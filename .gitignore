@@ -1,0 +1,17 @@
+venv/
+.venv/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.db
+*.sqlite3
+*.log
+*.env
+.env.local
+.env.prod
+.env.dev
+.env.test
+__pycache__/
+dev.db
+.vscode/

@@ -1,0 +1,199 @@
+from sqlalchemy import (
+    CheckConstraint, Column, DateTime, String, Integer, Enum, Date,
+    ForeignKey, Index, func, Boolean,
+)
+from src.db.session import Base
+from src.models.address import Country
+from sqlalchemy.orm import relationship
+from src.models.base import AuditableBase
+from datetime import datetime
+from src.models.master import Programe
+
+
+class Student(AuditableBase):
+    __tablename__ = "students"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    # Program Details
+    program_id = Column(Integer, ForeignKey("programs.id"), nullable=False)
+
+    # Personal Info
+    application_no = Column(Integer, unique=True, nullable=True)
+    registration_no = Column(String, unique=True, nullable=True)
+    title = Column(String(10), nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    gender = Column(String(10), nullable=False)
+    date_of_birth = Column(Date, nullable=False)
+    blood_group = Column(String(10), nullable=False)
+
+    # Contact
+    email = Column(String(100), unique=True, nullable=False)
+    mobile_number = Column(String(15), unique=True, nullable=False)
+    alternative_phone = Column(String(15), nullable=True)
+    whatsapp_number = Column(String(15), nullable=False)
+    
+    # Demographics
+    marital_status = Column(String(10), nullable=False)
+    religion = Column(String(10), nullable=False)
+    nationality = Column(Integer, ForeignKey("countries.id"), nullable=False)
+    
+    # Caste/Category
+    category = Column(String(10), nullable=False)
+    caste = Column(String(50), nullable=True)
+    
+    # Documents
+    aadhaar_number = Column(String(12), unique=True)
+    pan_number = Column(String(10), unique=True)
+
+    # Family Info
+    parent_guardian_name = Column(String(100), nullable=False)
+    relationship_with_student = Column(String(50), nullable=False)
+    
+    # Employment/Financial
+    current_employment = Column(String(100), nullable=True)
+    annual_income = Column(String(10), nullable=True)
+    locality = Column(String(10), nullable=True)
+
+    # Passport Details
+    passport_issued_country = Column(Integer, ForeignKey("countries.id"), nullable=True)
+    passport_number = Column(String(20), nullable=True)
+    passport_expiry_date = Column(Date, nullable=True)
+    
+    # Soft Delete (optional)
+    is_deleted = Column(Boolean, default=False)
+
+    # Relationships
+    #nationality_country = relationship("Country", back_populates="students_nationality")
+    nationality_country = relationship("Country", back_populates="students_nationality", foreign_keys=[nationality])
+    programe = relationship("Programe", backref="students")
+    address_details = relationship("AddressDetails", back_populates="student", uselist=False)
+    academic_details = relationship("AcademicDetails", back_populates="student", uselist=False)
+    document_details = relationship("DocumentDetails", back_populates="student", uselist=False)
+    declaration_details = relationship("DeclarationDetails", back_populates="student", uselist=False)
+    deb_details = relationship("DebDetails", back_populates="student", uselist=False)
+
+    __table_args__ = (
+        CheckConstraint("date_of_birth <= current_date - interval '18 years'", name="age_check"),
+        Index("ix_students_phone", "mobile_number"),
+        Index("ix_students_aadhaar", "aadhaar_number"),
+        Index("ix_students_pan", "pan_number"),
+        CheckConstraint("aadhaar_number ~ '^[0-9]{12}$' ", name="check_aadhaar_format"),
+        CheckConstraint("pan_number ~ '^[A-Z]{5}[0-9]{4}[A-Z]$' ", name="check_pan_format"),
+    )
+
+class AddressDetails(Base):
+    __tablename__ = "address_details"
+    
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
+    
+    # Correspondence Address
+    corr_addr1 = Column(String(100), nullable=False)
+    corr_addr2 = Column(String(100))
+    corr_city = Column(String(10), nullable=False)  
+    corr_state = Column(String(10), nullable=False)
+    corr_district = Column(String(10), nullable=False)
+    corr_country = Column(Integer, ForeignKey("countries.id"), nullable=False)
+    corr_pin = Column(String(10), nullable=False)
+    corr_addr_same = Column(Boolean, default=True)
+    # Permanent Address
+    perm_addr1 = Column(String(100))
+    perm_addr2 = Column(String(100))
+    perm_city = Column(String(10))
+    perm_state = Column(String(10))
+    perm_district = Column(String(10))
+    perm_country = Column(Integer, ForeignKey("countries.id"))
+    perm_pin = Column(String(10))
+
+    corr_country_rel = relationship("Country", foreign_keys=[corr_country], back_populates="address_details_corr")
+    perm_country_rel = relationship("Country", foreign_keys=[perm_country], back_populates="address_details_perm")
+    student = relationship("Student", back_populates="address_details")
+
+class AcademicDetails(Base):
+    __tablename__ = "academic_details"
+
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
+    ssc_board_id = Column(Integer, ForeignKey("ssc_board.id"))
+    ssc_school = Column(String(100), nullable=False)
+    ssc_scheme = Column(String(30), nullable=False)
+    ssc_score = Column(String(10), nullable=False)
+    ssc_year = Column(Date, nullable=False)
+    after_ssc = Column(String(20), nullable=False)
+    hsc_board_id = Column(Integer, ForeignKey("hsc_board.id"))
+    hsc_school = Column(String(100), nullable=False)
+    hsc_result = Column(String(20), nullable=False)
+    hsc_scheme = Column(String(30), nullable=False)
+    hsc_score = Column(String(10), nullable=False)
+    hsc_year = Column(Date, nullable=False)
+    diploma_institute = Column(String(100), nullable=False)
+    diploma_board = Column(String(100), nullable=False)
+    diploma_result = Column(String(20), nullable=False)
+    diploma_scheme = Column(String(30), nullable=False)
+    diploma_score = Column(String(10), nullable=False)
+    diploma_year = Column(Date, nullable=False)
+
+    student = relationship("Student", back_populates="academic_details")
+    ssc_board = relationship("SscBoard", back_populates="academic_details_10th")
+    hsc_board = relationship("HscBoard", back_populates="academic_details_12th")
+
+class DocumentDetails(Base):
+    __tablename__ = "document_details"
+
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
+    class_10th_marksheet = Column(String(255))  # Cloud file URL/path
+    class_12th_marksheet = Column(String(255))
+    graduation_marksheet = Column(String(255))
+    diploma_marksheet = Column(String(255))
+    work_experience_certificates = Column(String(255))
+    passport = Column(String(255))
+    aadhar = Column(String(255))
+    signature = Column(String(255))
+
+    student = relationship("Student", back_populates="document_details")
+
+class DeclarationDetails(Base):
+    __tablename__ = "declaration_details"
+
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
+    declaration_agreed = Column(Boolean, nullable=False)
+    applicant_name = Column(String(100), nullable=False)
+    parent_name = Column(String(100))
+    declaration_date = Column(Date, nullable=False)
+    place = Column(String(100), nullable=False)
+
+    student = relationship("Student", back_populates="declaration_details")
+
+class DebDetails(Base):
+    __tablename__ = "deb_details"
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
+    deb_id = Column(String(80), nullable=False)
+    deb_name = Column(String)
+    deb_gender = Column(String)
+    deb_date_of_birth = Column(String)
+    deb_university = Column(String)
+    deb_program = Column(String)
+    deb_abcid = Column(String)
+    deb_details_1 = Column(String)
+    deb_details_2 = Column(String)
+    deb_details_3 = Column(String)
+    deb_details_4 = Column(String)
+    deb_details_5 = Column(String)
+    deb_details_6 = Column(String)
+    deb_details_7 = Column(String)
+    deb_details_8 = Column(String)
+    deb_details_9 = Column(String)
+    deb_details_10 = Column(String)
+    deb_details_11 = Column(String)
+    deb_details_12 = Column(String)
+    deb_details_13 = Column(String)
+    deb_details_14 = Column(String)
+    deb_details_15 = Column(String)
+    deb_status = Column(String)
+
+    student = relationship("Student", back_populates="deb_details")
