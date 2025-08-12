@@ -2,7 +2,7 @@ from src.repositories.students import StudentRepository
 from src.models.students import Student
 from sqlalchemy.orm import Session
 from typing import List, Dict
-from src.schemas.students import StudentCreate
+from src.schemas.students import StudentCreate, StudentResponse
 import httpx
 from src.services.integrations.student_api import fetch_students_from_erp
 import logging
@@ -23,9 +23,10 @@ class StudentService:
         """Retrieve a student by ID."""
         return self.student_repo.get_by_id(student_id)
 
-    def get_all_students(self) -> List[Student]:
-        """Retrieve all students."""
-        return self.student_repo.get_all()
+    def get_all_students(self) -> List[StudentResponse]:
+        """Retrieve all students with their details."""
+        print("Fetching all students from the repository...")
+        return self.student_repo.get_all_students()
 
     def update_student(self, student_id: int, student_data: Dict) -> Student:
         """Update an existing student."""
@@ -75,8 +76,8 @@ class StudentService:
             logger.error(f"Error syncing students: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")
 
-    def get_all_students(self):
-        return self.student_repo.get_all_students()
+    # def get_all_students(self):
+    #     return self.student_repo.get_all_students()
     
 # import logging
 # from sqlalchemy.orm import Session

@@ -1,6 +1,6 @@
 from src.db.session import SessionLocal, get_db
 from sqlalchemy.orm import Session
-from src.models.user import User,  Group
+from src.models.user import User,  Group, user_group
 from src.utils.hash import hash_password
 from src.repositories import user as user_repo
 from fastapi import HTTPException
@@ -25,17 +25,22 @@ def creatsuperuser():
         is_superuser = True,
     )
     print(user.hashed_password)
-
-    admin_group = db.query(Group).filter(Group.name == 'Admin').first()
-
-    # group = user_group(
-    #     user_id = user.id,
-    #     group_id = admin_group.id
-    # )
-    
-    db.add(user,group)
+    db.add(user)
     db.commit()
-    db.refresh(user,group)
+    db.refresh(user)
+
+    # Assign user to Admin group
+    admin_group = db.query(Group).filter(Group.name == 'Admin').first()
+    if not admin_group:
+        admin_group = Group(name='Admin')
+        db.add(admin_group)
+        db.commit()
+        db.refresh(admin_group)
+
+    user.groups.append(admin_group)
+    
+    db.commit()
+    db.refresh(user)
     print("Superuser created:", user.email)
 
 if __name__ == "__main__":

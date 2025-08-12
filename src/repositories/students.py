@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from typing import List
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.future import select
 from src.models.students import *
 from src.repositories.base import BaseRepository
@@ -18,8 +19,25 @@ class StudentRepository(BaseRepository[Student]):
         return student
 
     def get_all(self) -> list[Student]:
-        result = self.db.execute(select(self.model))
-        return result.scalars().all()
+        # result = self.db.execute(select(self.model))
+        # print(f"Total students fetched: {result}")
+        # return result.scalars().all()
+        """Retrieve all students."""
+        return self.db.query(Student).all()
+    
+    def get_all_students(self) -> List[Student]:
+        try:
+            print("Fetching all students from the repository...")
+            students = self.db.query(Student).options(
+                joinedload(Student.address_details),
+                joinedload(Student.academic_details),
+                joinedload(Student.document_details),
+                joinedload(Student.declaration_details),
+                joinedload(Student.deb_details)
+            ).filter(Student.is_deleted == False).all()
+            return students
+        except Exception as e:
+            raise e
 
     def update(self, student_id: int, obj_data: dict) -> Student:
         student = self.get_by_id(student_id)

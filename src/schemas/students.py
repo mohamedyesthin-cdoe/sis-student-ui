@@ -120,7 +120,6 @@ class StudentBase(BaseModel):
     document_details: DocumentDetailsBase
     declaration_details: DeclarationDetailsBase
     deb_details: DebDetailsBase
-    
 
     @validator("mobile_number")
     def validate_mobile_number(cls, v):
@@ -144,13 +143,65 @@ class StudentCreate(StudentBase):
     """Schema for creating a new student."""
     pass
 
-class StudentResponse(BaseModel):
-    """Schema for Response an existing student."""
+class AddressDetailsResponse(AddressBase):
+    """Schema for Address Details Response."""
     id: int
-    student: StudentBase
+
+class AcademicDetailsResponse(AcademicDetailsBase):
+    """Schema for Academic Details Response."""
+    id: int
+
+class DocumentDetailsResponse(DocumentDetailsBase):
+    """Schema for Document Details Response."""
+    id: int 
+
+class DeclarationDetailsResponse(DeclarationDetailsBase):
+    """Schema for Declaration Details Response."""
+    id: int
+
+class DebDetailsResponse(DebDetailsBase):
+    """Schema for Deb Details Response."""
+    id: int 
+
+class StudentResponse(BaseModel):
+    id: int
+    program_id: int
+    registration_no: Optional[str] = None
+    application_no: Optional[int]
+    title: str
+    first_name: str
+    last_name: str
+    gender: str
+    date_of_birth: date
+    blood_group: str
+    email: str
+    mobile_number: str
+    alternative_phone: Optional[str]
+    whatsapp_number: str
+    marital_status: str
+    religion: str
+    nationality: int
+    category: str
+    caste: Optional[str]
+    aadhaar_number: Optional[str]
+    pan_number: Optional[str]
+    parent_guardian_name: str
+    relationship_with_student: str
+    current_employment: Optional[str]
+    annual_income: Optional[str]
+    locality: Optional[str]
+    passport_issued_country: Optional[int]
+    passport_number: Optional[str]
+    passport_expiry_date: Optional[date]
+    is_deleted: bool
     created_at: datetime
     updated_at: datetime
-    
+    address_details: Optional[AddressDetailsResponse]
+    academic_details: Optional[AcademicDetailsResponse]
+    document_details: Optional[DocumentDetailsResponse]
+    declaration_details: Optional[DeclarationDetailsResponse]
+    deb_details: Optional[DebDetailsResponse]
+
     class Config:
         from_attributes = True
 

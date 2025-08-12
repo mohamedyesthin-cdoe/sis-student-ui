@@ -20,7 +20,6 @@ def authenticate_user(email: str, password: str, db: Session, is_encrypted: bool
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     return user
 
-
 def login_user(email: str, password: str, db: Session, is_encrypted: bool = True):
     user = authenticate_user(email, password, db, is_encrypted)
     token = create_access_token(data={"id": user.id,"username": user.username, "email": user.email})
