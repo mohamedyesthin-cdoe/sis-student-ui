@@ -1,6 +1,6 @@
 from sqlalchemy import (
     CheckConstraint, Column, DateTime, String, Integer, Enum, Date,
-    ForeignKey, Index, func, Boolean,
+    ForeignKey, Index, func, Boolean, Text
 )
 from src.db.session import Base
 from src.models.address import Country
@@ -19,7 +19,7 @@ class Student(AuditableBase):
     program_id = Column(Integer, ForeignKey("programs.id"), nullable=False)
 
     # Personal Info
-    application_no = Column(Integer, unique=True, nullable=True)
+    application_no = Column(String(20), unique=True, nullable=True)
     registration_no = Column(String, unique=True, nullable=True)
     title = Column(String(10), nullable=False)
     first_name = Column(String(50), nullable=False)
@@ -53,7 +53,7 @@ class Student(AuditableBase):
     
     # Employment/Financial
     current_employment = Column(String(100), nullable=True)
-    annual_income = Column(String(10), nullable=True)
+    annual_income = Column(String(20), nullable=True)
     locality = Column(String(10), nullable=True)
 
     # Passport Details
@@ -73,6 +73,7 @@ class Student(AuditableBase):
     document_details = relationship("DocumentDetails", back_populates="student", uselist=False)
     declaration_details = relationship("DeclarationDetails", back_populates="student", uselist=False)
     deb_details = relationship("DebDetails", back_populates="student", uselist=False)
+    payments = relationship("Payment", back_populates="student", cascade="all, delete-orphan")
 
     __table_args__ = (
         CheckConstraint("date_of_birth <= current_date - interval '18 years'", name="age_check"),
@@ -133,7 +134,7 @@ class AcademicDetails(Base):
     diploma_result = Column(String(20), nullable=False)
     diploma_scheme = Column(String(30), nullable=False)
     diploma_score = Column(String(10), nullable=False)
-    diploma_year = Column(Date, nullable=False)
+    diploma_year = Column(Date, nullable=True)
 
     student = relationship("Student", back_populates="academic_details")
     ssc_board = relationship("SscBoard", back_populates="academic_details_10th")
@@ -144,14 +145,14 @@ class DocumentDetails(Base):
 
     id = Column(Integer, primary_key=True)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
-    class_10th_marksheet = Column(String(255))  # Cloud file URL/path
-    class_12th_marksheet = Column(String(255))
-    graduation_marksheet = Column(String(255))
-    diploma_marksheet = Column(String(255))
-    work_experience_certificates = Column(String(255))
-    passport = Column(String(255))
-    aadhar = Column(String(255))
-    signature = Column(String(255))
+    class_10th_marksheet = Column(Text)  # Cloud file URL/path
+    class_12th_marksheet = Column(Text)
+    graduation_marksheet = Column(Text)
+    diploma_marksheet = Column(Text)
+    work_experience_certificates = Column(Text)
+    passport = Column(Text)
+    aadhar = Column(Text)
+    signature = Column(Text)
 
     student = relationship("Student", back_populates="document_details")
 

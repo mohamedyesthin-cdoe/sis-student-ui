@@ -2,10 +2,14 @@ from typing import List
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.future import select
 from src.models.students import *
+from src.models.payment import *
 from src.repositories.base import BaseRepository
 from src.schemas.students import StudentBase
 from sqlalchemy.exc import IntegrityError
 from src.utils.register_number import generate_registration_number
+from src.services.integrations.student_mapper import (
+    map_api_to_student_schema, timestamp_to_date, safe_float, parse_date, ensure_datetime
+)
 
 class StudentRepository(BaseRepository[Student]):
     def __init__(self, db: Session):
@@ -55,88 +59,30 @@ class StudentRepository(BaseRepository[Student]):
     def get_last_sync_student(self):
         result = self.db.query(Student).order_by(Student.id.desc()).first()
         return result
-
-    # def bulk_create_student(self, student_data: dict):
-    #     try:
-    #         # Validate input data with Pydantic schema
-    #         program_id = self.db.query(Programe).filter(Programe.id == student_data.get("program_id")).first()
-    #         program_code = program_id.programe_code
-    #         last_reg_no = self.get_last_sync_student().registration_no if self.get_last_sync_student() else None
-    #         registration_number = generate_registration_number(program_code, last_reg_no)
-    #         print(f"Last registration number: {last_reg_no.id}")
-    #         student_schema = StudentBase(**student_data)
-    #         # Check for existing student
-    #         existing_student = self.db.query(Student).filter(
-    #             (Student.application_no == student_data["application_no"]) |
-    #             (Student.email == student_data["email"])
-    #         ).first()
-    #         if existing_student:
-    #             return existing_student.id
-            
-    #         validated_data = Student.__table__.columns.keys()
-    #         print(f"Validated data keys: {validated_data}")
-    #         student_data_filtered = {k: v for k, v in student_data.items() if k in validated_data}
-    #         print(f"Filtered student data: {student_data_filtered}")
-    #         # Create student and relatd models
-    #         student = Student(**student_data_filtered)
-    #         print(f"Creating student with data: {student_data}")
-    #         self.db.add(student)
-    #         self.db.flush()
-
-    #         # Create AddressDetails
-    #         address_data = student_data["address_details"]
-    #         address = AddressDetails(student_id=student.id, **address_data)
-    #         self.db.add(address)
-
-    #         # Create AcademicDetails
-    #         academic_data = student_data["academic_details"]
-    #         academic = AcademicDetails(student_id=student.id, **academic_data)
-    #         self.db.add(academic)
-
-    #         # Create DocumentDetails
-    #         document_data = student_data["document_details"]
-    #         document = DocumentDetails(student_id=student.id, **document_data)
-    #         self.db.add(document)
-
-    #         # Create Declaration
-    #         declaration_data = student_data["declaration_details"]
-    #         declaration = DeclarationDetails(student_id=student.id, **declaration_data)
-    #         self.db.add(declaration)
-
-    #         #Create Deb
-    #         deb_data = student_data["deb_details"]
-    #         deb = DebDetails(student_id=student.id, **deb_data)
-    #         self.db.add(deb)  
-
-    #         self.db.commit()
-    #         self.db.refresh(student)
-    #         return student.id
-    #     except IntegrityError as e:
-    #         self.db.rollback()
-    #         raise ValueError(f"Database integrity error: {str(e)}")
-    #     except Exception as e:
-    #         self.db.rollback()
-    #         raise ValueError(f"Error creating student: {str(e)}")
-
-    def bulk_create_student(self, student_data: dict):
+        
+    def bulk_create_student(self, api_response: dict):
         try:
             # --- 1. Fetch program and validate ---
+            student_data = map_api_to_student_schema(api_response)
+            
             program = self.db.query(Programe).filter(Programe.id == student_data.get("program_id")).first()
             if not program:
                 raise ValueError("Invalid program_id provided")
 
             program_code = program.programe_code
+
             # --- 2. Get last registration number (only 1 DB call) ---
             last_student = self.get_last_sync_student()
             last_reg_no = last_student.registration_no if last_student else None
+
             # Generate new registration number
             registration_number = generate_registration_number(program_code, last_reg_no)
 
             # --- 3. Validate input data with Pydantic ---
             # This ensures correct data types before proceeding
             student_data['registration_no'] = registration_number  # Add generated reg no
-            student_schema = StudentBase(**student_data)
             
+            student_schema = StudentBase(**student_data)
             # --- 4. Check for existing student (application_no or email) ---
             existing_student = self.db.query(Student).filter(
                 (Student.application_no == student_data["application_no"]) |
@@ -170,6 +116,53 @@ class StudentRepository(BaseRepository[Student]):
                 if details_data:
                     self.db.add(model(student_id=student.id, **details_data))
             
+            # Application Fee
+            if "application_fee" in student_data and student_data["application_fee"]:
+                app_fee_data = student_data["application_fee"]
+
+                payment = Payment(
+                    student_id=student.id,   
+                    payment_type="application_fee",
+                    order_id=app_fee_data.get("order_id"),
+                    transaction_id=app_fee_data.get("transaction_id"),
+                    payment_date=ensure_datetime(app_fee_data.get("payment_date")),
+                    payment_amount=app_fee_data.get("payment_amount", 0.0),
+                    is_offline=app_fee_data.get("is_offline", False),
+                    offline_transaction_id=app_fee_data.get("offline_transaction_id"),
+                    offline_payment_method=app_fee_data.get("offline_payment_method"),
+                    offline_receipt_enabled=app_fee_data.get("offline_receipt_enabled", False),
+                )
+
+                self.db.add(payment)
+                self.db.flush()
+                app_fee = ApplicationFee(payment_id=payment.id)
+                self.db.add(app_fee)
+
+            # Semester Fees (only 1st semester for initial sync)
+            if "semester_fees" in student_data and student_data["semester_fees"] and student_data["semester_fees"][0]:  # Take first entry
+                fee_data = student_data["semester_fees"][0]
+                payment = Payment(
+                    student_id=student.id,
+                    payment_type="semester_fee",
+                    order_id=fee_data.get("order_id"),
+                    transaction_id=fee_data.get("transaction_id"),
+                    payment_date=ensure_datetime(fee_data.get("payment_date")),
+                    payment_amount=fee_data.get("payment_amount"),
+                    is_offline=fee_data.get("is_offline"),
+                )
+                self.db.add(payment)
+                self.db.flush()
+                semester_fee = SemesterFee(
+                    payment_id=payment.id,
+                    semester=fee_data.get("semester"),
+                    lab_fee=fee_data.get("lab_fee"),
+                    lms_fee=fee_data.get("lms_fee"),
+                    exam_fee=fee_data.get("exam_fee"),
+                    tuition_fee=fee_data.get("tuition_fee"),
+                    total_fee=fee_data.get("total_fee"),
+                )
+                self.db.add(semester_fee)
+
             # --- 8. Commit transaction ---
             self.db.commit()
             self.db.refresh(student)

@@ -1,10 +1,11 @@
 from pydantic import BaseModel, EmailStr, validator, constr
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 from src.utils.enum import (
     HonorificType, GenderEnum, BloodGroupEnum, 
     MaritalStatus, CategoryEnum, Religion
 )
+from src.schemas.payment import ApplicationFeeCreate, SemesterFeeCreate
 
 class AddressBase(BaseModel):
     corr_addr1: str
@@ -41,7 +42,7 @@ class AcademicDetailsBase(BaseModel):
     diploma_result: str
     diploma_scheme: str
     diploma_score: str
-    diploma_year: date
+    diploma_year: Optional[date] = None
 
 class DocumentDetailsBase(BaseModel):
     class_10th_marksheet: Optional[str] = None
@@ -87,7 +88,7 @@ class DebDetailsBase(BaseModel):
 
 class StudentBase(BaseModel):
     program_id: int
-    application_no: Optional[int] = None
+    application_no: Optional[str] = None
     registration_no: str
     title: str
     first_name: str
@@ -109,7 +110,7 @@ class StudentBase(BaseModel):
     parent_guardian_name: str
     relationship_with_student: str
     current_employment: Optional[str] = None
-    annual_income: Optional[int] = None
+    annual_income: Optional[str] = None
     locality: Optional[str] = None
     passport_issued_country: Optional[str] = None
     passport_number: Optional[str] = None
@@ -120,6 +121,8 @@ class StudentBase(BaseModel):
     document_details: DocumentDetailsBase
     declaration_details: DeclarationDetailsBase
     deb_details: DebDetailsBase
+    application_fee: Optional[ApplicationFeeCreate] = None
+    semester_fees: Optional[List[SemesterFeeCreate]] = None
 
     @validator("mobile_number")
     def validate_mobile_number(cls, v):
@@ -201,6 +204,8 @@ class StudentResponse(BaseModel):
     document_details: Optional[DocumentDetailsResponse]
     declaration_details: Optional[DeclarationDetailsResponse]
     deb_details: Optional[DebDetailsResponse]
+    application_fee: Optional[ApplicationFeeCreate] = None
+    semester_fees: Optional[List[SemesterFeeCreate]] = None
 
     class Config:
         from_attributes = True
