@@ -20,7 +20,7 @@ export default function StudentDetail() {
     } else {
       navigate('/students');  // Redirect if student not found
     }
-  }, [id, navigate]);
+  }, [id, navigate])
 
   if (!student) return null;
 
