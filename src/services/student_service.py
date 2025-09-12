@@ -84,6 +84,3 @@ class StudentService:
         except Exception as e:
             logger.error(f"Error syncing students: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")
-
-    # def get_all_students(self):
-    #     return self.student_repo.get_all_students()
