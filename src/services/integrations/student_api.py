@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from typing import List
 import httpx
@@ -81,7 +82,11 @@ async def push_deb_student_details(db: Session) -> dict:
     MODE_EDUCATION = "Online(OL)"
     ADMISSION_DETAILS = "NA"
     GovernmentIdentifier = 'AADHAR Card'
-
+    category_map = { 1500033: 'General',
+                     1500034: 'OBC',
+                     1500035: 'SC',
+                     1500036: 'ST'
+                    }
     headers = {
         "APIKey": settings.UGC_API_POST_KEY,
         "ClientID": settings.CLIENT_ID_POST,
@@ -95,7 +100,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 joinedload(Student.declaration_details),
                 joinedload(Student.deb_details),
                 joinedload(Student.payments)
-            ).filter_by(is_pushed='False').all()
+            ).filter_by(is_pushed=False).all()
     
     print(len(students))
     print(students)
@@ -107,13 +112,23 @@ async def push_deb_student_details(db: Session) -> dict:
         try:
             for student in students:
                 #programe = db.query(Programe).filter(Programe.id == student.program_id).first()
-                admission_date = db.query(Payment).filter(Payment.student_id == student.id and Payment.semester_fee=='semester_fee').first()
+                admission_date = db.query(Payment).filter(
+                    Payment.student_id == student.id and
+                    Payment.semester_fee=='semester_fee'
+                ).first()
                 nationality = db.query(Country).filter(Country.id == student.nationality).first()
-                if nationality.name == 'India':
-                    CountryResidence = 'India'
-                else:
-                    CountryResidence = 'Others'
                 
+                if not admission_date:
+                    print(f"Skipping student {student.id}: No admission date found")
+                    continue
+                if not nationality:
+                    print(f"Skipping student {student.id}: No nationality found")
+                    continue
+
+                CountryResidence = 'India' if nationality.name == 'India' else 'Others'
+                Locality = 'Urban' if student.locality == '1500102' else 'Rural'
+                Category = category_map.get(student.category, 'Others')
+
                 params={
                     "DEBuniqueID": student.deb_details.deb_id,
                     "UniversityName": UNIVERSITY_NAME,
@@ -122,14 +137,14 @@ async def push_deb_student_details(db: Session) -> dict:
                     "AdmissionDetails": ADMISSION_DETAILS,
                     "EnrollmentNumber": student.registration_no,
                     "ModeOfEducation": MODE_EDUCATION,
-                    "Category": student.category,
+                    "Category": Category,
                     "GovernmentIdentifier": GovernmentIdentifier,
-                    "Locality": student.locality,
+                    "Locality": Locality,
                     "Nationality": nationality.name,
                     "GovernmentIdentifierNumber": student.aadhaar_number,
                     "CountryResidence": CountryResidence,
                 }
-
+                print(params)
                 print(f"Fetching DEB student details...{params}")
                 response = await client.post(
                     deb_api_url,
@@ -141,8 +156,9 @@ async def push_deb_student_details(db: Session) -> dict:
                 response.raise_for_status()
                 data = response.json()
                 print(f"DEB student details fetched...{data}")
-                # Validate response format
-                student.is_pushed = 'True'
+                #Validate response format
+                student.is_pushed  = True
+                student.updated_at = datetime.utcnow()
                 db.add(student)
                 db.commit()
                 db.refresh(student)
