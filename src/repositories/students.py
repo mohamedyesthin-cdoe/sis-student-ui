@@ -23,9 +23,6 @@ class StudentRepository(BaseRepository[Student]):
         return student
 
     def get_all(self) -> list[Student]:
-        # result = self.db.execute(select(self.model))
-        # print(f"Total students fetched: {result}")
-        # return result.scalars().all()
         """Retrieve all students."""
         return self.db.query(Student).all()
     
@@ -37,8 +34,12 @@ class StudentRepository(BaseRepository[Student]):
                 joinedload(Student.academic_details),
                 joinedload(Student.document_details),
                 joinedload(Student.declaration_details),
-                joinedload(Student.deb_details)
-            ).filter(Student.is_deleted == False).all()
+                joinedload(Student.deb_details),
+                joinedload(Student.payments).joinedload(Payment.semester_fee),
+                joinedload(Student.payments).joinedload(Payment.application_fee)
+            ).all()
+            #students = self.db.query(Student).all()
+            print(f"Total students fetched: {len(students)}")
             return students
         except Exception as e:
             raise e
@@ -66,6 +67,7 @@ class StudentRepository(BaseRepository[Student]):
             student_data = map_api_to_student_schema(api_response)
             
             program = self.db.query(Programe).filter(Programe.id == student_data.get("program_id")).first()
+            
             if not program:
                 raise ValueError("Invalid program_id provided")
 

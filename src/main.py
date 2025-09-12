@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.core.config import settings
 from src.db.session import engine,get_db,Base
@@ -6,8 +6,11 @@ from src.db import base  # This should import and register all models
 from src.models import user
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from src.schemas.students import DebResponse
+from src.services.integrations.student_api import get_deb_student_details, push_deb_student_details
 #from src.middleware.request_id import RequestIDMiddleware
 #from src.utils.rate_limiter import RateLimiter
+
 
 
 from src.api.v1.endpoints.auth import router as auth_router
@@ -65,11 +68,6 @@ async def startup():
 def root():
     return RedirectResponse(url="/api/v1/docs")
 
-@app.get("/users/{user_id}")
-async def read_user(user_id: int, db: Session = Depends(get_db)):
-    user = db.query(user).filter(user.id == user_id).first()
-    return {"user": user}
-
 @app.get(f"{settings.API_V1_STR}/health")
 async def health_check():
     return {"status": "ok", 
@@ -81,3 +79,23 @@ async def health_check():
 def debug_user(db: Session = Depends(get_db)):
     users = db.query(user.User).all()
     return {"users": [u.email for u in users]}
+
+@app.router.get("/deb/student/{deb_id}", response_model=DebResponse, tags=["Deb"])
+async def get_deb_student(deb_id: str):
+    """Retrieve student by DEB ID."""
+    try:
+        print(f"Fetching DEB student details...{deb_id}")
+        students = await get_deb_student_details(deb_id)
+        return students
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
+
+@app.router.post("/push/ugc/", response_model=DebResponse, tags=["Deb"])
+async def push_student_deb(db: Session = Depends(get_db)):
+    """Push student by DEB"""
+    try:
+        print("Pushing DEB student details...")
+        students = await push_deb_student_details(db)
+        return students
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")

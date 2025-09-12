@@ -15,7 +15,12 @@ class BaseConfig(BaseSettings):
     STUDENT_API_URL: str
     MERRITO_API_URL: str 
     MERRITO_SECRET_KEY: str 
-    MERRITO_ACCESS_KEY: str 
+    MERRITO_ACCESS_KEY: str
+    UGC_DEB_API_URL: str
+    CLIENT_ID_GET: str
+    UGC_API_GET_KEY: str
+    CLIENT_ID_POST: str
+    UGC_API_POST_KEY: str
 
     class Config:
         env_file = ".env.dev"

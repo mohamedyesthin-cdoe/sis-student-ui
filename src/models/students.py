@@ -63,7 +63,8 @@ class Student(AuditableBase):
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)
-
+    is_pushed = Column(Boolean, default=False)
+    
     # Relationships
     #nationality_country = relationship("Country", back_populates="students_nationality")
     nationality_country = relationship("Country", back_populates="students_nationality", foreign_keys=[nationality])
@@ -124,11 +125,11 @@ class AcademicDetails(Base):
     ssc_year = Column(Date, nullable=False)
     after_ssc = Column(String(20), nullable=False)
     hsc_board_id = Column(Integer, ForeignKey("hsc_board.id"))
-    hsc_school = Column(String(100), nullable=False)
-    hsc_result = Column(String(20), nullable=False)
-    hsc_scheme = Column(String(30), nullable=False)
-    hsc_score = Column(String(10), nullable=False)
-    hsc_year = Column(Date, nullable=False)
+    hsc_school = Column(String(100))
+    hsc_result = Column(String(20))
+    hsc_scheme = Column(String(30))
+    hsc_score = Column(String(10))
+    hsc_year = Column(Date)
     diploma_institute = Column(String(100), nullable=False)
     diploma_board = Column(String(100), nullable=False)
     diploma_result = Column(String(20), nullable=False)

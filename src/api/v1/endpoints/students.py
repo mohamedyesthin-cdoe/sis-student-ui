@@ -1,9 +1,10 @@
 from typing import List
 from src.services.student_service import StudentService
+from src.services.integrations.student_api import get_deb_student_details, push_deb_student_details
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from src.db.session import get_db
-from src.schemas.students import StudentCreate, StudentResponse, SyncResponse
+from src.schemas.students import StudentCreate, StudentResponse, SyncResponse, DebResponse
 
 router = APIRouter()
 
