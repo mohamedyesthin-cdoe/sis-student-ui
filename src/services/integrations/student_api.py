@@ -82,11 +82,6 @@ async def push_deb_student_details(db: Session) -> dict:
     MODE_EDUCATION = "Online(OL)"
     ADMISSION_DETAILS = "NA"
     GovernmentIdentifier = 'AADHAR Card'
-    category_map = { 1500033: 'General',
-                     1500034: 'OBC',
-                     1500035: 'SC',
-                     1500036: 'ST'
-                    }
     headers = {
         "APIKey": settings.UGC_API_POST_KEY,
         "ClientID": settings.CLIENT_ID_POST,
@@ -101,7 +96,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 joinedload(Student.deb_details),
                 joinedload(Student.payments)
             ).filter_by(is_pushed=False).all()
-    
+    Course = db.query(Programe).filter(Programe.id == Student.program_id).first()
     print(len(students))
     print(students)
 
@@ -126,14 +121,16 @@ async def push_deb_student_details(db: Session) -> dict:
                     continue
 
                 CountryResidence = 'India' if nationality.name == 'India' else 'Others'
-                Locality = 'Urban' if student.locality == '1500102' else 'Rural'
-                Category = category_map.get(student.category, 'Others')
+                Locality = 'Urban' if student.locality == '1500102' else 'Rural' 
+                Category = 'General' if student.category == '1500033' else (
+                           'OBC' if student.category == '1500034' else (
+                           'SC' if student.category == '1500035' else 'General'))
 
                 params={
                     "DEBuniqueID": student.deb_details.deb_id,
                     "UniversityName": UNIVERSITY_NAME,
-                    "CourseName": student.programe.programe,
-                    "AdmissionDate": admission_date.payment_date.strftime("%Y-%m-%d"),
+                    "CourseName": Course.programe,
+                    "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
                     "AdmissionDetails": ADMISSION_DETAILS,
                     "EnrollmentNumber": student.registration_no,
                     "ModeOfEducation": MODE_EDUCATION,
