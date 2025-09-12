@@ -96,7 +96,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 joinedload(Student.deb_details),
                 joinedload(Student.payments)
             ).filter_by(is_pushed=False).all()
-    Course = db.query(Programe).filter(Programe.id == Student.program_id).first()
+    Course = 'BACHELOR OF SCIENCE (HONS) (DATA SCIENCE)'
     print(len(students))
     print(students)
 
