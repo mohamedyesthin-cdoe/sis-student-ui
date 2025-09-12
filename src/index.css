@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans;
+}
+
+:root {
+  --color-bg: #ffffff;
+  --color-text: #111111;
+  --color-card: #ffffff;
+  --color-border: #e0e0e0;
+  --color-input-bg: #ffffff;
+  --color-input-text: #111111;
+  --color-input-border: #cccccc;
+  --color-button-bg: #663FFA;
+  --color-button-text: #ffffff;
+  --color-link: #2563eb;
+  --color-link-hover: #1d4ed8;
+}
+
+.dark {
+  --color-bg: #111827;
+  --color-text: #f3f4f6;
+  --color-card: #1f2937;
+  --color-border: #374151;
+  --color-input-bg: #1f2937;
+  --color-input-text: #f3f4f6;
+  --color-input-border: #4b5563;
+  --color-button-bg: #3b82f6;
+  --color-button-text: #ffffff;
+  --color-link: #60a5fa;
+  --color-link-hover: #3b82f6;
+  --color-text-muted: #6b7280;
+}
+
+@layer utilities {
+  .bg-bg {
+    background-color: var(--color-bg);
+  }
+
+  .text-text {
+    color: var(--color-text);
+  }
+
+  .bg-card {
+    background-color: var(--color-card);
+  }
+
+  .border-border {
+    border-color: var(--color-border);
+  }
+
+  .bg-input-bg {
+    background-color: var(--color-input-bg);
+  }
+
+  .text-input-text {
+    color: var(--color-input-text);
+  }
+
+  .border-input-border {
+    border-color: var(--color-input-border);
+  }
+
+  .bg-button-bg {
+    background-color: var(--color-button-bg);
+  }
+
+  .text-button-text {
+    color: var(--color-button-text);
+  }
+
+  .text-link {
+    color: var(--color-link);
+  }
+
+  .hover\:text-link-hover:hover {
+    color: var(--color-link-hover);
+  }
+
+  .text-muted {
+    color: var(--color-text-muted);
+    opacity: 0.7;
+  }
+
+  .header {
+    color: var(--color-text);
+  }
+
+  .table-scroll-container {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Unified global scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #d7d4d4;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #cbcaca;
+  }
+}
+
+@layer components {
+  .input {
+    @apply w-full px-4 py-2 pr-10 text-sm rounded border focus:outline-none focus:ring;
+    background-color: var(--color-input-bg);
+    color: var(--color-input-text);
+    border-color: var(--color-input-border);
+  }
+
+  .input::placeholder {
+    color: var(--color-input-text);
+    opacity: 0.5;
+  }
+
+  .button {
+    @apply w-full py-2 rounded text-sm font-semibold transition shadow hover:shadow-lg;
+    background-color: var(--color-button-bg);
+    color: var(--color-button-text);
+  }
+
+  .button:hover {
+    background-color: var(--color-link-hover);
+  }
+}
