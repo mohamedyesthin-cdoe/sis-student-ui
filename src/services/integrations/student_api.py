@@ -129,7 +129,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 params={
                     "DEBuniqueID": student.deb_details.deb_id,
                     "UniversityName": UNIVERSITY_NAME,
-                    "CourseName": Course.programe,
+                    "CourseName": Course,
                     "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
                     "AdmissionDetails": ADMISSION_DETAILS,
                     "EnrollmentNumber": student.registration_no,
