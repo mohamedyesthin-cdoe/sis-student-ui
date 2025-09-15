@@ -38,6 +38,7 @@ class StudentRepository(BaseRepository[Student]):
                 joinedload(Student.payments).joinedload(Payment.semester_fee),
                 joinedload(Student.payments).joinedload(Payment.application_fee)
             ).all()
+            
             #students = self.db.query(Student).all()
             print(f"Total students fetched: {len(students)}")
             return students

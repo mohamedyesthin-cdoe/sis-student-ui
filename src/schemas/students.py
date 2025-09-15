@@ -101,7 +101,7 @@ class DocumentDetailsBase(BaseModel):
     class_10th_marksheet: Optional[str] = None
     class_12th_marksheet: Optional[str] = None
     graduation_marksheet: Optional[str] = None
-    diploma_marksheet: Optional[List[str]] = None
+    diploma_marksheet: Optional[str] = None
     work_experience_certificates: Optional[str] = None
     passport: Optional[str] = None
     aadhar: Optional[str] = None
@@ -392,7 +392,7 @@ class DebStudentResponse(BaseModel):
 class DebResponse(BaseModel):
     Message: str
     Status: str
-    Resource: Union[List[DebStudentResponse], str, None] = None
+    Flag: Optional[str] = None
 
 class DebPushResponse(BaseModel):
     Message: str

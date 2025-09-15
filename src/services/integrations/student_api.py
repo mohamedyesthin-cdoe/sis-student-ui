@@ -9,6 +9,9 @@ from src.models.students import Student
 from src.models.payment import Payment
 from src.models.master import Programe
 from src.models.address import Country
+from src.utils.logger import setup_logger
+
+logger = setup_logger()
     
 async def fetch_students_list() -> dict:
     """Fetch students from the external API."""
@@ -44,14 +47,12 @@ async def fetch_students_list() -> dict:
         
 async def get_deb_student_details(deb_id: str) -> dict:
     """Fetch DEB student details from the external API."""
-    print("deb_id", deb_id)
     deb_api_url = f"{settings.UGC_DEB_API_URL}/GetStudentDetails"
     headers = {
         "APIKey": settings.UGC_API_GET_KEY,
         "ClientID": settings.CLIENT_ID_GET,
         "Content-Type": "application/json",
     }
-    print(f"Fetching DEB student details...{headers}")
     params={"DEBuniqueID": deb_id}
 
     async with httpx.AsyncClient(timeout=10.0) as client:
@@ -61,10 +62,8 @@ async def get_deb_student_details(deb_id: str) -> dict:
                 params=params,
                 headers=headers,
             )
-            print(response)
             response.raise_for_status()
             data = response.json()
-            print(f"DEB student details fetched...{data}")
             # Validate response format
             return data
         
@@ -96,9 +95,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 joinedload(Student.deb_details),
                 joinedload(Student.payments)
             ).filter_by(is_pushed=False).all()
-    Course = 'BACHELOR OF SCIENCE (HONS) (DATA SCIENCE)'
-    print(len(students))
-    print(students)
+    #Course = 'BACHELOR OF SCIENCE (HONS) (DATA SCIENCE)'
 
     if not students:
         raise HTTPException(status_code=404, detail="No students to push")
@@ -106,21 +103,18 @@ async def push_deb_student_details(db: Session) -> dict:
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
             for student in students:
-                #programe = db.query(Programe).filter(Programe.id == student.program_id).first()
                 admission_date = db.query(Payment).filter(
                     Payment.student_id == student.id and
                     Payment.semester_fee=='semester_fee'
                 ).first()
                 nationality = db.query(Country).filter(Country.id == student.nationality).first()
-                
+                course = db.query(Programe).filter(Programe.id == student.program_id).first()
                 if not admission_date:
-                    print(f"Skipping student {student.id}: No admission date found")
                     continue
                 if not nationality:
-                    print(f"Skipping student {student.id}: No nationality found")
                     continue
 
-                CountryResidence = 'India' if nationality.name == 'India' else 'Others'
+                CountryResidence = 'Indian' if nationality.name == 'India' else 'Others'
                 Locality = 'Urban' if student.locality == '1500102' else 'Rural' 
                 Category = 'General' if student.category == '1500033' else (
                            'OBC' if student.category == '1500034' else (
@@ -129,37 +123,34 @@ async def push_deb_student_details(db: Session) -> dict:
                 params={
                     "DEBuniqueID": student.deb_details.deb_id,
                     "UniversityName": UNIVERSITY_NAME,
-                    "CourseName": Course,
+                    "CourseName": course.programe,
                     "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
                     "AdmissionDetails": ADMISSION_DETAILS,
                     "EnrollmentNumber": student.registration_no,
-                    "ModeOfEducation": MODE_EDUCATION,
+                    "ModeEducation": MODE_EDUCATION,
                     "Category": Category,
                     "GovernmentIdentifier": GovernmentIdentifier,
                     "Locality": Locality,
-                    "Nationality": nationality.name,
+                    "Nationality": CountryResidence,
                     "GovernmentIdentifierNumber": student.aadhaar_number,
-                    "CountryResidence": CountryResidence,
+                    "CountryResidence": nationality.name,
                 }
-                print(params)
-                print(f"Fetching DEB student details...{params}")
+
                 response = await client.post(
                     deb_api_url,
                     headers=headers,
                     params=params,
                 )
 
-                print(response)
                 response.raise_for_status()
                 data = response.json()
-                print(f"DEB student details fetched...{data}")
                 #Validate response format
                 student.is_pushed  = True
                 student.updated_at = datetime.utcnow()
                 db.add(student)
                 db.commit()
                 db.refresh(student)
-                return data
+            return data
         
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=e.response.status_code, detail="External API request failed")
