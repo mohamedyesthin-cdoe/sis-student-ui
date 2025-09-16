@@ -8,7 +8,10 @@ import {
   Divider,
   Button,
   Avatar,
+  Box,
+  IconButton,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function NotificationsDrawer({ open, onClose }) {
   const notifications = [
@@ -34,23 +37,28 @@ export default function NotificationsDrawer({ open, onClose }) {
 
   return (
     <Drawer anchor="right" open={open} onClose={onClose}>
-      <div className="w-[340px] h-full flex flex-col bg-white rounded-lg shadow-lg border border-gray-300">
+      <Box className="w-[340px] h-full flex flex-col bg-white rounded-lg shadow-lg border border-gray-300">
 
         {/* Header */}
-        <div className="flex items-center justify-between p-3 bg-[#105c8e] text-white">
-          <Typography variant="subtitle1" className="font-semibold text-sm">
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          p={2}
+          bgcolor="secondary.main"
+          color="white"
+        >
+          <Typography variant="subtitle1" sx={{ fontWeight: '600', fontSize: '0.875rem' }}>
             Notifications
           </Typography>
-          <button
-            onClick={onClose}
-            className="text-white text-lg font-bold"
-          >
-            ×
-          </button>
-        </div>
+
+          <IconButton onClick={onClose} sx={{ color: 'white' }}>
+            <CloseIcon fontSize="large" />
+          </IconButton>
+        </Box>
 
         {/* Notifications List */}
-        <div className="flex-1 overflow-auto p-2">
+        <Box className="flex-1 overflow-auto p-2">
           <List>
             {notifications.map((item, index) => (
               <React.Fragment key={index}>
@@ -59,36 +67,36 @@ export default function NotificationsDrawer({ open, onClose }) {
                     {item.avatarText}
                   </Avatar>
 
-                  <div className="flex-1">
+                  <Box className="flex-1">
                     <Typography className="font-medium text-gray-800 text-sm">
                       {item.message}
                     </Typography>
 
                     {item.extra && (
-                      <div className="flex items-center text-gray-600 text-xs mt-1">
+                      <Box className="flex items-center text-gray-600 text-xs mt-1">
                         {item.extra}
-                      </div>
+                      </Box>
                     )}
 
                     <Typography className="text-xs text-gray-400 mt-1">
                       {item.time}
                     </Typography>
-                  </div>
+                  </Box>
                 </ListItem>
 
                 {index < notifications.length - 1 && <Divider />}
               </React.Fragment>
             ))}
           </List>
-        </div>
+        </Box>
 
         {/* Footer */}
-        <div className="p-4 border-t border-gray-300 text-center">
+        <Box className="p-4 border-t border-gray-300 text-center">
           <Button variant="outlined" size="small" onClick={onClose}>
             Close
           </Button>
-        </div>
-      </div>
+        </Box>
+      </Box>
     </Drawer>
   );
 }

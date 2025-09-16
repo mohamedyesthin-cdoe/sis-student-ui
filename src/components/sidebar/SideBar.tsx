@@ -7,6 +7,8 @@ import {
   Collapse,
   Drawer,
   Tooltip,
+  useTheme,
+  Box,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -56,6 +58,7 @@ export default function Sidebar({
   const [selectedParent, setSelectedParent] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme()
 
   // Sync selected item and parent based on current route
   useEffect(() => {
@@ -76,46 +79,46 @@ export default function Sidebar({
     }
   }, [location.pathname]);
 
-  const handleSelect = (itemText, routePath, hasChildren, parentText = '') => {
-  if (routePath) {
-    navigate(routePath);
-    setSelectedItem(itemText);
-    setSelectedParent(parentText);
+  const handleSelect = (itemText:any, routePath:any, hasChildren:any, parentText = '') => {
+    if (routePath) {
+      navigate(routePath);
+      setSelectedItem(itemText);
+      setSelectedParent(parentText);
 
-    if (parentText) {
-      setOpenItems((prev) => ({ ...prev, [parentText]: true }));
-    }
+      if (parentText) {
+        setOpenItems((prev) => ({ ...prev, [parentText]: true }));
+      }
 
-    if (isDrawer && onClose) {
-      onClose();
-    }
-  } else if (hasChildren) {
-    // If in compact mode, expand the sidebar when clicking parent item
-    if (!isSidebarVisible) {
-      setSidebarVisible(true);
-    }
+      if (isDrawer && onClose) {
+        onClose();
+      }
+    } else if (hasChildren) {
+      // If in compact mode, expand the sidebar when clicking parent item
+      if (!isSidebarVisible) {
+        setSidebarVisible(true);
+      }
 
-    setOpenItems((prev) => ({
-      ...prev,
-      [itemText]: !prev[itemText],
-    }));
-  }
-};
+      setOpenItems((prev) => ({
+        ...prev,
+        [itemText]: !prev[itemText],
+      }));
+    }
+  };
 
 
 
   const drawerContent = (
-    <div
+    <Box
       className={`h-full bg-white flex flex-col border-r border-gray-200 transition-all duration-300 ${isSidebarVisible ? 'w-64' : 'w-16'
         }`}
     >
-      <div className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3' : 'p-1'}`}>
+      <Box className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3' : 'p-1'}`}>
         {isSidebarVisible ? (
           <img src={logo} alt="Logo" className="mx-auto object-contain h-12" />
         ) : (
           <img src={logo2} alt="Logo Small" className="mx-auto object-contain h-12" />
         )}
-      </div>
+      </Box>
 
       <List component="nav" className="flex-1 px-2 py-3">
         {STATIC_MENU_ITEMS.map((item) => {
@@ -124,37 +127,37 @@ export default function Sidebar({
           const isActive = selectedItem === item.text || selectedParent === item.text;
 
           return (
-            <div key={item.text}>
+            <Box key={item.text}>
               {!isSidebarVisible ? (
                 <Tooltip title={item.text} placement="right" arrow>
                   <ListItem
-                    component="div"
+                    component={Box}
                     onClick={() => handleSelect(item.text, item.routePath, hasChildren)}
                     sx={{
-                      bgcolor: isActive ? '#105c8e' : 'transparent',
-                      color: isActive ? 'white' : 'gray',
-                      '&:hover': {
-                        backgroundColor: '#BF2728',
-                        color: 'white',
-                        cursor: 'pointer',
-                      },
+                      bgcolor: isActive ? theme.palette.secondary.main : 'transparent',
+                      color: isActive ? 'white' : theme.palette.text.secondary,
                       fontSize: '1rem',
-                      fontWeight: '500',
+                      fontWeight: 500,
                       borderRadius: '8px',
-                      '&:hover .MuiListItemIcon-root': { color: 'white' },
                       marginBottom: '8px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      paddingLeft: '0',
-                      paddingRight: '0',
+                      paddingLeft: 0,
+                      paddingRight: 0,
                       height: '48px',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: theme.palette.primary.main,
+                        color: 'white',
+                      },
+                      '&:hover .MuiListItemIcon-root': { color: 'white' },
                     }}
                   >
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
-                        color: isActive ? 'white' : 'gray',
+                        color: isActive ? 'white' : theme.palette.text.secondary,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -166,20 +169,14 @@ export default function Sidebar({
                 </Tooltip>
               ) : (
                 <ListItem
-                  component="div"
+                  component={Box}
                   onClick={() => handleSelect(item.text, item.routePath, hasChildren)}
                   sx={{
-                    bgcolor: isActive ? '#105c8e' : 'transparent',
-                    color: isActive ? 'white' : 'gray',
-                    '&:hover': {
-                      backgroundColor: '#BF2728',
-                      color: 'white',
-                      cursor: 'pointer',
-                    },
+                    bgcolor: isActive ? theme.palette.secondary.main : 'transparent',
+                    color: isActive ? 'white' : theme.palette.text.secondary,
                     fontSize: '1rem',
-                    fontWeight: '500',
+                    fontWeight: 500,
                     borderRadius: '8px',
-                    '&:hover .MuiListItemIcon-root': { color: 'white' },
                     marginBottom: '8px',
                     display: 'flex',
                     alignItems: 'center',
@@ -187,12 +184,18 @@ export default function Sidebar({
                     paddingLeft: '16px',
                     paddingRight: '16px',
                     height: '48px',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: theme.palette.primary.main,
+                      color: 'white',
+                    },
+                    '&:hover .MuiListItemIcon-root': { color: 'white' },
                   }}
                 >
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      color: isActive ? 'white' : 'gray',
+                      color: isActive ? 'white' : theme.palette.text.primary,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -201,35 +204,39 @@ export default function Sidebar({
                     {ICON_MAP[item.icon]}
                   </ListItemIcon>
 
-                  <ListItemText primary={item.text} className="pl-2" sx={{ opacity: 1 }} />
+                  <ListItemText
+                    primary={item.text}
+                    sx={{ pl: 2, opacity: 1 }}
+                  />
 
                   {hasChildren && (
-                    <div className="ml-auto flex items-center">
+                    <Box style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                       {isOpen ? <ExpandLess /> : <ExpandMore />}
-                    </div>
+                    </Box>
                   )}
                 </ListItem>
               )}
 
               {hasChildren && (
                 <Collapse in={isOpen && isSidebarVisible} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding>
+                  <List component={Box} disablePadding>
                     {item.subItems.map((subItem) => (
                       <ListItem
                         key={subItem.text}
-                        component="div"
+                        component={Box}
                         onClick={() =>
                           handleSelect(subItem.text, subItem.routePath, false, item.text)
                         }
-                        className="pl-12"
                         sx={{
                           fontSize: '0.875rem',
-                          color: selectedItem === subItem.text ? '#105c8e' : '#6b7280',
+                          color: selectedItem === subItem.text
+                            ? theme.palette.primary.main
+                            : theme.palette.text.primary,
                           justifyContent: 'flex-end',
+                          cursor: 'pointer',
                           '&:hover': {
-                            backgroundColor: '#105c8e',
+                            backgroundColor: theme.palette.primary.main,
                             color: 'white',
-                            cursor: 'pointer',
                           },
                         }}
                       >
@@ -245,11 +252,12 @@ export default function Sidebar({
                   </List>
                 </Collapse>
               )}
-            </div>
+            </Box>
+
           );
         })}
       </List>
-    </div>
+    </Box>
   );
 
   if (isDrawer) {
@@ -261,11 +269,11 @@ export default function Sidebar({
   }
 
   return (
-    <div
+    <Box
       className={`hidden md:flex transition-all duration-300 ease-in-out ${isSidebarVisible ? 'translate-x-0' : 'translate-x-0'
         }`}
     >
       {drawerContent}
-    </div>
+    </Box>
   );
 }

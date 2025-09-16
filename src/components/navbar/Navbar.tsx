@@ -11,6 +11,7 @@ import {
   Divider,
   TextField,
   InputAdornment,
+  Box,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
@@ -18,6 +19,7 @@ import {
   Search as SearchIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material';
+import  CloseIcon from '@mui/icons-material/Close'
 
 import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
@@ -72,12 +74,12 @@ export default function Navbar({ onHamburgerClick }) {
         <Toolbar className="flex flex-col md:flex-row md:justify-between md:items-center p-2 space-y-2 md:space-y-0">
 
           {/* Left Section: Hamburger + Search */}
-          <div className="flex items-center w-full md:w-auto space-x-3">
-            <IconButton onClick={onHamburgerClick} color="primary" className="md:hidden">
+          <Box className="flex items-center w-full md:w-auto space-x-3">
+            <IconButton onClick={onHamburgerClick} color="secondary" className="md:hidden">
               <MenuIcon />
             </IconButton>
 
-            <div className="w-full md:w-72">
+            <Box className="w-full md:w-72">
               <TextField
                 placeholder="Search..."
                 size="small"
@@ -91,11 +93,11 @@ export default function Navbar({ onHamburgerClick }) {
                   ),
                 }}
               />
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           {/* Right Section: Icons + Avatar */}
-          <div className="flex items-center space-x-4">
+          <Box className="flex items-center space-x-4">
             <IconButton onClick={handleNotificationClick}>
               <Badge badgeContent={4} color="error">
                 <NotificationsIcon />
@@ -109,7 +111,7 @@ export default function Navbar({ onHamburgerClick }) {
             <IconButton onClick={handleProfileClick}>
               <Avatar alt="User Avatar" src="https://via.placeholder.com/40" />
             </IconButton>
-          </div>
+          </Box>
 
           {/* Notification Popover */}
           <Popover
@@ -122,49 +124,54 @@ export default function Navbar({ onHamburgerClick }) {
               className: 'rounded-lg shadow-lg w-[340px] border border-gray-300',
             }}
           >
-            <div className="bg-white flex flex-col max-h-[340px]">
-              <div className="flex items-center justify-between p-3 bg-[#105c8e] text-white">
-                <Typography variant="subtitle1" className="font-semibold text-sm">
+            <Box className="bg-white flex flex-col max-h-[340px]">
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                p={2}
+                bgcolor="secondary.main" 
+                color="white"
+              >
+                <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
                   Notifications Summary
                 </Typography>
-                <button
-                  onClick={handleNotificationClose}
-                  className="text-white text-lg font-bold"
-                >
-                  ×
-                </button>
-              </div>
+
+                <IconButton onClick={handleNotificationClose} sx={{ color: 'white' }}>
+                  <CloseIcon fontSize="large" />
+                </IconButton>
+              </Box>
 
               <Divider className="my-2" />
 
-              <div className="flex-1 overflow-auto p-2">
+              <Box className="flex-1 overflow-auto p-2">
                 {[
                   { avatarText: 'AB', message: 'Ashwin requested access to Design File.', extra: '📁 Design brief...', time: '2 mins ago' },
                   { avatarText: 'P', message: 'Patrick added a comment.', extra: '', time: '5 mins ago' },
                   { avatarText: 'PR', message: 'New version of Project Roadmap uploaded.', extra: '', time: '10 mins ago' },
                 ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-3 py-3 px-2 rounded hover:bg-gray-100 transition-colors">
+                  <Box key={index} className="flex items-start space-x-3 py-3 px-2 rounded hover:bg-gray-100 transition-colors">
                     <Avatar className="w-10 h-10 bg-gray-300 text-gray-600 text-xs">{item.avatarText}</Avatar>
-                    <div className="flex-1">
+                    <Box className="flex-1">
                       <Typography className="font-medium text-gray-800 text-sm">{item.message}</Typography>
-                      {item.extra && <div className="flex items-center text-gray-600 text-xs mt-1">{item.extra}</div>}
+                      {item.extra && <Box className="flex items-center text-gray-600 text-xs mt-1">{item.extra}</Box>}
                       <Typography className="text-xs text-gray-400 mt-1">{item.time}</Typography>
-                    </div>
-                  </div>
+                    </Box>
+                  </Box>
                 ))}
-              </div>
+              </Box>
 
               <Divider className="my-2" />
 
-              <div className="text-center p-2 mb-2">
+              <Box className="text-center p-2 mb-2">
                 <Button variant="outlined" size="small" onClick={() => {
                   handleNotificationsDrawerOpen();
                   handleNotificationClose();
                 }}>
                   View All Notifications
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           </Popover>
 
           {/* Language Selection Popover */}
@@ -178,18 +185,18 @@ export default function Navbar({ onHamburgerClick }) {
               className: 'rounded-lg shadow-lg w-[240px] border border-gray-300',
             }}
           >
-            <div className="bg-white flex flex-col p-3 space-y-2">
+            <Box className="bg-white flex flex-col p-3 space-y-2">
               {languages.map((item, index) => (
-                <div
+                <Box
                   key={index}
                   className={`flex items-center space-x-3 p-2 rounded cursor-pointer ${selectedLanguage === item.label ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
                   onClick={() => handleSelectLanguage(item.label)}
                 >
                   <img src={item.imgSrc} alt={item.label} className="w-8 h-8 rounded-full" />
                   <Typography className="font-medium text-gray-800">{item.label}</Typography>
-                </div>
+                </Box>
               ))}
-            </div>
+            </Box>
           </Popover>
 
           <Popover
@@ -202,14 +209,14 @@ export default function Navbar({ onHamburgerClick }) {
               className: 'rounded-lg shadow-lg w-[300px] border border-gray-300',
             }}
           >
-            <div className="bg-white flex flex-col p-4 space-y-4">
-              <div className="flex items-center space-x-3">
+            <Box className="bg-white flex flex-col p-4 space-y-4">
+              <Box className="flex items-center space-x-3">
                 <Avatar src="https://via.placeholder.com/53" className="w-12 h-12" />
-                <div>
+                <Box>
                   <Typography className="font-bold text-lg">Michel John</Typography>
                   <Typography className="text-gray-500 text-sm">examplemail@mail.com</Typography>
-                </div>
-              </div>
+                </Box>
+              </Box>
 
               <Divider />
 
@@ -220,10 +227,10 @@ export default function Navbar({ onHamburgerClick }) {
                 { label: 'Inbox', icon: '💬' },
                 { label: 'Email', icon: '✉️' },
               ].map((item, index) => (
-                <div key={index} className="flex items-center space-x-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
+                <Box key={index} className="flex items-center space-x-3 p-2 rounded hover:bg-gray-100 cursor-pointer">
                   <span className="text-xl">{item.icon}</span>
                   <Typography className="text-gray-800 font-medium">{item.label}</Typography>
-                </div>
+                </Box>
               ))}
 
               <Divider />
@@ -240,7 +247,7 @@ export default function Navbar({ onHamburgerClick }) {
               >
                 Logout
               </Button>
-            </div>
+            </Box>
           </Popover>
 
 

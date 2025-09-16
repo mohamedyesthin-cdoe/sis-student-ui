@@ -1,6 +1,8 @@
+import { Box } from "@mui/material"
+
 const DashboardHome = () => {
   return (
-    <div>Welcome To All</div>
+    <Box>Welcome To All</Box>
   )
 }
 

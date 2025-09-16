@@ -6,7 +6,7 @@ import { setUser } from "../../../redux/slices/AuthSlice";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { encryptPassword } from "../../../utils/encryption";
-import { Button, TextField, Typography, Checkbox, FormControlLabel, Link, Paper } from '@mui/material'
+import { Button, TextField, Typography, Checkbox, FormControlLabel, Link, Paper, Box, colors, useTheme } from '@mui/material'
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -20,6 +20,7 @@ function LoginPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const theme = useTheme()
 
   // useEffect(() => {
   //   showAlert('Alert system is working!', 'info');
@@ -81,7 +82,7 @@ function LoginPage() {
   const togglePassword = () => setShowPassword(!showPassword);
 
   return (
-    <div className="min-h-screen flex items-center justify-end bg-gray-100 relative px-4 sm:px-6 lg:px-12">
+    <Box className="min-h-screen flex items-center justify-end bg-gray-100 relative px-4 sm:px-6 lg:px-12">
 
       {/* Logo */}
       <img
@@ -91,7 +92,7 @@ function LoginPage() {
       />
 
       {/* Illustrations - only shown on xl screens */}
-      <div className="hidden xl:block absolute inset-0">
+      <Box className="hidden xl:block absolute inset-0">
         <img
           src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/illustrations/auth-login-illustration-light.png"
           alt="auth-login-cover"
@@ -102,21 +103,21 @@ function LoginPage() {
           alt="platform-bg"
           className="absolute bottom-0 left-0 w-full h-80"
         />
-      </div>
+      </Box>
 
       {/* Right Aligned Form Card */}
-      <div className="w-full max-w-md mr-2">
+      <Box className="w-full max-w-md mr-2">
         <Paper elevation={6} className="p-8" component="form"
           onSubmit={handleSubmit(handleData)}>
           <Typography variant="h5" fontWeight="500" gutterBottom>
             Welcome to SIS! 👋
           </Typography>
 
-          <Typography variant="body1" className="text-gray-400">
+          <Typography variant="body1" sx={{color:theme.palette.custom.accent}}>
             Please sign-in to your account and start the adventure
           </Typography>
 
-          <div className="relative mb-4 mt-3">
+          <Box className="relative mb-4 mt-3">
             <TextField
               fullWidth
               label="Email"
@@ -126,10 +127,10 @@ function LoginPage() {
               helperText={errors.username?.message}
             />
             <Mail className="absolute right-3 top-3 w-5 h-5 text-muted pointer-events-none" />
-          </div>
+          </Box>
 
 
-          <div className="relative mb-4">
+          <Box className="relative mb-4">
             <TextField
               fullWidth
               label="Password"
@@ -151,24 +152,35 @@ function LoginPage() {
                 onClick={togglePassword}
               />
             )}
-          </div>
+          </Box>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <Box className="flex flex-col sm:flex-row justify-between items-center mb-6">
             <FormControlLabel control={<Checkbox />} label="Remember Me" />
             <Link href="#" underline="hover" className="mt-2 sm:mt-0">
               Forgot Password?
             </Link>
-          </div>
+          </Box>
 
-          <Button type="submit"
+          <Button
+            type="submit"
             variant="contained"
             fullWidth
-            sx={{ backgroundColor: '#105c8e', textTransform: 'none', py: 1.5, fontWeight: 600 }}>
+            sx={{
+              backgroundColor: (theme) => theme.palette.secondary.main, 
+              textTransform: 'none',
+              py: 1.5,
+              fontWeight: 600,
+              '&:hover': {
+                backgroundColor: (theme) => theme.palette.primary.dark, 
+              },
+            }}
+          >
             Sign in
           </Button>
+
         </Paper>
-      </div>
-    </div>
+      </Box>
+    </Box>
 
   );
 }

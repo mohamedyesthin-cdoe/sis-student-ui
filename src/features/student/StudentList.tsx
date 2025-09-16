@@ -9,7 +9,6 @@ import {
   Paper,
   IconButton,
   Box,
-  CircularProgress,
   TextField,
   MenuItem,
   Select,
@@ -23,6 +22,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../../utils/ApiRequest';
 import { ApiRoutes } from '../../constants/ApiConstants';
+import theme from '../../styles/theme';
 
 // Pagination Actions with Icons
 function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
@@ -71,7 +71,6 @@ const fetchStudents = async () => {
 
 export default function StudentListWithGlobalSearch() {
   const [students, setStudents] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState('');
@@ -95,7 +94,7 @@ export default function StudentListWithGlobalSearch() {
     setPage(0);
   };
 
- const handleView = (studentId) => navigate(`/studentsdetail/${studentId}`);
+  const handleView = (studentId) => navigate(`/studentsdetail/${studentId}`);
 
 
   const filteredStudents = students.filter((student) => {
@@ -110,21 +109,17 @@ export default function StudentListWithGlobalSearch() {
 
   const emptyRows = Math.max(0, (1 + page) * rowsPerPage - filteredStudents.length);
 
-  if (loading) {
-    return <CircularProgress sx={{ display: 'block', mx: 'auto', mt: 5 }} />;
-  }
-
   return (
     <Paper sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box
         sx={{
           padding: '16px',
-          backgroundColor: '#ffff',
-          borderBottom: '1px solid #ddd',
+          backgroundColor: (theme) => theme.palette.background.default,
+          borderBottom: (theme) => `1px solid ${theme.palette.background.default}`,
           fontSize: '1.25rem',
           fontWeight: '500',
-          color: '#555',
-          boxShadow: '0px 1px 3px rgba(0,0,0,0.1)',  // Subtle shadow
+          color: (theme)=>theme.palette.text.primary,
+          boxShadow: '0px 1px 3px rgba(0,0,0,0.1)',
           border: '1px solid rgba(224,224,224,1)',
         }}
       >
@@ -177,7 +172,7 @@ export default function StudentListWithGlobalSearch() {
                     sx={{
                       fontWeight: '600',
                       fontSize: '0.95rem',
-                      backgroundColor: '#f5f5f5',
+                      backgroundColor: theme.palette.background.default,
                     }}
                   >
                     {header}

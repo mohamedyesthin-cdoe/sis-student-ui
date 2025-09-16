@@ -3,6 +3,7 @@ import Sidebar from '../components/sidebar/SideBar';
 import Navbar from '../components/navbar/Navbar';
 import { Outlet, useLocation } from 'react-router-dom';
 import DashboardHome from '../features/dashboard/DashboardHome';
+import { Box } from '@mui/material';
 
 export default function DashboardLayout() {
   const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -31,7 +32,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <Box className="flex h-screen bg-gray-100">
 
       {isMobile && (
         <Sidebar
@@ -44,17 +45,17 @@ export default function DashboardLayout() {
       )}
 
       {!isMobile && (
-        <div
+        <Box
           className={`transition-width duration-300 bg-white overflow-hidden ${sidebarVisible ? 'w-64' : 'w-15'}`}
         >
           <Sidebar
             isSidebarVisible={sidebarVisible}
             setSidebarVisible={setSidebarVisible}
           />
-        </div>
+        </Box>
       )}
 
-      <div className="flex-1 flex flex-col transition-all duration-300">
+      <Box className="flex-1 flex flex-col transition-all duration-300">
 
         <Navbar onHamburgerClick={handleHamburgerClick} />
 
@@ -66,7 +67,7 @@ export default function DashboardLayout() {
           )}
         </main>
 
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

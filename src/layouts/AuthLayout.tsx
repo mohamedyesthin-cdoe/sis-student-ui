@@ -1,7 +1,9 @@
+import { Box } from "@mui/material"
+
 const AuthLayout = ({ children }:any) => (
-  <div className="auth-layout">
-    <div className="auth-container">{children}</div>
-  </div>
+  <Box className="auth-layout">
+    <Box className="auth-container">{children}</Box>
+  </Box>
 )
 
 export default AuthLayout
