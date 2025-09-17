@@ -44,7 +44,8 @@ export default function NotificationsDrawer({ open, onClose }) {
           display="flex"
           alignItems="center"
           justifyContent="space-between"
-          p={2}
+          pl={2}
+          py={1}
           bgcolor="secondary.main"
           color="white"
         >
@@ -53,7 +54,7 @@ export default function NotificationsDrawer({ open, onClose }) {
           </Typography>
 
           <IconButton onClick={onClose} sx={{ color: 'white' }}>
-            <CloseIcon fontSize="large" />
+            <CloseIcon fontSize="medium" />
           </IconButton>
         </Box>
 

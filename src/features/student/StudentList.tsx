@@ -6,15 +6,19 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   IconButton,
   Box,
   TextField,
   MenuItem,
   Select,
   FormControl,
+  Button,
+  Typography,
+  Paper,
+  Card,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
@@ -23,54 +27,36 @@ import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../../utils/ApiRequest';
 import { ApiRoutes } from '../../constants/ApiConstants';
 import theme from '../../styles/theme';
+import CardComponent from '../../components/card/Card';
 
-// Pagination Actions with Icons
+// Pagination Actions
 function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
-  const handleFirstPageButtonClick = (event) => onPageChange(event, 0);
-  const handleBackButtonClick = (event) => onPageChange(event, page - 1);
-  const handleNextButtonClick = (event) => onPageChange(event, page + 1);
-  const handleLastPageButtonClick = (event) =>
-    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0}>
-        <FirstPageIcon />
+    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+      <IconButton onClick={(e) => onPageChange(e, 0)} disabled={page === 0}>
+        <FirstPageIcon fontSize="small" />
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0}>
-        <KeyboardArrowLeft />
-      </IconButton>
-      <IconButton
-        onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-      >
-        <KeyboardArrowRight />
+      <IconButton onClick={(e) => onPageChange(e, page - 1)} disabled={page === 0}>
+        <KeyboardArrowLeft fontSize="small" />
       </IconButton>
       <IconButton
-        onClick={handleLastPageButtonClick}
+        onClick={(e) => onPageChange(e, page + 1)}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
       >
-        <LastPageIcon />
+        <KeyboardArrowRight fontSize="small" />
+      </IconButton>
+      <IconButton
+        onClick={(e) => onPageChange(e, Math.max(0, Math.ceil(count / rowsPerPage) - 1))}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+      >
+        <LastPageIcon fontSize="small" />
       </IconButton>
     </Box>
   );
 }
 
-// Fetch students from API
-const fetchStudents = async () => {
-  const data = await apiRequest({
-    url: ApiRoutes.GETSTUDENTSLIST,
-    method: 'get',
-  });
-
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data.data)) return data.data;
-
-  return [];
-};
-
-export default function StudentListWithGlobalSearch() {
-  const [students, setStudents] = React.useState([]);
+export default function ModernStudentTable() {
+  const [students, setStudents] = React.useState<any[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState('');
@@ -78,55 +64,33 @@ export default function StudentListWithGlobalSearch() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    fetchStudents()
-      .then((data) => setStudents(data))
-      .catch((err) => {
-        console.error('Error fetching students:', err);
-        setStudents([]);
-      })
-      .finally(() => setLoading(false));
+    apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' })
+      .then((data) => setStudents(Array.isArray(data) ? data : data.data))
+      .catch(() => setStudents([]));
   }, []);
 
-  const handleChangePage = (event, newPage) => setPage(newPage);
-
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangePage = (event: any, newPage: any) => setPage(newPage);
+  const handleChangeRowsPerPage = (event: any) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+  const handleView = (id: any) => navigate(`/students/detail/${id}`);
 
-  const handleView = (studentId) => navigate(`/studentsdetail/${studentId}`);
-
-
-  const filteredStudents = students.filter((student) => {
-    const fullName = `${student.title} ${student.first_name} ${student.last_name}`.toLowerCase();
-    const combinedText = `${student.registration_no} ${fullName} ${student.email} ${student.mobile_number} ${student.gender} ${student.date_of_birth}`.toLowerCase();
-
-    return (
-      combinedText.includes(searchText.toLowerCase()) &&
-      (genderFilter === '' || student.gender === genderFilter)
-    );
+  const filteredStudents = students.filter((s) => {
+    const fullName = `${s.title} ${s.first_name} ${s.last_name}`.toLowerCase();
+    const combinedText = `${s.registration_no} ${fullName} ${s.email} ${s.mobile_number} ${s.gender} ${s.date_of_birth}`.toLowerCase();
+    return combinedText.includes(searchText.toLowerCase()) && (genderFilter === '' || s.gender === genderFilter);
   });
 
-  const emptyRows = Math.max(0, (1 + page) * rowsPerPage - filteredStudents.length);
-
   return (
-    <Paper sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box
-        sx={{
-          padding: '16px',
-          backgroundColor: (theme) => theme.palette.background.default,
-          borderBottom: (theme) => `1px solid ${theme.palette.background.default}`,
-          fontSize: '1.25rem',
-          fontWeight: '500',
-          color: (theme)=>theme.palette.text.primary,
-          boxShadow: '0px 1px 3px rgba(0,0,0,0.1)',
-          border: '1px solid rgba(224,224,224,1)',
-        }}
-      >
-        Student List
-      </Box>
-
-      <Box sx={{ display: 'flex', gap: 2, padding: '16px' }}>
+    <Card sx={{
+      width: '100%',
+      maxWidth: { xs: '350px', sm: '900px', md: '1200px' }, // Responsive max-width
+      mx: 'auto', p: 2,mt:3
+    }}>
+      {/* Filters & Export */}
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, alignItems: 'center' }}>
+        {/* Your filters and export button */}
         <TextField
           size="small"
           placeholder="Search all fields"
@@ -135,10 +99,13 @@ export default function StudentListWithGlobalSearch() {
             setSearchText(e.target.value);
             setPage(0);
           }}
-          sx={{ width: '300px' }}
+          sx={{ width: { xs: '100%', sm: 280 } }}
         />
 
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+        <FormControl
+          size="small"
+          sx={{ minWidth: 150, width: { xs: '100%', sm: 150 } }}
+        >
           <Select
             value={genderFilter}
             displayEmpty
@@ -153,26 +120,48 @@ export default function StudentListWithGlobalSearch() {
             <MenuItem value="Other">Other</MenuItem>
           </Select>
         </FormControl>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          size="small"
+          startIcon={<FileDownloadIcon />}
+          sx={{ ml: { xs: 0, sm: 'auto' }, width: { xs: '100%', sm: 'auto' } }}
+          onClick={() => console.log('Export Excel')}
+        >
+          Export Excel
+        </Button>
       </Box>
 
-      <TableContainer
-        className="table-scroll-container"
-        sx={{
-          maxHeight: '60vh',
-          overflowY: 'auto',
-        }}
-      >
-        <Table stickyHeader aria-label="student table">
+      {/* Table Container with fixed width */}
+      <Box sx={{ overflowX: 'auto', width: '100%' }}>
+        <Table sx={{ minWidth: 900 }} stickyHeader aria-label="student table">
           <TableHead>
             <TableRow>
+              <TableCell
+                sx={{
+                  fontWeight: 600,
+                  fontSize: { xs: '0.75rem', sm: '0.85rem' },
+                  backgroundColor: theme.palette.background.default,
+                  py: 1,
+                  px: 1,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                S.No
+              </TableCell>
+
               {['Registration No', 'Full Name', 'Email', 'Mobile', 'Gender', 'DOB', 'Action'].map(
                 (header) => (
                   <TableCell
                     key={header}
                     sx={{
-                      fontWeight: '600',
-                      fontSize: '0.95rem',
+                      fontWeight: 600,
+                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
                       backgroundColor: theme.palette.background.default,
+                      py: 1,
+                      px: 1,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {header}
@@ -182,20 +171,36 @@ export default function StudentListWithGlobalSearch() {
             </TableRow>
           </TableHead>
 
+
           <TableBody>
             {filteredStudents
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((student) => (
-                <TableRow key={student.id}>
-                  <TableCell>{student.registration_no}</TableCell>
-                  <TableCell>{`${student.title} ${student.first_name} ${student.last_name}`}</TableCell>
-                  <TableCell>{student.email}</TableCell>
-                  <TableCell>{student.mobile_number}</TableCell>
-                  <TableCell>{student.gender == '12842' ? 'Male' : 'Female'}</TableCell>
-                  <TableCell>{student.date_of_birth}</TableCell>
-                  <TableCell align="center">
-                    <IconButton color="primary" onClick={() => handleView(student.id)}>
-                      <VisibilityIcon />
+              .map((student, index) => (
+                <TableRow key={student.id} hover>
+                  <TableCell sx={{ py: 0.5, px: 1, whiteSpace: 'nowrap' }}>
+                    {page * rowsPerPage + index + 1}
+                  </TableCell>
+                  <TableCell sx={{ py: 0.5, px: 1, whiteSpace: 'nowrap' }}>
+                    {student.registration_no}
+                  </TableCell>
+                  <TableCell sx={{ py: 0.5, px: 1 }}>
+                    {`${student.title} ${student.first_name} ${student.last_name}`}
+                  </TableCell>
+                  <TableCell sx={{ py: 0.5, px: 1, whiteSpace: 'nowrap' }}>
+                    {student.email}
+                  </TableCell>
+                  <TableCell sx={{ py: 0.5, px: 1 }}>{student.mobile_number}</TableCell>
+                  <TableCell sx={{ py: 0.5, px: 1 }}>
+                    {student.gender === '12842' ? 'Male' : 'Female'}
+                  </TableCell>
+                  <TableCell sx={{ py: 0.5, px: 1 }}>{student.date_of_birth}</TableCell>
+                  <TableCell align="center" sx={{ py: 0.5, px: 1 }}>
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={() => handleView(student.id)}
+                    >
+                      <VisibilityIcon fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -203,43 +208,91 @@ export default function StudentListWithGlobalSearch() {
           </TableBody>
 
         </Table>
-      </TableContainer>
+      </Box>
 
+      {/* Pagination (Fixed below) */}
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: 'background.paper',
-          borderTop: '1px solid rgba(224, 224, 224, 1)',
-          position: 'sticky',
-          bottom: 0,
-          zIndex: 1,
-          padding: '16px',
+          mt: 3,
+          flexWrap: 'wrap',
         }}
       >
-        <Box>
-          Rows per page:&nbsp;
-          <select
-            value={rowsPerPage}
-            onChange={handleChangeRowsPerPage}
-            style={{ padding: '4px 8px' }}
-          >
-            {[5, 10, 25].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </Box>
+        <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
+          Showing {page * rowsPerPage + 1} to{' '}
+          {Math.min((page + 1) * rowsPerPage, filteredStudents.length)} of{' '}
+          {filteredStudents.length} entries
+        </Typography>
 
-        <TablePaginationActions
-          count={filteredStudents.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          onPageChange={handleChangePage}
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <IconButton
+            size="small"
+            onClick={() => setPage(0)}
+            disabled={page === 0}
+            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
+          >
+            <FirstPageIcon fontSize="small" />
+          </IconButton>
+
+          <IconButton
+            size="small"
+            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
+            disabled={page === 0}
+            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
+          >
+            <KeyboardArrowLeft fontSize="small" />
+          </IconButton>
+
+          {Array.from(
+            { length: Math.ceil(filteredStudents.length / rowsPerPage) },
+            (_, index) => (
+              <Button
+                key={index}
+                size="small"
+                variant={page === index ? 'contained' : 'outlined'}
+                onClick={() => setPage(index)}
+                sx={{ minWidth: 36, height: 36, textTransform: 'none' }}
+                color='secondary'
+              >
+                {index + 1}
+              </Button>
+            )
+          )}
+
+          <IconButton
+            size="small"
+            onClick={() =>
+              setPage((prev) =>
+                prev + 1 < Math.ceil(filteredStudents.length / rowsPerPage)
+                  ? prev + 1
+                  : prev
+              )
+            }
+            disabled={(page + 1) * rowsPerPage >= filteredStudents.length}
+            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
+          >
+            <KeyboardArrowRight fontSize="small" />
+          </IconButton>
+
+          <IconButton
+            size="small"
+            onClick={() =>
+              setPage(Math.max(0, Math.ceil(filteredStudents.length / rowsPerPage) - 1))
+            }
+            disabled={(page + 1) * rowsPerPage >= filteredStudents.length}
+            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
+          >
+            <LastPageIcon fontSize="small" />
+          </IconButton>
+        </Box>
       </Box>
-    </Paper>
+    </Card>
+
+
+
   );
 }
+
+

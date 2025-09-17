@@ -4,7 +4,7 @@ import { sampleStudents } from './sampleData';
 import coverImage from '../../../src/assets/images/user-grid-bg1.png';
 import avatarImage from '../../../src/assets/images/user-grid-img14.png';
 import { Avatar, Divider, Typography, Box } from '@mui/material';
-import CardComponent from '../../components/custom/card/Card';
+import CardComponent from '../../components/card/Card';
 import StudentDetailTab from './StudentDetailTab';
 import theme from '../../styles/theme';
 

@@ -10,41 +10,14 @@ import {
   useTheme,
   Box,
 } from '@mui/material';
-import {
-  Dashboard as DashboardIcon,
-  School as SchoolIcon,
-  Settings as SettingsIcon,
-  People as PeopleIcon,
-  Assignment as AssignmentIcon,
-  BarChart as BarChartIcon,
-  ExpandLess,
-  ExpandMore,
-} from '@mui/icons-material';
+import { ExpandLess, ExpandMore, } from '@mui/icons-material';
 import logo from '../../assets/logo.png';
 import logo2 from '../../assets/logo2.png';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ICON_MAP, MENU_ITEMS } from '../../constants/MenuItems';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 
-const ICON_MAP = {
-  Dashboard: <DashboardIcon />,
-  School: <SchoolIcon />,
-  Settings: <SettingsIcon />,
-  Students: <PeopleIcon />,
-  Assignments: <AssignmentIcon />,
-  Reports: <BarChartIcon />,
-};
 
-const STATIC_MENU_ITEMS = [
-  { text: 'Dashboard', icon: 'Dashboard', subItems: [], routePath: '/dashboard' },
-  {
-    text: 'Students',
-    icon: 'Students',
-    subItems: [
-      { text: 'Student List', routePath: '/students' },
-      { text: 'Courses', routePath: '/courses' },
-    ],
-    routePath: '',
-  },
-];
 
 export default function Sidebar({
   isDrawer = false,
@@ -60,26 +33,29 @@ export default function Sidebar({
   const location = useLocation();
   const theme = useTheme()
 
-  // Sync selected item and parent based on current route
-  useEffect(() => {
+   useEffect(() => {
     const path = location.pathname;
 
-    if (path === '/dashboard') {
+    if (path.startsWith('/dashboard')) {
       setSelectedItem('Dashboard');
       setSelectedParent('');
       setOpenItems({});
-    } else if (path === '/students') {
-      setSelectedItem('Student List');
+    } else if (path.startsWith('/students')) {
+      setSelectedItem('Students List');
       setSelectedParent('Students');
       setOpenItems((prev) => ({ ...prev, Students: true }));
-    } else if (path === '/courses') {
-      setSelectedItem('Courses');
-      setSelectedParent('Students');
-      setOpenItems((prev) => ({ ...prev, Students: true }));
+    } else if (path.startsWith('/courses')) {
+      setSelectedItem('Courses List');
+      setSelectedParent('Courses');
+      setOpenItems((prev) => ({ ...prev, Courses: true }));
+    } else if (path.startsWith('/faculty')) {
+      setSelectedItem('Faculty List');
+      setSelectedParent('Faculty');
+      setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
   }, [location.pathname]);
 
-  const handleSelect = (itemText:any, routePath:any, hasChildren:any, parentText = '') => {
+  const handleSelect = (itemText: any, routePath: any, hasChildren: any, parentText = '') => {
     if (routePath) {
       navigate(routePath);
       setSelectedItem(itemText);
@@ -121,7 +97,7 @@ export default function Sidebar({
       </Box>
 
       <List component="nav" className="flex-1 px-2 py-3">
-        {STATIC_MENU_ITEMS.map((item) => {
+        {MENU_ITEMS.map((item) => {
           const hasChildren = item.subItems.length > 0;
           const isOpen = openItems[item.text] || false;
           const isActive = selectedItem === item.text || selectedParent === item.text;
@@ -229,17 +205,36 @@ export default function Sidebar({
                         }
                         sx={{
                           fontSize: '0.875rem',
-                          color: selectedItem === subItem.text
-                            ? theme.palette.primary.main
-                            : theme.palette.text.primary,
-                          justifyContent: 'flex-end',
+                          color:
+                            selectedItem === subItem.text
+                              ? theme.palette.secondary.main
+                              : theme.palette.text.primary,
+                          justifyContent: 'flex-start',  // Align content left
                           cursor: 'pointer',
+                          pl: 4,
                           '&:hover': {
-                            backgroundColor: theme.palette.primary.main,
-                            color: 'white',
+                            backgroundColor: theme.palette.custom.highlight,
+                            color: theme.palette.text.primary,
+                            borderRadius: '8px',
                           },
                         }}
                       >
+                        {/* Minus Icon */}
+                        <RadioButtonUncheckedIcon
+                          fontSize="small"
+                          sx={{
+                            mr: 1,
+                            fontSize: '0.5rem',
+                            color: selectedItem === subItem.text
+                              ? theme.palette.primary.main
+                              : theme.palette.text.secondary,
+                            '&:hover': {
+                              color: theme.palette.text.primary,
+                            },
+                          }}
+                        />
+
+
                         <ListItemText
                           primary={subItem.text}
                           primaryTypographyProps={{

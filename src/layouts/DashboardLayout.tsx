@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar/SideBar';
 import Navbar from '../components/navbar/Navbar';
-import { Outlet, useLocation } from 'react-router-dom';
-import DashboardHome from '../features/dashboard/DashboardHome';
+import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
+import Breadcrumb from '../constants/Breadcrumb';
 
 export default function DashboardLayout() {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [sidebarDrawerOpen, setSidebarDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -58,13 +57,9 @@ export default function DashboardLayout() {
       <Box className="flex-1 flex flex-col transition-all duration-300">
 
         <Navbar onHamburgerClick={handleHamburgerClick} />
-
-        <main className="p-6 overflow-auto">
-          {location.pathname === '/dashboard' ? (
-            <DashboardHome />
-          ) : (
-            <Outlet />
-          )}
+        <Breadcrumb></Breadcrumb>
+        <main className="px-6 py-2 overflow-auto">
+          <Outlet />
         </main>
 
       </Box>
