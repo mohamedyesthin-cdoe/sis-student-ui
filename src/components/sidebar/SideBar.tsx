@@ -44,10 +44,10 @@ export default function Sidebar({
       setSelectedItem('Students List');
       setSelectedParent('Students');
       setOpenItems((prev) => ({ ...prev, Students: true }));
-    } else if (path.startsWith('/courses')) {
-      setSelectedItem('Courses List');
-      setSelectedParent('Courses');
-      setOpenItems((prev) => ({ ...prev, Courses: true }));
+    } else if (path.startsWith('/programs')) {
+      setSelectedItem('Programs List');
+      setSelectedParent('Programs');
+      setOpenItems((prev) => ({ ...prev, Programs: true }));
     } else if (path.startsWith('/faculty')) {
       setSelectedItem('Faculty List');
       setSelectedParent('Faculty');
@@ -88,7 +88,7 @@ export default function Sidebar({
       className={`h-full bg-white flex flex-col border-r border-gray-200 transition-all duration-300 ${isSidebarVisible ? 'w-64' : 'w-16'
         }`}
     >
-      <Box className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3' : 'p-1'}`}>
+      <Box className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3 pb-2' : 'p-1 pb-3'}`}>
         {isSidebarVisible ? (
           <img src={logo} alt="Logo" className="mx-auto object-contain h-12" />
         ) : (

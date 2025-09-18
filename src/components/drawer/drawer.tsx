@@ -93,7 +93,7 @@ export default function NotificationsDrawer({ open, onClose }) {
 
         {/* Footer */}
         <Box className="p-4 border-t border-gray-300 text-center">
-          <Button variant="outlined" size="small" onClick={onClose}>
+          <Button variant="outlined" size="small" color='secondary' onClick={onClose}>
             Close
           </Button>
         </Box>

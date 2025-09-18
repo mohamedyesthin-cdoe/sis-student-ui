@@ -3,12 +3,11 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      // main: '#9c27b0',
-      main:'#6457B8'
+      main: '#a748a2ff', // <-- New primary color
     },
     secondary: {
       main: '#105c8e',
-      dark:'rgb(11, 64, 99)'
+      dark: 'rgb(11, 64, 99)',
     },
     error: {
       main: '#BF2728',
@@ -18,7 +17,6 @@ const theme = createTheme({
     },
     background: {
       default: '#f5f5f5',
-
     },
     text: {
       primary: '#333333',
@@ -27,12 +25,11 @@ const theme = createTheme({
     },
     custom: {
       accent: '#9CA3AF',
-      highlight: 'rgba(0,0,0,0.04)'
+      highlight: 'rgba(0,0,0,0.04)',
     },
   },
   typography: {
-    // fontFamily: `'Poppins', 'Inter', 'Lato', 'sans-serif'`,
-      fontFamily: `'Inter', 'Poppins', 'Arial', sans-serif`,
+    fontFamily: `'Inter', 'Poppins', 'Arial', sans-serif`,
   },
 });
 

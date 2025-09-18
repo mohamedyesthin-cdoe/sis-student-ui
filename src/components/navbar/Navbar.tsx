@@ -165,7 +165,7 @@ export default function Navbar({ onHamburgerClick }) {
               <Divider className="my-2" />
 
               <Box className="text-center p-2 mb-2">
-                <Button variant="outlined" size="small" onClick={() => {
+                <Button variant="outlined" color='secondary' size="small" onClick={() => {
                   handleNotificationsDrawerOpen();
                   handleNotificationClose();
                 }}>

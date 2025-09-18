@@ -24,10 +24,10 @@ export const MENU_ITEMS = [
     routePath: '',
   },
   {
-    text: 'Courses',
-    icon: 'Courses',
+    text: 'Programs',
+    icon: 'Programs',
     subItems: [
-      { text: 'Courses List', routePath: '/courses' },
+      { text: 'Programs List', routePath: '/programs' },
     ],
     routePath: '',
   },
@@ -47,7 +47,7 @@ export const ICON_MAP = {
   Settings: <SettingsIcon />,
   Students: <PeopleIcon />,
   Faculty: <SchoolIcon />,     
-  Courses: <MenuBookIcon />,    
+  Programs: <MenuBookIcon />,    
   Assignments: <AssignmentIcon />,
   Reports: <BarChartIcon />,
 };

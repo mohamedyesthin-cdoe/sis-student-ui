@@ -2,6 +2,8 @@ import DashboardHome from "../features/dashboard/DashboardHome";
 import StudentList from "../features/student/StudentList";
 import StudentDetail from "../features/student/StudentDetail";
 import Faculty from "../features/faculty/Faculty";
+import ProgramAdd from "../features/programs/ProgramAdd";
+import ProgramList from "../features/programs/ProgramList";
 
 export const routesConfig = [
   {
@@ -13,12 +15,12 @@ export const routesConfig = [
     breadcrumb: 'Students List',
     children: [
       {
-        path: '',            
+        path: '',
         element: <StudentList />,
         breadcrumb: 'Students List',
       },
       {
-        path: 'detail/:id',      
+        path: 'detail/:id',
         element: <StudentDetail />,
         breadcrumb: 'Student Detail',
       },
@@ -28,5 +30,21 @@ export const routesConfig = [
     path: '/faculty',
     element: <Faculty />,
     breadcrumb: 'Faculty List',
+  },
+  {
+    path: '/programs',
+    breadcrumb: 'Programs List',
+    children: [
+      {
+        path: '',
+        element: <ProgramList />,
+        breadcrumb: 'Programs List',
+      },
+      {
+        path: 'add',
+        element: <ProgramAdd />,
+        breadcrumb: 'Programs Add',
+      },
+    ],
   },
 ];

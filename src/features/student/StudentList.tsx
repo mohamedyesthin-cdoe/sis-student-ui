@@ -3,7 +3,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   IconButton,
@@ -14,8 +13,6 @@ import {
   FormControl,
   Button,
   Typography,
-  Paper,
-  Card,
 } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -83,10 +80,12 @@ export default function ModernStudentTable() {
   });
 
   return (
-    <Card sx={{
+    <CardComponent sx={{
       width: '100%',
-      maxWidth: { xs: '350px', sm: '900px', md: '1200px' }, // Responsive max-width
-      mx: 'auto', p: 2,mt:3
+      maxWidth: { xs: '350px', sm: '900px', md: '1200px' },
+      mx: 'auto',
+      p: 3,
+      mt: 3,
     }}>
       {/* Filters & Export */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, alignItems: 'center' }}>
@@ -142,7 +141,7 @@ export default function ModernStudentTable() {
                 sx={{
                   fontWeight: 600,
                   fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                  backgroundColor: theme.palette.background.default,
+                  backgroundColor: theme.palette.background.paper,
                   py: 1,
                   px: 1,
                   whiteSpace: 'nowrap',
@@ -158,7 +157,7 @@ export default function ModernStudentTable() {
                     sx={{
                       fontWeight: 600,
                       fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                      backgroundColor: theme.palette.background.default,
+                      backgroundColor: theme.palette.background.paper,
                       py: 1,
                       px: 1,
                       whiteSpace: 'nowrap',
@@ -170,7 +169,6 @@ export default function ModernStudentTable() {
               )}
             </TableRow>
           </TableHead>
-
 
           <TableBody>
             {filteredStudents
@@ -288,7 +286,7 @@ export default function ModernStudentTable() {
           </IconButton>
         </Box>
       </Box>
-    </Card>
+    </CardComponent>
 
 
 
