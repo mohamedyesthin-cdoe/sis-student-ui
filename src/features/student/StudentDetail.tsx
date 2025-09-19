@@ -50,7 +50,7 @@ export default function StudentDetailUI() {
   ];
 
   return (
-    <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2">
+    <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2 mt-4">
       {/* Left Column */}
       <Box className="col-span-12 lg:col-span-4">
           <CardComponent mb={2} p={0} className="h-full">

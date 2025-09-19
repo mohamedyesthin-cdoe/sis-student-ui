@@ -70,8 +70,9 @@ const Breadcrumb = () => {
                             sx={{
                                 fontWeight: isLast ? 'bold' : 'normal',
                                 textTransform: 'capitalize',
-                                py: 0.5,
+                                py: 1.5,
                                 px: 1.2,
+                                borderRadius:'5px'
                             }}
                         />
                         {!isLast && <NavigateNextIcon fontSize="small" />}

@@ -12,6 +12,7 @@ import {
 import CardComponent from "../../components/card/Card";
 import theme from "../../styles/theme";
 import { useAlert } from "../../context/AlertContext";
+import Subheader from "../../components/subheader/Subheader";
 
 const CourseForm = () => {
   const [courseId, setCourseId] = useState("");
@@ -144,8 +145,6 @@ const CourseForm = () => {
       duration,
       semesters,
     };
-
-    console.log("Submitted Course Data:", courseData);
     showConfirm("Course submitted successfully!", () => {}, () => {});
   };
 
@@ -161,19 +160,7 @@ const CourseForm = () => {
     >
       {/* Course Details Section */}
       <CardComponent sx={{ p: 3 }}>
-        <Typography
-          variant="subtitle1"
-          gutterBottom
-          sx={{
-            color: theme.palette.secondary.main,
-            fontWeight: "bold",
-            fontSize: "0.95rem",
-            mb: 2,
-          }}
-        >
-          Course Details
-        </Typography>
-
+     <Subheader fieldName="Course Details" sx={{mb:2}}></Subheader>
         <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <TextField
@@ -215,18 +202,7 @@ const CourseForm = () => {
 
       {/* Semester Fee Details */}
       <CardComponent sx={{ p: 3, mt: 4 }}>
-        <Typography
-          variant="subtitle1"
-          gutterBottom
-          sx={{
-            color: theme.palette.secondary.main,
-            fontWeight: "bold",
-            fontSize: "0.95rem",
-          }}
-        >
-          Semester Fee Details
-        </Typography>
-
+       <Subheader fieldName="Semester Fee Details"></Subheader>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}

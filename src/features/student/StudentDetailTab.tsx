@@ -1,5 +1,6 @@
 import { Box, Typography, useTheme } from '@mui/material';
 import CardComponent from '../../components/card/Card';
+import Subheader from '../../components/subheader/Subheader';
 
 type StudentDetailTabsProps = {
   student: any;
@@ -11,10 +12,10 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
   const theme = useTheme();
   const field = (label: string, value: any) => (
     <Box className="border-b border-gray-300 last:border-b-0 p-2">
-      <Typography variant="subtitle2" sx={{ color: theme.palette.custom.accent, fontSize: '0.75rem' }}>
+      <Typography variant="subtitle2" sx={{ color: theme.palette.custom.accent, fontSize: '0.85rem' }}>
         {label}
       </Typography>
-      <Typography variant="body1" sx={{ color:theme.palette.text.secondary, fontSize: '0.85rem' }}>
+      <Typography variant="body1" sx={{ color: theme.palette.text.secondary, fontSize: '0.85rem' }}>
         {value || '-'}
       </Typography>
     </Box>
@@ -67,9 +68,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
         <>
           {/* Basic Details */}
           <CardComponent mb={2} p={2}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '0.8rem', ml: 1 }}>
-              Basic Details
-            </Typography>
+            <Subheader fieldName="Basic Details"></Subheader>
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ['Gender', student.gender],
@@ -83,9 +82,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
           </CardComponent>
           {/* Addresses */}
           <CardComponent mb={0} p={2}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '0.8rem', ml: 1 }}>
-              Temporary Address
-            </Typography>
+            <Subheader fieldName="Temporary Address"></Subheader>
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ['Address', `${student.address_details.corr_addr1}, ${student.address_details.corr_addr2}, ${student.address_details.corr_city} - ${student.address_details.corr_pin}`],
@@ -96,10 +93,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
                 <Box key={label}>{field(label, value)}</Box>
               ))}
             </Box>
-
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', fontSize: '0.8rem', ml: 1 }}>
-              Permanent Address
-            </Typography>
+            <Subheader fieldName="Permanent Address" sx={{mt:2}}></Subheader>
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 ['Address', `${student.address_details.perm_addr1}, ${student.address_details.perm_addr2}, ${student.address_details.perm_city} - ${student.address_details.perm_pin}`],
@@ -114,7 +108,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
         </>
       )}
 
-       {activeTab === 1 && renderTabContent([
+      {activeTab === 1 && renderTabContent([
         ['SSC Board ID', student.academic_details.ssc_board_id],
         ['SSC School', student.academic_details.ssc_school],
         ['SSC Scheme', student.academic_details.ssc_scheme],
