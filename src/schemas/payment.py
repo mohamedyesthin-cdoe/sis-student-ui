@@ -42,3 +42,26 @@ class PaymentResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class StudentSchema(BaseModel):
+    id: int
+    program_id: int
+    registration_no: Optional[str] = None
+    application_no: Optional[str]
+    payments: List[PaymentResponse] = []
+
+    class Config:
+        from_attributes = True
+        
+class PaginationResponse(BaseModel):
+    previous_page: Optional[str] = None
+    next_page: Optional[str] = None
+
+class DataResponse(BaseModel):
+    list: List[StudentSchema]
+    pagination: Optional[PaginationResponse] = None
+
+class StandardResponse(BaseModel):
+    code: int
+    status: bool
+    message: str
+    data: DataResponse

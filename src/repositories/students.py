@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.future import select
 from src.models.students import *
@@ -44,6 +44,10 @@ class StudentRepository(BaseRepository[Student]):
             return students
         except Exception as e:
             raise e
+
+    def get_first_student_id(self) -> Optional[int]:
+        first = self.db.query(Student).order_by(Student.id.asc()).first()
+        return first.id if first else None
 
     def update(self, student_id: int, obj_data: dict) -> Student:
         student = self.get_by_id(student_id)

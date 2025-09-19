@@ -86,8 +86,10 @@ class BaseRepository(Generic[T]):
             obj_data = obj_data.dict()
         elif hasattr(obj_data, "model_dump"):
             obj_data = obj_data.model_dump()
-
+        print("test pass 2")
+        print(obj_data)
         obj = self.model(**obj_data)
+        print(obj)
         self.db.add(obj)
         try:
             self.commit()

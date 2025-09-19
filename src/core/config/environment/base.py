@@ -10,6 +10,7 @@ class BaseConfig(BaseSettings):
     DATABASE_URL: str
     DATABASE_ECHO: bool
     SECRET_KEY: str
+    ACCESS_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     STUDENT_API_URL: str

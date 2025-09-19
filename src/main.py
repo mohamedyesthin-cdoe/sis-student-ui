@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
+from src.core.security.jwt import SECRET_KEY, ACCESS_KEY, verify_api_key
 from src.core.config import settings
 from src.db.session import engine,get_db,Base
 from src.db import base  # This should import and register all models
@@ -10,8 +11,9 @@ from src.schemas.students import DebResponse
 from src.services.integrations.student_api import get_deb_student_details, push_deb_student_details
 #from src.middleware.request_id import RequestIDMiddleware
 #from src.utils.rate_limiter import RateLimiter
-
-
+from src.repositories.students import StudentRepository
+from typing import List, Optional
+from src.schemas.payment import StudentSchema, StandardResponse, DataResponse, PaginationResponse
 
 from src.api.v1.endpoints.auth import router as auth_router
 from src.api.v1.endpoints.users import router as users_router
@@ -20,6 +22,9 @@ from src.api.v1.endpoints.faculty import router as faculty_router
 from src.api.v1.endpoints.admin import router as admin_router
 from src.api.v1.endpoints.address import router as address_router
 from src.api.v1.endpoints.students import router as students_router
+from src.api.v1.endpoints.api import router as api_router
+from src.api.v1.endpoints.programe import router as program_router
+from src.utils.hash import decode_token, encode_token
 
 app = FastAPI(
     title=settings.APP_NAME,    
@@ -54,8 +59,10 @@ app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router, prefix="/user", tags=["User"])
 app.include_router(menu_router, prefix="", tags=["Menu"])
 app.include_router(faculty_router, prefix="/faculty", tags=["Faculty"])
-app.include_router(address_router, prefix="", tags=["Address"])
+#app.include_router(address_router, prefix="", tags=["Address"])
 app.include_router(students_router, prefix="/student", tags=["Student"])
+app.include_router(api_router, prefix="/api", tags=["API"])
+app.include_router(program_router, prefix="/programe", tags=["Programe"])
 
 
 # Create database tables on startup

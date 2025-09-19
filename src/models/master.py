@@ -10,9 +10,26 @@ class Programe(AuditableBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     programe = Column(String(100), nullable=False, unique=True, index=True)
     programe_code = Column(String(50), nullable=False, unique=True)
-
+    duration = Column(String(20), nullable=True)
+    \
+    fee = relationship("FeeDetails", back_populates="programe")
     #student = relationship("Student", back_populates="program")
 
+class FeeDetails(AuditableBase):
+    __tablename__ = "fee_details"
+
+    id = Column(Integer, primary_key=True, index=True)
+    programe_id = Column(Integer, ForeignKey("programs.id"))
+    semester = Column(String)
+    application_fee = Column(String, nullable=True)
+    admission_fee = Column(String, nullable=True)
+    tuition_fee = Column(String, nullable=True)
+    exam_fee = Column(String, nullable=True)
+    lms_fee = Column(String, nullable=True)
+    lab_fee = Column(String, nullable=True)
+    total_fee = Column(String, nullable=True)
+
+    programe = relationship("Programe", back_populates="fee")
 
 class Category(AuditableBase):
     __tablename__ = "categories"

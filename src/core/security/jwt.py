@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from sqlalchemy.orm import Session
@@ -11,6 +11,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 oauth2_scheme = HTTPBearer()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+ACCESS_KEY = os.getenv("ACCESS_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
@@ -46,3 +47,8 @@ def verify_token(token: str):
         return payload
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    
+def verify_api_key(secret_key: str = Header(...), access_key: str = Header(...)):    
+    if secret_key != SECRET_KEY or access_key != ACCESS_KEY:
+        raise HTTPException(status_code=403, detail="Invalid API Key")
+    return True
