@@ -6,5 +6,6 @@ export const ApiRoutes = {
   REGISTER: '/auth/register',
   USERS: '/users',
   PRODUCTS: '/products',
-  GETSTUDENTSLIST:'/student/list'
+  GETSTUDENTSLIST:'/student/list',
+  STUDENTSYNC:'student/sync'
 };
