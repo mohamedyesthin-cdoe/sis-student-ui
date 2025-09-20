@@ -23,34 +23,11 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../../utils/ApiRequest';
 import { ApiRoutes } from '../../constants/ApiConstants';
-import theme from '../../styles/theme';
 import CardComponent from '../../components/card/Card';
-
-// Pagination Actions
-function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
-  return (
-    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-      <IconButton onClick={(e) => onPageChange(e, 0)} disabled={page === 0}>
-        <FirstPageIcon fontSize="small" />
-      </IconButton>
-      <IconButton onClick={(e) => onPageChange(e, page - 1)} disabled={page === 0}>
-        <KeyboardArrowLeft fontSize="small" />
-      </IconButton>
-      <IconButton
-        onClick={(e) => onPageChange(e, page + 1)}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-      >
-        <KeyboardArrowRight fontSize="small" />
-      </IconButton>
-      <IconButton
-        onClick={(e) => onPageChange(e, Math.max(0, Math.ceil(count / rowsPerPage) - 1))}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-      >
-        <LastPageIcon fontSize="small" />
-      </IconButton>
-    </Box>
-  );
-}
+import * as XLSX from 'xlsx'; // <-- Excel library
+import theme from '../../styles/theme';
+import { sampleStudents } from './sampleData';
+import ReusableTable from '../../components/table/table';
 
 export default function ModernStudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -60,17 +37,17 @@ export default function ModernStudentTable() {
   const [genderFilter, setGenderFilter] = React.useState('');
   const navigate = useNavigate();
 
+  // React.useEffect(() => {
+  //   apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' })
+  //     .then((data) => setStudents(Array.isArray(data) ? data : data.data))
+  //     .catch(() => setStudents([]));
+  // }, []);
+
   React.useEffect(() => {
-    apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' })
-      .then((data) => setStudents(Array.isArray(data) ? data : data.data))
-      .catch(() => setStudents([]));
+    // Instead of calling API, use local sample data
+    setStudents(sampleStudents);
   }, []);
 
-  const handleChangePage = (event: any, newPage: any) => setPage(newPage);
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
   const handleView = (id: any) => navigate(`/students/detail/${id}`);
 
   const filteredStudents = students.filter((s) => {
@@ -78,6 +55,31 @@ export default function ModernStudentTable() {
     const combinedText = `${s.registration_no} ${fullName} ${s.email} ${s.mobile_number} ${s.gender} ${s.date_of_birth}`.toLowerCase();
     return combinedText.includes(searchText.toLowerCase()) && (genderFilter === '' || s.gender === genderFilter);
   });
+
+  // -----------------------------
+  // EXPORT TO EXCEL FUNCTION
+  // -----------------------------
+  const handleExportExcel = () => {
+    if (!filteredStudents.length) return;
+
+    // Map data for Excel
+    const dataForExcel = filteredStudents.map((s, index) => ({
+      'S.No': index + 1,
+      'Registration No': s.registration_no,
+      'Full Name': `${s.title} ${s.first_name} ${s.last_name}`,
+      Email: s.email,
+      Mobile: s.mobile_number,
+      Gender: s.gender,
+      DOB: s.date_of_birth,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataForExcel);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+
+    // Export file
+    XLSX.writeFile(workbook, 'Students.xlsx');
+  };
 
   return (
     <CardComponent sx={{
@@ -89,7 +91,6 @@ export default function ModernStudentTable() {
     }}>
       {/* Filters & Export */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2, alignItems: 'center' }}>
-        {/* Your filters and export button */}
         <TextField
           size="small"
           placeholder="Search all fields"
@@ -126,171 +127,63 @@ export default function ModernStudentTable() {
           size="small"
           startIcon={<FileDownloadIcon />}
           sx={{ ml: { xs: 0, sm: 'auto' }, width: { xs: '100%', sm: 'auto' } }}
-          onClick={() => console.log('Export Excel')}
+          onClick={handleExportExcel} // <-- new handler
         >
           Export Excel
         </Button>
       </Box>
 
-      {/* Table Container with fixed width */}
+      {/* Table */}
       <Box sx={{ overflowX: 'auto', width: '100%' }}>
-        <Table sx={{ minWidth: 900 }} stickyHeader aria-label="student table">
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  fontWeight: 600,
-                  fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                  backgroundColor: theme.palette.background.paper,
-                  py: 1,
-                  px: 1,
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                S.No
-              </TableCell>
+        <ReusableTable
+          columns={[
+            { key: "registration_no", label: "Registration No" },
+            { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
+            { key: "email", label: "Email" },
+            { key: "mobile_number", label: "Mobile" },
+            { key: "gender", label: "Gender" },
+            { key: "date_of_birth", label: "DOB" },
+          ]}
+          data={filteredStudents}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          actions={[
+            { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id) },
+          ]}
+        />
 
-              {['Registration No', 'Full Name', 'Email', 'Mobile', 'Gender', 'DOB', 'Action'].map(
-                (header) => (
-                  <TableCell
-                    key={header}
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: { xs: '0.75rem', sm: '0.85rem' },
-                      backgroundColor: theme.palette.background.paper,
-                      py: 1,
-                      px: 1,
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {header}
-                  </TableCell>
-                )
-              )}
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-            {filteredStudents
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((student, index) => (
-                <TableRow key={student.id} hover>
-                  <TableCell sx={{ py: 0.5, px: 1, whiteSpace: 'nowrap' }}>
-                    {page * rowsPerPage + index + 1}
-                  </TableCell>
-                  <TableCell sx={{ py: 0.5, px: 1, whiteSpace: 'nowrap' }}>
-                    {student.registration_no}
-                  </TableCell>
-                  <TableCell sx={{ py: 0.5, px: 1 }}>
-                    {`${student.title} ${student.first_name} ${student.last_name}`}
-                  </TableCell>
-                  <TableCell sx={{ py: 0.5, px: 1, whiteSpace: 'nowrap' }}>
-                    {student.email}
-                  </TableCell>
-                  <TableCell sx={{ py: 0.5, px: 1 }}>{student.mobile_number}</TableCell>
-                  <TableCell sx={{ py: 0.5, px: 1 }}>
-                    {student.gender === '12842' ? 'Male' : 'Female'}
-                  </TableCell>
-                  <TableCell sx={{ py: 0.5, px: 1 }}>{student.date_of_birth}</TableCell>
-                  <TableCell align="center" sx={{ py: 0.5, px: 1 }}>
-                    <IconButton
-                      size="small"
-                      color="secondary"
-                      onClick={() => handleView(student.id)}
-                    >
-                      <VisibilityIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-
-        </Table>
       </Box>
 
-      {/* Pagination (Fixed below) */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mt: 3,
-          flexWrap: 'wrap',
-        }}
-      >
+      {/* Pagination */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3, flexWrap: 'wrap' }}>
         <Typography sx={{ fontSize: '0.875rem', color: 'text.secondary' }}>
-          Showing {page * rowsPerPage + 1} to{' '}
-          {Math.min((page + 1) * rowsPerPage, filteredStudents.length)} of{' '}
-          {filteredStudents.length} entries
+          Showing {page * rowsPerPage + 1} to {Math.min((page + 1) * rowsPerPage, filteredStudents.length)} of {filteredStudents.length} entries
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton
-            size="small"
-            onClick={() => setPage(0)}
-            disabled={page === 0}
-            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
-          >
+          <IconButton size="small" onClick={() => setPage(0)} disabled={page === 0} sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}>
             <FirstPageIcon fontSize="small" />
           </IconButton>
 
-          <IconButton
-            size="small"
-            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            disabled={page === 0}
-            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
-          >
+          <IconButton size="small" onClick={() => setPage(prev => Math.max(prev - 1, 0))} disabled={page === 0} sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}>
             <KeyboardArrowLeft fontSize="small" />
           </IconButton>
 
-          {Array.from(
-            { length: Math.ceil(filteredStudents.length / rowsPerPage) },
-            (_, index) => (
-              <Button
-                key={index}
-                size="small"
-                variant={page === index ? 'contained' : 'outlined'}
-                onClick={() => setPage(index)}
-                sx={{ minWidth: 36, height: 36, textTransform: 'none' }}
-                color='secondary'
-              >
-                {index + 1}
-              </Button>
-            )
-          )}
+          {Array.from({ length: Math.ceil(filteredStudents.length / rowsPerPage) }, (_, index) => (
+            <Button key={index} size="small" variant={page === index ? 'contained' : 'outlined'} onClick={() => setPage(index)} sx={{ minWidth: 36, height: 36, textTransform: 'none' }} color="secondary">
+              {index + 1}
+            </Button>
+          ))}
 
-          <IconButton
-            size="small"
-            onClick={() =>
-              setPage((prev) =>
-                prev + 1 < Math.ceil(filteredStudents.length / rowsPerPage)
-                  ? prev + 1
-                  : prev
-              )
-            }
-            disabled={(page + 1) * rowsPerPage >= filteredStudents.length}
-            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
-          >
+          <IconButton size="small" onClick={() => setPage(prev => prev + 1 < Math.ceil(filteredStudents.length / rowsPerPage) ? prev + 1 : prev)} disabled={(page + 1) * rowsPerPage >= filteredStudents.length} sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}>
             <KeyboardArrowRight fontSize="small" />
           </IconButton>
 
-          <IconButton
-            size="small"
-            onClick={() =>
-              setPage(Math.max(0, Math.ceil(filteredStudents.length / rowsPerPage) - 1))
-            }
-            disabled={(page + 1) * rowsPerPage >= filteredStudents.length}
-            sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}
-          >
+          <IconButton size="small" onClick={() => setPage(Math.max(0, Math.ceil(filteredStudents.length / rowsPerPage) - 1))} disabled={(page + 1) * rowsPerPage >= filteredStudents.length} sx={{ borderRadius: '50%', border: '1px solid', minWidth: 0 }}>
             <LastPageIcon fontSize="small" />
           </IconButton>
         </Box>
       </Box>
     </CardComponent>
-
-
-
   );
 }
-
-

@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   TextField,
   MenuItem,
-  Typography,
   Tabs,
   Tab,
   Box,
   Button,
 } from "@mui/material";
+import { useParams } from "react-router-dom";
 import CardComponent from "../../components/card/Card";
-import theme from "../../styles/theme";
 import { useAlert } from "../../context/AlertContext";
 import Subheader from "../../components/subheader/Subheader";
 
 const CourseForm = () => {
+  const { id } = useParams(); // ✅ detect edit mode
   const [courseId, setCourseId] = useState("");
   const [courseName, setCourseName] = useState("");
   const [duration, setDuration] = useState("3 Years");
@@ -33,10 +33,35 @@ const CourseForm = () => {
 
   const [semesters, setSemesters] = useState(initialSemesterData);
 
+  // ✅ Prefill if editing
+  useEffect(() => {
+    if (id) {
+      // Replace with real API call if needed
+      const sampleData = {
+        courseId: id,
+        courseName: "Sample Course " + id,
+        duration: "3 Years",
+        semesters: initialSemesterData.map((s, idx) => ({
+          ...s,
+          applicationFee: "500",
+          admissionFee: "1000",
+          tuitionFee: "2000",
+          examFee: "300",
+          lmsFee: "200",
+          labFee: "400",
+          totalFee: 4400,
+        })),
+      };
+      setCourseId(sampleData.courseId);
+      setCourseName(sampleData.courseName);
+      setDuration(sampleData.duration);
+      setSemesters(sampleData.semesters);
+    }
+  }, [id]);
+
   // Function to check if form is dirty
   const isFormDirty = () => {
     if (courseId || courseName || duration !== "3 Years") return true;
-
     for (let i = 0; i < semesters.length; i++) {
       const s = semesters[i];
       const initial = initialSemesterData[i];
@@ -58,8 +83,8 @@ const CourseForm = () => {
     if (isFormDirty()) {
       showConfirm(
         "You have unsaved changes. Are you sure you want to leave?",
-        () => window.history.back(), // Yes
-        () => console.log("Stay on page") // No
+        () => window.history.back(),
+        () => {}
       );
     } else {
       window.history.back();
@@ -97,23 +122,19 @@ const CourseForm = () => {
   };
 
   const handleSubmit = () => {
-    // Validate Course Details
     if (!courseId.trim()) {
       showConfirm("Course ID is required.", () => {}, () => {});
       return;
     }
-
     if (!courseName.trim()) {
       showConfirm("Course Name is required.", () => {}, () => {});
       return;
     }
-
     if (!duration) {
       showConfirm("Please select a course duration.", () => {}, () => {});
       return;
     }
 
-    // Validate Semester Fees
     for (let i = 0; i < semesters.length; i++) {
       const s = semesters[i];
       const fields = [
@@ -127,9 +148,7 @@ const CourseForm = () => {
       for (let field of fields) {
         if (!s[field] || Number(s[field]) < 0) {
           showConfirm(
-            `Please enter a valid ${
-              field.replace(/([A-Z])/g, " $1")
-            } for Semester ${i + 1}.`,
+            `Please enter a valid ${field.replace(/([A-Z])/g, " $1")} for Semester ${i + 1}.`,
             () => {},
             () => {}
           );
@@ -138,14 +157,14 @@ const CourseForm = () => {
       }
     }
 
-    // Submit Data
-    const courseData = {
-      courseId,
-      courseName,
-      duration,
-      semesters,
-    };
-    showConfirm("Course submitted successfully!", () => {}, () => {});
+    const courseData = { courseId, courseName, duration, semesters };
+    console.log("Submitted Data:", courseData);
+
+    showConfirm(
+      id ? "Course updated successfully!" : "Course added successfully!",
+      () => {},
+      () => {}
+    );
   };
 
   return (
@@ -160,7 +179,7 @@ const CourseForm = () => {
     >
       {/* Course Details Section */}
       <CardComponent sx={{ p: 3 }}>
-     <Subheader fieldName="Course Details" sx={{mb:2}}></Subheader>
+        <Subheader fieldName="Course Details" sx={{ mb: 2 }} />
         <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <TextField
@@ -170,6 +189,7 @@ const CourseForm = () => {
               size="small"
               value={courseId}
               onChange={(e) => setCourseId(e.target.value)}
+              disabled={!!id} // ✅ lock courseId when editing
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -202,7 +222,7 @@ const CourseForm = () => {
 
       {/* Semester Fee Details */}
       <CardComponent sx={{ p: 3, mt: 4 }}>
-       <Subheader fieldName="Semester Fee Details"></Subheader>
+        <Subheader fieldName="Semester Fee Details" />
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -247,7 +267,7 @@ const CourseForm = () => {
         </Box>
       </CardComponent>
 
-      {/* Buttons Outside Cards */}
+      {/* Buttons */}
       <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
         <Button variant="contained" color="primary" onClick={handleBack}>
           Back
@@ -256,7 +276,7 @@ const CourseForm = () => {
           Reset
         </Button>
         <Button variant="contained" color="secondary" onClick={handleSubmit}>
-          Submit
+          {id ? "Update" : "Submit"}
         </Button>
       </Box>
     </Box>

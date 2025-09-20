@@ -45,6 +45,11 @@ export const routesConfig = [
         element: <ProgramAdd />,
         breadcrumb: 'Programs Add',
       },
+      {
+        path: 'add/:id',   // ✅ edit program route
+        element: <ProgramAdd />,
+        breadcrumb: 'Programs Edit',
+      },
     ],
   },
 ];

@@ -52,7 +52,7 @@ function LoginPage() {
 
       const user = jwtDecode<JwtPayload>(result.access_token);
       dispatch(setUser({ userName: user.username }));
-      showAlert('Login successful!', 'info');
+      // showAlert('Login successful!', 'info');
       navigate("/dashboard");
 
     } catch (error) {

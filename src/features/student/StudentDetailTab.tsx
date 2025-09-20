@@ -11,7 +11,7 @@ type StudentDetailTabsProps = {
 export default function StudentDetailTab({ student, activeTab, setActiveTab }: StudentDetailTabsProps) {
   const theme = useTheme();
   const field = (label: string, value: any) => (
-    <Box className="border-b border-gray-300 last:border-b-0 p-2">
+    <Box className="border-b border-gray-300 last:border-b-0">
       <Typography variant="subtitle2" sx={{ color: theme.palette.custom.accent, fontSize: '0.85rem' }}>
         {label}
       </Typography>
@@ -23,7 +23,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
 
   const renderTabContent = (items: [string, any][]) => (
     <CardComponent mb={0} p={2}>
-      <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {items.length
           ? items.map(([label, value]) => (
             <Box key={label}>{field(label, value)}</Box>
@@ -69,7 +69,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
           {/* Basic Details */}
           <CardComponent mb={2} p={2}>
             <Subheader fieldName="Basic Details"></Subheader>
-            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 ['Gender', student.gender],
                 ['Date of Birth', student.date_of_birth],
@@ -83,7 +83,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
           {/* Addresses */}
           <CardComponent mb={0} p={2}>
             <Subheader fieldName="Temporary Address"></Subheader>
-            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 ['Address', `${student.address_details.corr_addr1}, ${student.address_details.corr_addr2}, ${student.address_details.corr_city} - ${student.address_details.corr_pin}`],
                 ['District', student.address_details.corr_district],
@@ -94,7 +94,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
               ))}
             </Box>
             <Subheader fieldName="Permanent Address" sx={{mt:2}}></Subheader>
-            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 ['Address', `${student.address_details.perm_addr1}, ${student.address_details.perm_addr2}, ${student.address_details.perm_city} - ${student.address_details.perm_pin}`],
                 ['District', student.address_details.perm_district],
