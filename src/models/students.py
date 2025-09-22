@@ -26,7 +26,7 @@ class Student(AuditableBase):
     last_name = Column(String(50), nullable=False)
     gender = Column(String(10), nullable=False)
     date_of_birth = Column(Date, nullable=False)
-    blood_group = Column(String(10), nullable=False)
+    blood_group = Column(String(10), nullable=True)
 
     # Contact
     email = Column(String(100), unique=True, nullable=False)
