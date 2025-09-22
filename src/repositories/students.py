@@ -37,7 +37,7 @@ class StudentRepository(BaseRepository[Student]):
                 joinedload(Student.deb_details),
                 joinedload(Student.payments).joinedload(Payment.semester_fee),
                 joinedload(Student.payments).joinedload(Payment.application_fee)
-            ).all()
+            ).order_by(Student.id.asc()).all()
             
             #students = self.db.query(Student).all()
             print(f"Total students fetched: {len(students)}")
