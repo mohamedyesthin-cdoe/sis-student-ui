@@ -100,25 +100,26 @@ class AcademicDetailsResponse(AcademicDetailsBase):
 class DocumentDetailsBase(BaseModel):
     class_10th_marksheet: Optional[str] = None
     class_12th_marksheet: Optional[str] = None
-    graduation_marksheet: Optional[str] = None
+    graduation_marksheet: Optional[List[str]] = None
     diploma_marksheet: Optional[List[str]] = None
     work_experience_certificates: Optional[str] = None
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None
 
-class DocumentDetailsUpdate(BaseModel):
+class DocumentDetailsUpdate(DocumentDetailsBase):
+    pass
+
+class DocumentDetailsResponse(BaseModel):
+    id: int
     class_10th_marksheet: Optional[str] = None
     class_12th_marksheet: Optional[str] = None
-    graduation_marksheet: Optional[str] = None
+    graduation_marksheet: Optional[List[str]] = None
     diploma_marksheet: Optional[str] = None
     work_experience_certificates: Optional[str] = None
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None
-
-class DocumentDetailsResponse(DocumentDetailsBase):
-    id: int
 
 # -----------------------------
 # Declaration Details Schemas
@@ -311,7 +312,7 @@ class StudentResponse(BaseModel):
     last_name: str
     gender: str
     date_of_birth: date
-    blood_group: str
+    blood_group: Optional[str] = None
     email: str
     mobile_number: str
     alternative_phone: Optional[str]
