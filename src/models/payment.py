@@ -35,6 +35,7 @@ class SemesterFee(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     payment_id = Column(Integer, ForeignKey("payments.id"), unique=True)
     semester = Column(String(20), default="1st")
+    admission_fee = Column(Float, default=0.0)
     lab_fee = Column(Float, default=0.0)
     lms_fee = Column(Float, default=0.0)
     exam_fee = Column(Float, default=0.0)

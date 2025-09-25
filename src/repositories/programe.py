@@ -48,3 +48,74 @@ class ProgrameRepository:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching programs: {str(e)}",
             )
+
+    def get_by_id(self, programe_id: int) -> Optional[Programe]:
+        try:
+            return self.db.query(self.model).filter(self.model.id == programe_id).first()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching program by id: {str(e)}",
+            )
+        
+    def get_by_id_with_fees(self, programe_id: int) -> Optional[Programe]:
+        try:
+            return (
+                self.db.query(self.model)
+                .options(joinedload(self.model.fee))
+                .filter(self.model.id == programe_id)
+                .first()
+            )
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching program with fees by id: {str(e)}",
+            )
+    
+    def update_program(self, programe_id: int, program_update: ProgrameUpdate) -> ProgrameResponse:
+        program = self.get_by_id_with_fees(programe_id)
+        if not program:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Program with id {programe_id} not found",
+            )
+        
+        try:
+            # Update main program fields
+            for key, value in program_update.dict(exclude_unset=True, exclude={"fees"}).items():
+                setattr(program, key, value)
+
+            # Update fees if provided
+            if program_update.fees is not None:
+                existing_fees = {fee.id: fee for fee in program.fee}
+                updated_fee_ids = set()
+
+                for fee_data in program_update.fees:
+                    if fee_data.id and fee_data.id in existing_fees:
+                        # Update existing fee
+                        fee = existing_fees[fee_data.id]
+                        for key, value in fee_data.dict(exclude_unset=True, exclude={"id"}).items():
+                            setattr(fee, key, value)
+                        updated_fee_ids.add(fee_data.id)
+                    else:
+                        # New fee entry
+                        new_fee = FeeDetails(**fee_data.dict(), programe_id=program.id)
+                        self.db.add(new_fee)
+
+                # Delete fees not in the update list
+                for fee_id, fee in existing_fees.items():
+                    if fee_id not in updated_fee_ids:
+                        self.db.delete(fee)
+            
+            self.db.commit()
+            self.db.refresh(program)
+            return program
+        
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while updating program: {str(e)}",
+            )
+                
+        

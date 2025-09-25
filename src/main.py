@@ -91,7 +91,6 @@ def debug_user(db: Session = Depends(get_db)):
 async def get_deb_student(deb_id: str):
     """Retrieve student by DEB ID."""
     try:
-        print(f"Fetching DEB student details...{deb_id}")
         students = await get_deb_student_details(deb_id)
         return students
     except Exception as e:
@@ -101,7 +100,6 @@ async def get_deb_student(deb_id: str):
 async def push_student_deb(db: Session = Depends(get_db)):
     """Push student by DEB"""
     try:
-        print("Pushing DEB student details...")
         students = await push_deb_student_details(db)
         return students
     except Exception as e:

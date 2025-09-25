@@ -1,7 +1,7 @@
 # Add these imports if not present
 from typing import List, Optional
-from pydantic import BaseModel
-from datetime import datetime
+from pydantic import BaseModel, field_validator
+from datetime import datetime, date
 
 # New schema for ApplicationFee
 class SemesterFeeResponse(BaseModel):
@@ -42,12 +42,58 @@ class PaymentResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class ApplicationFee(BaseModel):
+    student_id: int
+    payment_type: str 
+    order_id: Optional[str] = None
+    transaction_id: Optional[str] = None
+    payment_date: Optional[datetime] = None
+    payment_amount: float = 0.0
+    is_offline: bool = False
+    offline_transaction_id: Optional[str] = None
+    offline_payment_method: Optional[str] = None
+    offline_receipt_enabled: bool = False
+
+    class Config:
+        from_attributes = True
+
+class SemesterFee(BaseModel):
+    student_id: int
+    payment_type: str 
+    order_id: Optional[str] = None
+    transaction_id: Optional[str] = None
+    payment_date: Optional[datetime] = None
+    payment_amount: float = 0.0
+    is_offline: bool = False
+    offline_transaction_id: Optional[str] = None
+    offline_payment_method: Optional[str] = None
+    offline_receipt_enabled: bool = False
+    semester_fee: Optional[SemesterFeeResponse] = None
+
+    class Config:
+        from_attributes = True
+    
 class StudentSchema(BaseModel):
     id: int
-    program_id: int
+    cat: str
+    admission_no: Optional[str] = None
+    sgrp: Optional[str] = None
+    name: str
+    gender: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    admission_year: Optional[str] = None
+    admission_date: Optional[date] = None
+    programe_name: str
     registration_no: Optional[str] = None
-    application_no: Optional[str]
-    payments: List[PaymentResponse] = []
+    sregno: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email: Optional[str] = None
+    addrs1: Optional[str] = None
+    addrs2: Optional[str] = None
+    addrs3: Optional[str] = None
+    addrs4: Optional[str] = None
+    application_fee: Optional[ApplicationFee] = None
+    semester_fee: Optional[SemesterFee] = None
 
     class Config:
         from_attributes = True

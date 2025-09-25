@@ -1,10 +1,10 @@
-from pydantic import BaseModel, EmailStr, StringConstraints, validator, Field
+from pydantic import BaseModel, EmailStr, StringConstraints, validator, Field, HttpUrl, constr
 from typing import Optional, List, Annotated
 from datetime import date, datetime
 import re
 from enum import Enum
 from src.schemas.address import AddressCreate, AddressResponse
-from src.utils.enum import ContactPreference
+from src.utils.enum import EmploymentTypeEnum, FacultyStatusEnum, GenderEnum
 from typing_extensions import Annotated
 
 class CountryCreate(BaseModel):
@@ -31,51 +31,40 @@ class StateResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class FacultyCreate(BaseModel):
-    first_name: Annotated[str, Field(min_length=2, max_length=50)]
-    last_name: Annotated[str, Field(min_length=2, max_length=50)]
-    email: EmailStr
-    phone_number: Optional[Annotated[str, Field(min_length=7, max_length=15)]] = None    
-    country_id: int
-    date_of_birth: Optional[date] = None
-    contact_preference: ContactPreference = ContactPreference.NONE
-    address: Optional[List[AddressCreate]] = None
+class FacultyBase(BaseModel):
+    employee_id: Optional[str] = Field(None, description="Employee / staff id")
+    department: Optional[str] = None
+    designation: Optional[str] = None
+    qualification: Optional[str] = None
+    specialization: Optional[str] = None
+    joining_date: Optional[date] = None
+    experience_years: Optional[float] = None
+    employment_type: Optional[EmploymentTypeEnum] = None
+    research_area: Optional[str] = None
+    publications_count: Optional[int] = None
+    status: Optional[FacultyStatusEnum] = FacultyStatusEnum.active
+    gender: Optional[GenderEnum] = None
+    dob: Optional[date] = None
+    address: Optional[str] = None
+    linkedin_url: Optional[HttpUrl] = None
+    profile_photo: Optional[str] = None
 
-    @validator("first_name", "last_name")
-    def validate_name(cls, value: str) -> str:
-        if not re.match(r"^[a-zA-Z\s]+$", value):
-            raise ValueError("Name must contain only letters and spaces")
-        return value
-
-    # @validator("date_of_birth")
-    # def validate_age(cls, value: Optional[date]) -> Optional[date]:
-    #     if value:
-    #         today = date.today()
-    #         age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
-    #         if age < 18:
-    #             raise ValueError("Faculty must be at least 18 years old")
-    #     return value
-
-    @validator("phone_number")
-    def validate_phone_number(cls, value: Optional[str]) -> Optional[str]:
-        if value and value.startswith("+"):
-            raise ValueError("Phone number should not include country code; it will be prepended based on country")
-        return value
-
-class FacultyResponse(BaseModel):
+class FacultyCreate(FacultyBase):
     id: int
-    first_name: str
-    last_name: str
-    email: str
-    phone_number: Optional[str]
-    #country: CountryResponse
-    loyalty_points: int
-    is_active: bool
-    created_at: datetime
-    updated_at: datetime
-    contact_preference: ContactPreference
-    date_of_birth: Optional[date]
-    address: List[AddressResponse]
+    username: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    is_active: Optional[bool] = True
+    is_superuser: Optional[bool] = False
 
     class Config:
         from_attributes = True
+
+class FacultyResponse(BaseModel):
+    faculty: FacultyCreate
+    generated_password: str
+
+    class Config:
+        orm_mode = True

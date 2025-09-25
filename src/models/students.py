@@ -36,7 +36,7 @@ class Student(AuditableBase):
     
     # Demographics
     marital_status = Column(String(10), nullable=False)
-    religion = Column(String(10), nullable=False)
+    religion = Column(String(20), nullable=False)
     nationality = Column(Integer, ForeignKey("countries.id"), nullable=False)
     
     # Caste/Category
@@ -94,18 +94,18 @@ class AddressDetails(Base):
     # Correspondence Address
     corr_addr1 = Column(String(100), nullable=False)
     corr_addr2 = Column(String(100))
-    corr_city = Column(String(10), nullable=False)  
-    corr_state = Column(String(10), nullable=False)
-    corr_district = Column(String(10), nullable=False)
+    corr_city = Column(String(30), nullable=False)  
+    corr_state = Column(String(30), nullable=False)
+    corr_district = Column(String(30), nullable=False)
     corr_country = Column(Integer, ForeignKey("countries.id"), nullable=False)
     corr_pin = Column(String(10), nullable=False)
     corr_addr_same = Column(Boolean, default=True)
     # Permanent Address
     perm_addr1 = Column(String(100))
     perm_addr2 = Column(String(100))
-    perm_city = Column(String(10))
-    perm_state = Column(String(10))
-    perm_district = Column(String(10))
+    perm_city = Column(String(30))
+    perm_state = Column(String(30))
+    perm_district = Column(String(30))
     perm_country = Column(Integer, ForeignKey("countries.id"))
     perm_pin = Column(String(10))
 

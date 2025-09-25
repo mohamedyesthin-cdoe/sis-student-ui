@@ -4,6 +4,7 @@ from src.models.faculty import Faculty
 from src.models.address import Address
 from fastapi import HTTPException, status 
 from typing import List, Optional
+from src.schemas.faculty import FacultyBase
 
 class FacultyRepository:
     def __init__(self, db: Session):
@@ -14,6 +15,17 @@ class FacultyRepository:
         """
         self.db = db
     
+    def create(self, user_id: int, faculty_in: FacultyBase) -> Faculty:
+        """
+        Create a Faculty row linked to an existing user (user_id).
+        `faculty_in` should contain faculty-only fields (FacultyBase or similar).
+        """
+        obj = Faculty(id=user_id, **(faculty_in.dict(exclude_none=True)))
+        self.db.add(obj)
+        self.db.commit()
+        self.db.refresh(obj)
+        return obj
+
     def get_faculty_by_email(self, email: str) -> Optional[Faculty]:
         """Retrieve a faculty by email.
 
@@ -24,33 +36,6 @@ class FacultyRepository:
             Optional[Faculty]: Faculty object if found, else None.
         """
         return self.db.query(Faculty).filter(Faculty.email == email).first()
-    
-    def create_faculty(self, faculty_data: dict) -> Faculty:
-        """Create a new faculty in the database.
-
-        Args:
-            faculty_data (dict): faculty data including country_id and phone_number.
-
-        Returns:
-            faculty: Created faculty object.
-        """
-        db_faculty = Faculty(**faculty_data)
-        self.db.add(db_faculty)
-        self.db.flush()  # Flush to get faculty ID
-        return db_faculty
-    
-    def create_address(self, address_data: dict) -> Address:
-        """Create a new address for a faculty.
-
-        Args:
-            address_data (dict): Address data including faculty_id, country_id, and state_id.
-
-        Returns:
-            Address: Created address object.
-        """
-        db_address = Address(**address_data)
-        self.db.add(db_address)
-        return db_address
     
     def commit(self):
         """Commit the current transaction."""

@@ -15,6 +15,9 @@ class FeeSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class FeeUpdate(FeeSchema):
+    id: Optional[int] = None
+
 # ----------------------------
 # Programe Schemas
 # ----------------------------
@@ -22,6 +25,8 @@ class ProgrameBase(BaseModel):
     programe: str
     programe_code: str
     duration: Optional[str] = None
+    category: Optional[str] = None
+    faculty: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -33,7 +38,9 @@ class ProgrameUpdate(BaseModel):
     programe: Optional[str] = None
     programe_code: Optional[str] = None
     duration: Optional[str] = None
-    fees: Optional[List[FeeSchema]] = None
+    category: Optional[str] = None
+    faculty: Optional[str] = None
+    fees: Optional[List[FeeUpdate]] = None
 
 
 class ProgrameResponse(ProgrameBase):

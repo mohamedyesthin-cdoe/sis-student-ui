@@ -31,3 +31,32 @@ class ProgrameService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while listing programs: {str(e)}",
             )
+        
+    def update_programe(self, programe_id: int, data: ProgrameUpdate) -> ProgrameResponse:
+        try:
+            return self.repo.update_program(programe_id, data)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while updating program: {str(e)}",
+            )
+        
+    def get_program_by_id_with_fees(self, programe_id: int) -> Programe:
+        try:
+            program = self.repo.get_by_id(programe_id)
+            if not program:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Program not found",
+            )
+            return program
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching program: {str(e)}",
+            )
+        

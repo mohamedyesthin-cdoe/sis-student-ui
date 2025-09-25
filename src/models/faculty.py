@@ -5,25 +5,28 @@ from sqlalchemy import (
 from sqlalchemy.orm import relationship
 from src.db.session import Base
 from datetime import datetime
-from src.utils.enum import ContactPreference
+from src.utils.enum import EmploymentTypeEnum, FacultyStatusEnum
+from sqlalchemy import Column, Integer, String, Date, Float, Enum, Text, ForeignKey
 
 class Faculty(Base):
-    __tablename__         = 'faculty'
+    __tablename__ = 'faculty'
 
-    id                  = Column(Integer, primary_key=True, index=True)
-    first_name          = Column(String(50), nullable=False)
-    last_name           = Column(String(50), nullable=False)
-    email               = Column(String(255), unique=True, nullable=False, index=True)
-    phone_number        = Column(String(15), nullable=True)
-    country_id          = Column(Integer, ForeignKey("countries.id"), nullable=False)
-    loyalty_points      = Column(Integer, default=0, nullable=False)
-    is_active           = Column(Boolean, default=True, nullable=False)
-    contact_preference  = Column(Enum(ContactPreference), default=ContactPreference.NONE, nullable=False)
-    date_of_birth       = Column(Date, nullable=True)
-    created_at          = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at          = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-    
-    # Relationships
-    #country             = relationship("Country", back_populates="customers")
-    #address           = relationship("Address", back_populates="customer", cascade="all, delete-orphan")
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # independent faculty id
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)  # link to user table
+    employee_id = Column(String(50), unique=True, nullable=False)
+    dob = Column(Date, nullable=True)
+    gender = Column(String(10), nullable=True)
+    department = Column(String(100), nullable=False)
+    designation = Column(String(100), nullable=True)
+    qualification = Column(String(150), nullable=True)
+    specialization = Column(String(150), nullable=True)
+    joining_date = Column(Date, nullable=True)
+    experience_years = Column(Float, nullable=True)
+    employment_type = Column(Enum(EmploymentTypeEnum), nullable=False, default=EmploymentTypeEnum.permanent)
+    research_area = Column(Text, nullable=True)
+    publications_count = Column(Integer, nullable=True, default=0)
+    status = Column(Enum(FacultyStatusEnum), nullable=False, default=FacultyStatusEnum.active)
+    linkedin_url = Column(String(200), nullable=True)
+    profile_photo = Column(String(200), nullable=True)
 
+    user = relationship("User", backref="faculty", uselist=False)

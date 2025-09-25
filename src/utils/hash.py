@@ -5,10 +5,16 @@ import base64
 from fastapi import HTTPException
 import os
 from cryptography.fernet import Fernet
+import string
+import secrets
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def generate_password(length: int = 8) -> str:
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*"
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)

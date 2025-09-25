@@ -4,6 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError
 import logging
 import os
 #from src.utils.logging import get_logger
+from src.utils.hash import hash_password, generate_password
+from src.models.user import User
 
 T = TypeVar("T")
 
@@ -54,19 +56,6 @@ class BaseRepository(Generic[T]):
             #self.logger.error("Delete failed for %s: %s", self.model.__name__, str(e))
             raise e
     
-    def bulk_delete(self, ids: List[int]) -> None:
-        """Delete multiple objects by their IDs."""
-        try:
-            if not ids:
-                raise RepositoryError("IDs list cannot be empty")
-            self.db.query(self.model).filter(self.model.id.in_(ids)).delete(synchronize_session=False)
-            self.commit()
-            #self.logger.info("Bulk deleted %d objects for model: %s", len(ids), self.model.__name__)
-        except SQLAlchemyError as e:
-            self.db.rollback()
-            #self.logger.error("Bulk delete failed for %s: %s", self.model.__name__, str(e))
-            raise RepositoryError(f"Failed to bulk delete objects: {str(e)}") from e
-
     def refresh(self, obj: T) -> T:
         """Refresh an object from the database."""
         try:
@@ -86,10 +75,7 @@ class BaseRepository(Generic[T]):
             obj_data = obj_data.dict()
         elif hasattr(obj_data, "model_dump"):
             obj_data = obj_data.model_dump()
-        print("test pass 2")
-        print(obj_data)
         obj = self.model(**obj_data)
-        print(obj)
         self.db.add(obj)
         try:
             self.commit()
@@ -102,29 +88,6 @@ class BaseRepository(Generic[T]):
             #self.logger.error("Create failed for %s: %s", self.model.__name__, str(e))
             raise e
     
-    def bulk_create(self, objects_data: List[Union[Dict, Any]]) -> List[T]:
-        """Create multiple objects in a single transaction."""
-        try:
-            if not objects_data:
-                raise RepositoryError("Objects data list cannot be empty")
-            objects = []
-            for data in objects_data:
-                if hasattr(data, "dict"):
-                    data = data.dict()
-                elif hasattr(data, "model_dump"):
-                    data = data.model_dump()
-                objects.append(self.model(**data))
-            self.db.add_all(objects)
-            self.commit()
-            for obj in objects:
-                self.refresh(obj)
-            #self.logger.info("Bulk created %d objects for model: %s", len(objects), self.model.__name__)
-            return objects
-        except SQLAlchemyError as e:
-            self.db.rollback()
-            #self.logger.error("Bulk create failed for %s: %s", self.model.__name__, str(e))
-            raise RepositoryError(f"Failed to bulk create objects: {str(e)}") from e
-
     def get_by_id(self, id:int) -> Optional[T]:
         """Retrieve an object by ID."""
         try:
@@ -161,31 +124,6 @@ class BaseRepository(Generic[T]):
             #self.logger.error("Update failed for %s: %s", self.model.__name__, str(e))
             raise e
     
-    def bulk_update(self, ids: List[int], obj_data: Union[Dict, Any]) -> List[T]:
-        """Update multiple objects in a single transaction."""
-        try:
-            if hasattr(obj_data, "dict"):
-                obj_data = obj_data.dict()
-            elif hasattr(obj_data, "model_dump"):
-                obj_data = obj_data.model_dump()
-            objects = self.db.query(self.model).filter(self.model.id.in_(ids)).all()
-            if not objects:
-                raise RepositoryError("No objects found for bulk update")
-            for obj in objects:
-                for key, value in obj_data.items():
-                    setattr(obj, key, value)
-                if hasattr(obj, "version"):
-                    setattr(obj, "version", obj.version + 1)
-            self.commit()
-            for obj in objects:
-                self.refresh(obj)
-            #self.logger.info("Bulk updated %d objects for model: %s", len(objects), self.model.__name__)
-            return objects
-        except SQLAlchemyError as e:
-            self.db.rollback()
-            #self.logger.error("Bulk update failed for %s: %s", self.model.__name__, str(e))
-            raise RepositoryError(f"Failed to bulk update objects: {str(e)}") from e
-
     def filter(self, filters: Dict) -> List[T]:
         """Generic filter method for dynamic queries."""
         try:
@@ -262,3 +200,40 @@ class BaseRepository(Generic[T]):
             self.db.rollback()
             #self.logger.error("Exists check failed for %s: %s", self.model.__name__, str(e))
             raise e
+        
+    # def _create_user(self, obj_data: dict) -> User:
+    #     """Internal method to create a user object. Not for external use."""
+
+    #     password = generate_password()
+    #     hashed_password = hash_password(password)
+
+    #     user = User(
+    #         username=obj_data.get("username"),
+    #         email=obj_data.get("email"),
+    #         first_name=obj_data.get("first_name"),
+    #         last_name=obj_data.get("last_name"),
+    #         phone=obj_data.get("phone"),
+    #         is_active=obj_data.get("is_active", True),
+    #         is_superuser=obj_data.get("is_superuser", False),
+    #         hashed_password=hashed_password,
+    #         is_active=True,
+    #         is_superuser=False,
+    #     )
+
+    #     if hasattr(obj_data, "dict"):
+    #         obj_data = obj_data.dict()
+    #     elif hasattr(obj_data, "model_dump"):
+    #         obj_data = obj_data.model_dump()
+        
+    #     obj = self.model(**obj_data)
+    #     self.db.add(obj)
+    #     try:
+    #         self.commit()
+    #         self.refresh(obj)
+    #         #self.logger.info("User object created successfully for model: %s", self.model.__name__)
+    #         return obj
+        
+    #     except SQLAlchemyError as e:
+    #         self.db.rollback()
+    #         #self.logger.error("User creation failed for %s: %s", self.model.__name__, str(e))
+    #         raise e

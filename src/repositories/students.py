@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.future import select
 from src.models.students import *
 from src.models.payment import *
+from src.models.master import Programe, FeeDetails
 from src.repositories.base import BaseRepository
 from src.schemas.students import StudentBase
 from sqlalchemy.exc import IntegrityError
@@ -28,7 +29,6 @@ class StudentRepository(BaseRepository[Student]):
     
     def get_all_students(self) -> List[Student]:
         try:
-            print("Fetching all students from the repository...")
             students = self.db.query(Student).options(
                 joinedload(Student.address_details),
                 joinedload(Student.academic_details),
@@ -40,7 +40,6 @@ class StudentRepository(BaseRepository[Student]):
             ).order_by(Student.id.asc()).all()
             
             #students = self.db.query(Student).all()
-            print(f"Total students fetched: {len(students)}")
             return students
         except Exception as e:
             raise e
@@ -139,7 +138,7 @@ class StudentRepository(BaseRepository[Student]):
                     offline_payment_method=app_fee_data.get("offline_payment_method"),
                     offline_receipt_enabled=app_fee_data.get("offline_receipt_enabled", False),
                 )
-
+                
                 self.db.add(payment)
                 self.db.flush()
                 app_fee = ApplicationFee(payment_id=payment.id)
@@ -159,14 +158,19 @@ class StudentRepository(BaseRepository[Student]):
                 )
                 self.db.add(payment)
                 self.db.flush()
+
+                fee_details = self.db.query(FeeDetails).filter(
+                    FeeDetails.programe_id == program.id).first()
+                
                 semester_fee = SemesterFee(
                     payment_id=payment.id,
-                    semester=fee_data.get("semester"),
-                    lab_fee=fee_data.get("lab_fee"),
-                    lms_fee=fee_data.get("lms_fee"),
-                    exam_fee=fee_data.get("exam_fee"),
-                    tuition_fee=fee_data.get("tuition_fee"),
-                    total_fee=fee_data.get("total_fee"),
+                    semester=fee_details.semester,
+                    admission_fee=float(fee_details.admission_fee),
+                    lab_fee=float(fee_details.lab_fee),
+                    lms_fee=float(fee_details.lms_fee),
+                    exam_fee=float(fee_details.exam_fee),
+                    tuition_fee=float(fee_details.tuition_fee),
+                    total_fee=float(fee_details.total_fee),
                 )
                 self.db.add(semester_fee)
 

@@ -59,3 +59,13 @@ class CategoryEnum(str, Enum):
     ST = "ST"
     OTHER = "Other"
     NOCASTE = "NoCaste"
+
+class EmploymentTypeEnum(str, Enum):
+    permanent = "Permanent"
+    contract = "Contract"
+    visiting = "Visiting"
+
+class FacultyStatusEnum(str, Enum):
+    active = "Active"
+    inactive = "Inactive"
+    retired = "Retired"
