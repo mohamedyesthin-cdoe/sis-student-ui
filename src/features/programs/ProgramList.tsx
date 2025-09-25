@@ -12,11 +12,12 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import theme from '../../styles/theme';
 import CardComponent from '../../components/card/Card';
 import { useNavigate } from 'react-router-dom';
-import { ProgramData } from './ProgramData';
 import ReusableTable from '../../components/table/table';
 import TableToolbar from '../../components/tabletoolbar/tableToolbar';
 import TablePagination from '../../components/tablepagination/tablepagination';
 import { exportToExcel } from '../../constants/excelExport';
+import { apiRequest } from '../../utils/ApiRequest';
+import { ApiRoutes } from '../../constants/ApiConstants';
 
 export default function ProgramList() {
   const navigate = useNavigate();
@@ -26,22 +27,36 @@ export default function ProgramList() {
   const [searchText, setSearchText] = React.useState('');
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const filteredCourses = ProgramData.courses.filter((c) =>
-    `${c.course_id} ${c.course_name} ${c.duration}`.toLowerCase().includes(searchText.toLowerCase())
-  );
+
+  const [programs, setPrograms] = React.useState<any[]>([]);
+
+  // Fetch programs from API on component mount
+  React.useEffect(() => {
+    apiRequest({ url: ApiRoutes.GETPROGRAMLIST, method: 'get' })
+      .then((data) => setPrograms(Array.isArray(data) ? data : data.data))
+      .catch(() => setPrograms([]));
+  }, []);
+
+  // Filtered programs based on search text
+  const filteredPrograms = programs.filter((c) => {
+    const combinedText = `${c.programe_code} ${c.programe} ${c.duration}`.toLowerCase();
+    return combinedText.includes(searchText.toLowerCase());
+  });
+
+
 
   // Excel export
   const handleExportExcel = () => {
     exportToExcel(
-      filteredCourses,
+      filteredPrograms,
       [
         { header: 'S.No', key: 'sno' },
-        { header: 'Course ID', key: 'course_id' },
-        { header: 'Course Name', key: 'course_name' },
+        { header: 'Program ID', key: 'programe_code' },
+        { header: 'Program Name', key: 'programe' },
         { header: 'Duration', key: 'duration' },
       ],
-      'Courses',
-      'Courses'
+      'Programs',
+      'Programs'
     );
   };
 
@@ -63,7 +78,7 @@ export default function ProgramList() {
           setSearchText(val);
           setPage(0);
         }}
-        searchPlaceholder="Search courses"
+        searchPlaceholder="Search programs"
         actions={[
           {
             label: 'Export Excel',
@@ -82,14 +97,14 @@ export default function ProgramList() {
 
       <ReusableTable
         columns={[
-          { key: "course_id", label: "Course ID" },
-          { key: "course_name", label: "Course Name" },
+          { key: "programe_code", label: "Program ID" },
+          { key: "programe", label: "Program Name" },
           { key: "duration", label: "Duration" },
         ]}
-        data={filteredCourses}
+        data={filteredPrograms}
         page={page}
         rowsPerPage={rowsPerPage}
-        renderExpanded={(course) => (
+        renderExpanded={(program) => (
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -103,12 +118,22 @@ export default function ProgramList() {
                   "Lab Fee",
                   "Total Fee",
                 ].map((h) => (
+                  // <TableCell
+                  //   key={h}
+                  //   sx={{
+                  //     fontWeight: 600,
+                  //     color: theme.palette.secondary.main,
+                  //   }}
+                  // >
+                  //   {h}
+                  // </TableCell>
                   <TableCell
                     key={h}
                     sx={{
                       fontWeight: 600,
                       color: theme.palette.secondary.main,
-                    }}>
+                    }}
+                  >
                     {h}
                   </TableCell>
                 ))}
@@ -116,25 +141,43 @@ export default function ProgramList() {
             </TableHead>
 
             <TableBody>
-              {Object.entries(course.fees).map(([semester, fee]: any) => (
-                <TableRow key={semester}>
-                  <TableCell>{semester}</TableCell>
-                  <TableCell>{fee.application_fee || "-"}</TableCell>
-                  <TableCell>{fee.admission_fee || "-"}</TableCell>
-                  <TableCell>{fee.tuition_fee || "-"}</TableCell>
-                  <TableCell>{fee.exam_fee || "-"}</TableCell>
-                  <TableCell>{fee.lms_fee || "-"}</TableCell>
-                  <TableCell>{fee.lab_fee || "-"}</TableCell>
-                  <TableCell>{fee.total_fee || "-"}</TableCell>
-                </TableRow>
-              ))}
+              {Array.isArray(program.fee) &&
+                program.fee.map((fee: any, idx: number) => (
+                  <TableRow key={idx}>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.application_fee || "-"}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.admission_fee || "-"}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.tuition_fee || "-"}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.exam_fee || "-"}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.lms_fee || "-"}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 }}>{fee.lab_fee || "-"}</TableCell>
+                    <TableCell 
+                      align="left"
+                      sx={{ py: 0.5, px: 1 ,fontWeight:'bold'}}>{fee.total_fee || "-"}</TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         )}
+
         actions={[
           {
             label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
-              navigate(`/programs/add/${row.course_id}`);
+              navigate(`/programs/add/${row.programe_code}`);
               setAnchorEl(null);
             }, color: "primary",
           },
@@ -146,7 +189,7 @@ export default function ProgramList() {
       <TablePagination
         page={page}
         rowsPerPage={rowsPerPage}
-        totalCount={filteredCourses.length}
+        totalCount={filteredPrograms.length}
         onPageChange={(newPage) => setPage(newPage)}
       />
 

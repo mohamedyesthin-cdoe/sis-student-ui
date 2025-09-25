@@ -7,5 +7,8 @@ export const ApiRoutes = {
   USERS: '/users',
   PRODUCTS: '/products',
   GETSTUDENTSLIST:'/student/list',
-  STUDENTSYNC:'student/sync'
+  STUDENTSYNC:'student/sync',
+  PUSHTODEBL:'push/ugc',
+  GETPROGRAMLIST:'programe/list',
+  PROGRAMADD:'programe/add',
 };

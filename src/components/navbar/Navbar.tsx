@@ -24,6 +24,7 @@ import  CloseIcon from '@mui/icons-material/Close'
 import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
 import { removeSingleValue } from '../../utils/localStorageUtil';
+import userimage from '../../assets/images/man.png'
 
 export default function Navbar({ onHamburgerClick }) {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
@@ -104,12 +105,12 @@ export default function Navbar({ onHamburgerClick }) {
               </Badge>
             </IconButton>
 
-            <IconButton onClick={handleLanguageClick}>
+            {/* <IconButton onClick={handleLanguageClick}>
               <LanguageIcon />
-            </IconButton>
+            </IconButton> */}
 
             <IconButton onClick={handleProfileClick}>
-              <Avatar alt="User Avatar" src="https://via.placeholder.com/40" />
+              <Avatar alt="User Avatar" src={userimage} />
             </IconButton>
           </Box>
 
@@ -212,7 +213,7 @@ export default function Navbar({ onHamburgerClick }) {
           >
             <Box className="bg-white flex flex-col p-4 space-y-4">
               <Box className="flex items-center space-x-3">
-                <Avatar src="https://via.placeholder.com/53" className="w-12 h-12" />
+                <Avatar src={userimage} className="w-12 h-12" />
                 <Box>
                   <Typography className="font-bold text-lg">Michel John</Typography>
                   <Typography className="text-gray-500 text-sm">examplemail@mail.com</Typography>

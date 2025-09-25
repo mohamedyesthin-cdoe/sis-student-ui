@@ -10,6 +10,7 @@ import SyncIcon from '@mui/icons-material/Sync';
 import TableToolbar from '../../components/tabletoolbar/tableToolbar';
 import TablePagination from '../../components/tablepagination/tablepagination';
 import { exportToExcel } from '../../constants/excelExport';
+import { CloudUploadIcon } from 'lucide-react';
 
 export default function ModernStudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -57,8 +58,8 @@ export default function ModernStudentTable() {
     try {
       const data = await apiRequest({ url: ApiRoutes.STUDENTSYNC, method: 'post' });
       // update students with response data if API returns the list
-      setStudents(Array.isArray(data) ? data : data.data);
-      setPage(0);
+      // setStudents(Array.isArray(data) ? data : data.data);
+      // setPage(0);
     } catch (error) {
       console.error('Sync failed', error);
     }
@@ -96,8 +97,23 @@ export default function ModernStudentTable() {
               { value: 'Male', label: 'Male' },
               { value: 'Female', label: 'Female' },
               { value: 'Other', label: 'Other' },
-            ],
+            ]
           },
+          // {
+          //   key: 'pushed',
+          //   label: 'Pushed Status',
+          //   value: pushedFilter,
+          //   onChange: (val) => {
+          //     setPushedFilter(val);
+          //     setPage(0);
+          //   },
+          //   options: [
+          //     { value: '', label: 'All' },
+          //     { value: 'Pushed', label: 'Pushed' },
+          //     { value: 'NotPushed', label: 'Not Pushed' },
+          //   ],
+          // },
+
         ]}
         actions={[
           {
@@ -106,6 +122,22 @@ export default function ModernStudentTable() {
             variant: 'outlined',
             startIcon: <SyncIcon />,
             onClick: handleSync,
+          },
+          {
+            label: 'Push to Deb',
+            color: 'success',
+            variant: 'outlined',
+            startIcon: <CloudUploadIcon />,
+            onClick: async () => {
+              try {
+                const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                // update students with response data if API returns the list
+                // setStudents(Array.isArray(data) ? data : data.data);
+                // setPage(0);
+              } catch (error) {
+                console.error('Sync failed', error);
+              }
+            },
           },
           {
             label: 'Export Excel',
@@ -130,7 +162,7 @@ export default function ModernStudentTable() {
         page={page}
         rowsPerPage={rowsPerPage}
         actions={[
-          { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id),color:'secondary' },
+          { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id), color: 'secondary' },
         ]}
       />
 

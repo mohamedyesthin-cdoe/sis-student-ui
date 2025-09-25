@@ -1,9 +1,10 @@
-// AlertContext.tsx
 import { createContext, useState, useContext, type ReactNode } from 'react';
-import { Box, Button, Typography, Fade, Backdrop, Modal } from '@mui/material';
+import { Box, Button, Typography, Fade, Backdrop, Modal, Snackbar, Alert as MuiAlert } from '@mui/material';
+
+type AlertType = 'success' | 'error' | 'info';
 
 interface AlertContextProps {
-  showAlert: (message: string) => void;
+  showAlert: (message: string, type?: AlertType) => void;
   showConfirm: (message: string, onConfirm: () => void, onCancel?: () => void) => void;
 }
 
@@ -18,17 +19,21 @@ export const useAlert = () => {
 export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState<AlertType>('info');
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmMessage, setConfirmMessage] = useState('');
   const [onConfirmCallback, setOnConfirmCallback] = useState<() => void>(() => {});
   const [onCancelCallback, setOnCancelCallback] = useState<() => void>(() => {});
 
-  const showAlert = (msg: string) => {
+  // ✅ Alert
+  const showAlert = (msg: string, type: AlertType = 'info') => {
     setAlertMessage(msg);
+    setAlertType(type);
     setAlertOpen(true);
   };
 
+  // ✅ Confirm
   const showConfirm = (msg: string, onConfirm: () => void, onCancel?: () => void) => {
     setConfirmMessage(msg);
     setOnConfirmCallback(() => onConfirm);
@@ -50,41 +55,24 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
     <AlertContext.Provider value={{ showAlert, showConfirm }}>
       {children}
 
-      {/* Simple alert box */}
-      <Modal
+      {/* ✅ Snackbar for alerts (top-right corner) */}
+      <Snackbar
         open={alertOpen}
+        autoHideDuration={4000}
         onClose={() => setAlertOpen(false)}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{ backdrop: { timeout: 300 } }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Fade in={alertOpen}>
-          <Box
-            sx={{
-              position: 'absolute' as const,
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              bgcolor: '#fefefe',
-              borderRadius: 3,
-              boxShadow: 24,
-              p: 4,
-              minWidth: 300,
-              textAlign: 'center',
-            }}
-          >
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Alert
-            </Typography>
-            <Typography sx={{ mb: 3 }}>{alertMessage}</Typography>
-            <Button variant="contained" color="primary" onClick={() => setAlertOpen(false)}>
-              OK
-            </Button>
-          </Box>
-        </Fade>
-      </Modal>
+        <MuiAlert
+          onClose={() => setAlertOpen(false)}
+          severity={alertType}
+          sx={{ width: '100%' }}
+          variant="filled"
+        >
+          {alertMessage}
+        </MuiAlert>
+      </Snackbar>
 
-      {/* Confirmation modal */}
+      {/* ✅ Confirm modal (centered) */}
       <Modal
         open={confirmOpen}
         onClose={handleCancel}
@@ -115,7 +103,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
               <Button variant="outlined" color="secondary" onClick={handleCancel}>
                 No
               </Button>
-              <Button variant="contained" color='secondary' onClick={handleConfirm}>
+              <Button variant="contained" color="secondary" onClick={handleConfirm}>
                 Yes
               </Button>
             </Box>
