@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, type ReactNode } from 'react';
 import { Box, Button, Typography, Fade, Backdrop, Modal, Snackbar, Alert as MuiAlert } from '@mui/material';
+import theme from '../styles/theme';
 
 type AlertType = 'success' | 'error' | 'info';
 
@@ -23,8 +24,8 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmMessage, setConfirmMessage] = useState('');
-  const [onConfirmCallback, setOnConfirmCallback] = useState<() => void>(() => {});
-  const [onCancelCallback, setOnCancelCallback] = useState<() => void>(() => {});
+  const [onConfirmCallback, setOnConfirmCallback] = useState<() => void>(() => { });
+  const [onCancelCallback, setOnCancelCallback] = useState<() => void>(() => { });
 
   // ✅ Alert
   const showAlert = (msg: string, type: AlertType = 'info') => {
@@ -37,7 +38,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const showConfirm = (msg: string, onConfirm: () => void, onCancel?: () => void) => {
     setConfirmMessage(msg);
     setOnConfirmCallback(() => onConfirm);
-    setOnCancelCallback(() => onCancel || (() => {}));
+    setOnCancelCallback(() => onCancel || (() => { }));
     setConfirmOpen(true);
   };
 
@@ -100,12 +101,36 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
             </Typography>
             <Typography sx={{ mb: 3 }}>{confirmMessage}</Typography>
             <Box display="flex" justifyContent="center" gap={2}>
-              <Button variant="outlined" color="secondary" onClick={handleCancel}>
+              <Button
+                variant="outlined"
+                onClick={handleCancel}
+                sx={{
+                  color: theme.palette.error.main,
+                  borderColor: theme.palette.error.main,
+                  "&:hover": {
+                    backgroundColor: theme.palette.error.main,
+                    color: "#fff",
+                    borderColor: theme.palette.error.main,
+                  },
+                }}
+              >
                 No
               </Button>
-              <Button variant="contained" color="secondary" onClick={handleConfirm}>
+
+              <Button
+                variant="contained"
+                onClick={handleConfirm}
+                sx={{
+                  backgroundColor: theme.palette.secondary.main,
+                  color: "#fff",
+                  "&:hover": {
+                    backgroundColor: theme.palette.secondary.main,
+                  },
+                }}
+              >
                 Yes
               </Button>
+
             </Box>
           </Box>
         </Fade>

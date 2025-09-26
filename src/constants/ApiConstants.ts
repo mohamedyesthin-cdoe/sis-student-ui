@@ -11,4 +11,6 @@ export const ApiRoutes = {
   PUSHTODEBL:'push/ugc',
   GETPROGRAMLIST:'programe/list',
   PROGRAMADD:'programe/add',
+  PROGRAMFETCH:'programe',
+  PROGRAMUPDATE:'programe/update',
 };

@@ -11,6 +11,9 @@ import TableToolbar from '../../components/tabletoolbar/tableToolbar';
 import TablePagination from '../../components/tablepagination/tablepagination';
 import { exportToExcel } from '../../constants/excelExport';
 import { CloudUploadIcon } from 'lucide-react';
+import { Box, Typography } from '@mui/material';
+import SearchOffIcon from "@mui/icons-material/SearchOff";
+
 
 export default function ModernStudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -20,12 +23,22 @@ export default function ModernStudentTable() {
   const [genderFilter, setGenderFilter] = React.useState('');
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' })
-      .then((data) => setStudents(Array.isArray(data) ? data : data.data))
-      .catch(() => setStudents([]));
-  }, []);
 
+  // Add this helper function
+  const fetchStudents = async () => {
+    try {
+      const data = await apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' });
+      setStudents(Array.isArray(data) ? data : data.data);
+    } catch (err) {
+      console.error('Failed to fetch students:', err);
+      setStudents([]);
+    }
+  };
+
+  // Replace your useEffect with fetchStudents call
+  React.useEffect(() => {
+    fetchStudents();
+  }, []);
 
   const handleView = (id: any) => navigate(`/students/detail/${id}`);
 
@@ -53,13 +66,13 @@ export default function ModernStudentTable() {
     );
   };
 
-  // Sync handler
+  // Update handleSync
   const handleSync = async () => {
     try {
-      const data = await apiRequest({ url: ApiRoutes.STUDENTSYNC, method: 'post' });
-      // update students with response data if API returns the list
-      // setStudents(Array.isArray(data) ? data : data.data);
-      // setPage(0);
+      await apiRequest({ url: ApiRoutes.STUDENTSYNC, method: 'post' });
+      // After successful sync, fetch updated student list
+      await fetchStudents();
+      setPage(0);
     } catch (error) {
       console.error('Sync failed', error);
     }
@@ -149,22 +162,41 @@ export default function ModernStudentTable() {
       />
 
       {/* Table */}
-      <ReusableTable
-        columns={[
-          { key: "registration_no", label: "Registration No" },
-          { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
-          { key: "email", label: "Email" },
-          { key: "mobile_number", label: "Mobile" },
-          { key: "gender", label: "Gender" },
-          { key: "date_of_birth", label: "DOB" },
-        ]}
-        data={filteredStudents}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        actions={[
-          { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id), color: 'secondary' },
-        ]}
-      />
+      {filteredStudents.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 8,
+            color: "text.secondary",
+          }}
+        >
+          <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
+          <Typography variant="h6">No records found</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Please check your search or filters.
+          </Typography>
+        </Box>
+      ) : (
+        <ReusableTable
+          columns={[
+            { key: "registration_no", label: "Registration No" },
+            { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
+            { key: "email", label: "Email" },
+            { key: "mobile_number", label: "Mobile" },
+            { key: "gender", label: "Gender" },
+            { key: "date_of_birth", label: "DOB" },
+          ]}
+          data={filteredStudents}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          actions={[
+            { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id), color: 'secondary' },
+          ]}
+        />
+      )}
 
       {/* Pagination */}
       <TablePagination

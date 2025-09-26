@@ -5,6 +5,8 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Typography,
+  Box
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -18,6 +20,8 @@ import TablePagination from '../../components/tablepagination/tablepagination';
 import { exportToExcel } from '../../constants/excelExport';
 import { apiRequest } from '../../utils/ApiRequest';
 import { ApiRoutes } from '../../constants/ApiConstants';
+import SearchOffIcon from "@mui/icons-material/SearchOff";
+
 
 export default function ProgramList() {
   const navigate = useNavigate();
@@ -94,96 +98,114 @@ export default function ProgramList() {
         ]}
       />
 
+      {filteredPrograms.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            py: 8,
+            color: "text.secondary",
+          }}
+        >
+          <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
+          <Typography variant="h6">No records found</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Please check your search or filters.
+          </Typography>
+        </Box>
+      ) : (
+        <ReusableTable
+          columns={[
+            { key: "programe_code", label: "Program ID" },
+            { key: "programe", label: "Program Name" },
+            { key: "duration", label: "Duration" },
+          ]}
+          data={filteredPrograms}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          renderExpanded={(program) => (
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  {[
+                    "Semester",
+                    "Application Fee",
+                    "Admission Fee",
+                    "Tuition Fee",
+                    "Exam Fee",
+                    "LMS Fee",
+                    "Lab Fee",
+                    "Total Fee",
+                  ].map((h) => (
+                    // <TableCell
+                    //   key={h}
+                    //   sx={{
+                    //     fontWeight: 600,
+                    //     color: theme.palette.secondary.main,
+                    //   }}
+                    // >
+                    //   {h}
+                    // </TableCell>
+                    <TableCell
+                      key={h}
+                      sx={{
+                        fontWeight: 600,
+                        color: theme.palette.secondary.main,
+                      }}
+                    >
+                      {h}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
 
-      <ReusableTable
-        columns={[
-          { key: "programe_code", label: "Program ID" },
-          { key: "programe", label: "Program Name" },
-          { key: "duration", label: "Duration" },
-        ]}
-        data={filteredPrograms}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        renderExpanded={(program) => (
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                {[
-                  "Semester",
-                  "Application Fee",
-                  "Admission Fee",
-                  "Tuition Fee",
-                  "Exam Fee",
-                  "LMS Fee",
-                  "Lab Fee",
-                  "Total Fee",
-                ].map((h) => (
-                  // <TableCell
-                  //   key={h}
-                  //   sx={{
-                  //     fontWeight: 600,
-                  //     color: theme.palette.secondary.main,
-                  //   }}
-                  // >
-                  //   {h}
-                  // </TableCell>
-                  <TableCell
-                    key={h}
-                    sx={{
-                      fontWeight: 600,
-                      color: theme.palette.secondary.main,
-                    }}
-                  >
-                    {h}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
+              <TableBody>
+                {Array.isArray(program.fee) &&
+                  program.fee.map((fee: any, idx: number) => (
+                    <TableRow key={idx}>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.application_fee || "-"}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.admission_fee || "-"}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.tuition_fee || "-"}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.exam_fee || "-"}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.lms_fee || "-"}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1 }}>{fee.lab_fee || "-"}</TableCell>
+                      <TableCell
+                        align="left"
+                        sx={{ py: 0.5, px: 1, fontWeight: 'bold' }}>{fee.total_fee || "-"}</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          )}
 
-            <TableBody>
-              {Array.isArray(program.fee) &&
-                program.fee.map((fee: any, idx: number) => (
-                  <TableRow key={idx}>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.application_fee || "-"}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.admission_fee || "-"}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.tuition_fee || "-"}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.exam_fee || "-"}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.lms_fee || "-"}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 }}>{fee.lab_fee || "-"}</TableCell>
-                    <TableCell 
-                      align="left"
-                      sx={{ py: 0.5, px: 1 ,fontWeight:'bold'}}>{fee.total_fee || "-"}</TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        )}
-
-        actions={[
-          {
-            label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
-              navigate(`/programs/add/${row.programe_code}`);
-              setAnchorEl(null);
-            }, color: "primary",
-          },
-          { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
-        ]}
-      />
+          actions={[
+            {
+              label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
+                navigate(`/programs/add/${row.id}`);
+                setAnchorEl(null);
+              }, color: "primary",
+            },
+            { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
+          ]}
+        />
+      )}
 
       {/* Pagination */}
       <TablePagination
