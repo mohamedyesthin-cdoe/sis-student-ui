@@ -6,23 +6,23 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def generate_series_number(last_number: str) -> str:
-    """Generate a new series number based on the last number."""
-    if last_number is None:
+def generate_series_number(last_reg_no: str, program_code: str, year: str) -> str:
+    """Generate a new series number starting from 001 each year."""
+    if last_reg_no is None or not last_reg_no.startswith(f"{program_code}{year}"):
+        # New year or no records → restart series
         return "001"
     else:
-        next_number = int(last_number[7:]) + 1
-        return f"{next_number:03d}"
-    
+        # Take the last 3 digits after program_code+year
+        next_number = int(last_reg_no[len(program_code) + len(year):]) + 1
+        return f"{next_number:03d}"  # keep 3 digits
+
 def generate_registration_number(program_code: str, last_reg_no: str) -> str:
-    """Generate a registration number based on program code, year, batch, and series number."""
-    year = str(datetime.now().year)[-2:]
-    month = datetime.now().month
-    #batch = "01" if month <= 6 else "02"
+    """Generate registration number as program_code + year + series(3 digits)."""
+    year = str(datetime.now().year)[-2:]  # last two digits of year
     try:
-        series_number = generate_series_number(last_reg_no)
+        series_number = generate_series_number(last_reg_no, program_code, year)
     except Exception as e:
-        logger.error(f"Error syncing students: {str(e)}")
+        logging.error(f"Error syncing students: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")
     
     registration_no = f"{program_code}{year}{series_number}"
