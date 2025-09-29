@@ -13,6 +13,7 @@ import { exportToExcel } from '../../constants/excelExport';
 import { CloudUploadIcon } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
+import { useAlert } from '../../context/AlertContext';
 
 
 export default function ModernStudentTable() {
@@ -22,6 +23,7 @@ export default function ModernStudentTable() {
   const [searchText, setSearchText] = React.useState('');
   const [genderFilter, setGenderFilter] = React.useState('');
   const navigate = useNavigate();
+  const { showAlert } = useAlert();
 
 
   // Add this helper function
@@ -29,8 +31,12 @@ export default function ModernStudentTable() {
     try {
       const data = await apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' });
       setStudents(Array.isArray(data) ? data : data.data);
-    } catch (err) {
+    } catch (error: any) {
       console.error('Failed to fetch students:', err);
+      showAlert(
+        error.response?.data?.message || "Failed to fetch students.",
+        "error"
+      );
       setStudents([]);
     }
   };
@@ -73,8 +79,11 @@ export default function ModernStudentTable() {
       // After successful sync, fetch updated student list
       await fetchStudents();
       setPage(0);
-    } catch (error) {
-      console.error('Sync failed', error);
+    } catch (error: any) {
+      showAlert(
+        error.response?.data?.message || "Something went wrong. Please try again.",
+        "error"
+      );
     }
   };
 
@@ -147,8 +156,11 @@ export default function ModernStudentTable() {
                 // update students with response data if API returns the list
                 // setStudents(Array.isArray(data) ? data : data.data);
                 // setPage(0);
-              } catch (error) {
-                console.error('Sync failed', error);
+              } catch (error:any) {
+                showAlert(
+                  error?.detail || "Sync failed.",
+                  "error"
+                );
               }
             },
           },
