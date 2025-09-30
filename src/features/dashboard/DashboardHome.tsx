@@ -1,14 +1,20 @@
 import React from "react";
-import { Box, Chip, Container, Divider, Grid, Typography } from "@mui/material";
+import { Box, Chip, Divider, Grid, Typography } from "@mui/material";
 import theme from "../../styles/theme";
 import LoopIcon from '@mui/icons-material/Loop';
 import userBg from '../../assets/images/bgpanel.jpg';
+import dayjs, { Dayjs } from 'dayjs';
 import CardComponent from "../../components/card/Card";
+import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { cardData } from "./cardData";
-
+import AddIcon from '@mui/icons-material/Add';
 
 
 const Dashboard: React.FC = () => {
+  const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
   return (
     <Box>
       <CardComponent
@@ -83,18 +89,58 @@ const Dashboard: React.FC = () => {
         ))}
       </Grid>
 
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={4}>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={1}
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
-        
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={1}
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
-
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={1}
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={['DateCalendar']}>
+              <DemoItem
+                sx={{
+                  padding: 0, // remove DemoItem padding
+                  '& .MuiTypography-root': { margin: 0, lineHeight: 1 }, // remove label spacing
+                }}
+                label={
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+                      Schedules
+                    </Typography>
+                    <Box display="flex" alignItems="center" sx={{ cursor: 'pointer', color: '#105c8e' }}>
+                      <AddIcon fontSize="small" />
+                      <Typography ml={0.5} fontWeight="600" variant="body2">Add New</Typography>
+                    </Box>
+                  </Box>
+                }
+              >
+                <Divider sx={{ my: 0.5 }} />
+                <DateCalendar
+                  value={value}
+                  onChange={(newValue: any) => setValue(newValue)}
+                />
+              </DemoItem>
+            </DemoContainer>
+          </LocalizationProvider>
+        </Grid>
+      </Grid>
 
+
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
+            <Box sx={{borderLeft:5,p:3}}>
+
+            </Box>
         </Grid>
       </Grid>
     </Box>

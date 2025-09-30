@@ -2,22 +2,11 @@ import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#a76b48ff', // <-- New primary color
-    },
-    secondary: {
-      main: '#105c8e',
-      dark: '#212C4B',
-    },
-    error: {
-      main: '#BF2728',
-    },
-    success: {
-      main: '#388e3c',
-    },
-    background: {
-      default: '#f5f5f5',
-    },
+    primary: { main: '#a76b48ff' },
+    secondary: { main: '#105c8e', dark: '#212C4B' },
+    error: { main: '#BF2728' },
+    success: { main: '#388e3c' },
+    background: { default: '#f5f5f5' },
     text: {
       primary: '#333333',
       secondary: '#555555',
@@ -31,6 +20,32 @@ const theme = createTheme({
   typography: {
     fontFamily: `'Inter', 'Poppins', 'Arial', sans-serif`,
   },
+components: {
+  MuiDateCalendar: {
+    styleOverrides: {
+      root: {
+        width: '100%',     // full width of the parent
+        height: 300,       // your fixed height
+        '& .MuiCalendarPicker-root': { padding: 0, margin: 0 },
+        '& .MuiDayCalendar-root': { margin: 0 },
+        '& .MuiDayCalendar-header': { width: '100%', padding: '0 8px' }, // 👈 make header full width
+        '& .MuiCalendarPicker-header': { minHeight: 30, marginBottom: 2 },
+        '& .MuiDayCalendar-weekContainer': { gap:11, marginBottom: 0 },
+        '& .MuiPickersDay-root': { minHeight: 24, minWidth: 24, fontSize: '0.7rem', margin: 0 },
+        '& .MuiDayCalendar-weekDayLabel': { minHeight: 20, fontSize: '0.7rem', lineHeight: 1, marginBottom: 0 },
+        '& .MuiPickersSlideTransition-root': { paddingBottom: 0 },
+        '& .MuiCalendarPicker-root > div:last-of-type': { marginBottom: 0 },
+         '& .MuiPickersCalendarHeader-root': {
+          paddingLeft: 18, // 👈 apply left padding
+          paddingRight: 0, // optional: remove right padding if needed
+          marginTop:8
+        },
+      },
+    },
+  },
+}
+
+
 });
 
 export default theme;
