@@ -90,7 +90,7 @@
 import { Box, Typography } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { routesConfig } from "./routeconfig";
+import { routesConfig } from "./Routeconfig";
 import theme from "../styles/theme";
 
 // Generate route map

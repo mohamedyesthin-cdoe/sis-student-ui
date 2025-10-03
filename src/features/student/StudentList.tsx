@@ -15,7 +15,6 @@ import { Box, Typography } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useAlert } from '../../context/AlertContext';
 
-
 export default function ModernStudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
   const [page, setPage] = React.useState(0);
@@ -32,7 +31,6 @@ export default function ModernStudentTable() {
       const data = await apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' });
       setStudents(Array.isArray(data) ? data : data.data);
     } catch (error: any) {
-      console.error('Failed to fetch students:', err);
       showAlert(
         error.response?.data?.message || "Failed to fetch students.",
         "error"
@@ -153,10 +151,12 @@ export default function ModernStudentTable() {
             onClick: async () => {
               try {
                 const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                console.log(data);
+
                 // update students with response data if API returns the list
                 // setStudents(Array.isArray(data) ? data : data.data);
                 // setPage(0);
-              } catch (error:any) {
+              } catch (error: any) {
                 showAlert(
                   error?.detail || "Sync failed.",
                   "error"
@@ -211,11 +211,16 @@ export default function ModernStudentTable() {
       )}
 
       {/* Pagination */}
+
       <TablePagination
         page={page}
         rowsPerPage={rowsPerPage}
         totalCount={filteredStudents.length}
         onPageChange={(newPage) => setPage(newPage)}
+        onRowsPerPageChange={(newRowsPerPage) => {
+          setRowsPerPage(newRowsPerPage);
+          setPage(0);
+        }}
       />
 
     </CardComponent>

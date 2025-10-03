@@ -6,7 +6,7 @@ import { setUser } from "../../../redux/slices/AuthSlice";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { encryptPassword } from "../../../utils/encryption";
-import { Button, TextField, Typography, Checkbox, FormControlLabel, Link, Paper, Box, colors, useTheme } from '@mui/material'
+import { Button, TextField, Typography, Checkbox, FormControlLabel, Link, Paper, Box, useTheme } from '@mui/material'
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";

@@ -19,30 +19,59 @@ import { ApiRoutes } from "../../constants/ApiConstants";
 import { apiRequest } from "../../utils/ApiRequest";
 import theme from "../../styles/theme";
 
+
 // ✅ Validation schema
-const ProgramSchema = Yup.object().shape({
+const ProgramSchema: Yup.ObjectSchema<ProgramFormValues> = Yup.object().shape({
   programId: Yup.string().required("Program ID is required"),
   programName: Yup.string().required("Program Name is required"),
   duration: Yup.string().required("Duration is required"),
   faculty: Yup.string().required("Faculty is required"),
   category: Yup.string().required("Category is required"),
+  semesters: Yup.array()
+    .of(
+      Yup.object().shape({
+        applicationFee: Yup.number().required(),
+        admissionFee: Yup.number().required(),
+        tuitionFee: Yup.number().required(),
+        examFee: Yup.number().required(),
+        lmsFee: Yup.number().required(),
+        labFee: Yup.number().required(),
+        totalFee: Yup.number().required(),
+      })
+    )
+    .required(),
 });
 
+
 type Semester = {
-  applicationFee: string | number;
-  admissionFee: string | number;
-  tuitionFee: string | number;
-  examFee: string | number;
-  lmsFee: string | number;
-  labFee: string | number;
+  applicationFee: number;
+  admissionFee: number;
+  tuitionFee: number;
+  examFee: number;
+  lmsFee: number;
+  labFee: number;
   totalFee: number;
 };
+
+type ProgramFormValues = {
+  programId: string;
+  programName: string;
+  duration: string;
+  faculty: string;
+  category: string;
+  semesters: Semester[];
+};
+
 
 // ✅ Semester Form Group Component
 type SemesterProps = {
   semesterIndex: number;
   control: any;
-  handleFeeChange: (index: number, field: keyof Semester, value: string | number) => void;
+  handleFeeChange: (
+    index: number,
+    field: keyof Semester,
+    value: string | number
+  ) => void;
   errors: any;
 };
 
@@ -65,7 +94,7 @@ const SemesterFormGroup: React.FC<SemesterProps> = ({
   return (
     <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
       {fields.map(({ label, field, readOnly }) => (
-        <Grid key={field} xs={12} sm={6} md={4}>
+        <Grid container spacing={2}>
           <Controller
             name={`semesters.${semesterIndex}.${field}`}
             control={control}
@@ -83,9 +112,12 @@ const SemesterFormGroup: React.FC<SemesterProps> = ({
                   error={!!errors.semesters?.[semesterIndex]?.[field]}
                   helperText={errors.semesters?.[semesterIndex]?.[field]?.message as string}
                   onChange={(e) =>
-                    !readOnly && handleFeeChange(semesterIndex, field, e.target.value)
+                    !readOnly &&
+                    handleFeeChange(semesterIndex, field, Number(e.target.value) || 0)
                   }
+
                 />
+
               );
             }}
           />
@@ -100,12 +132,12 @@ const ProgramForm = () => {
   const { showConfirm, showAlert } = useAlert();
 
   const initialSemesterData: Semester[] = Array.from({ length: 6 }, () => ({
-    applicationFee: "",
-    admissionFee: "",
-    tuitionFee: "",
-    examFee: "",
-    lmsFee: "",
-    labFee: "",
+    applicationFee: 0,
+    admissionFee: 0,
+    tuitionFee: 0,
+    examFee: 0,
+    lmsFee: 0,
+    labFee: 0,
     totalFee: 0,
   }));
 
@@ -116,7 +148,7 @@ const ProgramForm = () => {
     getValues,
     setValue,
     formState: { errors, isDirty },
-  } = useForm({
+  } = useForm<ProgramFormValues>({
     resolver: yupResolver(ProgramSchema),
     defaultValues: {
       programId: "",
@@ -124,9 +156,11 @@ const ProgramForm = () => {
       duration: "3",
       faculty: "",
       category: "UG",
-      semesters: initialSemesterData.map(s => ({ ...s })), // fresh objects
+      semesters: initialSemesterData, // all numbers
     },
   });
+
+
 
   // ✅ Prefill data if editing
   useEffect(() => {
@@ -142,14 +176,15 @@ const ProgramForm = () => {
         const data = res.data || res;
 
         const semestersData: Semester[] = (data.fee || []).map((fee: any) => ({
-          applicationFee: fee.application_fee || "",
-          admissionFee: fee.admission_fee || "",
-          tuitionFee: fee.tuition_fee || "",
-          examFee: fee.exam_fee || "",
-          lmsFee: fee.lms_fee || "",
-          labFee: fee.lab_fee || "",
+          applicationFee: Number(fee.application_fee) || 0,
+          admissionFee: Number(fee.admission_fee) || 0,
+          tuitionFee: Number(fee.tuition_fee) || 0,
+          examFee: Number(fee.exam_fee) || 0,
+          lmsFee: Number(fee.lms_fee) || 0,
+          labFee: Number(fee.lab_fee) || 0,
           totalFee: Number(fee.total_fee) || 0,
         }));
+
 
         reset({
           programId: data.programe_code || id,
@@ -176,22 +211,25 @@ const ProgramForm = () => {
     field: keyof Semester,
     value: string | number
   ) => {
-    const semestersCurrent: Semester[] = JSON.parse(
-      JSON.stringify(getValues("semesters"))
-    ); // deep clone
+    const numericValue = typeof value === "string" ? Number(value) || 0 : value;
 
-    semestersCurrent[semesterIndex][field] = value;
+    const semestersCurrent = [...getValues("semesters")];
+    semestersCurrent[semesterIndex] = {
+      ...semestersCurrent[semesterIndex],
+      [field]: numericValue,
+    };
 
     const s = semestersCurrent[semesterIndex];
     s.totalFee =
-      Number(s.admissionFee || 0) +
-      Number(s.tuitionFee || 0) +
-      Number(s.examFee || 0) +
-      Number(s.lmsFee || 0) +
-      Number(s.labFee || 0);
+      (s.admissionFee || 0) +
+      (s.tuitionFee || 0) +
+      (s.examFee || 0) +
+      (s.lmsFee || 0) +
+      (s.labFee || 0);
 
     setValue("semesters", semestersCurrent, { shouldDirty: true });
   };
+
 
   const handleBack = () => {
     if (isDirty) {
@@ -260,7 +298,7 @@ const ProgramForm = () => {
         <Subheader fieldName="Program Details" sx={{ mb: 2 }} />
         <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           {/* Program ID */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid container spacing={2}>
             <Controller
               name="programId"
               control={control}
@@ -279,7 +317,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Program Name */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid container spacing={2}>
             <Controller
               name="programName"
               control={control}
@@ -297,7 +335,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Duration (dropdown) */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid container spacing={2}>
             <Controller
               name="duration"
               control={control}
@@ -324,7 +362,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Faculty */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid container spacing={2}>
             <Controller
               name="faculty"
               control={control}
@@ -342,7 +380,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Category (dropdown) */}
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid container spacing={2}>
             <Controller
               name="category"
               control={control}
@@ -421,6 +459,7 @@ const ProgramForm = () => {
         >
           Reset
         </Button>
+
         <Button variant="contained" color="secondary" type="submit">
           {id ? "Update" : "Submit"}
         </Button>

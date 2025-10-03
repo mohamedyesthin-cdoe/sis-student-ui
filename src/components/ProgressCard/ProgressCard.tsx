@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, CircularProgress } from "@mui/material";
+import {  CardContent, Typography, CircularProgress } from "@mui/material";
 import CardComponent from "../card/Card";
 
 const ProgressCard: React.FC = () => {

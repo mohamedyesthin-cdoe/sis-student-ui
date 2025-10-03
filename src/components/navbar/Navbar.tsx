@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -15,26 +15,26 @@ import {
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
-  Language as LanguageIcon,
   Search as SearchIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material';
-import  CloseIcon from '@mui/icons-material/Close'
+import CloseIcon from '@mui/icons-material/Close'
 
 import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
 import { removeSingleValue } from '../../utils/localStorageUtil';
 import userimage from '../../assets/images/man.png'
-
-export default function Navbar({ onHamburgerClick }) {
+type NavbarProps = {
+  onHamburgerClick?: () => void; // optional callback
+};
+export default function Navbar({ onHamburgerClick }: NavbarProps) {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const [notificationsDrawerOpen, setNotificationsDrawerOpen] = useState(false);
 
-  const handleNotificationClick = (event) => setNotificationAnchorEl(event.currentTarget);
+  const handleNotificationClick = (event: any) => setNotificationAnchorEl(event.currentTarget);
   const handleNotificationClose = () => setNotificationAnchorEl(null);
 
-  const handleLanguageClick = (event) => setLanguageAnchorEl(event.currentTarget);
   const handleLanguageClose = () => setLanguageAnchorEl(null);
 
   const handleNotificationsDrawerOpen = () => setNotificationsDrawerOpen(true);
@@ -52,14 +52,14 @@ export default function Navbar({ onHamburgerClick }) {
 
   const [selectedLanguage, setSelectedLanguage] = useState('English');
 
-  const handleSelectLanguage = (label) => {
+  const handleSelectLanguage = (label: any) => {
     setSelectedLanguage(label);
   };
 
 
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
 
-  const handleProfileClick = (event) => setProfileAnchorEl(event.currentTarget);
+  const handleProfileClick = (event: any) => setProfileAnchorEl(event.currentTarget);
   const handleProfileClose = () => setProfileAnchorEl(null);
 
   const profilePopoverOpen = Boolean(profileAnchorEl);
@@ -132,7 +132,7 @@ export default function Navbar({ onHamburgerClick }) {
                 justifyContent="space-between"
                 pl={2}
                 py={1}
-                bgcolor="secondary.main" 
+                bgcolor="secondary.main"
                 color="white"
               >
                 <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>

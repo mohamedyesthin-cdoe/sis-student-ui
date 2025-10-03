@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, Checkbox } from "@mui/material";
+import {CardContent, Typography, Checkbox } from "@mui/material";
 import CardComponent from "../card/Card";
 
 interface Assignment {

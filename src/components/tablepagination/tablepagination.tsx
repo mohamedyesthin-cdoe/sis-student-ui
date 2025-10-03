@@ -6,11 +6,18 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import theme from '../../styles/theme';
 
+// interface TablePaginationProps {
+//   page: number;
+//   rowsPerPage: number;
+//   totalCount: number;
+//   onPageChange: (page: number) => void;
+// }
 interface TablePaginationProps {
   page: number;
   rowsPerPage: number;
   totalCount: number;
-  onPageChange: (page: number) => void;
+  onPageChange: (newPage: number) => void;
+  onRowsPerPageChange?: (newRowsPerPage: number) => void; // <--- add this
 }
 
 const TablePagination: React.FC<TablePaginationProps> = ({
@@ -32,7 +39,7 @@ const TablePagination: React.FC<TablePaginationProps> = ({
       }}
     >
       {/* Showing Info */}
-      <Typography sx={{ fontSize: '0.875rem', color: theme.palette.secondary.main,fontWeight:'bold' }}>
+      <Typography sx={{ fontSize: '0.875rem', color: theme.palette.secondary.main, fontWeight: 'bold' }}>
         Showing {page * rowsPerPage + 1} to{' '}
         {Math.min((page + 1) * rowsPerPage, totalCount)} of {totalCount} entries
       </Typography>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   List,
   ListItem,
@@ -18,6 +18,13 @@ import { ICON_MAP, MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 
 
+interface SidebarProps {
+  isDrawer?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+  isSidebarVisible?: boolean;
+  setSidebarVisible?: (visible: boolean) => void;
+}
 
 export default function Sidebar({
   isDrawer = false,
@@ -25,15 +32,15 @@ export default function Sidebar({
   onClose,
   isSidebarVisible = true,
   setSidebarVisible,
-}) {
-  const [openItems, setOpenItems] = useState({});
+}: SidebarProps) {
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
   const [selectedItem, setSelectedItem] = useState('Dashboard');
   const [selectedParent, setSelectedParent] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme()
 
-   useEffect(() => {
+  useEffect(() => {
     const path = location.pathname;
 
     if (path.startsWith('/dashboard')) {
@@ -71,7 +78,7 @@ export default function Sidebar({
     } else if (hasChildren) {
       // If in compact mode, expand the sidebar when clicking parent item
       if (!isSidebarVisible) {
-        setSidebarVisible(true);
+        setSidebarVisible?.(true);
       }
 
       setOpenItems((prev) => ({

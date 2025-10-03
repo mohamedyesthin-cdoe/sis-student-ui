@@ -5,7 +5,7 @@ import ProtectedLayout from "../layouts/ProtectedLayout";
 import PublicRoute from "./PublicRoute";
 import { getValue } from "../utils/localStorageUtil";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { routesConfig } from "../constants/routeconfig";
+import { routesConfig } from "../constants/Routeconfig";
 
 const renderRoutes = (routes: any[]) =>
   routes.map(({ path, element, children }) =>

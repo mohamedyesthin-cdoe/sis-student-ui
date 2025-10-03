@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '../components/sidebar/SideBar';
 import Navbar from '../components/navbar/Navbar';
 import { Outlet } from 'react-router-dom';
@@ -50,6 +50,7 @@ export default function DashboardLayout() {
           <Sidebar
             isSidebarVisible={sidebarVisible}
             setSidebarVisible={setSidebarVisible}
+            onClose={() => setSidebarVisible(false)}
           />
         </Box>
       )}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography } from "@mui/material";
+import { CardContent, Typography } from "@mui/material";
 import { TrendingUp } from "@mui/icons-material";
 import CardComponent from "../card/Card";
 

@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Chip, Divider, FormControl, Grid, MenuItem, Select, Typography } from "@mui/material";
 import theme from "../../styles/theme";
-import LoopIcon from '@mui/icons-material/Loop';
 import userBg from '../../assets/images/bgpanel.jpg';
 import dayjs, { Dayjs } from 'dayjs';
 import CardComponent from "../../components/card/Card";
@@ -15,28 +14,29 @@ import AddIcon from '@mui/icons-material/Add';
 import Chart from "react-apexcharts";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import type { ApexOptions } from "apexcharts";
 const Dashboard: React.FC = () => {
   const series = [44, 55];
 
-  const options = {
-    labels: ["Collected Fee", "Total Fee"],
-    colors: [theme.palette.secondary.main, theme.palette.primary.main], // 👈 custom colors
-    legend: {
-      position: "bottom",   // 👈 moves legend below chart
-      horizontalAlign: "center",
-      fontSize: "14px",
-      markers: {
-        radius: 12,
+const options: ApexOptions = {
+  labels: ["Collected Fee", "Total Fee"],
+  colors: [theme.palette.secondary.main, theme.palette.primary.main],
+  legend: {
+    position: "bottom", // literal type
+    horizontalAlign: "center",
+    fontSize: "14px",
+    markers: {
+      size: 6,
+    },
+  },
+  plotOptions: {
+    pie: {
+      donut: {
+        size: "70%",
       },
     },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: "70%",
-        },
-      },
-    },
-  };
+  },
+}
 
   const [selectedRange, setSelectedRange] = React.useState("Last 8 Quarter");
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
@@ -193,7 +193,8 @@ const Dashboard: React.FC = () => {
 
           {/* Centered Donut Chart */}
           <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={2}>
-            <Chart options={options} series={series} type="donut" width='320' />
+            <Chart options={options} series={series} type="donut" width={320} />
+
           </Box>
         </Grid>
 
@@ -338,11 +339,11 @@ const Dashboard: React.FC = () => {
           container
           direction="column"
           spacing={2}
-          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}
+          sx={{ backgroundColor: "white", borderRadius: 3, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}
         >
           {/* Cards stacked one by one */}
-          {EventData.map((card, index) => (
-            <Grid xs={12} key={index}>
+          {EventData.map((card) => (
+            <Grid container spacing={2}>
               <Box
                 sx={{
                   backgroundColor: "white",
@@ -355,17 +356,32 @@ const Dashboard: React.FC = () => {
               >
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box display="flex" alignItems="center">
-                    <img
-                      src={card.icon}
-                      alt={card.title}
-                      style={{
-                        width: 50,
-                        height: 50,
-                        backgroundColor: theme.palette.background.default,
-                        borderRadius: 3,
-                        padding: 3,
-                      }}
-                    />
+                    {typeof card.icon === "string" ? (
+                      <img
+                        src={card.icon} // only use src if it’s a string
+                        alt={card.title}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          backgroundColor: theme.palette.background.default,
+                          borderRadius: 3,
+                          padding: 3,
+                        }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          width: 50,
+                          height: 50,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {card.icon} {/* render React element */}
+                      </Box>
+                    )}
+
                     <Box ml={2}>
                       <Typography fontWeight={600} variant="body2">
                         {card.title}
@@ -375,14 +391,15 @@ const Dashboard: React.FC = () => {
                       </Typography>
                     </Box>
                   </Box>
+
                 </Box>
 
                 <Divider sx={{ my: 2 }} />
 
                 <Box display="flex" justifyContent="space-between">
                   <Box display="flex">
-                    <Typography variant="body2" sx={{color:theme.palette.text.disabled}} pr={1}>
-                    {card.time}
+                    <Typography variant="body2" sx={{ color: theme.palette.text.disabled }} pr={1}>
+                      {card.time}
                     </Typography>
                   </Box>
                   <Box display="flex">

@@ -29,7 +29,7 @@ export default function ProgramList() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState('');
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
 
   const [programs, setPrograms] = React.useState<any[]>([]);
@@ -199,7 +199,6 @@ export default function ProgramList() {
             {
               label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
                 navigate(`/programs/add/${row.id}`);
-                setAnchorEl(null);
               }, color: "primary",
             },
             { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },

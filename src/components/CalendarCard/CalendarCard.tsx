@@ -18,7 +18,7 @@ const CalendarCard: React.FC = () => {
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DateCalendar
               value={date}
-              onChange={(newValue) => setDate(newValue)}
+              onChange={(newValue:any) => setDate(newValue)}
             />
           </LocalizationProvider>
         </div>

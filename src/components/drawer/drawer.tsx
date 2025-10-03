@@ -12,8 +12,12 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+interface NotificationsDrawerProps {
+  open: boolean;
+  onClose: () => void;
+}
 
-export default function NotificationsDrawer({ open, onClose }) {
+export default function NotificationsDrawer({ open, onClose }: NotificationsDrawerProps) {
   const notifications = [
     {
       avatarText: 'AB',
