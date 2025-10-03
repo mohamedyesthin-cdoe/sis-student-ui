@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Chip, Divider, Grid, Typography } from "@mui/material";
+import { Box, Chip, Divider, FormControl, Grid, MenuItem, Select, Typography } from "@mui/material";
 import theme from "../../styles/theme";
 import LoopIcon from '@mui/icons-material/Loop';
 import userBg from '../../assets/images/bgpanel.jpg';
@@ -10,16 +10,41 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { cardData } from "./cardData";
+import { EventData } from "./cardData";
 import AddIcon from '@mui/icons-material/Add';
-
-
+import Chart from "react-apexcharts";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 const Dashboard: React.FC = () => {
+  const series = [44, 55];
+
+  const options = {
+    labels: ["Collected Fee", "Total Fee"],
+    colors: [theme.palette.secondary.main, theme.palette.primary.main], // 👈 custom colors
+    legend: {
+      position: "bottom",   // 👈 moves legend below chart
+      horizontalAlign: "center",
+      fontSize: "14px",
+      markers: {
+        radius: 12,
+      },
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "70%",
+        },
+      },
+    },
+  };
+
+  const [selectedRange, setSelectedRange] = React.useState("Last 8 Quarter");
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
   return (
     <Box>
       <CardComponent
         sx={{
-          backgroundColor: "#2d2d2d",
+          backgroundColor: theme.palette.text.primary,
           color: "white",
           p: 3,
           backgroundImage: `url(${userBg})`,
@@ -92,12 +117,6 @@ const Dashboard: React.FC = () => {
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DateCalendar']}>
               <DemoItem
@@ -110,7 +129,7 @@ const Dashboard: React.FC = () => {
                     <Typography fontWeight="bold" variant="body2" lineHeight={1}>
                       Schedules
                     </Typography>
-                    <Box display="flex" alignItems="center" sx={{ cursor: 'pointer', color: '#105c8e' }}>
+                    <Box display="flex" alignItems="center" sx={{ cursor: 'pointer', color: theme.palette.secondary.main }}>
                       <AddIcon fontSize="small" />
                       <Typography ml={0.5} fontWeight="600" variant="body2">Add New</Typography>
                     </Box>
@@ -126,21 +145,268 @@ const Dashboard: React.FC = () => {
             </DemoContainer>
           </LocalizationProvider>
         </Grid>
+        <Grid
+          size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+          sx={{
+            backgroundColor: "white",
+            borderRadius: 3,
+            p: 2,
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {/* Header with title and dropdown */}
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+              Fees Collection
+            </Typography>
+            <FormControl size="small">
+              <Select
+                value={selectedRange}
+                onChange={(e) => setSelectedRange(e.target.value)}
+                displayEmpty
+                sx={{
+                  fontSize: "0.8125rem", // ~13px
+                  fontWeight: 'bold',
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none",
+                  },
+                  color: theme.palette.secondary.main,
+                }}
+
+                renderValue={(value) => (
+                  <Box display="flex" alignItems="center">
+                    <CalendarTodayIcon sx={{ fontSize: 16, mr: 0.5, color: theme.palette.secondary.main }} />
+                    {value}
+                  </Box>
+                )}
+              >
+                <MenuItem value="This Month" sx={{ fontSize: "0.75rem" }}>This Month</MenuItem>
+                <MenuItem value="This Year" sx={{ fontSize: "0.75rem" }}>This Year</MenuItem>
+                <MenuItem value="Last 8 Quarter" sx={{ fontSize: "0.75rem" }}>Last 8 Quarter</MenuItem>
+                <MenuItem value="Last 12 Quarter" sx={{ fontSize: "0.75rem" }}>Last 12 Quarter</MenuItem>
+                <MenuItem value="Last 16 Quarter" sx={{ fontSize: "0.75rem" }}>Last 16 Quarter</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Divider />
+
+          {/* Centered Donut Chart */}
+          <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={2}>
+            <Chart options={options} series={series} type="donut" width='320' />
+          </Box>
+        </Grid>
+
+        <Grid container spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}>
+          <Grid sx={{ width: '100%' }}>
+            <Box
+              sx={{
+                backgroundColor: "white",
+                borderRadius: 3,
+                p: 2.5,
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Total Fees Collected
+                </Typography>
+                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
+                  $25,000,02
+                </Typography>
+              </Box>
+              <Chip
+                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
+                label="1.2%"
+                size="small"
+                sx={{
+                  backgroundColor: "#e8eff5ff",
+                  color: theme.palette.secondary.main,
+                  fontWeight: 600,
+                }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid sx={{ width: '100%' }}>
+            <Box
+              sx={{
+                backgroundColor: "white",
+                borderRadius: 3,
+                p: 2.5,
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Fine Collected till date
+                </Typography>
+                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
+                  $4,56,64
+                </Typography>
+              </Box>
+              <Chip
+                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
+                label="1.2%"
+                size="small"
+                sx={{
+                  backgroundColor: "#FFEBEE",
+                  color: theme.palette.error.main,
+                  fontWeight: 600,
+                }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid sx={{ width: '100%' }}>
+            <Box
+              sx={{
+                backgroundColor: "white",
+                borderRadius: 3,
+                p: 2.5,
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Student Not Paid
+                </Typography>
+                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
+                  $545
+                </Typography>
+              </Box>
+              <Chip
+                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
+                label="1.2%"
+                size="small"
+                sx={{
+                  backgroundColor: "#E3F2FD",
+                  color: theme.palette.info.main,
+                  fontWeight: 600,
+                }}
+              />
+            </Box>
+          </Grid>
+
+          <Grid sx={{ width: '100%' }}>
+            <Box
+              sx={{
+                backgroundColor: "white",
+                borderRadius: 3,
+                p: 2.5,
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Total Outstanding
+                </Typography>
+                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
+                  $4,56,64
+                </Typography>
+              </Box>
+              <Chip
+                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
+                label="1.2%"
+                size="small"
+                sx={{
+                  backgroundColor: "#fff5ebff",
+                  color: theme.palette.warning.main,
+                  fontWeight: 600,
+                }}
+              />
+            </Box>
+          </Grid>
+        </Grid>
       </Grid>
 
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
+          container
+          direction="column"
+          spacing={2}
+          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}
+        >
+          {/* Cards stacked one by one */}
+          {EventData.map((card, index) => (
+            <Grid xs={12} key={index}>
+              <Box
+                sx={{
+                  backgroundColor: "white",
+                  borderRadius: 3,
+                  p: 2,
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                  width: "100%",
+                  borderLeft: card.bordercolor
+                }}
+              >
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Box display="flex" alignItems="center">
+                    <img
+                      src={card.icon}
+                      alt={card.title}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        backgroundColor: theme.palette.background.default,
+                        borderRadius: 3,
+                        padding: 3,
+                      }}
+                    />
+                    <Box ml={2}>
+                      <Typography fontWeight={600} variant="body2">
+                        {card.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {card.value}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
+                <Divider sx={{ my: 2 }} />
+
+                <Box display="flex" justifyContent="space-between">
+                  <Box display="flex">
+                    <Typography variant="body2" sx={{color:theme.palette.text.disabled}} pr={1}>
+                    {card.time}
+                    </Typography>
+                  </Box>
+                  <Box display="flex">
+                    {/* <Typography variant="body2" color="text.secondary" pr={1}>
+                      Inactive :
+                    </Typography>
+                    <Typography variant="body2" fontWeight={600}>
+                      {card.inactive}
+                    </Typography> */}
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+          ))}
         </Grid>
+
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
-            <Box sx={{borderLeft:5,p:3}}>
+          <Box sx={{ borderLeft: 5, p: 3 }}>
 
-            </Box>
+          </Box>
         </Grid>
       </Grid>
     </Box>
