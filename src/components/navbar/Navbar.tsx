@@ -23,7 +23,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
 import { removeSingleValue } from '../../utils/localStorageUtil';
-import userimage from '../../assets/images/man.png'
+import userimage from '/assets/images/man.png'
 type NavbarProps = {
   onHamburgerClick?: () => void; // optional callback
 };

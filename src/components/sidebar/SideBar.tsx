@@ -11,8 +11,8 @@ import {
   Box,
 } from '@mui/material';
 import { ExpandLess, ExpandMore, } from '@mui/icons-material';
-import logo from '../../assets/logo.png';
-import logo2 from '../../assets/logo2.png';
+import logo from '/assets/logo.png';
+import logo2 from '/assets/logo2.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ICON_MAP, MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';

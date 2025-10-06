@@ -1,42 +1,50 @@
 import React from "react";
 import { Box, Chip, Divider, FormControl, Grid, MenuItem, Select, Typography } from "@mui/material";
 import theme from "../../styles/theme";
-import userBg from '../../assets/images/bgpanel.jpg';
+import userBg from '/assets/images/bgpanel.jpg';
 import dayjs, { Dayjs } from 'dayjs';
 import CardComponent from "../../components/card/Card";
 import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { cardData } from "./cardData";
+import { cardData, NoticePeriodData, QuickLinksData } from "./cardData";
 import { EventData } from "./cardData";
 import AddIcon from '@mui/icons-material/Add';
 import Chart from "react-apexcharts";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import type { ApexOptions } from "apexcharts";
+import {
+  Timeline,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineConnector,
+  TimelineContent,
+  TimelineDot,
+} from "@mui/lab";
 const Dashboard: React.FC = () => {
   const series = [44, 55];
 
-const options: ApexOptions = {
-  labels: ["Collected Fee", "Total Fee"],
-  colors: [theme.palette.secondary.main, theme.palette.primary.main],
-  legend: {
-    position: "bottom", // literal type
-    horizontalAlign: "center",
-    fontSize: "14px",
-    markers: {
-      size: 6,
-    },
-  },
-  plotOptions: {
-    pie: {
-      donut: {
-        size: "70%",
+  const options: ApexOptions = {
+    labels: ["Collected Fee", "Total Fee"],
+    colors: [theme.palette.secondary.main, theme.palette.primary.main],
+    legend: {
+      position: "bottom", // literal type
+      horizontalAlign: "center",
+      fontSize: "14px",
+      markers: {
+        size: 6,
       },
     },
-  },
-}
+    plotOptions: {
+      pie: {
+        donut: {
+          size: "70%",
+        },
+      },
+    },
+  }
 
   const [selectedRange, setSelectedRange] = React.useState("Last 8 Quarter");
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
@@ -125,7 +133,7 @@ const options: ApexOptions = {
                   '& .MuiTypography-root': { margin: 0, lineHeight: 1 }, // remove label spacing
                 }}
                 label={
-                  <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                     <Typography fontWeight="bold" variant="body2" lineHeight={1}>
                       Schedules
                     </Typography>
@@ -339,8 +347,14 @@ const options: ApexOptions = {
           container
           direction="column"
           spacing={2}
+          p={3}
           sx={{ backgroundColor: "white", borderRadius: 3, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}
         >
+          <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+            Upcoming Events
+          </Typography>
+          <Divider />
+
           {/* Cards stacked one by one */}
           {EventData.map((card) => (
             <Grid container spacing={2}>
@@ -349,16 +363,17 @@ const options: ApexOptions = {
                   backgroundColor: "white",
                   borderRadius: 3,
                   p: 2,
-                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                   width: "100%",
-                  borderLeft: card.bordercolor
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
+                  borderLeft: card.bordercolor,
+                  mb: 1
                 }}
               >
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box display="flex" alignItems="center">
                     {typeof card.icon === "string" ? (
                       <img
-                        src={card.icon} // only use src if it’s a string
+                        src={card.icon}
                         alt={card.title}
                         style={{
                           width: 50,
@@ -378,7 +393,7 @@ const options: ApexOptions = {
                           justifyContent: "center",
                         }}
                       >
-                        {card.icon} {/* render React element */}
+                        {card.icon}
                       </Box>
                     )}
 
@@ -386,7 +401,7 @@ const options: ApexOptions = {
                       <Typography fontWeight={600} variant="body2">
                         {card.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="caption" color="text.secondary" sx={{ color: theme.palette.text.primary }}>
                         {card.value}
                       </Typography>
                     </Box>
@@ -398,17 +413,35 @@ const options: ApexOptions = {
 
                 <Box display="flex" justifyContent="space-between">
                   <Box display="flex">
-                    <Typography variant="body2" sx={{ color: theme.palette.text.disabled }} pr={1}>
+
+                    <Typography variant="body2" sx={{ color: theme.palette.text.disabled }} pr={1} display="flex">
+                      {typeof card.timeicon === "string" ? (
+                        <img
+                          src={card.timeicon}
+                          alt={card.title}
+                          style={{
+                            width: 30,
+                            height: 10,
+                            backgroundColor: theme.palette.background.default,
+                            borderRadius: 3,
+                          }}
+                        />
+                      ) : (
+                        <Box
+                          sx={{
+                            width: 30,
+                            height: 10,
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {card.timeicon}
+                        </Box>
+                      )}
                       {card.time}
                     </Typography>
                   </Box>
                   <Box display="flex">
-                    {/* <Typography variant="body2" color="text.secondary" pr={1}>
-                      Inactive :
-                    </Typography>
-                    <Typography variant="body2" fontWeight={600}>
-                      {card.inactive}
-                    </Typography> */}
                   </Box>
                 </Box>
               </Box>
@@ -416,14 +449,182 @@ const options: ApexOptions = {
           ))}
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
+        <Grid
+          size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+          sx={{
+            backgroundColor: "white",
+            borderRadius: 3,
+            p: 2,
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {/* Header */}
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+              Notice Board
+            </Typography>
+            <Box
+              display="flex"
+              alignItems="center"
+              sx={{ cursor: "pointer", color: theme.palette.secondary.main }}
+            >
+              <Typography ml={0.5} fontWeight="600" variant="body2">
+                View All
+              </Typography>
+            </Box>
+          </Box>
+
+          <Divider sx={{ my: 2 }} />
+
+          {/* Timeline UI */}
+          <Timeline
+            sx={{
+              m: 0,
+              p: 0,
+              "& .MuiTimelineItem-root:before": { flex: 0, padding: 0 },
+            }}
+          >
+            {NoticePeriodData.map((card, index) => (
+              <TimelineItem key={index}>
+                {/* Left side - custom icon instead of dot */}
+                <TimelineSeparator>
+                  <TimelineDot
+                    sx={{
+                      backgroundColor: theme.palette.background.default,
+                      width: 40,
+                      height: 40,
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderRadius: "50%",
+                    }}
+                  >
+                    {card.icon}
+                  </TimelineDot>
+
+                  {index !== NoticePeriodData.length - 1 && (
+                    <TimelineConnector
+                      sx={{
+                        backgroundColor: theme.palette.divider,
+                        width: 2,
+                        minHeight: 30,
+                        mx: "auto",
+                      }}
+                    />
+                  )}
+                </TimelineSeparator>
+
+                {/* Right side - content */}
+                <TimelineContent sx={{ pb: 2, position: "relative", p: 0 }}>
+                  <Box
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 2,
+                      position: "relative",
+                    }}
+                  >
+                    {/* Notice text */}
+                    <Box pr={8}> {/* adds spacing so text doesn’t overlap the badge */}
+                      <Typography fontWeight={600} variant="body2">
+                        {card.title}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: theme.palette.text.secondary }}
+                      >
+                        {card.time}
+                      </Typography>
+                    </Box>
+
+                    {/* Days badge pinned to the far right */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        right: 8,
+                        transform: "translateY(-50%)",
+                        minWidth: 60,
+                        textAlign: "center",
+                        borderRadius: 1,
+                        backgroundColor: theme.palette.background.default,
+                        px: 1,
+                        py: 0.3,
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        fontWeight={500}
+                        sx={{ whiteSpace: "nowrap" }}
+                      >
+                        {card.days}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>
         </Grid>
+
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
-          <Box sx={{ borderLeft: 5, p: 3 }}>
-
+          {/* Header */}
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+              Quick Links
+            </Typography>
           </Box>
+
+          <Divider sx={{ mb: 2, mt: 3 }} />
+
+          <Grid
+            container
+            alignItems="center"
+            justifyContent="center"
+            spacing={4}
+            sx={{ mt: 2 }} // optional margin top
+          >
+            {QuickLinksData.map((card) => (
+              <Grid>
+                <Box
+                  sx={{
+                    backgroundColor: "white",
+                    borderRadius: 3,
+                    p: 2,
+                    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  {typeof card.icon === "string" ? (
+                    <img
+                      src={card.icon}
+                      alt={card.title}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        backgroundColor: theme.palette.background.default,
+                        borderRadius: 3,
+                        padding: 3,
+                      }}
+                    />
+                  ) : (
+                    <Box
+                      sx={{
+                        width: 50,
+                        height: 50,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {card.icon}
+                    </Box>
+                  )}
+                </Box>
+              </Grid>
+            ))}
+          </Grid>
+
         </Grid>
       </Grid>
     </Box>
