@@ -118,4 +118,12 @@ class ProgrameRepository:
                 detail=f"Database error while updating program: {str(e)}",
             )
                 
+    def get_by_code(self, code: str) -> Optional[Programe]:
+        try:
+            return self.db.query(self.model).filter(self.model.application_code == code).first()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching program by code: {str(e)}",
+            )
         

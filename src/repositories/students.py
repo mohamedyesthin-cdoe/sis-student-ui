@@ -64,6 +64,10 @@ class StudentRepository(BaseRepository[Student]):
     def get_last_sync_student(self):
         result = self.db.query(Student).order_by(Student.id.desc()).first()
         return result
+    
+    def get_last_paymentdate(self, student_id: int):
+        result = self.db.query(Payment).filter(Payment.student_id == student_id).order_by(Payment.payment_date.desc()).first()
+        return result.payment_date if result else None
         
     def bulk_create_student(self, api_response: dict):
         try:
@@ -83,7 +87,6 @@ class StudentRepository(BaseRepository[Student]):
 
             # Generate new registration number
             registration_number = generate_registration_number(program_code, last_reg_no)
-
             # --- 3. Validate input data with Pydantic ---
             # This ensures correct data types before proceeding
             student_data['registration_no'] = registration_number  # Add generated reg no

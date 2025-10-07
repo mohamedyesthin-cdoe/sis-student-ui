@@ -86,7 +86,7 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
         "category": get_title(api_response.get("category")),
         "caste": api_response.get("field_73695") or None,
         "aadhaar_number": api_response.get("aadhar_card_no") or None,
-        "pan_number": api_response.get("field_73442") or None,
+        #"pan_number": api_response.get("field_73442") or None,
         "parent_guardian_name": api_response.get("field_73703", ""),
         "relationship_with_student": get_title(api_response.get("field_73698")),
         "current_employment": get_title(api_response.get("field_73700")),

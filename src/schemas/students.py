@@ -220,7 +220,7 @@ class StudentBase(BaseModel):
     category: str
     caste: Optional[str] = None
     aadhaar_number: str
-    pan_number: str
+    #pan_number: str
     parent_guardian_name: str
     relationship_with_student: str
     current_employment: Optional[str] = None
@@ -254,11 +254,11 @@ class StudentBase(BaseModel):
             raise ValueError("Aadhaar number must be exactly 12 digits")
         return v
 
-    @validator("pan_number")
-    def validate_pan(cls, v):
-        if not (len(v) == 10 and v[:5].isalpha() and v[5:9].isdigit() and v[9].isalpha()):
-            raise ValueError("PAN number must be 5 letters, 4 digits, and 1 letter (total 10 characters)")
-        return v
+    # @validator("pan_number")
+    # def validate_pan(cls, v):
+    #     if not (len(v) == 10 and v[:5].isalpha() and v[5:9].isdigit() and v[9].isalpha()):
+    #         raise ValueError("PAN number must be 5 letters, 4 digits, and 1 letter (total 10 characters)")
+    #     return v
 
 class StudentCreate(StudentBase):
     """Schema for creating a new student."""
@@ -284,7 +284,7 @@ class StudentUpdate(BaseModel):
     category: Optional[str] = None
     caste: Optional[str] = None
     aadhaar_number: Optional[str] = None
-    pan_number: Optional[str] = None
+    #pan_number: Optional[str] = None
     parent_guardian_name: Optional[str] = None
     relationship_with_student: Optional[str] = None
     current_employment: Optional[str] = None
@@ -323,7 +323,7 @@ class StudentResponse(BaseModel):
     category: str
     caste: Optional[str]
     aadhaar_number: Optional[str]
-    pan_number: Optional[str]
+    #pan_number: Optional[str]
     parent_guardian_name: str
     relationship_with_student: str
     current_employment: Optional[str]

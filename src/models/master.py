@@ -9,10 +9,12 @@ class Programe(AuditableBase):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     programe = Column(String(100), nullable=False, unique=True, index=True)
+    short_name = Column(String(20), nullable=True)
     programe_code = Column(String(50), nullable=False, unique=True)
     duration = Column(String(20), nullable=True)
     category = Column(String(50), nullable=True)
     faculty = Column(String(100), nullable=True)
+    application_code = Column(String(30), nullable=True)
     
     fee = relationship("FeeDetails", back_populates="programe")
     #student = relationship("Student", back_populates="program")

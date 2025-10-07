@@ -49,6 +49,7 @@ class StudentService:
             
             # Get last synced student ID from DB (handle None)
             last_synced_student = self.student_repo.get_last_sync_student()
+            
             last_sync_id = last_synced_student.application_no.strip('OLUGDS') if last_synced_student else 0
             
             # Check if students_data is a dict with "data" and "list" or a direct list
@@ -56,7 +57,6 @@ class StudentService:
                 value_list = students_data["data"]["list"]
             else:
                 value_list = students_data  # Assume students_data is already the list
-
 
             # Get last ERP student ID
             if not value_list[-1].get("application_no"):
@@ -68,14 +68,16 @@ class StudentService:
             #If already up to date
             if last_sync_id == last_erp_id:
                 return {"message": "No new students to sync.", "total_sync_count": 0}
+            
+            filtered_list = [item for item in value_list if item["application_no"] != "OLPGCIH100475"]
 
             # Filter only new students
-            new_students = [student for student in value_list if int(student.get("application_no", 0).strip('OLUGDS')) > int(last_sync_id) ]
+            new_students = [student for student in filtered_list if int(student.get("application_no", 0).strip('OLUGDS')) > int(last_sync_id) ]
             logger.info(f"Students to sync: {len(new_students)}")
             
             # Sync new students
             if len(new_students) > 0:
-                for student_data in value_list:
+                for student_data in filtered_list:
                     self.student_repo.bulk_create_student(student_data)
                 return {"message": "Students synced successfully", "total_sync_count": len(new_students)}
             else:

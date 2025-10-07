@@ -60,3 +60,19 @@ class ProgrameService:
                 detail=f"Unexpected error while fetching program: {str(e)}",
             )
         
+    def get_program_by_code(self, code: str) -> Programe:
+        try:
+            program = self.repo.get_by_code(code)
+            if not program:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Program not found",
+            )
+            return program
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching program by code: {str(e)}",
+            )

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from src.services.api_service import ApiService
 from src.core.security.jwt import verify_api_key
 from src.schemas.payment import StandardResponse
-from src.schemas.master import ProgrameResponse
+from src.schemas.master import ProgrameOut
 from src.db.session import get_db
 
 router = APIRouter()
@@ -30,7 +30,7 @@ def get_payments(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch payments: {str(e)}")
     
-@router.get("/program/fees/list", response_model=List[ProgrameResponse])
+@router.get("/program/fees/list", response_model=ProgrameOut)
 def get_program_fees(db: Session = Depends(get_db)):
     """Retrieve program fees by program ID."""
     try:

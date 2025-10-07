@@ -23,6 +23,7 @@ class FeeUpdate(FeeSchema):
 # ----------------------------
 class ProgrameBase(BaseModel):
     programe: str
+    short_name: Optional[str] = None
     programe_code: str
     duration: Optional[str] = None
     category: Optional[str] = None
@@ -52,3 +53,12 @@ class ProgrameResponse(ProgrameBase):
     class Config:
         from_attributes = True
         populate_by_name = True
+
+class DataOut(BaseModel):
+    list: List[ProgrameResponse]
+
+class ProgrameOut(BaseModel):
+    code: int
+    status: bool
+    message: str
+    data: DataOut

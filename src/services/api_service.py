@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from src.schemas.payment import DataResponse, PaginationResponse, StandardResponse
 from src.repositories.api import ApiRepository
 from datetime import datetime
-
+from src.schemas.master import ProgrameOut, DataOut
+from fastapi import HTTPException, status
 
 class ApiService:
     def __init__(self, db: Session):
@@ -92,11 +93,24 @@ class ApiService:
         return StandardResponse(
             code=200,
             status=True,
-            message="Payments fetched successfully",
+            message="data fetched successfully",
             data=DataResponse(list=students_data, pagination=pagination)
         )
     
-    def get_program_fees(self) -> Optional[list]:
+    def get_program_fees(self) -> ProgrameOut:
         """Retrieve program and associated fees."""
-        programs = self.repo.get_program_fees()
-        return programs if programs else None
+        try:
+            programs = self.repo.get_program_fees()
+            return ProgrameOut(
+                code=status.HTTP_200_OK,
+                status=True,
+                message="Program and fees fetched successfully",
+                data=DataOut(list=programs)
+            )
+        except Exception as e:
+            raise e
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error in endpoint: {str(e)}",
+            )
