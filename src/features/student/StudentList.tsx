@@ -59,6 +59,7 @@ export default function ModernStudentTable() {
       [
         { header: 'S.No', key: 'sno' },
         { header: 'Registration No', key: 'registration_no' },
+        { header: 'Application No', key: 'application_no' },
         { header: 'Full Name', key: 'full_name', render: (s) => `${s.title} ${s.first_name} ${s.last_name}` },
         { header: 'Email', key: 'email' },
         { header: 'Mobile', key: 'mobile_number' },
@@ -195,6 +196,7 @@ export default function ModernStudentTable() {
         <ReusableTable
           columns={[
             { key: "registration_no", label: "Registration No" },
+            { key: "application_no", label: "Application No" },
             { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
             { key: "email", label: "Email" },
             { key: "mobile_number", label: "Mobile" },

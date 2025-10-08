@@ -2,6 +2,7 @@ import studentIcon from "/assets/images/student.svg";
 import teacherIcon from "/assets/images/teacher.svg";
 import staffIcon from "/assets/images/staff.svg";
 import subjectIcon from "/assets/images/subject.svg";
+import ChatIcon from '@mui/icons-material/Chat';
 import theme from "../../styles/theme";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
@@ -18,101 +19,223 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import ArticleIcon from '@mui/icons-material/Article';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import DescriptionIcon from '@mui/icons-material/Description';
-export const cardData = [
+import MarkunreadIcon from '@mui/icons-material/Markunread';
+export const FaclitiesData = [
   {
     id: 1,
-    title: "Total Students",
-    value: 3654,
-    active: 3540,
-    inactive: 11,
+    title: "Aaron",
+    subject: "Chemistry",
+    action1: "Email",
+    action2: "Chat",
     percentage: "1.2%",
-    icon: studentIcon,
-    color: theme.palette.secondary.main
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-06.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
   },
   {
     id: 2,
-    title: "Total Teachers",
-    value: 120,
-    active: 118,
-    inactive: 2,
-    percentage: "0.8%",
-    icon: teacherIcon,
-    color: theme.palette.info.main
+    title: "Hellana",
+    subject: "English",
+    action1: "Email",
+    action2: "Chat",
+    percentage: "1.2%",
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-03.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
   },
   {
     id: 3,
-    title: "Total Courses",
-    value: 58,
-    active: 40,
-    inactive: 18,
-    percentage: "2.5%",
-    icon: staffIcon,
-    color: theme.palette.warning.main
+    title: "Morgan",
+    subject: "Physics",
+    action1: "Email",
+    action2: "Chat",
+    percentage: "1.2%",
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-05.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
   },
   {
     id: 4,
-    title: "Departments",
-    value: 12,
-    active: 12,
-    inactive: 0,
-    percentage: "0%",
-    icon: subjectIcon,
-    color: theme.palette.error.main
+    title: "Daniel Josuva",
+    subject: "Spanish",
+    action1: "Email",
+    action2: "Chat",
+    percentage: "1.2%",
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-02.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
   },
+  {
+    id: 5,
+    title: "Teresa",
+    subject: "Maths",
+    action1: "Email",
+    action2: "Chat",
+    percentage: "1.2%",
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-01.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+  },
+  {
+    id: 6,
+    title: "Teresa",
+    subject: "Maths",
+    action1: "Email",
+    action2: "Chat",
+    percentage: "1.2%",
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-01.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+  },
+  {
+    id: 7,
+    title: "Teresa",
+    subject: "Maths",
+    action1: "Email",
+    action2: "Chat",
+    percentage: "1.2%",
+    icon: 'https://preskool.dreamstechnologies.com/html/template/assets/img/teachers/teacher-01.jpg',
+    icon1: (
+      <Box>
+        <ChatIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+    icon2: (
+      <Box>
+        <MarkunreadIcon sx={{ fontSize: 15 }} />
+      </Box>
+    ),
+  }
+];
+export const FeesData = [
+  {
+    id: 1,
+    title: "Transport Fees",
+    value: "$2500",
+    date: "25 May 2024",
+    icon: (
+      <Box position="relative" display="inline-flex"
+        sx={{ color: "white", p: 1, borderRadius: 5,backgroundColor:theme.palette.primary.light }}>
+        <LibraryBooksIcon sx={{ fontSize: 20 }} />
+      </Box>
+    ),
+    color: theme.palette.secondary.main,
+    backgroundcolor: `4px solid ${theme.palette.secondary.main}`,
+  },
+  {
+    id: 2,
+    title: "Transport Fees",
+    value: "$2500",
+    date: "25 May 2024",
+    icon: (
+      <Box position="relative" display="inline-flex"
+        sx={{ color: "white", p: 1, borderRadius: 5,backgroundColor:theme.palette.primary.light }}>
+        <LibraryBooksIcon sx={{ fontSize: 20 }} />
+      </Box>
+    ),
+    color: theme.palette.secondary.main,
+    backgroundcolor: `4px solid ${theme.palette.secondary.main}`,
+  },
+  {
+    id: 3,
+    title: "Transport Fees",
+    value: "$2500",
+    date: "25 May 2024",
+    icon: (
+     <Box position="relative" display="inline-flex"
+        sx={{ color: "white", p: 1, borderRadius: 5,backgroundColor:theme.palette.primary.light }}>
+        <LibraryBooksIcon sx={{ fontSize: 20 }} />
+      </Box>
+    ),
+    color: theme.palette.secondary.main,
+    backgroundcolor: `4px solid ${theme.palette.secondary.main}`,
+  },
+  {
+    id: 4,
+    title: "Transport Fees",
+    value: "$2500",
+    date: "25 May 2024",
+    icon: (
+     <Box position="relative" display="inline-flex"
+        sx={{ color: "white", p: 1, borderRadius: 5,backgroundColor:theme.palette.primary.light }}>
+        <LibraryBooksIcon sx={{ fontSize: 20 }} />
+      </Box>
+    ),
+    color: theme.palette.secondary.main,
+    backgroundcolor: `4px solid ${theme.palette.secondary.main}`,
+  }
 ];
 export const EventData = [
   {
     id: 1,
-    title: "Parents, Teachers Meet",
-    value: "15 Oct 2025",
+    title: "1st Quarterly",
+    titleday:'19 Days More',
+    subtitle:'Mathematics',
     time: "09:10 AM - 10:50 PM",
-    icon: <Box position="relative" display="inline-flex"
-      sx={{ backgroundColor: theme.palette.background.default, p: 1, borderRadius: 2 }}>
-      <PersonIcon sx={{ fontSize: 20 }} />
-      <EditIcon
-        sx={{
-          fontSize: 14,
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-          bgcolor: "white",
-          borderRadius: "50%",
-        }}
-      />
-    </Box>,
+    subtitleday:'06 May 2024',
+    roomno:'15',
+    calendaricon: <CalendarMonthIcon sx={{ fontSize: 20 }} />,
     color: theme.palette.secondary.main,
-    bordercolor: `4px solid ${theme.palette.secondary.main}`,
     timeicon: <AvTimerIcon sx={{ fontSize: 20 }} />
-
   },
   {
     id: 2,
-    title: "Vacation Meeting",
-    value: "5 Nov 2025",
+    title: "2nd Quarterly",
+    titleday:'19 Days More',
+    subtitle:'Physics',
     time: "09:10 AM - 10:50 PM",
-    icon: (
-      <Box position="relative" display="inline-flex"
-        sx={{ backgroundColor: theme.palette.background.default, p: 1, borderRadius: 2 }}>
-        <AirportShuttleIcon sx={{ fontSize: 20 }} />
-      </Box>
-    ),
-    color: theme.palette.info.main,
-    bordercolor: `4px solid ${theme.palette.info.main}`,
-    timeicon: <AvTimerIcon sx={{ fontSize: 20 }} />
-  },
-  {
-    id: 3,
-    title: "Vacation Meeting",
-    value: "5 Nov 2025",
-    time: "09:10 AM - 10:50 PM",
-    icon: (
-      <Box position="relative" display="inline-flex"
-        sx={{ backgroundColor: theme.palette.background.default, p: 1, borderRadius: 2 }}>
-        <AirportShuttleIcon sx={{ fontSize: 20 }} />
-      </Box>
-    ),
-    color: theme.palette.info.main,
-    bordercolor: `4px solid ${theme.palette.info.main}`,
+    subtitleday:'06 May 2024',
+    roomno:'15',
+    calendaricon: <CalendarMonthIcon sx={{ fontSize: 20 }} />,
+    color: theme.palette.secondary.main,
     timeicon: <AvTimerIcon sx={{ fontSize: 20 }} />
   },
 ];
@@ -176,7 +299,7 @@ export const NoticePeriodData = [
 export const QuickLinksData = [
   {
     id: 1,
-    title: "Calendar",
+    title: "Pay Fees",
     icon: <CalendarMonthIcon sx={{ fontSize: 20 }} />,
     color: theme.palette.secondary.main,
     backgroundcolor: ''
@@ -190,30 +313,16 @@ export const QuickLinksData = [
   },
   {
     id: 3,
-    title: "Attendance",
+    title: "Calendar",
     icon: <ArticleIcon sx={{ fontSize: 20 }} />,
     color: theme.palette.warning.main,
     backgroundcolor: ''
   },
   {
     id: 4,
-    title: "Fees",
+    title: "Attendance",
     icon: <LocalAtmIcon sx={{ fontSize: 20 }} />,
     color: theme.palette.error.main,
     backgroundcolor: ''
-  },
-  {
-    id: 5,
-    title: "Home Works",
-    icon: <EventNoteIcon sx={{ fontSize: 20 }} />,
-    color: theme.palette.error.main,
-    backgroundcolor: ''
-  },
-  {
-    id: 6,
-    title: "Reports",
-    icon: <DescriptionIcon sx={{ fontSize: 20 }} />,
-    color: theme.palette.error.main,
-    backgroundcolor: ''
-  },
+  }
 ];

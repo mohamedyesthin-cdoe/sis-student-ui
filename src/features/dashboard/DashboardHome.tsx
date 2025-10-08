@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Chip, Divider, FormControl, Grid, MenuItem, Select, Typography } from "@mui/material";
+import { Box, Chip, Container, Divider, FormControl, Grid, IconButton, MenuItem, Select, Typography } from "@mui/material";
 import theme from "../../styles/theme";
 import userBg from '/assets/images/bgpanel.jpg';
 import dayjs, { Dayjs } from 'dayjs';
@@ -8,7 +8,7 @@ import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { cardData, NoticePeriodData, QuickLinksData } from "./cardData";
+import { FaclitiesData, FeesData, NoticePeriodData, QuickLinksData } from "./cardData";
 import { EventData } from "./cardData";
 import AddIcon from '@mui/icons-material/Add';
 import Chart from "react-apexcharts";
@@ -23,6 +23,10 @@ import {
   TimelineContent,
   TimelineDot,
 } from "@mui/lab";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import { useRef } from "react";
+import { BarChart } from "@mui/x-charts/BarChart";
 const Dashboard: React.FC = () => {
   const series = [44, 55];
 
@@ -46,10 +50,30 @@ const Dashboard: React.FC = () => {
     },
   }
 
-  const [selectedRange, setSelectedRange] = React.useState("Last 8 Quarter");
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 300; // adjust scroll distance
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const [selectedRange, setSelectedRange] = React.useState("1st Quarter");
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
+
+
+  const [selectedRangeChart, setSelectedRangeChart] = React.useState("1st Quarter");
+
+  // Sample data
+  const subjects = ["Mat", "Phy", "Che", "Eng", "Sci"];
+  const marks = [50, 92, 90, 82, 90];
+
   return (
-    <Box>
+    <Container>
       <CardComponent
         sx={{
           backgroundColor: theme.palette.text.primary,
@@ -76,51 +100,139 @@ const Dashboard: React.FC = () => {
         </Box>
       </CardComponent>
 
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={4}>
-        {cardData.map((card, index) => (
-          <Grid key={index} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }} my={1} sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Box display="flex" alignItems="center">
-                <img
-                  src={card.icon}
-                  alt={card.title}
-                  style={{ width: 50, height: 50, backgroundColor: theme.palette.background.default, borderRadius: 3, padding: 3 }}
-                />
-                <Box ml={2}>
-                  <Typography fontWeight={600} variant="h5">
-                    {card.value}
+      {/* <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={4}>
+       
+      </Grid> */}
+      <CardComponent p={2}>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+            Class Faculties
+          </Typography>
+
+          {/* Scroll buttons instead of View All */}
+          <Box display="flex" alignItems="center" gap={1}>
+            <IconButton
+              size="small"
+              onClick={() => scroll("left")}
+              sx={{
+                color: theme.palette.secondary.main,
+                backgroundColor: theme.palette.action.hover,
+                "&:hover": { backgroundColor: theme.palette.action.selected },
+              }}
+            >
+              <ArrowBackIosNewIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => scroll("right")}
+              sx={{
+                color: theme.palette.secondary.main,
+                backgroundColor: theme.palette.action.hover,
+                "&:hover": { backgroundColor: theme.palette.action.selected },
+              }}
+            >
+              <ArrowForwardIosIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        </Box>
+
+        {/* Scrollable card container */}
+        <Box
+          ref={scrollRef}
+          sx={{
+            display: "flex",
+            overflowX: "auto",
+            scrollBehavior: "smooth",
+            pb: 1,
+            "&::-webkit-scrollbar": { display: "none" }, // hide scrollbar
+          }}
+        >
+          {FaclitiesData.map((card, index) => (
+            <CardComponent
+              key={index}
+              p={2}
+              sx={{
+                minWidth: 260,
+                mr: 3,
+                mb: 0,
+                backgroundColor: "white",
+                borderRadius: 3,
+                flexShrink: 0, // prevents shrinking in flex scroll
+                border: `2px solid ${theme.palette.background.default}`,
+                boxShadow: 'none'
+              }}
+            >
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Box display="flex" alignItems="center">
+                  <img
+                    src={card.icon}
+                    alt={card.title}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      backgroundColor: theme.palette.background.default,
+                      borderRadius: 5,
+                    }}
+                  />
+                  <Box ml={2}>
+                    <Typography fontWeight={600} variant="body2">
+                      {card.title}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {card.subject}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box display="flex" justifyContent="space-between">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                  sx={{
+                    border: `1px solid ${theme.palette.background.default}`,
+                    p: 1,
+                    borderRadius: 1,
+                  }}
+                >
+                  {card.icon1}
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    {card.action1}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {card.title}
+                </Box>
+
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  gap={1}
+                  sx={{
+                    border: `1px solid ${theme.palette.background.default}`,
+                    p: 1,
+                    borderRadius: 1,
+                  }}
+                >
+                  {card.icon2}
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
+                  >
+                    {card.action2}
                   </Typography>
                 </Box>
               </Box>
-              <Chip label={card.percentage} sx={{ backgroundColor: card.color, color: theme.palette.background.paper }} />
-            </Box>
-
-            <Divider sx={{ my: 2 }} />
-
-            <Box display="flex" justifyContent="space-between">
-              <Box display="flex">
-                <Typography variant="body2" color="text.secondary" pr={1}>
-                  Active :
-                </Typography>
-                <Typography variant="body2" fontWeight={600}>
-                  {card.active}
-                </Typography>
-              </Box>
-              <Box display="flex">
-                <Typography variant="body2" color="text.secondary" pr={1}>
-                  Inactive :
-                </Typography>
-                <Typography variant="body2" fontWeight={600}>
-                  {card.inactive}
-                </Typography>
-              </Box>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+            </CardComponent>
+          ))}
+        </Box>
+      </CardComponent>
 
       <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
@@ -153,19 +265,17 @@ const Dashboard: React.FC = () => {
             </DemoContainer>
           </LocalizationProvider>
         </Grid>
-        <Grid
-          size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+        <Grid spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
           sx={{
             backgroundColor: "white",
             borderRadius: 3,
             p: 2,
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          {/* Header with title and dropdown */}
+          }}>
+          {/* Header */}
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
             <Typography fontWeight="bold" variant="body2" lineHeight={1}>
-              Fees Collection
+              Exam Result
             </Typography>
             <FormControl size="small">
               <Select
@@ -173,204 +283,83 @@ const Dashboard: React.FC = () => {
                 onChange={(e) => setSelectedRange(e.target.value)}
                 displayEmpty
                 sx={{
-                  fontSize: "0.8125rem", // ~13px
-                  fontWeight: 'bold',
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
+                  fontSize: "0.8125rem",
+                  fontWeight: "bold",
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
                   color: theme.palette.secondary.main,
                 }}
-
                 renderValue={(value) => (
                   <Box display="flex" alignItems="center">
-                    <CalendarTodayIcon sx={{ fontSize: 16, mr: 0.5, color: theme.palette.secondary.main }} />
+                    <CalendarTodayIcon
+                      sx={{ fontSize: 16, mr: 0.5, color: theme.palette.secondary.main }}
+                    />
                     {value}
                   </Box>
                 )}
               >
-                <MenuItem value="This Month" sx={{ fontSize: "0.75rem" }}>This Month</MenuItem>
-                <MenuItem value="This Year" sx={{ fontSize: "0.75rem" }}>This Year</MenuItem>
-                <MenuItem value="Last 8 Quarter" sx={{ fontSize: "0.75rem" }}>Last 8 Quarter</MenuItem>
-                <MenuItem value="Last 12 Quarter" sx={{ fontSize: "0.75rem" }}>Last 12 Quarter</MenuItem>
-                <MenuItem value="Last 16 Quarter" sx={{ fontSize: "0.75rem" }}>Last 16 Quarter</MenuItem>
+                <MenuItem value="1st Quarter" sx={{ fontSize: "0.75rem" }}>
+                  1st Quarter
+                </MenuItem>
+                <MenuItem value="2nd Quarter" sx={{ fontSize: "0.75rem" }}>
+                  2nd Quarter
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
-
           <Divider />
 
-          {/* Centered Donut Chart */}
-          <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={2}>
-            <Chart options={options} series={series} type="donut" width={320} />
-
+          {/* Chart */}
+          <Box mt={2} width="100%">
+            {/* Bar Chart */}
+            <BarChart
+              xAxis={[
+                {
+                  data: subjects,
+                  scaleType: "band",
+                  tickLabelStyle: { fontSize: 12 },
+                },
+              ]}
+              series={[
+                {
+                  data: marks,
+                  color: "#3b82f6",
+                  valueFormatter: (value) => `${value}%`,
+                },
+              ]}
+              margin={{ top: 20, right: 10, bottom: 5, left: -10 }}
+              height={300}
+              sx={{
+                width: "100%", // full width
+                "& .MuiChartsAxis-tickLabel": { fontSize: 12, fill: "#555" },
+                "& .MuiChartsAxis-line": { stroke: "#ccc" },
+              }}
+            />
           </Box>
+
         </Grid>
 
         <Grid container spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}>
-          <Grid sx={{ width: '100%' }}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                p: 2.5,
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Total Fees Collected
-                </Typography>
-                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
-                  $25,000,02
-                </Typography>
-              </Box>
-              <Chip
-                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
-                label="1.2%"
-                size="small"
-                sx={{
-                  backgroundColor: "#e8eff5ff",
-                  color: theme.palette.secondary.main,
-                  fontWeight: 600,
-                }}
-              />
-            </Box>
-          </Grid>
-
-          <Grid sx={{ width: '100%' }}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                p: 2.5,
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Fine Collected till date
-                </Typography>
-                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
-                  $4,56,64
-                </Typography>
-              </Box>
-              <Chip
-                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
-                label="1.2%"
-                size="small"
-                sx={{
-                  backgroundColor: "#FFEBEE",
-                  color: theme.palette.error.main,
-                  fontWeight: 600,
-                }}
-              />
-            </Box>
-          </Grid>
-
-          <Grid sx={{ width: '100%' }}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                p: 2.5,
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Student Not Paid
-                </Typography>
-                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
-                  $545
-                </Typography>
-              </Box>
-              <Chip
-                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
-                label="1.2%"
-                size="small"
-                sx={{
-                  backgroundColor: "#E3F2FD",
-                  color: theme.palette.info.main,
-                  fontWeight: 600,
-                }}
-              />
-            </Box>
-          </Grid>
-
-          <Grid sx={{ width: '100%' }}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                p: 2.5,
-                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Total Outstanding
-                </Typography>
-                <Typography variant="body1" fontWeight="bold" sx={{ color: theme.palette.text.primary }}>
-                  $4,56,64
-                </Typography>
-              </Box>
-              <Chip
-                icon={<TrendingUpIcon sx={{ fontSize: 16 }} />}
-                label="1.2%"
-                size="small"
-                sx={{
-                  backgroundColor: "#fff5ebff",
-                  color: theme.palette.warning.main,
-                  fontWeight: 600,
-                }}
-              />
-            </Box>
-          </Grid>
-        </Grid>
-      </Grid>
-
-
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          container
-          direction="column"
-          spacing={2}
-          p={3}
-          sx={{ backgroundColor: "white", borderRadius: 3, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}
-        >
-          <Typography fontWeight="bold" variant="body2" lineHeight={1}>
-            Upcoming Events
-          </Typography>
-          <Divider />
-
-          {/* Cards stacked one by one */}
-          {EventData.map((card) => (
-            <Grid container spacing={2}>
+          <Grid sx={{ width: '100%', backgroundColor: 'white', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', p: 2.5, borderRadius: 3 }} >
+            {/* Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+                Fees Reminder
+              </Typography>
               <Box
-                sx={{
-                  backgroundColor: "white",
-                  borderRadius: 3,
-                  p: 2,
-                  width: "100%",
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  borderLeft: card.bordercolor,
-                  mb: 1
-                }}
+                display="flex"
+                alignItems="center"
+                sx={{ cursor: "pointer", color: theme.palette.secondary.main }}
               >
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Box display="flex" alignItems="center">
+                <Typography ml={0.5} fontWeight="600" variant="body2">
+                  View All
+                </Typography>
+              </Box>
+            </Box>
+            <Divider sx={{ my: 2 }} />
+            <Box mt={5}>
+              {FeesData.map((card) => (
+                <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                  <Box display="flex">
                     {typeof card.icon === "string" ? (
                       <img
                         src={card.icon}
@@ -396,8 +385,7 @@ const Dashboard: React.FC = () => {
                         {card.icon}
                       </Box>
                     )}
-
-                    <Box ml={2}>
+                    <Box ml={1}>
                       <Typography fontWeight={600} variant="body2">
                         {card.title}
                       </Typography>
@@ -406,12 +394,73 @@ const Dashboard: React.FC = () => {
                       </Typography>
                     </Box>
                   </Box>
+                  <Box textAlign="end">
+                    <Typography fontWeight={600} variant="body2">
+                      Last Date
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ color: theme.palette.text.primary }}>
+                      {card.date}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
 
+          </Grid>
+        </Grid>
+      </Grid>
+
+
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+          container
+          direction="column"
+          spacing={2}
+          p={3}
+          sx={{ backgroundColor: "white", borderRadius: 3, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}
+        >
+          <Typography fontWeight="bold" variant="body2" lineHeight={1}>
+            Upcoming Exams
+          </Typography>
+          <Divider />
+
+          {/* Cards stacked one by one */}
+          {EventData.map((card) => (
+            <Grid container spacing={2}>
+              <Box
+                sx={{
+                  backgroundColor: "white",
+                  borderRadius: 3,
+                  p: 2,
+                  width: "100%",
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
+                  mb: 1
+                }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography fontWeight={600} variant="body2">
+                    {card.title}
+                  </Typography>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary" sx={{
+                      color:
+                        'white', p: 1, backgroundColor: theme.palette.primary.main, borderRadius: 3
+                    }}>
+                      {card.titleday}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                  <Typography fontWeight={600} variant="body2">
+                    {card.subtitle}
+                  </Typography>
+                  <Box>
+                    <Typography variant="caption" color="text.secondary">
+                      {card.subtitleday}
+                    </Typography>
+                  </Box>
                 </Box>
 
-                <Divider sx={{ my: 2 }} />
-
-                <Box display="flex" justifyContent="space-between">
+                <Box display="flex" justifyContent="space-between" my={1}>
                   <Box display="flex">
 
                     <Typography variant="body2" sx={{ color: theme.palette.text.disabled }} pr={1} display="flex">
@@ -442,6 +491,9 @@ const Dashboard: React.FC = () => {
                     </Typography>
                   </Box>
                   <Box display="flex">
+                    <Typography variant="caption" fontWeight='bold'>
+                      Room No : {card.roomno}
+                    </Typography>
                   </Box>
                 </Box>
               </Box>
@@ -582,52 +634,59 @@ const Dashboard: React.FC = () => {
             container
             alignItems="center"
             justifyContent="center"
-            spacing={4}
-            sx={{ mt: 2 }} // optional margin top
+            spacing={6}
+            sx={{ mt: 8 }}
           >
             {QuickLinksData.map((card) => (
-              <Grid>
-                <Box
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: 3,
-                    p: 2,
-                    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  {typeof card.icon === "string" ? (
-                    <img
-                      src={card.icon}
-                      alt={card.title}
-                      style={{
-                        width: 50,
-                        height: 50,
-                        backgroundColor: theme.palette.background.default,
-                        borderRadius: 3,
-                        padding: 3,
-                      }}
-                    />
-                  ) : (
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {card.icon}
-                    </Box>
-                  )}
-                </Box>
+              <Grid
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  backgroundColor: "white",
+                  borderRadius: 3,
+                  p: 2,
+                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                  width: 120
+                }}
+              >
+                {typeof card.icon === "string" ? (
+                  <img
+                    src={card.icon}
+                    alt={card.title}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      backgroundColor: theme.palette.background.default,
+                      borderRadius: 3,
+                      padding: 3,
+                    }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {card.icon}
+                  </Box>
+                )}
+                <Typography variant="body2" textAlign="center">
+                  {card.title}
+                </Typography>
               </Grid>
             ))}
           </Grid>
 
+
         </Grid>
       </Grid>
-    </Box>
+    </Container>
 
 
   );
