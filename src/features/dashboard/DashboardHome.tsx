@@ -11,10 +11,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { FaclitiesData, FeesData, NoticePeriodData, QuickLinksData } from "./cardData";
 import { EventData } from "./cardData";
 import AddIcon from '@mui/icons-material/Add';
-import Chart from "react-apexcharts";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import type { ApexOptions } from "apexcharts";
 import {
   Timeline,
   TimelineItem,
@@ -28,27 +25,6 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useRef } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
 const Dashboard: React.FC = () => {
-  const series = [44, 55];
-
-  const options: ApexOptions = {
-    labels: ["Collected Fee", "Total Fee"],
-    colors: [theme.palette.secondary.main, theme.palette.primary.main],
-    legend: {
-      position: "bottom", // literal type
-      horizontalAlign: "center",
-      fontSize: "14px",
-      markers: {
-        size: 6,
-      },
-    },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: "70%",
-        },
-      },
-    },
-  }
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -66,7 +42,7 @@ const Dashboard: React.FC = () => {
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
 
 
-  const [selectedRangeChart, setSelectedRangeChart] = React.useState("1st Quarter");
+  // const [selectedRangeChart, setSelectedRangeChart] = React.useState("1st Quarter");
 
   // Sample data
   const subjects = ["Mat", "Phy", "Che", "Eng", "Sci"];
@@ -80,7 +56,8 @@ const Dashboard: React.FC = () => {
           color: "white",
           p: 3,
           backgroundImage: `url(${userBg})`,
-          backgroundPosition: 'right'
+          backgroundPosition: 'right',
+          my: 3
         }}
         className="d-flex align-items-xl-center justify-content-xl-between flex-xl-row flex-column p-4 my-3">
 
@@ -100,18 +77,19 @@ const Dashboard: React.FC = () => {
         </Box>
       </CardComponent>
 
-      {/* <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={4}>
-       
-      </Grid> */}
-      <CardComponent p={2}>
+      <CardComponent p={2} sx={{ mb: 3, mt: 4, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
         {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography fontWeight="bold" variant="body2" lineHeight={1}>
             Class Faculties
           </Typography>
 
-          {/* Scroll buttons instead of View All */}
-          <Box display="flex" alignItems="center" gap={1}>
+          {/* Scroll buttons only for large screens */}
+          <Box
+            display={{ xs: 'none', md: 'flex' }}
+            alignItems="center"
+            gap={1}
+          >
             <IconButton
               size="small"
               onClick={() => scroll("left")}
@@ -137,15 +115,17 @@ const Dashboard: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Scrollable card container */}
+        {/* Responsive card container */}
         <Box
           ref={scrollRef}
           sx={{
-            display: "flex",
-            overflowX: "auto",
-            scrollBehavior: "smooth",
+            display: 'flex',
+            flexWrap: { xs: 'wrap', md: 'nowrap' }, // wrap on small screens, no-wrap on desktop
+            overflowX: { xs: 'visible', md: 'auto' }, // scroll only on desktop
+            scrollBehavior: 'smooth',
+            gap: 2,
             pb: 1,
-            "&::-webkit-scrollbar": { display: "none" }, // hide scrollbar
+            "&::-webkit-scrollbar": { display: 'none' },
           }}
         >
           {FaclitiesData.map((card, index) => (
@@ -153,16 +133,15 @@ const Dashboard: React.FC = () => {
               key={index}
               p={2}
               sx={{
-                minWidth: 260,
-                mr: 3,
-                mb: 0,
-                backgroundColor: "white",
+                minWidth: { xs: '100%', sm: 260 }, // full width on mobile, fixed on tablet+
+                flex: { xs: '1 1 100%', md: '0 0 auto' }, // responsive flex
+                backgroundColor: 'white',
                 borderRadius: 3,
-                flexShrink: 0, // prevents shrinking in flex scroll
                 border: `2px solid ${theme.palette.background.default}`,
-                boxShadow: 'none'
+                boxShadow: 'none',
               }}
             >
+              {/* Card content */}
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box display="flex" alignItems="center">
                   <img
@@ -188,7 +167,7 @@ const Dashboard: React.FC = () => {
 
               <Divider sx={{ my: 2 }} />
 
-              <Box display="flex" justifyContent="space-between">
+              <Box display="flex" justifyContent="space-between" flexWrap="wrap" gap={1}>
                 <Box
                   display="flex"
                   alignItems="center"
@@ -197,14 +176,11 @@ const Dashboard: React.FC = () => {
                     border: `1px solid ${theme.palette.background.default}`,
                     p: 1,
                     borderRadius: 1,
+                    flex: '1 1 45%', // wrap actions nicely on small screens
                   }}
                 >
                   {card.icon1}
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                     {card.action1}
                   </Typography>
                 </Box>
@@ -217,14 +193,11 @@ const Dashboard: React.FC = () => {
                     border: `1px solid ${theme.palette.background.default}`,
                     p: 1,
                     borderRadius: 1,
+                    flex: '1 1 45%',
                   }}
                 >
                   {card.icon2}
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    sx={{ fontWeight: 500 }}
-                  >
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>
                     {card.action2}
                   </Typography>
                 </Box>
@@ -234,9 +207,10 @@ const Dashboard: React.FC = () => {
         </Box>
       </CardComponent>
 
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', }}>
+
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={2}
+          sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DemoContainer components={['DateCalendar']}>
               <DemoItem
@@ -265,7 +239,7 @@ const Dashboard: React.FC = () => {
             </DemoContainer>
           </LocalizationProvider>
         </Grid>
-        <Grid spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+        <Grid spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={2}
           sx={{
             backgroundColor: "white",
             borderRadius: 3,
@@ -338,7 +312,7 @@ const Dashboard: React.FC = () => {
 
         </Grid>
 
-        <Grid container spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}>
+        <Grid container spacing={2} size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={2}>
           <Grid sx={{ width: '100%', backgroundColor: 'white', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', p: 2.5, borderRadius: 3 }} >
             {/* Header */}
             <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -410,9 +384,8 @@ const Dashboard: React.FC = () => {
         </Grid>
       </Grid>
 
-
-      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }} my={2}>
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={2}
           container
           direction="column"
           spacing={2}
@@ -508,7 +481,7 @@ const Dashboard: React.FC = () => {
             borderRadius: 3,
             p: 2,
             boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-          }}
+          }} my={2}
         >
           {/* Header */}
           <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -619,7 +592,7 @@ const Dashboard: React.FC = () => {
           </Timeline>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }} my={2}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
           {/* Header */}
           <Box display="flex" justifyContent="space-between" alignItems="center">
