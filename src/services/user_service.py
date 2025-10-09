@@ -15,3 +15,6 @@ class UserService:
     def list_groups(self):
         return UserRepository.get_all_roles(self.db)
     
+    def bulk_create_users(self, users_data, group_id: int):
+        return UserRepository.bulk_create_users(self.db, users_data, group_id)
+    

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 
 class UserBase(BaseModel):
     username: str
@@ -21,4 +21,15 @@ class UserOut(UserBase):
         "from_attributes": True
     }
 
+class BulkUserCreate(BaseModel):
+    username: str
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone: str
+    student_id: Optional[int]
+
+class BulkUserCreateRequest(BaseModel):
+    group_id: int
+    users: List[BulkUserCreate]
 

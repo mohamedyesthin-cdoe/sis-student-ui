@@ -31,6 +31,8 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=True, unique=True)
+    #faculty_id = Column(Integer, nullable=True)
 
     groups = relationship("Group", secondary=user_group, back_populates="users")
     permissions = relationship("Permission", secondary=user_permission, back_populates="users")

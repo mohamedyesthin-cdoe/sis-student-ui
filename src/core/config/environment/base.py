@@ -22,6 +22,14 @@ class BaseConfig(BaseSettings):
     UGC_API_GET_KEY: str
     CLIENT_ID_POST: str
     UGC_API_POST_KEY: str
+    MAIL_SERVER: str
+    MAIL_PORT: int
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_FROM_NAME: str
+    MAIL_STARTTLS: bool = Field(default=True)
+    MAIL_SSL_TLS: bool = Field(default=False)
 
     class Config:
         env_file = ".env.dev"
