@@ -1,4 +1,5 @@
-import DashboardHome from "../features/dashboard/DashboardHome";
+// import DashboardStudent from "../features/dashboard/DashboardStudent";
+import DashboardAdmin from "../features/dashboard/DashboardAdmin";
 import StudentList from "../features/student/StudentList";
 import StudentDetail from "../features/student/StudentDetail";
 import Faculty from "../features/faculty/Faculty";
@@ -8,7 +9,7 @@ import ProgramList from "../features/programs/ProgramList";
 export const routesConfig = [
   {
     path: '/dashboard',
-    element: <DashboardHome />,
+    element: <DashboardAdmin />,
   },
   {
     path: '/students',

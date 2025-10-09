@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { FaclitiesData, FeesData, NoticePeriodData, QuickLinksData } from "./cardData";
-import { EventData } from "./cardData";
+import { StudentEventData } from "./cardData";
 import AddIcon from '@mui/icons-material/Add';
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import {
@@ -24,7 +24,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useRef } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
-const Dashboard: React.FC = () => {
+const DashboardStudent: React.FC = () => {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -398,7 +398,7 @@ const Dashboard: React.FC = () => {
           <Divider />
 
           {/* Cards stacked one by one */}
-          {EventData.map((card) => (
+          {StudentEventData.map((card) => (
             <Grid container spacing={2}>
               <Box
                 sx={{
@@ -620,7 +620,7 @@ const Dashboard: React.FC = () => {
                   backgroundColor: "white",
                   borderRadius: 3,
                   p: 2,
-                  boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
                   width: 120
                 }}
               >
@@ -665,4 +665,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardStudent;

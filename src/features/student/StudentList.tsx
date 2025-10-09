@@ -59,7 +59,6 @@ export default function ModernStudentTable() {
       [
         { header: 'S.No', key: 'sno' },
         { header: 'Registration No', key: 'registration_no' },
-        { header: 'Application No', key: 'application_no' },
         { header: 'Full Name', key: 'full_name', render: (s) => `${s.title} ${s.first_name} ${s.last_name}` },
         { header: 'Email', key: 'email' },
         { header: 'Mobile', key: 'mobile_number' },
@@ -138,6 +137,23 @@ export default function ModernStudentTable() {
         ]}
         actions={[
           {
+            label: 'Bulk Upload',
+            color: 'secondary',
+            variant: 'outlined',
+            startIcon: <CloudUploadIcon />,
+            onClick: async () => {
+              try {
+                const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                console.log(data);
+              } catch (error: any) {
+                showAlert(
+                  error?.detail || "Sync failed.",
+                  "error"
+                );
+              }
+            },
+          },
+          {
             label: 'Sync',
             color: 'primary',
             variant: 'outlined',
@@ -153,10 +169,6 @@ export default function ModernStudentTable() {
               try {
                 const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
                 console.log(data);
-
-                // update students with response data if API returns the list
-                // setStudents(Array.isArray(data) ? data : data.data);
-                // setPage(0);
               } catch (error: any) {
                 showAlert(
                   error?.detail || "Sync failed.",
@@ -196,7 +208,6 @@ export default function ModernStudentTable() {
         <ReusableTable
           columns={[
             { key: "registration_no", label: "Registration No" },
-            { key: "application_no", label: "Application No" },
             { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
             { key: "email", label: "Email" },
             { key: "mobile_number", label: "Mobile" },
