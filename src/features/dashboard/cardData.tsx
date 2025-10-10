@@ -14,11 +14,9 @@ import TimerIcon from '@mui/icons-material/Timer';
 import ClassIcon from '@mui/icons-material/Class';
 import AvTimerIcon from '@mui/icons-material/AvTimer';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import EventNoteIcon from '@mui/icons-material/EventNote';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ArticleIcon from '@mui/icons-material/Article';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
-import DescriptionIcon from '@mui/icons-material/Description';
 import MarkunreadIcon from '@mui/icons-material/Markunread';
 export const cardData = [
   {

@@ -14,6 +14,8 @@ import { CloudUploadIcon } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useAlert } from '../../context/AlertContext';
+import UploadExcelDialog from '../../components/alertcard/alertcard';
+import * as XLSX from "xlsx";
 
 export default function ModernStudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -38,6 +40,7 @@ export default function ModernStudentTable() {
       setStudents([]);
     }
   };
+
 
   // Replace your useEffect with fetchStudents call
   React.useEffect(() => {
@@ -85,7 +88,51 @@ export default function ModernStudentTable() {
     }
   };
 
+  const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
 
+  const handleOpenUploadDialog = () => setOpenUploadDialog(true);
+  const handleExcelUpload = async (file: File) => {
+    try {
+      const data = await file.arrayBuffer();
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      // Convert sheet to JSON
+      const rows: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+      if (!rows.length) throw new Error("Excel file is empty");
+
+      // Extract group_id (take from first row or default 0)
+      const group_id = rows[0].group_id || 0;
+
+      // Map each row to user object
+      const users = rows.map(row => ({
+        username: row.username,
+        first_name: row.first_name,
+        last_name: row.last_name,
+        email: row.email,
+        phone: row.phone,
+        student_id: row.student_id
+      }));
+
+      // Build final payload
+      const payload = { group_id, users };
+      console.log("Payload to send:", payload);
+
+      // Call API
+      await apiRequest({
+        url: ApiRoutes.BULKADD, // your endpoint
+        method: "post",
+        data: payload,
+      });
+
+      showAlert("Excel uploaded successfully!", "success");
+    } catch (error) {
+      console.error(error);
+      showAlert("Failed to upload Excel. Please check the file and try again.", "error");
+    }
+  };
   return (
     <CardComponent sx={{
       width: '100%',
@@ -135,55 +182,44 @@ export default function ModernStudentTable() {
           // },
 
         ]}
-        actions={[
-          {
-            label: 'Bulk Upload',
-            color: 'secondary',
-            variant: 'outlined',
-            startIcon: <CloudUploadIcon />,
-            onClick: async () => {
-              try {
-                const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
-                console.log(data);
-              } catch (error: any) {
-                showAlert(
-                  error?.detail || "Sync failed.",
-                  "error"
-                );
-              }
+        actions={
+          [
+            {
+              label: 'Bulk Upload',
+              color: 'secondary',
+              variant: 'outlined',
+              startIcon: <CloudUploadIcon />,
+              onClick: handleOpenUploadDialog
             },
-          },
-          {
-            label: 'Sync',
-            color: 'primary',
-            variant: 'outlined',
-            startIcon: <SyncIcon />,
-            onClick: handleSync,
-          },
-          {
-            label: 'Push to Deb',
-            color: 'success',
-            variant: 'outlined',
-            startIcon: <CloudUploadIcon />,
-            onClick: async () => {
-              try {
-                const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
-                console.log(data);
-              } catch (error: any) {
-                showAlert(
-                  error?.detail || "Sync failed.",
-                  "error"
-                );
-              }
+            {
+              label: 'Sync',
+              color: 'primary',
+              variant: 'outlined',
+              startIcon: <SyncIcon />,
+              onClick: handleSync,
             },
-          },
-          {
-            label: 'Export Excel',
-            color: 'secondary',
-            startIcon: <FileDownloadIcon />,
-            onClick: handleExportExcel,
-          },
-        ]}
+            {
+              label: 'Push to Deb',
+              color: 'success',
+              variant: 'outlined',
+              startIcon: <CloudUploadIcon />,
+              onClick: async () => {
+                try {
+                  const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                  console.log(data);
+                } catch (error: any) {
+                  showAlert(error?.detail || "Sync failed.", "error");
+                }
+              },
+            },
+            {
+              label: 'Export Excel',
+              color: 'secondary',
+              startIcon: <FileDownloadIcon />,
+              onClick: handleExportExcel,
+            },
+          ]
+        }
       />
 
       {/* Table */}
@@ -234,6 +270,12 @@ export default function ModernStudentTable() {
           setRowsPerPage(newRowsPerPage);
           setPage(0);
         }}
+      />
+
+      <UploadExcelDialog
+        open={openUploadDialog}
+        onClose={() => setOpenUploadDialog(false)}
+        onUpload={handleExcelUpload}
       />
 
     </CardComponent>

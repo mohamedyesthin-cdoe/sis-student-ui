@@ -13,4 +13,5 @@ export const ApiRoutes = {
   PROGRAMADD:'programe/add',
   PROGRAMFETCH:'programe',
   PROGRAMUPDATE:'programe/update',
+  BULKADD:'user/bulk-add'
 };

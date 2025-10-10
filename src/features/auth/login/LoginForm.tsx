@@ -53,6 +53,8 @@ function LoginPage() {
       const user = jwtDecode<JwtPayload>(result.access_token);
       dispatch(setUser({ userName: user.username }));
       // showAlert('Login successful!', 'info');
+      console.log("user---",user);
+      
       navigate("/dashboard");
 
     } catch (error) {
@@ -67,11 +69,15 @@ function LoginPage() {
 
   let schema = Yup.object().shape({
     username: Yup.string()
-      .email()
+      .email("Enter a valid Email")
       .required("Email is Required")
-      .matches(/^[a-zA-Z0-9]+@[a-z]{3,6}\.[a-z]{2,4}$/, "Enter a valid Email"),
-    password: Yup.string().required("Password is Required")
+      .matches(
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        "Enter a valid Email"
+      ),
+    password: Yup.string().required("Password is Required"),
   });
+
 
   let { register, handleSubmit, formState: { errors }, } = useForm({
     resolver: yupResolver(schema),
@@ -113,7 +119,7 @@ function LoginPage() {
             Welcome to SIS! 👋
           </Typography>
 
-          <Typography variant="body1" sx={{color:theme.palette.custom.accent}}>
+          <Typography variant="body1" sx={{ color: theme.palette.custom.accent }}>
             Please sign-in to your account and start the adventure
           </Typography>
 
@@ -166,12 +172,12 @@ function LoginPage() {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: (theme) => theme.palette.secondary.main, 
+              backgroundColor: (theme) => theme.palette.secondary.main,
               textTransform: 'none',
               py: 1.5,
               fontWeight: 600,
               '&:hover': {
-                backgroundColor: (theme) => theme.palette.primary.dark, 
+                backgroundColor: (theme) => theme.palette.primary.dark,
               },
             }}
           >
