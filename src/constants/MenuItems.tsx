@@ -19,7 +19,7 @@ interface MenuItem {
   }[];
 }
 
-export const MENU_ITEMS: MenuItem[] = [
+export const ADMIN_MENU_ITEMS: MenuItem[] = [
   { 
     text: 'Dashboard', 
     icon: 'Dashboard', 
@@ -50,6 +50,38 @@ export const MENU_ITEMS: MenuItem[] = [
     ],
     routePath: '',
   },
+];
+export const STUDENT_MENU_ITEMS: MenuItem[] = [
+  { 
+    text: 'Dashboard', 
+    icon: 'Dashboard', 
+    subItems: [], 
+    routePath: '/dashboard' 
+  },
+  // {
+  //   text: 'Students',
+  //   icon: 'Students',
+  //   subItems: [
+  //     { text: 'Students List', routePath: '/students' },
+  //   ],
+  //   routePath: '',
+  // },
+  // {
+  //   text: 'Programs',
+  //   icon: 'Programs',
+  //   subItems: [
+  //     { text: 'Programs List', routePath: '/programs' },
+  //   ],
+  //   routePath: '',
+  // },
+  // {
+  //   text: 'Faculty',
+  //   icon: 'Faculty',
+  //   subItems: [
+  //     { text: 'Faculty List', routePath: '/faculty' },
+  //   ],
+  //   routePath: '',
+  // },
 ];
 
 export const ICON_MAP: Record<string, JSX.Element> = {

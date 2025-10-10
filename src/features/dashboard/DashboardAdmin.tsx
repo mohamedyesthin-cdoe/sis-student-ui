@@ -23,6 +23,7 @@ import {
   TimelineContent,
   TimelineDot,
 } from "@mui/lab";
+import { getValue } from "../../utils/localStorageUtil";
 const DashboardAdmin: React.FC = () => {
   const series = [44, 55];
 
@@ -48,6 +49,7 @@ const DashboardAdmin: React.FC = () => {
 
   const [selectedRange, setSelectedRange] = React.useState("Last 8 Quarter");
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
+  const username = getValue('username')
   return (
     <Box>
       <CardComponent
@@ -61,9 +63,10 @@ const DashboardAdmin: React.FC = () => {
         className="d-flex align-items-xl-center justify-content-xl-between flex-xl-row flex-column p-4 my-3">
 
         <Box>
-          <Typography variant="h5" fontWeight={600}>
-            Welcome Back, Jiya!
+          <Typography variant="h5" fontWeight={600} sx={{ textTransform: 'capitalize' }}>
+            Welcome Back, {username}!
           </Typography>
+
           <Typography variant="body2">Have a Good day at work</Typography>
         </Box>
         <Box>
@@ -568,7 +571,7 @@ const DashboardAdmin: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-        height={300}
+          height={300}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
           {/* Header */}
           <Box display="flex" justifyContent="space-between" alignItems="center">

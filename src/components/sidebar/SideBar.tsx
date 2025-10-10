@@ -14,8 +14,9 @@ import { ExpandLess, ExpandMore, } from '@mui/icons-material';
 import logo from '/assets/logo.png';
 import logo2 from '/assets/logo2.png';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ICON_MAP, MENU_ITEMS } from '../../constants/MenuItems';
+import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import { getValue } from '../../utils/localStorageUtil';
 
 
 interface SidebarProps {
@@ -39,6 +40,7 @@ export default function Sidebar({
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme()
+  const rollId = getValue("rollid")
 
   useEffect(() => {
     const path = location.pathname;
@@ -104,7 +106,7 @@ export default function Sidebar({
       </Box>
 
       <List component="nav" className="flex-1 px-2 py-3">
-        {MENU_ITEMS.map((item) => {
+        {(rollId == '1' ? ADMIN_MENU_ITEMS : STUDENT_MENU_ITEMS).map((item) => {
           const hasChildren = item.subItems.length > 0;
           const isOpen = openItems[item.text] || false;
           const isActive = selectedItem === item.text || selectedParent === item.text;

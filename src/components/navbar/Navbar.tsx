@@ -3,7 +3,7 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Badge,
+  // Badge,
   Avatar,
   Popover,
   Button,
@@ -14,15 +14,19 @@ import {
   Box,
 } from '@mui/material';
 import {
-  Notifications as NotificationsIcon,
   Search as SearchIcon,
   Menu as MenuIcon,
 } from '@mui/icons-material';
+// import {
+//   Notifications as NotificationsIcon,
+//   Search as SearchIcon,
+//   Menu as MenuIcon,
+// } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close'
 
 import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
-import { removeSingleValue } from '../../utils/localStorageUtil';
+import { getValue, removeSingleValue } from '../../utils/localStorageUtil';
 import userimage from '/assets/images/man.png'
 type NavbarProps = {
   onHamburgerClick?: () => void; // optional callback
@@ -32,7 +36,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
   const [notificationsDrawerOpen, setNotificationsDrawerOpen] = useState(false);
 
-  const handleNotificationClick = (event: any) => setNotificationAnchorEl(event.currentTarget);
+  // const handleNotificationClick = (event: any) => setNotificationAnchorEl(event.currentTarget);
   const handleNotificationClose = () => setNotificationAnchorEl(null);
 
   const handleLanguageClose = () => setLanguageAnchorEl(null);
@@ -66,8 +70,13 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   const navigate = useNavigate();
   const clearLocalStorage = () => {
     removeSingleValue('ACCESS_TOKEN_KEY');
+    removeSingleValue('email');
+    removeSingleValue('rollid');
+    removeSingleValue('username');
     navigate("/login");
   };
+  const username = getValue('username')
+  const email = getValue('email')
 
   return (
     <>
@@ -99,17 +108,17 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
 
           {/* Right Section: Icons + Avatar */}
           <Box className="flex items-center space-x-4">
-            <IconButton onClick={handleNotificationClick}>
+            {/* <IconButton onClick={handleNotificationClick}>
               <Badge badgeContent={4} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
 
             {/* <IconButton onClick={handleLanguageClick}>
               <LanguageIcon />
             </IconButton> */}
 
-            <IconButton onClick={handleProfileClick}>
+            <IconButton onClick={handleProfileClick} sx={{ mr: 1 }}>
               <Avatar alt="User Avatar" src={userimage} />
             </IconButton>
           </Box>
@@ -215,14 +224,23 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
               <Box className="flex items-center space-x-3">
                 <Avatar src={userimage} className="w-12 h-12" />
                 <Box>
-                  <Typography className="font-bold text-lg">Michel John</Typography>
-                  <Typography className="text-gray-500 text-sm">examplemail@mail.com</Typography>
+                  <Typography className="font-bold text-lg" sx={{ textTransform: 'capitalize' }}>{username}</Typography>
+                  <Typography
+                    className="text-gray-500 text-sm"
+                    sx={{
+                      wordBreak: "break-word",
+                      whiteSpace: "normal"
+                    }}
+                  >
+                    {email}
+                  </Typography>
+
                 </Box>
               </Box>
 
               <Divider />
 
-              {[
+              {/* {[
                 { label: 'Account Settings', icon: '⚙️' },
                 { label: 'Upgrade Plan', icon: '📊' },
                 { label: 'Daily Activity', icon: '📈' },
@@ -233,7 +251,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
                   <span className="text-xl">{item.icon}</span>
                   <Typography className="text-gray-800 font-medium">{item.label}</Typography>
                 </Box>
-              ))}
+              ))} */}
 
               <Divider />
 

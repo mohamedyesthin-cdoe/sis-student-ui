@@ -5,11 +5,21 @@ import StudentDetail from "../features/student/StudentDetail";
 import Faculty from "../features/faculty/Faculty";
 import ProgramAdd from "../features/programs/ProgramAdd";
 import ProgramList from "../features/programs/ProgramList";
+import DashboardStudent from "../features/dashboard/DashboardStudent";
 
 export const routesConfig = [
-  {
+ {
     path: '/dashboard',
-    element: <DashboardAdmin />,
+    children: [
+      {
+        path: '',
+        element: <DashboardAdmin />, // default admin view
+      },
+      {
+        path: 'student',
+        element: <DashboardStudent />, // student view
+      },
+    ],
   },
   {
     path: '/students',

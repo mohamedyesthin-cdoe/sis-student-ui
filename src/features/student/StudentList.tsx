@@ -14,7 +14,7 @@ import { CloudUploadIcon } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useAlert } from '../../context/AlertContext';
-import UploadExcelDialog from '../../components/alertcard/alertcard';
+import UploadExcelDialog from '../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
 
 export default function ModernStudentTable() {
@@ -115,6 +115,7 @@ export default function ModernStudentTable() {
         phone: row.phone,
         student_id: row.student_id
       }));
+
 
       // Build final payload
       const payload = { group_id, users };

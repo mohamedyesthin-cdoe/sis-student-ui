@@ -24,6 +24,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useRef } from "react";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { getValue } from "../../utils/localStorageUtil";
 const DashboardStudent: React.FC = () => {
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -40,6 +41,7 @@ const DashboardStudent: React.FC = () => {
 
   const [selectedRange, setSelectedRange] = React.useState("1st Quarter");
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
+  const username = getValue('username')
 
 
   // const [selectedRangeChart, setSelectedRangeChart] = React.useState("1st Quarter");
@@ -62,8 +64,8 @@ const DashboardStudent: React.FC = () => {
         className="d-flex align-items-xl-center justify-content-xl-between flex-xl-row flex-column p-4 my-3">
 
         <Box>
-          <Typography variant="h5" fontWeight={600}>
-            Welcome Back, Jiya!
+          <Typography variant="h5" fontWeight={600} sx={{ textTransform: 'capitalize' }}>
+            Welcome Back, {username}!
           </Typography>
           <Typography variant="body2">Have a Good day at work</Typography>
         </Box>
