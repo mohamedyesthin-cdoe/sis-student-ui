@@ -13,7 +13,7 @@ oauth2_scheme = HTTPBearer()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 
 def get_current_user(token: HTTPAuthorizationCredentials = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(

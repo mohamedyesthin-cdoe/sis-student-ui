@@ -1,16 +1,22 @@
 from sqlalchemy.orm import Session
-from src.models.user import User, Group
+from src.models.user import User, Group, user_group
 from src.schemas.user import UserCreate
 from src.utils.hash import hash_password, generate_password
 from fastapi import HTTPException
 from src.utils.email import send_credentials_email
 import asyncio
+from sqlalchemy import select
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
 
 def get_user_by_username(db: Session, username: str):
     return db.query(User).filter(User.username == username).first()
+
+def get_group_by_id(db: Session, user_id: int):
+    stmt = select(user_group.c.group_id).where(user_group.c.user_id == user_id)
+    result = db.execute(stmt).scalars().first()
+    return result
 
 class UserRepository:
     """

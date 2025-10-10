@@ -44,7 +44,6 @@ async def send_credentials_email(email_to: str, username: str, password: str):
     fm = FastMail(conf)
     try:
         await fm.send_message(message)
-        print(message)
     except Exception as e:
         # Log error (use your logger here, e.g., logger.error(f"Email failed for {email_to}: {e}"))
         print(f"Email send failed for {email_to}: {e}")  # Fallback for demo
