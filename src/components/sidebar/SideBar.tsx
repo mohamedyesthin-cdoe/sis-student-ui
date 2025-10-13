@@ -120,7 +120,7 @@ export default function Sidebar({
                     onClick={() => handleSelect(item.text, item.routePath, hasChildren)}
                     sx={{
                       bgcolor: isActive ? theme.palette.secondary.main : 'transparent',
-                      color: isActive ? 'white' : theme.palette.text.secondary,
+                      color: isActive ? 'white' : theme.palette.secondary.main,
                       fontSize: '1rem',
                       fontWeight: 500,
                       borderRadius: '8px',
@@ -142,7 +142,7 @@ export default function Sidebar({
                     <ListItemIcon
                       sx={{
                         minWidth: 0,
-                        color: isActive ? 'white' : theme.palette.text.secondary,
+                        color: isActive ? 'white' : theme.palette.secondary.main,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -158,7 +158,7 @@ export default function Sidebar({
                   onClick={() => handleSelect(item.text, item.routePath, hasChildren)}
                   sx={{
                     bgcolor: isActive ? theme.palette.secondary.main : 'transparent',
-                    color: isActive ? 'white' : theme.palette.text.secondary,
+                    color: isActive ? 'white' : theme.palette.secondary.main,
                     fontSize: '1rem',
                     fontWeight: 500,
                     borderRadius: '8px',
@@ -180,7 +180,7 @@ export default function Sidebar({
                   <ListItemIcon
                     sx={{
                       minWidth: 0,
-                      color: isActive ? 'white' : theme.palette.text.primary,
+                      color: isActive ? 'white' : theme.palette.secondary.main,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',

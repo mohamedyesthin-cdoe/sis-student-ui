@@ -19,25 +19,40 @@ const renderRoutes = (routes: any[]) =>
   );
 
 const AppRoutes = () => {
-  const isAuthenticated = getValue('ACCESS_TOKEN_KEY');
+  const token = getValue("ACCESS_TOKEN_KEY");
+  const rollid = Number(getValue("rollid"));
+
+  // ✅ Compute default redirect based on authentication + role
+  const getDefaultRoute = () => {
+    if (!token) return "/login";
+    if (rollid === 1) return "/dashboard";
+    if (rollid === 2) return "/dashboard/student";
+    return "/unauthorized";
+  };
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />}
-      />
+      {/* Root Redirect */}
+      <Route path="/" element={<Navigate to={getDefaultRoute()} />} />
+
+      {/* Public Route (Login) */}
       <Route
         path="/login"
-        element={<PublicRoute><LoginPage /></PublicRoute>}
+        element={
+          <PublicRoute>
+            <LoginPage />
+          </PublicRoute>
+        }
       />
 
+      {/* Protected Routes */}
       <Route element={<ProtectedLayout />}>
         <Route element={<DashboardLayout />}>
           {renderRoutes(routesConfig)}
         </Route>
       </Route>
 
+      {/* Catch-All 404 */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

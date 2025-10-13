@@ -1,9 +1,3 @@
-// const PublicRoute = ({ children }: { children: ReactNode }) => {
-//   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-//   return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" />;
-// };
-
-
 import React, { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { getValue } from "../utils/localStorageUtil";
@@ -13,9 +7,16 @@ interface PublicRouteProps {
 }
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
-  const isAuthenticated = getValue('ACCESS_TOKEN_KEY')
+  const token = getValue("ACCESS_TOKEN_KEY");
+  const rollid = Number(getValue("rollid"));
 
-  return !isAuthenticated ? children : <Navigate to="/dashboard" />;
+  if (!token) return <>{children}</>;
+
+  // ✅ Role-based redirect
+  if (rollid === 1) return <Navigate to="/dashboard" />;
+  if (rollid === 2) return <Navigate to="/dashboard/student" />;
+  
+  return <Navigate to="/unauthorized" />;
 };
 
 export default PublicRoute;

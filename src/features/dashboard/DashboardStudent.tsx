@@ -610,7 +610,7 @@ const DashboardStudent: React.FC = () => {
             alignItems="center"
             justifyContent="center"
             spacing={6}
-            sx={{ mt: 8 }}
+            sx={{ mt: 6 }}
           >
             {QuickLinksData.map((card) => (
               <Grid

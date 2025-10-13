@@ -571,7 +571,7 @@ const DashboardAdmin: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-          height={300}
+          height={370}
           sx={{ backgroundColor: "white", borderRadius: 3, p: 2, boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
           {/* Header */}
           <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -586,45 +586,51 @@ const DashboardAdmin: React.FC = () => {
             container
             alignItems="center"
             justifyContent="center"
-            spacing={4}
-            sx={{ mt: 2 }} // optional margin top
+            spacing={6}
+            sx={{ mt: 3 }}
           >
             {QuickLinksData.map((card) => (
-              <Grid>
-                <Box
-                  sx={{
-                    backgroundColor: "white",
-                    borderRadius: 3,
-                    p: 2,
-                    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  {typeof card.icon === "string" ? (
-                    <img
-                      src={card.icon}
-                      alt={card.title}
-                      style={{
-                        width: 50,
-                        height: 50,
-                        backgroundColor: theme.palette.background.default,
-                        borderRadius: 3,
-                        padding: 3,
-                      }}
-                    />
-                  ) : (
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {card.icon}
-                    </Box>
-                  )}
-                </Box>
+              <Grid
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                sx={{
+                  backgroundColor: "white",
+                  borderRadius: 3,
+                  p: 2,
+                  border: '1px solid rgba(0, 0, 0, 0.1)',
+                  width: 120
+                }}
+              >
+                {typeof card.icon === "string" ? (
+                  <img
+                    src={card.icon}
+                    alt={card.title}
+                    style={{
+                      width: 50,
+                      height: 50,
+                      backgroundColor: theme.palette.background.default,
+                      borderRadius: 3,
+                      padding: 3,
+                    }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {card.icon}
+                  </Box>
+                )}
+                <Typography variant="body2" textAlign="center">
+                  {card.title}
+                </Typography>
               </Grid>
             ))}
           </Grid>
