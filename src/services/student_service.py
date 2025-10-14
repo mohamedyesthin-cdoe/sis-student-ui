@@ -23,6 +23,14 @@ class StudentService:
     def get_student_by_id(self, student_id: int) -> Student:
         """Retrieve a student by ID."""
         return self.student_repo.get_by_id(student_id)
+    
+    def get_student_id(self, student_id: int) -> Student:
+        """Retrieve a student by ID."""
+        return self.student_repo.get_student_by_id(student_id)
+    
+    def get_fees(self, student_id: int) -> Student:
+        """Retrieve a student by ID."""
+        return self.student_repo.get_fees(student_id)
 
     def get_all_students(self) -> List[StudentResponse]:
         """Retrieve all students with their details."""

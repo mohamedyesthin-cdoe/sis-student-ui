@@ -43,6 +43,35 @@ class StudentRepository(BaseRepository[Student]):
             return students
         except Exception as e:
             raise e
+    
+    def get_student_by_id(self, student_id: int) -> Student:
+        try:
+            students = self.db.query(Student).options(
+                joinedload(Student.address_details),
+                joinedload(Student.academic_details),
+                joinedload(Student.document_details),
+                joinedload(Student.declaration_details),
+                joinedload(Student.deb_details),
+                joinedload(Student.payments).joinedload(Payment.semester_fee),
+                joinedload(Student.payments).joinedload(Payment.application_fee)
+            ).filter(Student.id == student_id).first()
+            
+            #students = self.db.query(Student).all()
+            return students
+        except Exception as e:
+            raise e
+        
+    def get_fees(self, student_id: int) -> Student:
+        try:
+            students = self.db.query(Payment).options(
+                joinedload(Payment.semester_fee),
+                joinedload(Payment.application_fee)
+            ).filter(Payment.student_id == student_id).all()
+            
+            #students = self.db.query(Student).all()
+            return students
+        except Exception as e:
+            raise e
 
     def get_first_student_id(self) -> Optional[int]:
         first = self.db.query(Student).order_by(Student.id.asc()).first()
