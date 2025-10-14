@@ -3,7 +3,6 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  // Badge,
   Avatar,
   Popover,
   Button,
@@ -80,167 +79,185 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
 
   return (
     <>
-      <AppBar position="static" elevation={0} className="bg-white border-b border-gray-200">
-        <Toolbar className="flex flex-col md:flex-row md:justify-between md:items-center p-2 space-y-2 md:space-y-0">
-
-          {/* Left Section: Hamburger + Search */}
-          <Box className="flex items-center w-full md:w-auto space-x-3">
-            <IconButton onClick={onHamburgerClick} color="secondary" className="md:hidden">
+      <AppBar position="static" elevation={2} className="bg-white border-b border-gray-200 shadow-sm">
+        <Toolbar className="flex flex-wrap md:flex-nowrap justify-between items-center p-3">
+          {/* Left Section: Hamburger + Search + Avatar */}
+          <Box className="flex items-center w-full md:w-auto space-x-2">
+            {/* Hamburger */}
+            <IconButton
+              onClick={onHamburgerClick}
+              color="primary"
+              className="md:hidden bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg"
+            >
               <MenuIcon />
             </IconButton>
 
-            <Box className="w-full md:w-72">
+            {/* Search Box */}
+            <Box className="flex-grow md:w-80">
               <TextField
                 placeholder="Search..."
                 size="small"
                 variant="outlined"
                 fullWidth
+                className="bg-gray-50 rounded-lg shadow-sm"
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <SearchIcon className="text-gray-400" />
                     </InputAdornment>
                   ),
+                  sx: { borderRadius: '10px', backgroundColor: '#f9fafb' },
                 }}
               />
             </Box>
+
+            {/* Avatar (mobile view: inside left section) */}
+            <div className='md:hidden'>
+              <IconButton
+              onClick={handleProfileClick}
+              sx={{ p: 0 }}
+            >
+              <Avatar
+                alt="User Avatar"
+                src={userimage}
+                sx={{ width: 40, height: 40, border: '2px solid #105c8e' }}
+              />
+            </IconButton>
+            </div>
           </Box>
 
-          {/* Right Section: Icons + Avatar */}
-          <Box className="flex items-center space-x-4">
-            {/* <IconButton onClick={handleNotificationClick}>
-              <Badge badgeContent={4} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton> */}
+          {/* Right Section: Avatar (desktop only) */}
+          <Box className="hidden md:flex items-center space-x-3">
+            <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
+              <Avatar
+                alt="User Avatar"
+                src={userimage}
+                sx={{ width: 40, height: 40, border: '2px solid #105c8e' }}
+              />
+            </IconButton>
+          </Box>
+        </Toolbar>
 
-            {/* <IconButton onClick={handleLanguageClick}>
-              <LanguageIcon />
-            </IconButton> */}
+      </AppBar>
 
-            <IconButton onClick={handleProfileClick} sx={{ mr: 1 }}>
-              <Avatar alt="User Avatar" src={userimage} />
+
+      <Popover
+        open={notificationPopoverOpen}
+        anchorEl={notificationAnchorEl}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          className: 'rounded-lg shadow-lg w-[340px] border border-gray-300',
+        }}
+      >
+        <Box className="bg-white flex flex-col max-h-[340px]">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            pl={2}
+            py={1}
+            bgcolor="secondary.main"
+            color="white"
+          >
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
+              Notifications Summary
+            </Typography>
+
+            <IconButton onClick={handleNotificationClose} sx={{ color: 'white' }}>
+              <CloseIcon fontSize="medium" />
             </IconButton>
           </Box>
 
-          {/* Notification Popover */}
-          <Popover
-            open={notificationPopoverOpen}
-            anchorEl={notificationAnchorEl}
-            onClose={handleNotificationClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            PaperProps={{
-              className: 'rounded-lg shadow-lg w-[340px] border border-gray-300',
-            }}
-          >
-            <Box className="bg-white flex flex-col max-h-[340px]">
-              <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                pl={2}
-                py={1}
-                bgcolor="secondary.main"
-                color="white"
+          <Divider className="my-2" />
+
+          <Box className="flex-1 overflow-auto p-2">
+            {[
+              { avatarText: 'AB', message: 'Ashwin requested access to Design File.', extra: '📁 Design brief...', time: '2 mins ago' },
+              { avatarText: 'P', message: 'Patrick added a comment.', extra: '', time: '5 mins ago' },
+              { avatarText: 'PR', message: 'New version of Project Roadmap uploaded.', extra: '', time: '10 mins ago' },
+            ].map((item, index) => (
+              <Box key={index} className="flex items-start space-x-3 py-3 px-2 rounded hover:bg-gray-100 transition-colors">
+                <Avatar className="w-10 h-10 bg-gray-300 text-gray-600 text-xs">{item.avatarText}</Avatar>
+                <Box className="flex-1">
+                  <Typography className="font-medium text-gray-800 text-sm">{item.message}</Typography>
+                  {item.extra && <Box className="flex items-center text-gray-600 text-xs mt-1">{item.extra}</Box>}
+                  <Typography className="text-xs text-gray-400 mt-1">{item.time}</Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+
+          <Divider className="my-2" />
+
+          <Box className="text-center p-2 mb-2">
+            <Button variant="outlined" color='secondary' size="small" onClick={() => {
+              handleNotificationsDrawerOpen();
+              handleNotificationClose();
+            }}>
+              View All Notifications
+            </Button>
+          </Box>
+        </Box>
+      </Popover>
+
+      {/* Language Selection Popover */}
+      <Popover
+        open={languagePopoverOpen}
+        anchorEl={languageAnchorEl}
+        onClose={handleLanguageClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          className: 'rounded-lg shadow-lg w-[240px] border border-gray-300',
+        }}
+      >
+        <Box className="bg-white flex flex-col p-3 space-y-2">
+          {languages.map((item, index) => (
+            <Box
+              key={index}
+              className={`flex items-center space-x-3 p-2 rounded cursor-pointer ${selectedLanguage === item.label ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
+              onClick={() => handleSelectLanguage(item.label)}
+            >
+              <img src={item.imgSrc} alt={item.label} className="w-8 h-8 rounded-full" />
+              <Typography className="font-medium text-gray-800">{item.label}</Typography>
+            </Box>
+          ))}
+        </Box>
+      </Popover>
+
+      <Popover
+        open={profilePopoverOpen}
+        anchorEl={profileAnchorEl}
+        onClose={handleProfileClose}  // Just close the popover
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          className: 'rounded-lg shadow-lg w-[300px] border border-gray-300',
+        }}
+      >
+        <Box className="bg-white flex flex-col p-4 space-y-4">
+          <Box className="flex items-center space-x-3">
+            <Avatar src={userimage} className="w-12 h-12" />
+            <Box>
+              <Typography className="font-bold text-lg" sx={{ textTransform: 'capitalize' }}>{username}</Typography>
+              <Typography
+                className="text-gray-500 text-sm"
+                sx={{
+                  wordBreak: "break-word",
+                  whiteSpace: "normal"
+                }}
               >
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
-                  Notifications Summary
-                </Typography>
+                {email}
+              </Typography>
 
-                <IconButton onClick={handleNotificationClose} sx={{ color: 'white' }}>
-                  <CloseIcon fontSize="medium" />
-                </IconButton>
-              </Box>
-
-              <Divider className="my-2" />
-
-              <Box className="flex-1 overflow-auto p-2">
-                {[
-                  { avatarText: 'AB', message: 'Ashwin requested access to Design File.', extra: '📁 Design brief...', time: '2 mins ago' },
-                  { avatarText: 'P', message: 'Patrick added a comment.', extra: '', time: '5 mins ago' },
-                  { avatarText: 'PR', message: 'New version of Project Roadmap uploaded.', extra: '', time: '10 mins ago' },
-                ].map((item, index) => (
-                  <Box key={index} className="flex items-start space-x-3 py-3 px-2 rounded hover:bg-gray-100 transition-colors">
-                    <Avatar className="w-10 h-10 bg-gray-300 text-gray-600 text-xs">{item.avatarText}</Avatar>
-                    <Box className="flex-1">
-                      <Typography className="font-medium text-gray-800 text-sm">{item.message}</Typography>
-                      {item.extra && <Box className="flex items-center text-gray-600 text-xs mt-1">{item.extra}</Box>}
-                      <Typography className="text-xs text-gray-400 mt-1">{item.time}</Typography>
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-
-              <Divider className="my-2" />
-
-              <Box className="text-center p-2 mb-2">
-                <Button variant="outlined" color='secondary' size="small" onClick={() => {
-                  handleNotificationsDrawerOpen();
-                  handleNotificationClose();
-                }}>
-                  View All Notifications
-                </Button>
-              </Box>
             </Box>
-          </Popover>
+          </Box>
 
-          {/* Language Selection Popover */}
-          <Popover
-            open={languagePopoverOpen}
-            anchorEl={languageAnchorEl}
-            onClose={handleLanguageClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            PaperProps={{
-              className: 'rounded-lg shadow-lg w-[240px] border border-gray-300',
-            }}
-          >
-            <Box className="bg-white flex flex-col p-3 space-y-2">
-              {languages.map((item, index) => (
-                <Box
-                  key={index}
-                  className={`flex items-center space-x-3 p-2 rounded cursor-pointer ${selectedLanguage === item.label ? 'bg-blue-100' : 'hover:bg-gray-100'}`}
-                  onClick={() => handleSelectLanguage(item.label)}
-                >
-                  <img src={item.imgSrc} alt={item.label} className="w-8 h-8 rounded-full" />
-                  <Typography className="font-medium text-gray-800">{item.label}</Typography>
-                </Box>
-              ))}
-            </Box>
-          </Popover>
+          <Divider />
 
-          <Popover
-            open={profilePopoverOpen}
-            anchorEl={profileAnchorEl}
-            onClose={handleProfileClose}  // Just close the popover
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            PaperProps={{
-              className: 'rounded-lg shadow-lg w-[300px] border border-gray-300',
-            }}
-          >
-            <Box className="bg-white flex flex-col p-4 space-y-4">
-              <Box className="flex items-center space-x-3">
-                <Avatar src={userimage} className="w-12 h-12" />
-                <Box>
-                  <Typography className="font-bold text-lg" sx={{ textTransform: 'capitalize' }}>{username}</Typography>
-                  <Typography
-                    className="text-gray-500 text-sm"
-                    sx={{
-                      wordBreak: "break-word",
-                      whiteSpace: "normal"
-                    }}
-                  >
-                    {email}
-                  </Typography>
-
-                </Box>
-              </Box>
-
-              <Divider />
-
-              {/* {[
+          {/* {[
                 { label: 'Account Settings', icon: '⚙️' },
                 { label: 'Upgrade Plan', icon: '📊' },
                 { label: 'Daily Activity', icon: '📈' },
@@ -253,27 +270,22 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
                 </Box>
               ))} */}
 
-              <Divider />
+          <Divider />
 
-              <Button
-                variant="outlined"
-                color="error"
-                fullWidth
-                onClick={() => {
-                  clearLocalStorage();  // Only now log out
-                  handleProfileClose();
-                  console.log('User logged out');
-                }}
-              >
-                Logout
-              </Button>
-            </Box>
-          </Popover>
-
-
-        </Toolbar>
-      </AppBar>
-
+          <Button
+            variant="outlined"
+            color="error"
+            fullWidth
+            onClick={() => {
+              clearLocalStorage();  // Only now log out
+              handleProfileClose();
+              console.log('User logged out');
+            }}
+          >
+            Logout
+          </Button>
+        </Box>
+      </Popover>
       <NotificationsDrawer open={notificationsDrawerOpen} onClose={handleNotificationsDrawerClose} />
     </>
   );

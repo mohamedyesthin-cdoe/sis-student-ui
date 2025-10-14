@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { sampleStudents } from './sampleData';
 import coverImage from '/assets/images/user-grid-bg1.png';
 import avatarImage from '/assets/images/user-grid-img14.png';
 import { Avatar, Divider, Typography, Box } from '@mui/material';

@@ -1,4 +1,4 @@
-import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button, Divider } from "@mui/material";
+import { Box, Typography, Table, TableBody, TableCell, TableHead, TableRow, Button } from "@mui/material";
 import PrintIcon from "@mui/icons-material/Print";
 import logo from '/assets/logo2.png';
 export default function FeesReceipt() {

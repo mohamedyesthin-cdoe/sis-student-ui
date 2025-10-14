@@ -25,7 +25,7 @@ import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 export default function Onlinegrievances() {
   const navigate = useNavigate();
-  const handleView = () => navigate(`/programs/add`);
+  const handleView = () => navigate(`/grievances/add`);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState('');
@@ -82,7 +82,7 @@ export default function Onlinegrievances() {
           setSearchText(val);
           setPage(0);
         }}
-        searchPlaceholder="Search programs"
+        searchPlaceholder="Search Grievances"
         actions={[
           {
             label: 'Export Excel',
@@ -91,7 +91,7 @@ export default function Onlinegrievances() {
             onClick: handleExportExcel,
           },
           {
-            label: 'Add',
+            label: 'Add Grievance',
             color: 'primary',
             onClick: handleView,
           },
@@ -118,90 +118,19 @@ export default function Onlinegrievances() {
       ) : (
         <ReusableTable
           columns={[
-            { key: "programe_code", label: "Program ID" },
-            { key: "programe", label: "Program Name" },
-            { key: "duration", label: "Duration" },
+            { key: "programe_code", label: "Grievance Number" },
+            { key: "programe", label: "Subject" },
+            { key: "duration", label: "Grievance Details" },
+            { key: "duration", label: "Date" },
+            { key: "duration", label: "File" },
+            { key: "duration", label: "Reply" },
+            { key: "duration", label: "Status" },
           ]}
           data={filteredPrograms}
           page={page}
           rowsPerPage={rowsPerPage}
-          renderExpanded={(program) => (
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  {[
-                    "Semester",
-                    "Application Fee",
-                    "Admission Fee",
-                    "Tuition Fee",
-                    "Exam Fee",
-                    "LMS Fee",
-                    "Lab Fee",
-                    "Total Fee",
-                  ].map((h) => (
-                    // <TableCell
-                    //   key={h}
-                    //   sx={{
-                    //     fontWeight: 600,
-                    //     color: theme.palette.secondary.main,
-                    //   }}
-                    // >
-                    //   {h}
-                    // </TableCell>
-                    <TableCell
-                      key={h}
-                      sx={{
-                        fontWeight: 600,
-                        color: theme.palette.secondary.main,
-                      }}
-                    >
-                      {h}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {Array.isArray(program.fee) &&
-                  program.fee.map((fee: any, idx: number) => (
-                    <TableRow key={idx}>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.application_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.admission_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.tuition_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.exam_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.lms_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.lab_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1, fontWeight: 'bold' }}>{fee.total_fee || "-"}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          )}
-
           actions={[
-            {
-              label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
-                navigate(`/programs/add/${row.id}`);
-              }, color: "primary",
-            },
-            { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
+           
           ]}
         />
       )}

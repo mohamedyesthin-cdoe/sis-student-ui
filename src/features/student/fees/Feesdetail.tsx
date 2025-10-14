@@ -20,7 +20,7 @@ export default function FeesDetail() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [searchText, setSearchText] = React.useState('');
-    const [genderFilter, setGenderFilter] = React.useState('');
+    const [genderFilter] = React.useState('');
     const navigate = useNavigate();
     const { showAlert } = useAlert();
     const { id } = useParams();
@@ -49,7 +49,7 @@ export default function FeesDetail() {
 
 
 
-    const handleView = (id: any) => navigate(`/fees/receipt`);
+    const handleView = () => navigate(`/fees/receipt`);
 
     const filteredStudents = students.filter((s) => {
         const fullName = `${s.title} ${s.first_name} ${s.last_name}`.toLowerCase();
@@ -177,7 +177,7 @@ export default function FeesDetail() {
                     page={page}
                     rowsPerPage={rowsPerPage}
                     actions={[
-                        { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id), color: 'secondary' },
+                        { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: () => handleView(), color: 'secondary' },
                     ]}
                 />
             )}

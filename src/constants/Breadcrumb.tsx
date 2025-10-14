@@ -125,7 +125,7 @@ const Breadcrumb = () => {
   const allPaths = ['/dashboard', ...breadcrumbPaths];
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.5, p: 1 ,m:2  
+    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.5, p: 2 
     }}>
       {allPaths.map((to, index) => {
         const text = routeMap[to] || 'Dashboard';

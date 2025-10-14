@@ -10,6 +10,7 @@ import FeesDetail from "../features/student/fees/Feesdetail";
 import FeesReceipt from "../features/student/fees/feesreceipt";
 import Onlinegrievances from "../features/student/grievances/onlinegrievances";
 import Offlinegrievances from "../features/student/grievances/offlinegrievances";
+import Grievanceadd from "../features/student/grievances/grievanceadd";
 
 export const routesConfig = [
   {
@@ -96,6 +97,11 @@ export const routesConfig = [
         path: 'offline',
         element: <Offlinegrievances />,
         breadcrumb: 'Offline Grievances',
+      },
+      {
+        path: 'add',
+        element: <Grievanceadd />,
+        breadcrumb: 'Grievance Add',
       }
     ]
   },

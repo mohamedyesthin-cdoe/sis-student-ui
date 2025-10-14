@@ -51,7 +51,7 @@ const DashboardStudent: React.FC = () => {
   const marks = [50, 92, 90, 82, 90];
 
   return (
-    <Container>
+    <Box>
       <CardComponent
         sx={{
           backgroundColor: theme.palette.text.primary,
@@ -135,7 +135,7 @@ const DashboardStudent: React.FC = () => {
               key={index}
               p={2}
               sx={{
-                minWidth: { xs: '100%', sm: 260 }, // full width on mobile, fixed on tablet+
+                minWidth: { xs: '100%', sm: 145 }, // full width on mobile, fixed on tablet+
                 flex: { xs: '1 1 100%', md: '0 0 auto' }, // responsive flex
                 backgroundColor: 'white',
                 borderRadius: 3,
@@ -661,7 +661,7 @@ const DashboardStudent: React.FC = () => {
 
         </Grid>
       </Grid>
-    </Container>
+    </Box>
 
 
   );

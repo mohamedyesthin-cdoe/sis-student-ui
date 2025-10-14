@@ -24,9 +24,9 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
   const [file, setFile] = useState<File | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0]);
-  };
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0]);
+  // };
 
   const handleUpload = () => {
     if (file) {

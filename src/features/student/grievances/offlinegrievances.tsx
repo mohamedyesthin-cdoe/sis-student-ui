@@ -1,6 +1,10 @@
+import StudentGrievanceForm from "./grievanceform"
+
 const Offlinegrievances = () => {
   return (
-    <div>offlinegrievances</div>
+    <div>
+      <StudentGrievanceForm />
+    </div>
   )
 }
 
