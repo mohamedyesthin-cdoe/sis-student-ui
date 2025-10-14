@@ -1,6 +1,6 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import CardComponent from '../../components/card/Card';
-import Subheader from '../../components/subheader/Subheader';
+import CardComponent from '../../../components/card/Card';
+import Subheader from '../../../components/subheader/Subheader';
 
 type StudentDetailTabsProps = {
   student: any;

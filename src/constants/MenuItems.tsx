@@ -6,7 +6,6 @@ import {
   MenuBook as MenuBookIcon,
   LibraryBooks as LibraryBooksIcon,
   Assignment as AssignmentIcon,
-  Folder as FolderIcon,
   Lock as LockIcon,
   SupportAgent as SupportAgentIcon,
   Description as DescriptionIcon,
@@ -18,6 +17,7 @@ import {
 } from '@mui/icons-material';
 
 import type { JSX } from 'react';
+import { getValue } from '../utils/localStorageUtil';
 
 interface MenuItem {
   text: string;
@@ -28,6 +28,7 @@ interface MenuItem {
     routePath: string;
   }[];
 }
+const student_id = getValue("student_id")
 
 export const ADMIN_MENU_ITEMS: MenuItem[] = [
   {
@@ -40,7 +41,7 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     text: 'Students',
     icon: 'Students',
     subItems: [
-      { text: 'Students List', routePath: '/students' },
+      { text: 'Students List', routePath: '/students/list' },
     ],
     routePath: '',
   },
@@ -71,20 +72,26 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
   {
     text: 'Profile',
     icon: 'Profile',
-    subItems: [],
-    routePath: '/student/profile',
+    subItems: [
+    ],
+    routePath: `/students/detail/${student_id}`
   },
   {
     text: 'Fees',
     icon: 'Fees',
-    subItems: [],
-    routePath: '/student/fees',
+    subItems: [
+      { text: 'Fees Detail', routePath: `/fees/detail/${student_id}` },
+    ],
+    routePath: '',
   },
   {
     text: 'Grievances',
     icon: 'Grievances',
-    subItems: [],
-    routePath: '/student/grievances',
+    subItems: [
+      { text: 'Online Grievance', routePath: '/grievances/online' },
+      { text: 'Offline Grievance', routePath: '/grievances/offline' },
+    ],
+    routePath: '',
   },
   {
     text: 'Examinations',

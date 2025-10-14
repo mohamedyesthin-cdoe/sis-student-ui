@@ -7,11 +7,13 @@ export const ApiRoutes = {
   USERS: '/users',
   PRODUCTS: '/products',
   GETSTUDENTSLIST:'/student/list',
+  GETSTUDENTBYID:'student',
   STUDENTSYNC:'student/sync',
   PUSHTODEBL:'push/ugc',
   GETPROGRAMLIST:'programe/list',
   PROGRAMADD:'programe/add',
   PROGRAMFETCH:'programe',
   PROGRAMUPDATE:'programe/update',
-  BULKADD:'user/bulk-add'
+  BULKADD:'user/bulk-add',
+  GETSTUDENTFEES:'student/fees',
 };

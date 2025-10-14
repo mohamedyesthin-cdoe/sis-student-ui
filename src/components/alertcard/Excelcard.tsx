@@ -8,6 +8,8 @@ import {
   Typography,
   Box,
   IconButton,
+  Menu,
+  MenuItem,
 } from "@mui/material";
 import { CloudUpload, Close, CloudDownload } from "@mui/icons-material";
 import * as XLSX from "xlsx";
@@ -20,6 +22,7 @@ interface UploadExcelDialogProps {
 
 const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, onUpload }) => {
   const [file, setFile] = useState<File | null>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) setFile(e.target.files[0]);
@@ -32,32 +35,47 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
     }
   };
 
-  const handleDownloadSample = () => {
-    const sampleData = [
-      {
-        group_id: 1,
-        username: "johndoe",
-        first_name: "John",
-        last_name: "Doe",
-        email: "johndoe@example.com",
-        phone: "9876543210",
-        student_id: 1001
-      },
-      {
-        group_id: 1,
-        username: "janesmith",
-        first_name: "Jane",
-        last_name: "Smith",
-        email: "janesmith@example.com",
-        phone: "9876501234",
-        student_id: 1002
-      }
-    ];
+  const sampleData = [
+    {
+      group_id: 1,
+      username: "johndoe",
+      first_name: "John",
+      last_name: "Doe",
+      email: "johndoe@example.com",
+      phone: "9876543210",
+      student_id: 1001,
+    },
+    {
+      group_id: 1,
+      username: "janesmith",
+      first_name: "Jane",
+      last_name: "Smith",
+      email: "janesmith@example.com",
+      phone: "9876501234",
+      student_id: 1002,
+    },
+  ];
 
+  // 📥 Download Sample Excel or CSV
+  const handleDownloadSample = (format: "xlsx" | "csv") => {
     const worksheet = XLSX.utils.json_to_sheet(sampleData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "SampleData");
-    XLSX.writeFile(workbook, "Sample_Student_Data.xlsx");
+
+    if (format === "csv") {
+      const csv = XLSX.utils.sheet_to_csv(worksheet);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Sample_Student_Data.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      XLSX.writeFile(workbook, "Sample_Student_Data.xlsx");
+    }
+
+    setAnchorEl(null);
   };
 
   return (
@@ -80,26 +98,23 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
         justifyContent="space-between"
         px={{ xs: 1, sm: 1.5 }}
       >
-        {/* Left-aligned title */}
         <DialogTitle
           sx={{
             fontWeight: 600,
             fontSize: { xs: "0.95rem", sm: "1.1rem" },
-            flex: 1,       // take remaining space
-            m: 0,          // remove default margin
+            flex: 1,
+            m: 0,
             textAlign: "left",
-            pl:0
+            pl: 0,
           }}
         >
-          Upload Excel File
+          Upload File
         </DialogTitle>
 
-        {/* Right-aligned close button */}
         <IconButton onClick={onClose} size="small">
           <Close fontSize="small" />
         </IconButton>
       </Box>
-
 
       <DialogContent sx={{ px: { xs: 1, sm: 1.5 }, py: 1.5 }}>
         {/* Download Sample Button */}
@@ -107,11 +122,27 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
           <Button
             variant="outlined"
             startIcon={<CloudDownload fontSize="small" />}
-            onClick={handleDownloadSample}
-            sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" }, textTransform: "none", py: 0.5 }}
+            onClick={(e) => setAnchorEl(e.currentTarget)}
+            sx={{
+              fontSize: { xs: "0.7rem", sm: "0.8rem" },
+              textTransform: "none",
+              py: 0.5,
+            }}
           >
             Download Sample Data
           </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={() => setAnchorEl(null)}
+          >
+            <MenuItem onClick={() => handleDownloadSample("xlsx")}>
+              Download Excel (.xlsx)
+            </MenuItem>
+            <MenuItem onClick={() => handleDownloadSample("csv")}>
+              Download CSV (.csv)
+            </MenuItem>
+          </Menu>
         </Box>
 
         {/* Upload Area */}
@@ -125,27 +156,68 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
             cursor: "pointer",
             "&:hover": { backgroundColor: "#f8f9fa" },
           }}
-          onClick={() => document.getElementById("excel-input")?.click()}
+          onClick={() => document.getElementById("file-input")?.click()}
         >
           <CloudUpload fontSize="medium" color="primary" />
-          <Typography variant="body1" mt={0.5} sx={{ fontSize: { xs: "0.8rem", sm: "0.9rem" } }}>
-            {file ? file.name : "Click or drag file to upload"}
-          </Typography>
+          <Box mt={0.5}>
+            {file ? (
+              <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+                <Typography
+                  variant="body1"
+                  sx={{ fontSize: { xs: "0.8rem", sm: "0.9rem" } }}
+                >
+                  {file.name}
+                </Typography>
+                <Button
+                  size="small"
+                  color="error"
+                  variant="outlined"
+                  sx={{
+                    minWidth: "auto",
+                    p: "2px 6px",
+                    fontSize: { xs: "0.6rem", sm: "0.7rem" },
+                    textTransform: "none",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent opening file dialog
+                    setFile(null);
+                  }}
+                >
+                  Remove
+                </Button>
+              </Box>
+            ) : (
+              <Typography
+                variant="body1"
+                sx={{ fontSize: { xs: "0.8rem", sm: "0.9rem" } }}
+              >
+                Click or drag file to upload
+              </Typography>
+            )}
+          </Box>
+
           <Typography
             variant="body2"
             color="textSecondary"
             sx={{ fontSize: { xs: "0.65rem", sm: "0.75rem" } }}
           >
-            Supported formats: .xlsx, .xls
+            Supported formats: .xlsx, .xls, .csv, .pdf
           </Typography>
+
           <input
-            id="excel-input"
+            id="file-input"
             type="file"
-            accept=".xlsx,.xls"
+            accept=".xlsx,.xls,.csv,.pdf"
             hidden
-            onChange={handleFileChange}
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                setFile(e.target.files[0]);
+                e.target.value = ""; // Reset input to allow re-upload same file
+              }
+            }}
           />
         </Box>
+
       </DialogContent>
 
       {/* Actions */}
@@ -154,7 +226,11 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
           onClick={onClose}
           variant="outlined"
           color="secondary"
-          sx={{ fontSize: { xs: "0.7rem", sm: "0.8rem" }, textTransform: "none", py: 0.5 }}
+          sx={{
+            fontSize: { xs: "0.7rem", sm: "0.8rem" },
+            textTransform: "none",
+            py: 0.5,
+          }}
         >
           Cancel
         </Button>

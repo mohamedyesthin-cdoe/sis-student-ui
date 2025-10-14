@@ -2,22 +2,22 @@ import * as React from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { useNavigate } from 'react-router-dom';
-import { apiRequest } from '../../utils/ApiRequest';
-import { ApiRoutes } from '../../constants/ApiConstants';
-import CardComponent from '../../components/card/Card';
-import ReusableTable from '../../components/table/table';
+import { apiRequest } from '../../../utils/ApiRequest';
+import { ApiRoutes } from '../../../constants/ApiConstants';
+import CardComponent from '../../../components/card/Card';
+import ReusableTable from '../../../components/table/table';
 import SyncIcon from '@mui/icons-material/Sync';
-import TableToolbar from '../../components/tabletoolbar/tableToolbar';
-import TablePagination from '../../components/tablepagination/tablepagination';
-import { exportToExcel } from '../../constants/excelExport';
+import TableToolbar from '../../../components/tabletoolbar/tableToolbar';
+import TablePagination from '../../../components/tablepagination/tablepagination';
+import { exportToExcel } from '../../../constants/excelExport';
 import { CloudUploadIcon } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
-import { useAlert } from '../../context/AlertContext';
-import UploadExcelDialog from '../../components/alertcard/Excelcard';
+import { useAlert } from '../../../context/AlertContext';
+import UploadExcelDialog from '../../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
 
-export default function ModernStudentTable() {
+export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -61,6 +61,7 @@ export default function ModernStudentTable() {
       filteredStudents,
       [
         { header: 'S.No', key: 'sno' },
+        { header: 'Student ID', key: 'id' },
         { header: 'Registration No', key: 'registration_no' },
         { header: 'Full Name', key: 'full_name', render: (s) => `${s.title} ${s.first_name} ${s.last_name}` },
         { header: 'Email', key: 'email' },
@@ -244,6 +245,7 @@ export default function ModernStudentTable() {
       ) : (
         <ReusableTable
           columns={[
+            { key: 'id', label: 'Student ID' },
             { key: "registration_no", label: "Registration No" },
             { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
             { key: "email", label: "Email" },

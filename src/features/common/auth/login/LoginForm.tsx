@@ -193,25 +193,19 @@
 
 // export default LoginPage;
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Mail } from 'lucide-react';
-import { setUser } from "../../../redux/slices/AuthSlice";
-import { ApiRoutes } from "../../../constants/ApiConstants";
-import { apiRequest } from "../../../utils/ApiRequest";
-import { encryptPassword } from "../../../utils/encryption";
-import { Button, TextField, Typography, Checkbox, FormControlLabel, Link, Paper, Box, useTheme } from '@mui/material'
+import { Button, TextField, Typography,Paper, Box, useTheme } from '@mui/material'
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { useAlert } from "../../../context/AlertContext";
+import { useAlert } from "../../../../context/AlertContext";
 import { jwtDecode } from 'jwt-decode'
-import { getValue, setValue } from "../../../utils/localStorageUtil";
+import { setValue } from "../../../../utils/localStorageUtil";
 
 function LoginPage() {
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const theme = useTheme()
@@ -267,13 +261,17 @@ function LoginPage() {
         setValue('username', user.username);
         setValue('email', user.email);
         setValue('rollid', user.group_id);
+        setValue('student_id',user.student_id)
         navigate("/dashboard/student");
         // showAlert('Student login successful!', 'success');
+      console.log("user---",user);
+
 
       } else {
         // Invalid credentials
         showAlert('Invalid username or password', 'error');
       }
+      
 
     } catch (error) {
       console.error('Login error:', error);

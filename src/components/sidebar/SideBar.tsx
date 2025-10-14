@@ -44,12 +44,11 @@ export default function Sidebar({
 
   useEffect(() => {
     const path = location.pathname;
-
     if (path.startsWith('/dashboard')) {
       setSelectedItem('Dashboard');
       setSelectedParent('');
       setOpenItems({});
-    } else if (path.startsWith('/students')) {
+    } else if (path.startsWith('/students/list')) {
       setSelectedItem('Students List');
       setSelectedParent('Students');
       setOpenItems((prev) => ({ ...prev, Students: true }));
@@ -62,6 +61,27 @@ export default function Sidebar({
       setSelectedParent('Faculty');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
+    else if (path.startsWith('/students/detail')) {
+      setSelectedItem('Profile');
+      setSelectedParent('');
+      setOpenItems({});
+    }
+    else if (path.startsWith('/fees')) {
+      setSelectedItem('Fees Detail');
+      setSelectedParent('Fees');
+      setOpenItems((prev) => ({ ...prev, Faculty: true }));
+    }
+    else if (path.startsWith('/grievances/online')) {
+      setSelectedItem('Online Grievance');
+      setSelectedParent('Grievances');
+      setOpenItems((prev) => ({ ...prev, Faculty: true }));
+    }
+    else if (path.startsWith('/grievances/offline')) {
+      setSelectedItem('Offline Grievance');
+      setSelectedParent('Grievances');
+      setOpenItems((prev) => ({ ...prev, Faculty: true }));
+    }
+
   }, [location.pathname]);
 
   const handleSelect = (itemText: any, routePath: any, hasChildren: any, parentText = '') => {

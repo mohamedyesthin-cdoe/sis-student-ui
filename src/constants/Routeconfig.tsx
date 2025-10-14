@@ -1,14 +1,18 @@
 // import DashboardStudent from "../features/dashboard/DashboardStudent";
-import DashboardAdmin from "../features/dashboard/DashboardAdmin";
-import StudentList from "../features/student/StudentList";
-import StudentDetail from "../features/student/StudentDetail";
-import Faculty from "../features/faculty/Faculty";
-import ProgramAdd from "../features/programs/ProgramAdd";
-import ProgramList from "../features/programs/ProgramList";
-import DashboardStudent from "../features/dashboard/DashboardStudent";
+import DashboardAdmin from "../features/admin/dashboard/DashboardAdmin";
+import StudentList from "../features/admin/student/StudentList";
+import StudentDetail from "../features/admin/student/StudentDetail";
+import Faculty from "../features/admin/faculty/Faculty";
+import ProgramAdd from "../features/admin/programs/ProgramAdd";
+import ProgramList from "../features/admin/programs/ProgramList";
+import DashboardStudent from "../features/student/dashboard/DashboardStudent";
+import FeesDetail from "../features/student/fees/Feesdetail";
+import FeesReceipt from "../features/student/fees/feesreceipt";
+import Onlinegrievances from "../features/student/grievances/onlinegrievances";
+import Offlinegrievances from "../features/student/grievances/offlinegrievances";
 
 export const routesConfig = [
- {
+  {
     path: '/dashboard',
     children: [
       {
@@ -23,10 +27,10 @@ export const routesConfig = [
   },
   {
     path: '/students',
-    breadcrumb: 'Students List',
+    // breadcrumb: 'Students List',
     children: [
       {
-        path: '',
+        path: 'list',
         element: <StudentList />,
         breadcrumb: 'Students List',
       },
@@ -62,5 +66,37 @@ export const routesConfig = [
         breadcrumb: 'Programs Edit',
       },
     ],
+  },
+  {
+    path: '/fees',
+    // breadcrumb: 'Fees',
+    children: [
+      {
+        path: 'detail/:id',
+        element: <FeesDetail />,
+        breadcrumb: 'Fees Detail',
+      },
+      {
+        path: 'receipt',
+        element: <FeesReceipt />,
+        breadcrumb: 'Fees Receipt',
+      }
+    ]
+  },
+  {
+    path: '/grievances',
+    // breadcrumb: 'Fees',
+    children: [
+      {
+        path: 'online',
+        element: <Onlinegrievances />,
+        breadcrumb: 'Online Grievances',
+      },
+      {
+        path: 'offline',
+        element: <Offlinegrievances />,
+        breadcrumb: 'Offline Grievances',
+      }
+    ]
   },
 ];

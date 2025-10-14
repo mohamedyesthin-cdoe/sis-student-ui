@@ -3,7 +3,7 @@ import teacherIcon from "/assets/images/teacher.svg";
 import staffIcon from "/assets/images/staff.svg";
 import subjectIcon from "/assets/images/subject.svg";
 import ChatIcon from '@mui/icons-material/Chat';
-import theme from "../../styles/theme";
+import theme from "../../../styles/theme";
 import PersonIcon from "@mui/icons-material/Person";
 import EditIcon from "@mui/icons-material/Edit";
 import AirportShuttleIcon from '@mui/icons-material/AirportShuttle';
