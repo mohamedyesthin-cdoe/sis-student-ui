@@ -76,7 +76,7 @@ class UserRepository:
             # Generate random password
             plain_password = generate_password()
             hashed_password = hash_password(plain_password)
-
+            fullname = f"{data.first_name} {data.last_name}"
             user = User(
                 username=data.username,
                 first_name=data.first_name,
@@ -95,7 +95,7 @@ class UserRepository:
             db.add(user)
             
             asyncio.run(
-                send_credentials_email(data.email, data.username, plain_password)
+                send_credentials_email(data.email, data.username, plain_password, fullname)
             )
             created_users.append({"user": user, "password": plain_password})
         db.commit()
