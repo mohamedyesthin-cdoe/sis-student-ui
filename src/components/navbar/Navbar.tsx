@@ -72,6 +72,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
     removeSingleValue('email');
     removeSingleValue('rollid');
     removeSingleValue('username');
+    removeSingleValue('student_id');
     navigate("/login");
   };
   const username = getValue('username')

@@ -304,6 +304,7 @@ function LoginPage() {
       setValue('username', user.username);
       setValue('email', user.email);
       setValue('rollid', user.group_id);
+      setValue('student_id', user.student_id)
       const rollid = Number(getValue('rollid')); // convert to number
 
       if (rollid == 1) {
@@ -313,7 +314,7 @@ function LoginPage() {
       } else {
         showAlert("Unauthorized role!", "error");
       }
-      console.log("user---",user);
+      console.log("user---", user);
 
 
 
