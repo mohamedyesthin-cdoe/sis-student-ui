@@ -202,8 +202,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAlert } from "../../../../context/AlertContext";
 import { jwtDecode } from 'jwt-decode'
-import { setValue } from "../../../../utils/localStorageUtil";
+import { getValue, setValue } from "../../../../utils/localStorageUtil";
 import bgimage from '/assets/images/bgimage.png'
+import { encryptPassword } from "../../../../utils/encryption";
+import { apiRequest } from "../../../../utils/ApiRequest";
+import { ApiRoutes } from "../../../../constants/ApiConstants";
 
 function LoginPage() {
 
@@ -221,97 +224,57 @@ function LoginPage() {
     iat?: number;
     [key: string]: any;
   }
-  const handleData = async (data: any) => {
-    try {
-      const userName = data.username;
-      const password = data.password;
-
-      // 🔒 Comment out the real API call for now
-      // const encryptedPassword = encryptPassword(password);
-      // const result = await apiRequest({
-      //   url: ApiRoutes.LOGIN,
-      //   method: 'post',
-      //   data: {
-      //     username: userName,
-      //     password: encryptedPassword,
-      //     is_encrypted: true,
-      //   },
-      // });
-
-      // setValue('ACCESS_TOKEN_KEY', result.access_token);
-      // const user = jwtDecode<JwtPayload>(result.access_token);
-
-      // 🧠 Temporary local login simulation
-      if (userName === "admin" && password === "admin@123") {
-        // Admin role
-        const adminToken =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiaGFyaUtyaXNobmFubXNkQGdtYWlsLmNvbSIsInN0dWRlbnRfaWQiOm51bGwsImdyb3VwX2lkIjoxLCJleHAiOjE3NjA0MzUyNTF9.E50MpzXDWnviiZ6OYwhrnV-jwgYQpzWgi2J23GrZzSc'
-        const admin = jwtDecode<JwtPayload>(adminToken);
-        setValue('ACCESS_TOKEN_KEY', adminToken);
-        setValue('username', admin.username);
-        setValue('email', admin.email);
-        setValue('rollid', admin.group_id);
-        navigate("/dashboard");
-        // showAlert('Admin login successful!', 'success');
-
-      } else if (userName === "O0525003" && password === "EQvqp@R#") {
-        // Student role
-        const studentToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsInVzZXJuYW1lIjoiTzA1MjUwMDMiLCJlbWFpbCI6Im1vaGFtZWQueWVzdGhpbkBzcmlyYW1hY2hhbmRyYS5lZHUuaW4iLCJzdHVkZW50X2lkIjozMSwiZ3JvdXBfaWQiOjIsImV4cCI6MTc2MDQzNTUwNn0.RqTiD8OIyRfqj9gArIVfT-f4Qp7g0zLd5VzGq7PBoPc'
-        const user = jwtDecode<JwtPayload>(studentToken);
-        setValue('ACCESS_TOKEN_KEY', studentToken);
-        setValue('username', user.username);
-        setValue('email', user.email);
-        setValue('rollid', user.group_id);
-        setValue('student_id', user.student_id)
-        navigate("/dashboard/student");
-        // showAlert('Student login successful!', 'success');
-        console.log("user---", user);
-
-
-      } else {
-        // Invalid credentials
-        showAlert('Invalid username or password', 'error');
-      }
-
-
-    } catch (error) {
-      console.error('Login error:', error);
-      showAlert('Login failed, please check your credentials.', 'error');
-    }
-  };
-
-
   // const handleData = async (data: any) => {
   //   try {
-  //     const encryptedPassword = encryptPassword(data.password);
   //     const userName = data.username;
+  //     const password = data.password;
 
-  //     const result = await apiRequest({
-  //       url: ApiRoutes.LOGIN,
-  //       method: 'post',
-  //       data: {
-  //         username: userName,
-  //         password: encryptedPassword,
-  //         is_encrypted: true,
-  //       },
-  //     });
+  //     // 🔒 Comment out the real API call for now
+  //     // const encryptedPassword = encryptPassword(password);
+  //     // const result = await apiRequest({
+  //     //   url: ApiRoutes.LOGIN,
+  //     //   method: 'post',
+  //     //   data: {
+  //     //     username: userName,
+  //     //     password: encryptedPassword,
+  //     //     is_encrypted: true,
+  //     //   },
+  //     // });
 
-  //     setValue('ACCESS_TOKEN_KEY', result.access_token);
-  //     const user = jwtDecode<JwtPayload>(result.access_token);
-  //     setValue('username', user.username);
-  //     setValue('email', user.email);
-  //     setValue('rollid', user.group_id);
-  //     const rollid = Number(getValue('rollid')); // convert to number
+  //     // setValue('ACCESS_TOKEN_KEY', result.access_token);
+  //     // const user = jwtDecode<JwtPayload>(result.access_token);
 
-  //     if (rollid == 1) {
+  //     // 🧠 Temporary local login simulation
+  //     if (userName === "admin" && password === "admin@123") {
+  //       // Admin role
+  //       const adminToken =
+  //         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiaGFyaUtyaXNobmFubXNkQGdtYWlsLmNvbSIsInN0dWRlbnRfaWQiOm51bGwsImdyb3VwX2lkIjoxLCJleHAiOjE3NjA0MzUyNTF9.E50MpzXDWnviiZ6OYwhrnV-jwgYQpzWgi2J23GrZzSc'
+  //       const admin = jwtDecode<JwtPayload>(adminToken);
+  //       setValue('ACCESS_TOKEN_KEY', adminToken);
+  //       setValue('username', admin.username);
+  //       setValue('email', admin.email);
+  //       setValue('rollid', admin.group_id);
   //       navigate("/dashboard");
-  //     } else if (rollid == 2) {
-  //       navigate("/dashboard/student");
-  //     } else {
-  //       showAlert("Unauthorized role!", "error");
-  //     }
-  //     console.log("user---",user);
+  //       // showAlert('Admin login successful!', 'success');
 
+  //     } else if (userName === "O0525003" && password === "EQvqp@R#") {
+  //       // Student role
+  //       const studentToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsInVzZXJuYW1lIjoiTzA1MjUwMDMiLCJlbWFpbCI6Im1vaGFtZWQueWVzdGhpbkBzcmlyYW1hY2hhbmRyYS5lZHUuaW4iLCJzdHVkZW50X2lkIjozMSwiZ3JvdXBfaWQiOjIsImV4cCI6MTc2MDQzNTUwNn0.RqTiD8OIyRfqj9gArIVfT-f4Qp7g0zLd5VzGq7PBoPc'
+  //       const user = jwtDecode<JwtPayload>(studentToken);
+  //       setValue('ACCESS_TOKEN_KEY', studentToken);
+  //       setValue('username', user.username);
+  //       setValue('email', user.email);
+  //       setValue('rollid', user.group_id);
+  //       setValue('student_id', user.student_id)
+  //       navigate("/dashboard/student");
+  //       // showAlert('Student login successful!', 'success');
+  //       console.log("user---", user);
+
+
+  //     } else {
+  //       // Invalid credentials
+  //       showAlert('Invalid username or password', 'error');
+  //     }
 
 
   //   } catch (error) {
@@ -319,6 +282,46 @@ function LoginPage() {
   //     showAlert('Login failed, please check your credentials.', 'error');
   //   }
   // };
+
+
+  const handleData = async (data: any) => {
+    try {
+      const encryptedPassword = encryptPassword(data.password);
+      const userName = data.username;
+
+      const result = await apiRequest({
+        url: ApiRoutes.LOGIN,
+        method: 'post',
+        data: {
+          username: userName,
+          password: encryptedPassword,
+          is_encrypted: true,
+        },
+      });
+
+      setValue('ACCESS_TOKEN_KEY', result.access_token);
+      const user = jwtDecode<JwtPayload>(result.access_token);
+      setValue('username', user.username);
+      setValue('email', user.email);
+      setValue('rollid', user.group_id);
+      const rollid = Number(getValue('rollid')); // convert to number
+
+      if (rollid == 1) {
+        navigate("/dashboard");
+      } else if (rollid == 2) {
+        navigate("/dashboard/student");
+      } else {
+        showAlert("Unauthorized role!", "error");
+      }
+      console.log("user---",user);
+
+
+
+    } catch (error) {
+      console.error('Login error:', error);
+      showAlert('Login failed, please check your credentials.', 'error');
+    }
+  };
 
 
 
