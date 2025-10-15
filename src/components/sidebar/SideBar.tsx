@@ -81,6 +81,11 @@ export default function Sidebar({
       setSelectedParent('Grievances');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
+    else if (path.startsWith('/examinations')) {
+      setSelectedItem('Examinations');
+      setSelectedParent('');
+      setOpenItems({});
+    }
 
   }, [location.pathname]);
 

@@ -97,7 +97,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Examinations',
     icon: 'Examinations',
     subItems: [],
-    routePath: '/student/examinations',
+    routePath: '/examinations',
   },
   {
     text: 'Feedback & Survey',

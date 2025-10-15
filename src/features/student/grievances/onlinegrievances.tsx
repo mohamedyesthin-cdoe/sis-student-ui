@@ -1,17 +1,9 @@
 import * as React from 'react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Typography,
   Box
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import theme from '../../../styles/theme';
 import CardComponent from '../../../components/card/Card';
 import { useNavigate } from 'react-router-dom';
 import ReusableTable from '../../../components/table/table';

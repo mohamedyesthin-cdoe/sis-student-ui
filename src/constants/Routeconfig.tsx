@@ -11,6 +11,7 @@ import FeesReceipt from "../features/student/fees/feesreceipt";
 import Onlinegrievances from "../features/student/grievances/onlinegrievances";
 import Offlinegrievances from "../features/student/grievances/offlinegrievances";
 import Grievanceadd from "../features/student/grievances/grievanceadd";
+import StudentIdCard from "../features/student/profilecard/profilecard";
 
 export const routesConfig = [
   {
@@ -104,5 +105,10 @@ export const routesConfig = [
         breadcrumb: 'Grievance Add',
       }
     ]
+  },
+  {
+    path: '/examinations',
+    element: <StudentIdCard />,
+    breadcrumb: 'Examinations',
   },
 ];
