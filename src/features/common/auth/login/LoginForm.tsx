@@ -195,7 +195,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail } from 'lucide-react';
-import { Button, TextField, Typography,Paper, Box, useTheme } from '@mui/material'
+import { Button, TextField, Typography, Paper, Box, useTheme } from '@mui/material'
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -203,6 +203,7 @@ import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAlert } from "../../../../context/AlertContext";
 import { jwtDecode } from 'jwt-decode'
 import { setValue } from "../../../../utils/localStorageUtil";
+import bgimage from '/assets/images/bgimage.png'
 
 function LoginPage() {
 
@@ -261,17 +262,17 @@ function LoginPage() {
         setValue('username', user.username);
         setValue('email', user.email);
         setValue('rollid', user.group_id);
-        setValue('student_id',user.student_id)
+        setValue('student_id', user.student_id)
         navigate("/dashboard/student");
         // showAlert('Student login successful!', 'success');
-      console.log("user---",user);
+        console.log("user---", user);
 
 
       } else {
         // Invalid credentials
         showAlert('Invalid username or password', 'error');
       }
-      
+
 
     } catch (error) {
       console.error('Login error:', error);
@@ -355,10 +356,16 @@ function LoginPage() {
       {/* Illustrations - only shown on xl screens */}
       <Box className="hidden xl:block absolute inset-0">
         <img
-          src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/illustrations/auth-login-illustration-light.png"
+          src={bgimage}
           alt="auth-login-cover"
-          className="absolute top-1/6 left-[15%] max-w-md"
+          className="
+    absolute 
+    top-1/6 
+    md:w-[600px] md:h-[600px] md:left-[10%] 
+    sm:w-[300px] sm:h-[300px] sm:left-[5%]
+  "
         />
+
         <img
           src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/illustrations/bg-shape-image-light.png"
           alt="platform-bg"
@@ -367,7 +374,7 @@ function LoginPage() {
       </Box>
 
       {/* Right Aligned Form Card */}
-      <Box className="w-full max-w-md mr-4">
+      <Box className="w-full max-w-md md:mr-4">
         <Paper elevation={6} className="p-8" component="form"
           onSubmit={handleSubmit(handleData)}>
           <Typography variant="h5" fontWeight="500" gutterBottom>
