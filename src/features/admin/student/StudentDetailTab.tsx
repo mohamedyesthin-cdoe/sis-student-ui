@@ -67,7 +67,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
       {activeTab === 0 && (
         <>
           {/* Basic Details */}
-          <CardComponent mb={2} p={2}>
+          <CardComponent mb={3} p={2}>
             <Subheader fieldName="Basic Details"></Subheader>
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[

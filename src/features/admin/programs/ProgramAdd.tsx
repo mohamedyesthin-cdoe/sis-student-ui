@@ -92,9 +92,9 @@ const SemesterFormGroup: React.FC<SemesterProps> = ({
   ];
 
   return (
-    <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+    <Grid container spacing={2}>
       {fields.map(({ label, field, readOnly }) => (
-        <Grid container spacing={2}>
+        <Grid size={{ xs: 12, md: 3 }} my={1}>
           <Controller
             name={`semesters.${semesterIndex}.${field}`}
             control={control}
@@ -291,14 +291,14 @@ const ProgramForm = () => {
     <Box
       component="form"
       onSubmit={handleSubmit(onSubmit)}
-      sx={{ width: "100%", maxWidth: 1200, mx: "auto", mt: 3, mb: 5 }}
+      sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
     >
       {/* Program Details */}
       <CardComponent sx={{ p: 3 }}>
         <Subheader fieldName="Program Details" sx={{ mb: 2 }} />
-        <Grid container rowSpacing={3} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        <Grid container spacing={2}>
           {/* Program ID */}
-          <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 3 }} my={1}>
             <Controller
               name="programId"
               control={control}
@@ -317,7 +317,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Program Name */}
-          <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 3 }} my={1}>
             <Controller
               name="programName"
               control={control}
@@ -335,7 +335,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Duration (dropdown) */}
-          <Grid container spacing={2}>
+          <Grid container size={{ xs: 12, md: 3 }} my={1}>
             <Controller
               name="duration"
               control={control}
@@ -348,9 +348,6 @@ const ProgramForm = () => {
                   size="small"
                   error={!!errors.duration}
                   helperText={errors.duration?.message as string}
-                  sx={{
-                    width: { xs: "100%", sm: 200 }, // ✅ constant width but responsive
-                  }}
                 >
                   <MenuItem value="1">1 Year</MenuItem>
                   <MenuItem value="2">2 Years</MenuItem>
@@ -362,7 +359,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Faculty */}
-          <Grid container spacing={2}>
+          <Grid container size={{ xs: 12, md: 3 }} my={1}>
             <Controller
               name="faculty"
               control={control}
@@ -380,7 +377,7 @@ const ProgramForm = () => {
           </Grid>
 
           {/* Category (dropdown) */}
-          <Grid container spacing={2}>
+          <Grid container size={{ xs: 12, md: 3 }} my={1}>
             <Controller
               name="category"
               control={control}
@@ -393,9 +390,6 @@ const ProgramForm = () => {
                   size="small"
                   error={!!errors.category}
                   helperText={errors.category?.message as string}
-                  sx={{
-                    width: { xs: "100%", sm: 200 }, // ✅ constant width but responsive
-                  }}
                 >
                   <MenuItem value="UG">UG</MenuItem>
                   <MenuItem value="PG">PG</MenuItem>
@@ -439,7 +433,17 @@ const ProgramForm = () => {
       </CardComponent>
 
       {/* Buttons */}
-      <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+      <Box
+        mt={4}
+        display="flex"
+        gap={2}
+        sx={{
+          justifyContent: {
+            xs: "center", // center on mobile
+            sm: "flex-end", // right align on tablet and above
+          },
+        }}
+      >
         <Button variant="contained" color="primary" onClick={handleBack}>
           Back
         </Button>
@@ -453,17 +457,17 @@ const ProgramForm = () => {
               duration: "3",
               faculty: "",
               category: "UG",
-              semesters: initialSemesterData.map(s => ({ ...s })),
+              semesters: initialSemesterData.map((s) => ({ ...s })),
             })
           }
         >
           Reset
         </Button>
-
         <Button variant="contained" color="secondary" type="submit">
           {id ? "Update" : "Submit"}
         </Button>
       </Box>
+
     </Box>
   );
 };

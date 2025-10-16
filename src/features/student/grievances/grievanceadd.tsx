@@ -1,4 +1,4 @@
-import  { useEffect } from "react";
+import { useEffect } from "react";
 import { Grid, TextField, Box, Button, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -111,7 +111,7 @@ const Grievanceadd = () => {
         >
             <CardComponent sx={{ p: 4 }}>
                 <Grid container spacing={5}>
-                    <Grid size={{ xs: 6, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Controller
                             name="subject"
                             control={control}
@@ -129,7 +129,7 @@ const Grievanceadd = () => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 6, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Controller
                             name="description"
                             control={control}
@@ -147,7 +147,7 @@ const Grievanceadd = () => {
                     </Grid>
 
                     {/* Row 2: File Upload */}
-                    <Grid size={{ xs: 6, md: 6 }}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Controller
                             name="grievanceFile"
                             control={control}
@@ -214,7 +214,13 @@ const Grievanceadd = () => {
             </CardComponent>
 
             {/* Action Buttons */}
-            <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+            <Box mt={4} display="flex"
+                sx={{
+                    justifyContent: {
+                        xs: "center", // center on mobile
+                        sm: "flex-end", // right align on tablet and above
+                    },
+                }} gap={2}>
                 <Button variant="contained" color="primary" onClick={handleBack}>
                     Back
                 </Button>

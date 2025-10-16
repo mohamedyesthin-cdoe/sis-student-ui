@@ -75,7 +75,7 @@ export default function StudentDetailUI() {
     <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2 mt-4"
     sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' },mx:'auto' }}>
       {/* Left Column */}
-      <Box className="col-span-12 lg:col-span-4">
+      <Box className="col-span-12 lg:col-span-4 my-1">
         <CardComponent mb={2} p={0} className="h-full">
           <img src={coverImage} alt="coverImage" className="w-full object-fit-cover" />
           <Box
@@ -194,7 +194,7 @@ export default function StudentDetailUI() {
       </Box>
 
       {/* Right Column */}
-      <Box className="col-span-12 lg:col-span-8">
+      <Box className="col-span-12 lg:col-span-8 my-1">
         <StudentDetailTab student={student} activeTab={activeTab} setActiveTab={setActiveTab} />
       </Box>
     </Box>
