@@ -107,7 +107,7 @@ const Grievanceadd = () => {
         <Box
             component="form"
             onSubmit={handleSubmit(onSubmit)}
-            sx={{ width: "100%", maxWidth: 1200, mx: "auto", mt: 3, mb: 5 }}
+            sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
         >
             <CardComponent sx={{ p: 4 }}>
                 <Grid container spacing={5}>

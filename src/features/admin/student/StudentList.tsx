@@ -138,7 +138,7 @@ export default function StudentTable() {
   return (
     <CardComponent sx={{
       width: '100%',
-      maxWidth: { xs: '350px', sm: '900px', md: '1200px' },
+      maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
       mx: 'auto',
       p: 3,
       mt: 3,

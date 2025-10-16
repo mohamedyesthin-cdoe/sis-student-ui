@@ -25,7 +25,8 @@ const StudentGrievanceForm = () => {
     };
 
     return (
-        <Box className="p-6 flex flex-col items-center bg-gray-50 min-h-screen">
+        <Box className="flex flex-col items-center min-h-screen my-4"
+            sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' },mx:'auto' }}>
             {/* FORM CONTENT */}
             <Paper
                 ref={formRef}

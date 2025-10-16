@@ -51,7 +51,7 @@ const DashboardStudent: React.FC = () => {
   const marks = [50, 92, 90, 82, 90];
 
   return (
-    <Box>
+    <Box sx={{maxWidth: { xs: '350px', sm: '900px', md: '1300px' },mx:'auto'}}>
       <CardComponent
         sx={{
           backgroundColor: theme.palette.text.primary,

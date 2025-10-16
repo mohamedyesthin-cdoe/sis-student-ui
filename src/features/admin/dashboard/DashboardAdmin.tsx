@@ -51,7 +51,7 @@ const DashboardAdmin: React.FC = () => {
   const [value, setValue] = React.useState<Dayjs | null>(dayjs('2022-04-17'));
   const username = getValue('username')
   return (
-    <Box>
+    <Box sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' },mx:'auto' }}>
       <CardComponent
         sx={{
           backgroundColor: theme.palette.text.primary,
