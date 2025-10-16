@@ -193,7 +193,7 @@
 
 // export default LoginPage;
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { Mail } from 'lucide-react';
 import { Button, TextField, Typography, Paper, Box, useTheme } from '@mui/material'
 import { useForm } from "react-hook-form";
@@ -202,7 +202,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAlert } from "../../../../context/AlertContext";
 import { jwtDecode } from 'jwt-decode'
-import { getValue, setValue } from "../../../../utils/localStorageUtil";
+import {  setValue } from "../../../../utils/localStorageUtil";
 import bgimage from '/assets/images/bgimage.png'
 import { encryptPassword } from "../../../../utils/encryption";
 import { apiRequest } from "../../../../utils/ApiRequest";
@@ -210,7 +210,7 @@ import { ApiRoutes } from "../../../../constants/ApiConstants";
 
 function LoginPage() {
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { showAlert } = useAlert();
   const theme = useTheme()
 
@@ -305,16 +305,16 @@ function LoginPage() {
       setValue('email', user.email);
       setValue('rollid', user.group_id);
       setValue('student_id', user.student_id)
-      const rollid = Number(getValue('rollid')); // convert to number
+      // const rollid = Number(getValue('rollid')); // convert to number
 
-      if (rollid == 1) {
-        navigate("/dashboard");
-      } else if (rollid == 2) {
-        navigate("/dashboard/student");
-      } else {
-        showAlert("Unauthorized role!", "error");
-      }
-      console.log("user---", user);
+      // if (rollid == 1) {
+      //   navigate("/dashboard");
+      // } else if (rollid == 2) {
+      //   navigate("/dashboard/student");
+      // } else {
+      //   showAlert("Unauthorized role!", "error");
+      // }
+      // console.log("user---", user);
 
 
 

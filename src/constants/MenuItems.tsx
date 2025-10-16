@@ -63,12 +63,12 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
   },
 ];
 export const STUDENT_MENU_ITEMS: MenuItem[] = [
-  {
-    text: 'Dashboard',
-    icon: 'Dashboard',
-    subItems: [],
-    routePath: '/dashboard/student'
-  },
+  // {
+  //   text: 'Dashboard',
+  //   icon: 'Dashboard',
+  //   subItems: [],
+  //   routePath: '/dashboard/student'
+  // },
   {
     text: 'Profile',
     icon: 'Profile',
@@ -97,37 +97,37 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Examinations',
     icon: 'Examinations',
     subItems: [],
-    routePath: '/examinations',
+    routePath: '',
   },
-  {
-    text: 'Feedback & Survey',
-    icon: 'Feedback',
-    subItems: [],
-    routePath: '/student/feedback',
-  },
+  // {
+  //   text: 'Feedback & Survey',
+  //   icon: 'Feedback',
+  //   subItems: [],
+  //   routePath: '/student/feedback',
+  // },
   {
     text: 'Student Counselling',
     icon: 'Counselling',
     subItems: [],
-    routePath: '/student/counselling',
+    routePath: '',
   },
   {
     text: 'Documents',
     icon: 'Documents',
     subItems: [],
-    routePath: '/student/documents',
+    routePath: '',
   },
-  {
-    text: 'Library',
-    icon: 'Library',
-    subItems: [],
-    routePath: '/student/library',
-  },
+  // {
+  //   text: 'Library',
+  //   icon: 'Library',
+  //   subItems: [],
+  //   routePath: '/student/library',
+  // },
   {
     text: 'Password Management',
     icon: 'Password',
     subItems: [],
-    routePath: '/student/password',
+    routePath: '',
   },
 ];
 

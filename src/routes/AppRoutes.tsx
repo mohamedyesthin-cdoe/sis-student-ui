@@ -21,12 +21,13 @@ const renderRoutes = (routes: any[]) =>
 const AppRoutes = () => {
   const token = getValue("ACCESS_TOKEN_KEY");
   const rollid = Number(getValue("rollid"));
+  const student_id = Number(getValue("student_id"));
 
   // ✅ Compute default redirect based on authentication + role
   const getDefaultRoute = () => {
     if (!token) return "/login";
     if (rollid === 1) return "/dashboard";
-    if (rollid === 2) return "/dashboard/student";
+    if (rollid === 2) return `/students/detail${student_id}"`;
     return "/unauthorized";
   };
 

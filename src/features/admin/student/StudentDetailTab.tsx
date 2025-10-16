@@ -33,7 +33,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
     </CardComponent>
   );
 
-  const tabs = ['Basic Info', 'Academic', 'DEB', 'Documents'];
+  const tabs = ['Basic Info', 'Address', 'Academic', 'DEB', 'Documents'];
 
   return (
     <>
@@ -75,12 +75,21 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
                 ['Date of Birth', student.date_of_birth],
                 ['Blood Group', student.blood_group],
                 ['Nationality', student.nationality],
+                ['Whatsapp Number', student.whatsapp_number],
+                ['Marital Status', student.marital_status],
+                ['Religion', student.religion],
+                ['Nationality', `${student.nationality == '101' ? 'Indian' : 'Others'}`],
+                ['Aadhar Number', student.aadhaar_number],
+                ['Personal EmailId', student.email],
               ].map(([label, value]) => (
                 <Box key={label}>{field(label, value)}</Box>
               ))}
             </Box>
           </CardComponent>
-          {/* Addresses */}
+        </>
+      )}
+      {activeTab === 1 && (
+        <>
           <CardComponent mb={0} p={2}>
             <Subheader fieldName="Temporary Address"></Subheader>
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -93,7 +102,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
                 <Box key={label}>{field(label, value)}</Box>
               ))}
             </Box>
-            <Subheader fieldName="Permanent Address" sx={{mt:2}}></Subheader>
+            <Subheader fieldName="Permanent Address" sx={{ mt: 2 }}></Subheader>
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 ['Address', `${student.address_details.perm_addr1}, ${student.address_details.perm_addr2}, ${student.address_details.perm_city} - ${student.address_details.perm_pin}`],
@@ -107,8 +116,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
           </CardComponent>
         </>
       )}
-
-      {activeTab === 1 && renderTabContent([
+      {activeTab === 2 && renderTabContent([
         ['SSC Board ID', student.academic_details.ssc_board_id],
         ['SSC School', student.academic_details.ssc_school],
         ['SSC Scheme', student.academic_details.ssc_scheme],
@@ -123,7 +131,7 @@ export default function StudentDetailTab({ student, activeTab, setActiveTab }: S
         ['HSC Year', student.academic_details.hsc_year],
       ])}
 
-      {activeTab === 2 && renderTabContent([
+      {activeTab === 3 && renderTabContent([
         ['DEB ID', student.deb_details.deb_id],
         ['Name', student.deb_details.deb_name],
         ['Gender', student.deb_details.deb_gender],

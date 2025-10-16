@@ -53,27 +53,38 @@ export default function StudentDetailUI() {
   }
 
   const personalInfo = {
-    fullName: `${student.first_name} ${student.last_name}`,
-    email: student.email,
-    phoneNumber: student.mobile_number,
-    department: student.department,
-    designation: student.designation,
-    languages: student.languages,
-    bio: student.bio,
-  };
+  fullName: `${student.first_name} ${student.last_name}`,
+  email: student.email,
+  phoneNumber: student.mobile_number,
+  program:
+    student.program_id == '1500038' ? (
+      <Box component="span">
+        Bachelor Of Science
+        <br />
+        (Hons) (Data Science)
+      </Box>
+    ) : (
+      '-'
+    ),
+  department: student.department,
+  batch: student.batch,
+  year: student.year,
+  registration_no:student.registration_no
+};
+
   const infoList = [
     ['Full Name', personalInfo.fullName],
     ['Email', personalInfo.email],
     ['Phone Number', personalInfo.phoneNumber],
-    ['Program', personalInfo.designation],
-    ['Department', "CDOE"],
-    ['Batch', personalInfo.languages],
-    ['Year', personalInfo.bio],
+    ['Program', personalInfo.program],
+    ['Department', 'CDOE'],
+    ['Batch', 'July'],
+    ['Year', '2025'],
   ];
 
   return (
     <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2 mt-4"
-    sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' },mx:'auto' }}>
+      sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: 'auto' }}>
       {/* Left Column */}
       <Box className="col-span-12 lg:col-span-4 my-1">
         <CardComponent mb={2} p={0} className="h-full">
@@ -123,7 +134,7 @@ export default function StudentDetailUI() {
                   color: theme.palette.custom.accent,
                 }}
               >
-                {personalInfo.email}
+                {personalInfo.registration_no}
               </Typography>
             </Box>
 
