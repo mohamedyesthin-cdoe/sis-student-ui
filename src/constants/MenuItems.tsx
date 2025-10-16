@@ -88,10 +88,10 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Grievances',
     icon: 'Grievances',
     subItems: [
-      { text: 'Online Grievance', routePath: '/grievances/online' },
-      { text: 'Offline Grievance', routePath: '/grievances/offline' },
+      // { text: 'Grievance', routePath: '/grievances' },
+      // { text: 'Offline Grievance', routePath: '/grievances/offline' },
     ],
-    routePath: '',
+    routePath: '/grievances',
   },
   {
     text: 'Examinations',

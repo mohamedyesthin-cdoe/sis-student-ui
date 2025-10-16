@@ -72,16 +72,16 @@ export default function Sidebar({
       setSelectedParent('Fees');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
-    else if (path.startsWith('/grievances/online')) {
-      setSelectedItem('Online Grievance');
+    else if (path.startsWith('/grievances')) {
+      setSelectedItem('Grievances');
       setSelectedParent('Grievances');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
-    else if (path.startsWith('/grievances/offline')) {
-      setSelectedItem('Offline Grievance');
-      setSelectedParent('Grievances');
-      setOpenItems((prev) => ({ ...prev, Faculty: true }));
-    }
+    // else if (path.startsWith('/grievances/offline')) {
+    //   setSelectedItem('Offline Grievance');
+    //   setSelectedParent('Grievances');
+    //   setOpenItems((prev) => ({ ...prev, Faculty: true }));
+    // }
     else if (path.startsWith('/examinations')) {
       setSelectedItem('Examinations');
       setSelectedParent('');
