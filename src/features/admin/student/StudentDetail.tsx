@@ -65,10 +65,10 @@ export default function StudentDetailUI() {
     ['Full Name', personalInfo.fullName],
     ['Email', personalInfo.email],
     ['Phone Number', personalInfo.phoneNumber],
-    ['Department', personalInfo.department],
-    ['Designation', personalInfo.designation],
-    ['Languages', personalInfo.languages],
-    ['Bio', personalInfo.bio],
+    ['Program', personalInfo.designation],
+    ['Department', "CDOE"],
+    ['Batch', personalInfo.languages],
+    ['Year', personalInfo.bio],
   ];
 
   return (

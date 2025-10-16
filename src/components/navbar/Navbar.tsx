@@ -87,7 +87,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
             {/* Hamburger */}
             <IconButton
               onClick={onHamburgerClick}
-              color="primary"
+              color="secondary"
               className="md:hidden bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg"
             >
               <MenuIcon />

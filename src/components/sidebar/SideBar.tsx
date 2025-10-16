@@ -9,6 +9,7 @@ import {
   Tooltip,
   useTheme,
   Box,
+  Typography,
 } from '@mui/material';
 import { ExpandLess, ExpandMore, } from '@mui/icons-material';
 import logo from '/assets/logo.png';
@@ -119,7 +120,7 @@ export default function Sidebar({
 
   const drawerContent = (
     <Box
-      className={`h-full bg-white flex flex-col border-r border-gray-200 transition-all duration-300 ${isSidebarVisible ? 'w-64' : 'w-16'
+      className={`h-full bg-white flex flex-col border-r p-1 border-gray-200 transition-all duration-300 ${isSidebarVisible ? 'w-64' : 'w-16'
         }`}
     >
       <Box className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3 pb-2' : 'p-1 pb-3'}`}>
@@ -286,6 +287,10 @@ export default function Sidebar({
           );
         })}
       </List>
+
+      <Box className="text-left ml-5 border-t border-gray-200 p-2">
+        <Typography className="text-sm text-gray-500" variant='caption' sx={{fontWeight:'bold',color:theme.palette.warning.main}}>version 1.0.0</Typography>
+      </Box>
     </Box>
   );
 
@@ -298,11 +303,8 @@ export default function Sidebar({
   }
 
   return (
-    <Box
-      className={`hidden md:flex transition-all duration-300 ease-in-out ${isSidebarVisible ? 'translate-x-0' : 'translate-x-0'
-        }`}
-    >
+    <>
       {drawerContent}
-    </Box>
+    </>
   );
 }
