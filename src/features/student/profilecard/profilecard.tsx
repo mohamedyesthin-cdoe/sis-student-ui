@@ -1,42 +1,42 @@
 import React, { useRef } from "react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import { Card, Box, Typography, Avatar, Button } from "@mui/material";
+// import jsPDF from "jspdf";
+// import html2canvas from "html2canvas";
+import {  Box, Typography, Avatar } from "@mui/material";
 import logo2 from "/assets/logo2.png";
 import userimage from "/assets/images/man.png";
 
 const StudentIdCard: React.FC = () => {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleDownloadPDF = async () => {
-    if (!cardRef.current) return;
+  // const handleDownloadPDF = async () => {
+  //   if (!cardRef.current) return;
 
-    try {
-      // Capture the card
-      const canvas = await html2canvas(cardRef.current, { scale: 2 } as any) ;
-      const imgData = canvas.toDataURL("image/png");
+  //   try {
+  //     // Capture the card
+  //     const canvas = await html2canvas(cardRef.current, { scale: 2 } as any) ;
+  //     const imgData = canvas.toDataURL("image/png");
 
-      // Create PDF
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
+  //     // Create PDF
+  //     const pdf = new jsPDF({
+  //       orientation: "portrait",
+  //       unit: "mm",
+  //       format: "a4",
+  //     });
 
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("Student_ID_Card.pdf");
-    } catch (error) {
-      console.error("PDF download failed:", error);
-    }
-  };
+  //     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //     pdf.save("Student_ID_Card.pdf");
+  //   } catch (error) {
+  //     console.error("PDF download failed:", error);
+  //   }
+  // };
 
   return (
-    <Box className="flex flex-col items-center mt-0 p-4 min-h-screen bg-gray-100">
+    <Box className="flex flex-col items-center mt-0 p-5">
       {/* ID Card */}
-      <Card
+      <Box
         ref={cardRef}
         sx={{
           width: { xs: 260, sm: 300, md: 320 },
@@ -44,7 +44,7 @@ const StudentIdCard: React.FC = () => {
           borderRadius: "12px",
           overflow: "hidden",
           position: "relative",
-          boxShadow: 4,
+          boxShadow: 1,
           background: "linear-gradient(to bottom, #f44336, #fff3e0)", // hex colors
           display: "flex",
           flexDirection: "column",
@@ -182,10 +182,10 @@ const StudentIdCard: React.FC = () => {
             </Box>
           </Box>
         </Box>
-      </Card>
+      </Box>
 
       {/* Download Button */}
-      <Button
+      {/* <Button
         variant="contained"
         onClick={handleDownloadPDF}
         sx={{
@@ -200,7 +200,7 @@ const StudentIdCard: React.FC = () => {
         }}
       >
         Download PDF
-      </Button>
+      </Button> */}
     </Box>
   );
 };

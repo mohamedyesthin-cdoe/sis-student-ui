@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import coverImage from '/assets/images/user-grid-bg1.png';
 import avatarImage from '/assets/images/user-grid-img14.png';
-import { Avatar, Divider, Typography, Box } from '@mui/material';
+import { Avatar, Divider, Box } from '@mui/material';
 import CardComponent from '../../../components/card/Card';
 import StudentDetailTab from './StudentDetailTab';
 import theme from '../../../styles/theme';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
+import Customtext from '../../../components/customtext/Customtext';
 
 
 export default function StudentDetailUI() {
@@ -16,12 +17,6 @@ export default function StudentDetailUI() {
   const [student, setStudent] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);
 
-  // useEffect(() => {
-  //   const filteredStudents = sampleStudents.filter((s: any) => s.id == id);
-  //   const foundStudent = filteredStudents.length > 0 ? filteredStudents[0] : null;
-  //   if (foundStudent) setStudent(foundStudent);
-  //   else navigate('/students/list');
-  // }, [id, navigate]);
   useEffect(() => {
     const fetchStudent = async () => {
       try {
@@ -44,33 +39,25 @@ export default function StudentDetailUI() {
   }, [id, navigate]);
 
 
-  if (!student) {
-    return (
-      <Box className="p-4 text-center">
-        <Typography variant="h6">Loading Student Data...</Typography>
-      </Box>
-    );
-  }
-
   const personalInfo = {
-  fullName: `${student.first_name} ${student.last_name}`,
-  email: student.email,
-  phoneNumber: student.mobile_number,
-  program:
-    student.program_id == '1500038' ? (
-      <Box component="span">
-        Bachelor Of Science
-        <br />
-        (Hons) (Data Science)
-      </Box>
-    ) : (
-      '-'
-    ),
-  department: student.department,
-  batch: student.batch,
-  year: student.year,
-  registration_no:student.registration_no
-};
+    fullName: `${student?.first_name} ${student?.last_name}`,
+    email: student?.email,
+    phoneNumber: student?.mobile_number,
+    program:
+      student?.program_id == '1500038' ? (
+        <Box component="span">
+          Bachelor Of Science
+          <br />
+          (Hons) (Data Science)
+        </Box>
+      ) : (
+        '-'
+      ),
+    department: student?.department,
+    batch: student?.batch,
+    year: student?.year,
+    registration_no: student?.registration_no
+  };
 
   const infoList = [
     ['Full Name', personalInfo.fullName],
@@ -115,90 +102,88 @@ export default function StudentDetailUI() {
                   mt: -6, // Negative margin to lift it over the cover image
                 }}
               />
-
-              <Typography
+              <Customtext
+                fieldName={personalInfo.fullName}
                 sx={{
+                  mt: 1,
+                  mb: 0,
+                  width: { xs: '100%', sm: '50%' },
+                  color: theme.palette.text.primary,
                   fontSize: { xs: '14px', sm: '16px' },
                   fontWeight: 'bold',
-                  mt: 2,
-                  mb: 0,
+                  wordBreak: 'break-word', // wrap if label is long
                 }}
-              >
-                {personalInfo.fullName}
-              </Typography>
-              <Typography
+              />
+              <Customtext
+                fieldName={personalInfo.registration_no}
+
                 sx={{
                   mb: 2,
                   wordBreak: 'break-word',
                   whiteSpace: 'normal',
                   color: theme.palette.custom.accent,
                 }}
-              >
-                {personalInfo.registration_no}
-              </Typography>
+              />
             </Box>
 
 
             <Divider sx={{ my: 2 }} />
 
             <Box sx={{ mt: 3 }}>
-              <Typography
+              <Customtext
+                fieldName='Personal Info'
+
                 sx={{
+                  mb: 2,
                   fontSize: { xs: '14px', sm: '16px' },
                   fontWeight: 'bold',
-                  mb: 3,
+                  color:theme.palette.text.primary
                 }}
-              >
-                Personal Info
-              </Typography>
+              />
 
-              <Box display="flex" flexDirection="column" gap={1}>
+              {/* Two-column responsive grid */}
+              <Box
+                display="grid"
+                gridTemplateColumns={{ xs: '1fr', sm: '1fr' }} // 1 column on mobile, 2 columns on small+
+                gap={0.5} // gap between rows/columns
+              >
                 {infoList.map(([label, value], index) => (
                   <Box
                     key={index}
                     display="flex"
-                    alignItems="flex-start"
-                    mb={0}
+                    flexDirection={{ xs: 'column', sm: 'row' }}
+                    alignItems={{ xs: 'flex-start', sm: 'center' }}
+                    py={0.5}
+                    gap={1}
                   >
-                    <Typography
+                    {/* Label */}
+                    <Customtext
+                      fieldName={label}
                       sx={{
-                        width: { xs: '30%', sm: '30%', md: '35%' },
-                        fontWeight: 600,
-                        fontSize: { xs: '13px', sm: '13px' },
-                        color: 'text.secondary',
+                        width: { xs: '100%', sm: '50%' },
+                        color: theme.palette.custom.accent,
+                        fontSize: '0.875rem',
+                        fontWeight: 'bold',
+                        wordBreak: 'break-word', // wrap if label is long
                       }}
-                    >
-                      {label}
-                    </Typography>
+                    />
 
-                    <Typography
+                    {/* Value */}
+                    <Customtext
+                      fieldName={value}
                       sx={{
-                        width: '20px',
-                        fontWeight: 600,
-                        fontSize: { xs: '13px', sm: '13px' },
-                        textAlign: 'center',
-                        color: 'text.secondary',
+                        width: { xs: '100%', sm: '50%' },
+                        color: theme.palette.secondary.main,
+                        fontSize: '0.875rem',
+                        fontWeight: 'bold',
+                        wordBreak: 'break-word', // wrap if label is long
                       }}
-                    >
-                      :
-                    </Typography>
-
-                    <Typography
-                      sx={{
-                        flex: 1,
-                        fontWeight: 500,
-                        fontSize: { xs: '13px', sm: '14px' },
-                        color: 'secondary.main',
-                        wordBreak: 'break-word',
-                        whiteSpace: 'normal',
-                      }}
-                    >
-                      {value || '-'}
-                    </Typography>
+                    />
                   </Box>
                 ))}
               </Box>
             </Box>
+
           </Box>
 
         </CardComponent>

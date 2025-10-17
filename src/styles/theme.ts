@@ -28,7 +28,8 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: `'Inter', 'Poppins', 'Arial', sans-serif`,
+    // fontFamily: `'Roboto', 'Poppins', 'Arial', sans-serif`,
+    fontFamily: `'Roboto', sans-serif`,
   },
   components: {
     MuiDateCalendar: {

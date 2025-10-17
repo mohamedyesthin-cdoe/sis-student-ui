@@ -31,7 +31,7 @@ export default function DashboardLayout() {
   };
 
   return (
-    <Box className="flex h-screen bg-gray-100">
+    <Box className="flex h-screen bg-[#FBFBFD]">
 
       {isMobile && (
         <Sidebar

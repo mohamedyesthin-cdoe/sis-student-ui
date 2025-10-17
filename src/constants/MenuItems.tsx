@@ -97,7 +97,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Examinations',
     icon: 'Examinations',
     subItems: [],
-    routePath: '',
+    routePath: '/comingsoon',
   },
   // {
   //   text: 'Feedback & Survey',
@@ -115,7 +115,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Documents',
     icon: 'Documents',
     subItems: [],
-    routePath: '',
+    routePath: `/documents/${student_id}`,
   },
   // {
   //   text: 'Library',

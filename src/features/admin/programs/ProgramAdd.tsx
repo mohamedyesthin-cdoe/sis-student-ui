@@ -13,7 +13,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
 import CardComponent from "../../../components/card/Card";
-import Subheader from "../../../components/subheader/Subheader";
+import Customtext from "../../../components/customtext/Customtext";
 import { useAlert } from "../../../context/AlertContext";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { apiRequest } from "../../../utils/ApiRequest";
@@ -295,7 +295,7 @@ const ProgramForm = () => {
     >
       {/* Program Details */}
       <CardComponent sx={{ p: 3 }}>
-        <Subheader fieldName="Program Details" sx={{ mb: 2 }} />
+        <Customtext fieldName="Program Details" sx={{ mb: 2 }} />
         <Grid container spacing={2}>
           {/* Program ID */}
           <Grid size={{ xs: 12, md: 3 }} my={1}>
@@ -403,10 +403,10 @@ const ProgramForm = () => {
 
       {/* Semester Fees */}
       <CardComponent sx={{ p: 3, mt: 4 }}>
-        <Subheader fieldName="Semester Fee Details" />
+        <Customtext fieldName="Semester Fee Details" />
         {Array.from({ length: 6 }).map((_, index) => (
           <Box key={index} sx={{ mt: 3, mb: 3 }}>
-            <Subheader
+            <Customtext
               fieldName={`Semester ${index + 1}`}
               sx={{ mb: 2, color: theme.palette.text.primary }}
             />

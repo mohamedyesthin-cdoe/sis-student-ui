@@ -1,13 +1,13 @@
 import { Card } from '@mui/material';
 import type { ReactNode } from 'react';
-import type { SxProps, Theme } from '@mui/material'; // 👈 type-only import
+import type { SxProps, Theme } from '@mui/material';
 
 type CardComponentProps = {
   children: ReactNode;
   mb?: number;
   p?: number;
   className?: string;
-  sx?: SxProps<Theme>; // ✅ custom sx support
+  sx?: SxProps<Theme>;
 };
 
 const CardComponent = ({
@@ -19,13 +19,15 @@ const CardComponent = ({
 }: CardComponentProps) => {
   return (
     <Card
+      elevation={0} // ✅ removes default Paper shadow
       className={className}
       sx={{
-        borderRadius: '1rem',
         mb,
         p,
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-        ...sx, // merge user styles
+        boxShadow: '0px 4.4px 12px -1px rgba(222, 222, 222, 0.3607843137)',
+        borderRadius: '5px',
+        border: '1px solid #e8e9ebff',
+        ...sx,
       }}
     >
       {children}

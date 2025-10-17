@@ -11,7 +11,8 @@ import FeesReceipt from "../features/student/fees/feesreceipt";
 import Onlinegrievances from "../features/student/grievances/onlinegrievances";
 // import Offlinegrievances from "../features/student/grievances/offlinegrievances";
 import Grievanceadd from "../features/student/grievances/grievanceadd";
-// import StudentIdCard from "../features/student/profilecard/profilecard";
+import DocumemtsCard from "../features/student/documents/documents"
+import ComingSoon from "../components/card/comingsoon";
 
 export const routesConfig = [
   {
@@ -106,9 +107,14 @@ export const routesConfig = [
       }
     ]
   },
-  // {
-  //   path: '/examinations',
-  //   element: <StudentIdCard />,
-  //   breadcrumb: 'Examinations',
-  // },
+  {
+    path: '/comingsoon',
+    element: <ComingSoon />,
+    breadcrumb: 'ComingSoon',
+  },
+  {
+    path: '/documents/:id',
+    element: <DocumemtsCard />,
+    breadcrumb: 'Examinations',
+  },
 ];

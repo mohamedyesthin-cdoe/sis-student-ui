@@ -82,11 +82,16 @@ export default function Sidebar({
     //   setSelectedParent('Grievances');
     //   setOpenItems((prev) => ({ ...prev, Faculty: true }));
     // }
-    // else if (path.startsWith('/examinations')) {
-    //   setSelectedItem('Examinations');
-    //   setSelectedParent('');
-    //   setOpenItems({});
-    // }
+    else if (path.startsWith('/comingsoon')) {
+      setSelectedItem('Examinations');
+      setSelectedParent('');
+      setOpenItems({});
+    }
+    else if (path.startsWith('/documents')) {
+      setSelectedItem('Documents');
+      setSelectedParent('');
+      setOpenItems({});
+    }
 
   }, [location.pathname]);
 
