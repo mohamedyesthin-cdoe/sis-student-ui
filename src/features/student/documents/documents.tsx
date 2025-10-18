@@ -5,12 +5,13 @@ import CardComponent from "../../../components/card/Card";
 import Customtext from "../../../components/customtext/Customtext";
 
 // ✅ Only import the academic PDF
-import academicPdf from "/assets/documents/Academic calender 2025-26.pdf";
+// import academicPdf from "/assets/documents/Academic calender 2025-26.pdf";
 
 export default function DocumentsCard() {
   const theme = useTheme();
 
   // ✅ Only one document (Academic Calendar)
+  const academicPdf ="https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Academic+calender+2025-26.pdf"
   const docs = [
     { label: "Academic Calendar 2025-26", file: academicPdf },
   ];
