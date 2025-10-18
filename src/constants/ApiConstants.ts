@@ -16,4 +16,5 @@ export const ApiRoutes = {
   PROGRAMUPDATE:'programe/update',
   BULKADD:'user/bulk-add',
   GETSTUDENTFEES:'student/fees',
+  CHANGEPASSWORD:'user/change-password'
 };

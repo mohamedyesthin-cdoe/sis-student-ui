@@ -77,11 +77,11 @@ export default function Sidebar({
       setSelectedParent('Grievances');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
-    // else if (path.startsWith('/grievances/offline')) {
-    //   setSelectedItem('Offline Grievance');
-    //   setSelectedParent('Grievances');
-    //   setOpenItems((prev) => ({ ...prev, Faculty: true }));
-    // }
+    else if (path.startsWith('/counselling')) {
+      setSelectedItem('Counselling');
+      setSelectedParent('');
+      setOpenItems({});
+    }
     else if (path.startsWith('/comingsoon')) {
       setSelectedItem('Examinations');
       setSelectedParent('');
@@ -89,6 +89,11 @@ export default function Sidebar({
     }
     else if (path.startsWith('/documents')) {
       setSelectedItem('Documents');
+      setSelectedParent('');
+      setOpenItems({});
+    }
+    else if (path.startsWith('/passwordmang')) {
+      setSelectedItem('Password Management');
       setSelectedParent('');
       setOpenItems({});
     }

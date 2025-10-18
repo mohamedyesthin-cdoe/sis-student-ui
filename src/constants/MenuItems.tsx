@@ -109,7 +109,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Student Counselling',
     icon: 'Counselling',
     subItems: [],
-    routePath: '',
+    routePath: '/counselling',
   },
   {
     text: 'Documents',
@@ -127,7 +127,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Password Management',
     icon: 'Password',
     subItems: [],
-    routePath: '',
+    routePath: '/passwordmang',
   },
 ];
 

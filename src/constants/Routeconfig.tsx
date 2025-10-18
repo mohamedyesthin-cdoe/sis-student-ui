@@ -13,6 +13,8 @@ import Onlinegrievances from "../features/student/grievances/onlinegrievances";
 import Grievanceadd from "../features/student/grievances/grievanceadd";
 import DocumemtsCard from "../features/student/documents/documents"
 import ComingSoon from "../components/card/comingsoon";
+import StudentCounselling from "../features/student/counselling/counselling";
+import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordForm";
 
 export const routesConfig = [
   {
@@ -95,11 +97,6 @@ export const routesConfig = [
         element: <Onlinegrievances />,
         breadcrumb: 'Online Grievances',
       },
-      // {
-      //   path: 'offline',
-      //   element: <Offlinegrievances />,
-      //   breadcrumb: 'Offline Grievances',
-      // },
       {
         path: 'add',
         element: <Grievanceadd />,
@@ -116,5 +113,15 @@ export const routesConfig = [
     path: '/documents/:id',
     element: <DocumemtsCard />,
     breadcrumb: 'Examinations',
+  },
+  {
+    path: '/counselling',
+    element: <StudentCounselling />,
+    breadcrumb: 'Counselling',
+  },
+  {
+    path: '/passwordmang',
+    element: <ChangePasswordForm />,
+    breadcrumb: 'Password Managment',
   },
 ];

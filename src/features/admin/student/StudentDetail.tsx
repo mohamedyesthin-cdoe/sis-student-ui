@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import coverImage from '/assets/images/user-grid-bg1.png';
-import avatarImage from '/assets/images/user-grid-img14.png';
+import avatarImage from '/assets/images/man.png'
 import { Avatar, Divider, Box } from '@mui/material';
 import CardComponent from '../../../components/card/Card';
 import StudentDetailTab from './StudentDetailTab';
@@ -9,7 +9,6 @@ import theme from '../../../styles/theme';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
 import Customtext from '../../../components/customtext/Customtext';
-
 
 export default function StudentDetailUI() {
   const navigate = useNavigate();
@@ -98,8 +97,9 @@ export default function StudentDetailUI() {
                 sx={{
                   width: 80,
                   height: 80,
-                  border: '2px solid white',
+                  border: `2px solid ${theme.palette.secondary.main}` ,
                   mt: -6, // Negative margin to lift it over the cover image
+                  backgroundColor:'white'
                 }}
               />
               <Customtext

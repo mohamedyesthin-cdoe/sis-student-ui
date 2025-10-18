@@ -27,6 +27,7 @@ import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
 import { getValue, removeSingleValue } from '../../utils/localStorageUtil';
 import userimage from '/assets/images/man.png'
+import theme from '../../styles/theme';
 type NavbarProps = {
   onHamburgerClick?: () => void; // optional callback
 };
@@ -115,15 +116,15 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
             {/* Avatar (mobile view: inside left section) */}
             <div className='md:hidden'>
               <IconButton
-              onClick={handleProfileClick}
-              sx={{ p: 0 }}
-            >
-              <Avatar
-                alt="User Avatar"
-                src={userimage}
-                sx={{ width: 40, height: 40, border: '2px solid #105c8e' }}
-              />
-            </IconButton>
+                onClick={handleProfileClick}
+                sx={{ p: 0 }}
+              >
+                <Avatar
+                  alt="User Avatar"
+                  src={userimage}
+                  sx={{ width: 40, height: 40, border: `2px solid ${theme.palette.secondary.main}` }}
+                />
+              </IconButton>
             </div>
           </Box>
 

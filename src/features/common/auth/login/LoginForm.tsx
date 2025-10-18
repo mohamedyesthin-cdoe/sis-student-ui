@@ -202,7 +202,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAlert } from "../../../../context/AlertContext";
 import { jwtDecode } from 'jwt-decode'
-import {  setValue } from "../../../../utils/localStorageUtil";
+import { setValue } from "../../../../utils/localStorageUtil";
 import bgimage from '/assets/images/bgimage.png'
 import { encryptPassword } from "../../../../utils/encryption";
 import { apiRequest } from "../../../../utils/ApiRequest";
@@ -415,15 +415,16 @@ function LoginPage() {
             />
 
             {showPassword ? (
-              <FiEyeOff
-                className="absolute right-3 top-3 w-5 h-5 text-muted cursor-pointer"
-                onClick={togglePassword}
-              />
-            ) : (
               <FiEye
                 className="absolute right-3 top-3 w-5 h-5 text-muted cursor-pointer"
                 onClick={togglePassword}
               />
+            ) : (
+              <FiEyeOff
+                className="absolute right-3 top-3 w-5 h-5 text-muted cursor-pointer"
+                onClick={togglePassword}
+              />
+
             )}
           </Box>
 
