@@ -13,12 +13,14 @@ oauth2_scheme = HTTPBearer()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7
+RESET_TOKEN_EXPIRE_MINUTES = 10
 
 def get_current_user(token: HTTPAuthorizationCredentials = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials"
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
     try:
         payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
@@ -52,3 +54,16 @@ def verify_api_key(secret_key: str = Header(...), access_key: str = Header(...))
     if secret_key != SECRET_KEY or access_key != ACCESS_KEY:
         raise HTTPException(status_code=403, detail="Invalid API Key")
     return True
+
+def create_reset_token(email: str):
+    expire = datetime.utcnow() + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)
+    payload = {"sub": email, "exp": expire}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_reset_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except JWTError:
+        return None
+    
