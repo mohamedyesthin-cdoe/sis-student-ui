@@ -1,79 +1,30 @@
-import { useEffect, useState } from "react";
-import {
-  Box,
-  Divider,
-  IconButton,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CardComponent from "../../../components/card/Card";
 import Customtext from "../../../components/customtext/Customtext";
-import { apiRequest } from "../../../utils/ApiRequest";
-import { ApiRoutes } from "../../../constants/ApiConstants";
-import { useParams } from "react-router-dom";
 
-export default function DocumemtsCard() {
+// ✅ Only import the academic PDF
+import academicPdf from "/assets/documents/Academic calender 2025-26.pdf";
+
+export default function DocumentsCard() {
   const theme = useTheme();
-  const { id } = useParams();
-  const [student, setStudent] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStudent = async () => {
-      try {
-        const response = await apiRequest({
-          url: `${ApiRoutes.GETSTUDENTBYID}/${id}`,
-          method: "get",
-        });
-        if (response) {
-          setStudent(response);
-        }
-      } catch (error) {
-        console.error("Error fetching student:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id) fetchStudent();
-  }, [id]);
-
+  // ✅ Only one document (Academic Calendar)
   const docs = [
-    { label: "Aadhar", value: student?.document_details?.aadhar },
-    { label: "Class 10th Marksheet", value: student?.document_details?.class_10th_marksheet },
-    { label: "Class 12th Marksheet", value: student?.document_details?.class_12th_marksheet },
-    { label: "Diploma Marksheet", value: student?.document_details?.diploma_marksheet },
-    { label: "Graduation Marksheet", value: student?.document_details?.graduation_marksheet },
-    { label: "Passport", value: student?.document_details?.passport },
-    { label: "Signature", value: student?.document_details?.signature },
-    { label: "Work Experience Certificates", value: student?.document_details?.work_experience_certificates },
+    { label: "Academic Calendar 2025-26", file: academicPdf },
   ];
 
-  const availableDocs = docs.filter((doc) => doc.value);
+  const availableDocs = docs.filter((doc) => doc.file);
 
   return (
-    <CardComponent sx={{ height: 400, display: "flex", flexDirection: "column" }}>
+    <CardComponent sx={{ height: 'auto', display: "flex", flexDirection: "column" }}>
       <Box className="py-2 px-3">
         <Customtext fieldName="Documents" sx={{ mb: 0 }} />
       </Box>
       <Divider sx={{ borderColor: "#899000" }} />
 
-      {/* Loading State */}
-      {loading ? (
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Typography color="text.secondary">Loading...</Typography>
-        </Box>
-      ) : availableDocs.length > 0 ? (
-        // ✅ Show document list
+      {availableDocs.length > 0 ? (
         <Box
           sx={{
             flex: 1,
@@ -97,6 +48,7 @@ export default function DocumemtsCard() {
                 boxShadow: "inset 0 0 3px rgba(0,0,0,0.05)",
               }}
             >
+              {/* PDF Icon + Label */}
               <Box display="flex" alignItems="center" gap={1}>
                 <Box
                   sx={{
@@ -114,17 +66,15 @@ export default function DocumemtsCard() {
                 </Box>
                 <Typography
                   variant="body2"
-                  sx={{
-                    fontWeight: 600,
-                    color: theme.palette.text.primary,
-                  }}
+                  sx={{ fontWeight: 600, color: theme.palette.text.primary }}
                 >
                   {doc.label}
                 </Typography>
               </Box>
 
+              {/* View Button */}
               <IconButton
-                onClick={() => window.open(doc.value, "_blank")}
+                onClick={() => window.open(doc.file, "_blank")}
                 sx={{
                   backgroundColor: "black",
                   color: theme.palette.grey[300],
@@ -138,7 +88,7 @@ export default function DocumemtsCard() {
           ))}
         </Box>
       ) : (
-        // 🚧 Coming Soon Fallback
+        // 🚧 Coming Soon
         <Box
           sx={{
             flex: 1,
@@ -163,7 +113,7 @@ export default function DocumemtsCard() {
             variant="body2"
             sx={{ color: theme.palette.text.secondary, maxWidth: 300 }}
           >
-            We’re working on adding document details for this student.
+            No documents available yet. Please check back later.
           </Typography>
         </Box>
       )}

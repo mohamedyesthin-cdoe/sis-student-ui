@@ -80,7 +80,7 @@ export const routesConfig = [
         breadcrumb: 'Fees Detail',
       },
       {
-        path: 'receipt',
+        path: 'receipt/:id',
         element: <FeesReceipt />,
         breadcrumb: 'Fees Receipt',
       }

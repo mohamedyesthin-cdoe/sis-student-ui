@@ -1,6 +1,10 @@
+import ComingSoon from "../../../components/card/comingsoon"
+
 const Faculty = () => {
   return (
-    <div>Faculty</div>
+    <div>
+      <ComingSoon />
+    </div>
   )
 }
 

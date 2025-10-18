@@ -8,9 +8,10 @@ import type { JSX } from 'react';
 import StudentIdCard from '../../student/profilecard/profilecard';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+
 type TabContent = {
   title: string;
-  items: [string, any][]; // 2 element tuple
+  items: [string, any][];
   customRender?: () => JSX.Element;
 };
 
@@ -72,14 +73,13 @@ export default function StudentDetailTab({
   const renderTabContent = (tab: TabContent) => {
     if (tab.customRender) return tab.customRender();
 
-    // For Documents tab with download icons
     if (tab.title === 'Documents') {
       const sampleDocs = tab.items.length
         ? tab.items
         : [
-          { name: 'Aadhaar Card', fileUrl: '/sample-aadhaar.pdf' },
-          { name: 'Passport', fileUrl: '/sample-passport.pdf' },
-        ];
+            { name: 'Aadhaar Card', fileUrl: '/sample-aadhaar.pdf' },
+            { name: 'Passport', fileUrl: '/sample-passport.pdf' },
+          ];
 
       return (
         <CardComponent>
@@ -155,7 +155,7 @@ export default function StudentDetailTab({
 
   // Tabs
   const admintabs = ['Basic Info', 'Academic', 'DEB', 'Documents', 'ID Card'];
-  const studenttabs = ['Basic Info', 'DEB', 'ID Card'];
+  const studenttabs = ['Basic Info', 'DEB', 'Documents', 'ID Card'];
   const tabs = rollid === 2 ? studenttabs : admintabs;
 
   // Tab Contents
@@ -209,12 +209,12 @@ export default function StudentDetailTab({
             {[
               {
                 title: 'Current Address',
-                value: `${student?.address_details.corr_addr1}, ${student?.address_details.corr_addr2}, ${student?.address_details.corr_city} - ${student?.address_details.corr_pin}`,
+                value: `${student?.address_details?.corr_addr1}, ${student?.address_details?.corr_addr2}, ${student?.address_details?.corr_city} - ${student?.address_details?.corr_pin}`,
                 icon: <LocationOnIcon sx={{ color: '#105c8e', fontSize: 32 }} />,
               },
               {
                 title: 'Permanent Address',
-                value: `${student?.address_details.perm_addr1}, ${student?.address_details.perm_addr2}, ${student?.address_details.perm_city} - ${student?.address_details.perm_pin}`,
+                value: `${student?.address_details?.perm_addr1}, ${student?.address_details?.perm_addr2}, ${student?.address_details?.perm_city} - ${student?.address_details?.perm_pin}`,
                 icon: <LocationOnIcon sx={{ color: '#BF2728', fontSize: 32 }} />,
               },
             ].map((card, index) => (
@@ -237,7 +237,7 @@ export default function StudentDetailTab({
                         backgroundColor: theme.palette.background.default,
                         borderRadius: 3,
                         mr: 2,
-                        mb: 1
+                        mb: 1,
                       }}
                     >
                       {card.icon}
@@ -250,20 +250,16 @@ export default function StudentDetailTab({
                           color: theme.palette.custom.accent,
                           fontSize: '0.875rem',
                           fontWeight: 'bold',
-                          wordBreak: 'break-word',
                           mb: 0,
                         }}
                       />
                       <Customtext
                         fieldName={card.value}
                         sx={{
-                          width: { xs: '100%', sm: '50%' },
                           color: theme.palette.text.primary,
                           fontSize: '0.875rem',
                           fontWeight: 'bold',
-                          wordBreak: 'break-word',
                         }}
-                        variantName="caption"
                       />
                     </Box>
                   </Box>
@@ -384,24 +380,26 @@ export default function StudentDetailTab({
     },
   };
 
-
-
   const IDCardTab: TabContent = {
     title: 'ID Card',
     items: [],
     customRender: () => (
       <CardComponent>
         <Box className="py-2 px-3">
-          <Customtext fieldName='ID Card' sx={{ mb: 0 }} />
+          <Customtext fieldName="ID Card" sx={{ mb: 0 }} />
         </Box>
         <Divider sx={{ borderColor: '#899000' }} />
+        {/* ✅ Pass student as prop */}
         <StudentIdCard />
       </CardComponent>
     ),
   };
 
+  // ✅ Corrected tab content mapping for both roles
   const tabContents =
-    rollid === 2 ? [basicInfoTab, debTab, IDCardTab] : [basicInfoTab, academicTab, debTab, documentsTab, IDCardTab];
+    rollid === 2
+      ? [basicInfoTab, debTab, documentsTab, IDCardTab]
+      : [basicInfoTab, academicTab, debTab, documentsTab, IDCardTab];
 
   return (
     <>
@@ -422,9 +420,10 @@ export default function StudentDetailTab({
               color: activeTab === index ? theme.palette.background.default : theme.palette.text.primary,
               backgroundColor: activeTab === index ? theme.palette.secondary.main : 'transparent',
               '&:hover': {
-                backgroundColor: activeTab === index
-                  ? theme.palette.primary.main
-                  : theme.palette.custom.highlight,
+                backgroundColor:
+                  activeTab === index
+                    ? theme.palette.primary.main
+                    : theme.palette.custom.highlight,
               },
             }}
           >

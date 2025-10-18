@@ -66,7 +66,6 @@ export default function FeesDetail() {
     );
   };
 
-   const handleView = () => navigate(`/fees/receipt`);
 
   return (
     <CardComponent
@@ -155,7 +154,9 @@ export default function FeesDetail() {
             {
               label: "View",
               icon: <VisibilityIcon fontSize="small" />,
-              onClick: handleView,
+              onClick: (row) => {
+                navigate(`/fees/receipt/${row.id}`);
+              },
               color: "secondary",
             },
           ]}

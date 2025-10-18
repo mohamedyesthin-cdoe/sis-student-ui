@@ -73,7 +73,22 @@ export default function StudentTable() {
       'Students'
     );
   };
-
+  // const customhandleExportExcel = () => {
+  //   exportToExcel(
+  //     filteredStudents,
+  //     [
+  //       { header: 'group_id', key: 2 },
+  //       { header: 'username', key: 'registration_no' },
+  //       { header: 'first_name', key: 'first_name'},
+  //       { header: 'last_name', key: 'last_name'},
+  //       { header: 'email', key: '' },
+  //       { header: 'phone', key: 'mobile_number' },
+  //       { header: 'student_id', key: 'id' },
+  //     ],
+  //     'Students',
+  //     'Students'
+  //   );
+  // };
   // Update handleSync
   const handleSync = async () => {
     try {
@@ -220,6 +235,12 @@ export default function StudentTable() {
               startIcon: <FileDownloadIcon />,
               onClick: handleExportExcel,
             },
+            //  {
+            //   label: 'Custom Excel',
+            //   color: 'secondary',
+            //   startIcon: <FileDownloadIcon />,
+            //   onClick: customhandleExportExcel,
+            // },
           ]
         }
       />
@@ -245,7 +266,6 @@ export default function StudentTable() {
       ) : (
         <ReusableTable
           columns={[
-            { key: 'id', label: 'Student ID' },
             { key: "registration_no", label: "Registration No" },
             { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
             { key: "email", label: "Email" },
