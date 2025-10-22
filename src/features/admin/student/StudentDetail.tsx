@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import coverImage from '/assets/images/user-grid-bg1.png';
 import avatarImage from '/assets/images/man.png'
 import { Avatar, Divider, Box } from '@mui/material';
@@ -9,10 +9,11 @@ import theme from '../../../styles/theme';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
 import Customtext from '../../../components/customtext/Customtext';
+import { getValue } from '../../../utils/localStorageUtil';
 
 export default function StudentDetailUI() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const student_id = getValue("student_id")
   const [student, setStudent] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);
 
@@ -20,7 +21,7 @@ export default function StudentDetailUI() {
     const fetchStudent = async () => {
       try {
         const response = await apiRequest({
-          url: `${ApiRoutes.GETSTUDENTBYID}/${id}`,
+          url: `${ApiRoutes.GETSTUDENTBYID}/${student_id}`,
           method: 'get',
         });
 
@@ -30,12 +31,11 @@ export default function StudentDetailUI() {
         }
       } catch (error) {
         console.error("Failed to fetch student:", error);
-        navigate('/students/list');
       }
     };
 
-    if (id) fetchStudent();
-  }, [id, navigate]);
+    if (student_id) fetchStudent();
+  }, [student_id, navigate]);
 
 
   const personalInfo = {

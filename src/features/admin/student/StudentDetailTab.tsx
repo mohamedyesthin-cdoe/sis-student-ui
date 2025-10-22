@@ -292,11 +292,11 @@ export default function StudentDetailTab({
     title: 'DEB Details',
     items: [
       ['DEB ID', student?.deb_details?.deb_id],
-      ['Name', student?.deb_details?.deb_name],
-      ['Gender', student?.deb_details?.deb_gender],
-      ['DOB', student?.deb_details?.deb_date_of_birth],
+      // ['Name', student?.deb_details?.deb_name],
+      // ['Gender', student?.deb_details?.deb_gender],
+      // ['DOB', student?.deb_details?.deb_date_of_birth],
       ['ABC ID', student?.deb_details?.deb_abcid],
-      ['Status', student?.deb_details?.deb_status],
+      // ['Status', student?.deb_details?.deb_status],
     ],
   };
 

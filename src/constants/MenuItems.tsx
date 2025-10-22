@@ -17,7 +17,6 @@ import {
 } from '@mui/icons-material';
 
 import type { JSX } from 'react';
-import { getValue } from '../utils/localStorageUtil';
 
 interface MenuItem {
   text: string;
@@ -28,7 +27,6 @@ interface MenuItem {
     routePath: string;
   }[];
 }
-const student_id = getValue("student_id")
 
 export const ADMIN_MENU_ITEMS: MenuItem[] = [
   {
@@ -74,13 +72,13 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     icon: 'Profile',
     subItems: [
     ],
-    routePath: `/students/detail/${student_id}`
+    routePath: '/students/detail'
   },
   {
     text: 'Fees',
     icon: 'Fees',
     subItems: [
-      { text: 'Fees Detail', routePath: `/fees/detail/${student_id}` },
+      { text: 'Fees Detail', routePath: `/fees/detail` },
     ],
     routePath: '',
   },
@@ -97,7 +95,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Examinations',
     icon: 'Examinations',
     subItems: [],
-    routePath: '/comingsoon',
+    routePath: '/examinations',
   },
   // {
   //   text: 'Feedback & Survey',
@@ -115,7 +113,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     text: 'Documents',
     icon: 'Documents',
     subItems: [],
-    routePath: `/documents/${student_id}`,
+    routePath: '/documents'
   },
   // {
   //   text: 'Library',

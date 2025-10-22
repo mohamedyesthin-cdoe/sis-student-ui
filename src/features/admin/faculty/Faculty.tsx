@@ -1,4 +1,4 @@
-import ComingSoon from "../../../components/card/comingsoon"
+import ComingSoon from "../../../components/card/NoRecordFound"
 
 const Faculty = () => {
   return (

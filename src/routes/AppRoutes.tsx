@@ -3,38 +3,27 @@ import LoginPage from "../pages/LoginPage";
 import NotFoundPage from "../components/notfound/NotFoundPage";
 import ProtectedLayout from "../layouts/ProtectedLayout";
 import PublicRoute from "./PublicRoute";
-import { getValue } from "../utils/localStorageUtil";
-import DashboardLayout from "../layouts/DashboardLayout";
 import { routesConfig } from "../constants/Routeconfig";
+import DashboardLayout from "../layouts/DashboardLayout";
 
-const renderRoutes = (routes: any[]) =>
+// Utility function to render nested routes
+export const renderRoutes = (routes: any[]) =>
   routes.map(({ path, element, children }) =>
     children ? (
       <Route key={path} path={path} element={element}>
-        {renderRoutes(children)}
+        {renderRoutes(children)} {/* Recursively render child routes */}
       </Route>
     ) : (
       <Route key={path} path={path} element={element} />
     )
   );
 
+
 const AppRoutes = () => {
-  const token = getValue("ACCESS_TOKEN_KEY");
-  const rollid = Number(getValue("rollid"));
-  const student_id = Number(getValue("student_id"));
-
-  // ✅ Compute default redirect based on authentication + role
-  const getDefaultRoute = () => {
-    if (!token) return "/login";
-    if (rollid === 1) return "/dashboard";
-    if (rollid === 2) return `/students/detail${student_id}"`;
-    return "/unauthorized";
-  };
-
   return (
     <Routes>
       {/* Root Redirect */}
-      <Route path="/" element={<Navigate to={getDefaultRoute()} />} />
+      <Route path="/" element={<Navigate to="/login" />} />
 
       {/* Public Route (Login) */}
       <Route
@@ -53,7 +42,7 @@ const AppRoutes = () => {
         </Route>
       </Route>
 
-      {/* Catch-All 404 */}
+      {/* Catch-All for 404 */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

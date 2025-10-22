@@ -2,7 +2,6 @@ import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CardComponent from "../../../components/card/Card";
-import Customtext from "../../../components/customtext/Customtext";
 
 // ✅ Only import the academic PDF
 // import academicPdf from "/assets/documents/Academic calender 2025-26.pdf";
@@ -20,9 +19,9 @@ export default function DocumentsCard() {
 
   return (
     <CardComponent sx={{ height: 'auto', display: "flex", flexDirection: "column" }}>
-      <Box className="py-2 px-3">
+      {/* <Box className="py-2 px-3">
         <Customtext fieldName="Documents" sx={{ mb: 0 }} />
-      </Box>
+      </Box> */}
       <Divider sx={{ borderColor: "#899000" }} />
 
       {availableDocs.length > 0 ? (

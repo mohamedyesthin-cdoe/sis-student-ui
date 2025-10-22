@@ -67,7 +67,6 @@ export default function FeesReceipt() {
         }
       } catch (err) {
         console.error("Failed to fetch fees", err);
-        navigate("/students/list");
       }
     };
 

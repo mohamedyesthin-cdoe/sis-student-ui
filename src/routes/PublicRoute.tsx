@@ -11,13 +11,19 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const rollid = Number(getValue("rollid"));
   const student_id = Number(getValue("student_id"));
 
-  if (!token) return <>{children}</>;
+  // If the user is logged in, redirect based on their role
+  if (token) {
+    if (rollid === 1) {
+      return <Navigate to="/dashboard" />;
+    }
+    if (rollid === 2 && student_id) {
+      return <Navigate to={`/students/detail`} />;
+    }
+    return <Navigate to="/unauthorized" />;
+  }
 
-  // ✅ Role-based redirect
-  if (rollid === 1) return <Navigate to="/dashboard" />;
-  if (rollid === 2) return <Navigate to={`/students/detail/${student_id}`} />;
-
-  return <Navigate to="/unauthorized" />;
+  // If no token, render children (public routes like login)
+  return <>{children}</>;
 };
 
 export default PublicRoute;

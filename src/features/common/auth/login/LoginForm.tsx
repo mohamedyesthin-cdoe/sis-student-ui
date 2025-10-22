@@ -305,18 +305,6 @@ function LoginPage() {
       setValue('email', user.email);
       setValue('rollid', user.group_id);
       setValue('student_id', user.student_id)
-      // const rollid = Number(getValue('rollid')); // convert to number
-
-      // if (rollid == 1) {
-      //   navigate("/dashboard");
-      // } else if (rollid == 2) {
-      //   navigate("/dashboard/student");
-      // } else {
-      //   showAlert("Unauthorized role!", "error");
-      // }
-      // console.log("user---", user);
-
-
 
     } catch (error) {
       console.error('Login error:', error);

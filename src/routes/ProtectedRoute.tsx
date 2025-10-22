@@ -1,21 +1,34 @@
 import React, { type ReactNode } from "react";
-import { Navigate } from "react-router-dom";
-// import { useSelector } from "react-redux";
-// import type { RootState } from "../redux/Store"; 
+import { Navigate, useLocation } from "react-router-dom";
 import { getValue } from "../utils/localStorageUtil";
- // Make sure this points to your store's root type
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  // const isAuthenticated = useSelector(
-  //   (state: RootState) => state.auth.isAuthenticated
-  // );
-  const isAuthenticated = getValue('ACCESS_TOKEN_KEY')
+  const location = useLocation();
+  const token = getValue("ACCESS_TOKEN_KEY");
+  const rollid = Number(getValue("rollid"));
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  // If user not logged in → send to login
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Role-based redirections
+  if (rollid === 2 && location.pathname === "/dashboard") {
+    // Student trying to access dashboard
+    return <Navigate to={`/students/detail`} replace />;
+  }
+
+  if (rollid === 1 && location.pathname.startsWith("/students/detail")) {
+    // Admin trying to access student detail directly
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // Otherwise, allow normal access
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

@@ -12,7 +12,7 @@ import Onlinegrievances from "../features/student/grievances/onlinegrievances";
 // import Offlinegrievances from "../features/student/grievances/offlinegrievances";
 import Grievanceadd from "../features/student/grievances/grievanceadd";
 import DocumemtsCard from "../features/student/documents/documents"
-import ComingSoon from "../components/card/comingsoon";
+import NoRecordFound from "../components/card/NoRecordFound";
 import StudentCounselling from "../features/student/counselling/counselling";
 import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordForm";
 
@@ -40,7 +40,7 @@ export const routesConfig = [
         breadcrumb: 'Students List',
       },
       {
-        path: 'detail/:id',
+        path: 'detail',
         element: <StudentDetail />,
         breadcrumb: 'Student Detail',
       },
@@ -77,7 +77,7 @@ export const routesConfig = [
     // breadcrumb: 'Fees',
     children: [
       {
-        path: 'detail/:id',
+        path: 'detail',
         element: <FeesDetail />,
         breadcrumb: 'Fees Detail',
       },
@@ -90,12 +90,12 @@ export const routesConfig = [
   },
   {
     path: '/grievances',
-    // breadcrumb: 'Fees',
+    breadcrumb: 'Grievances',
     children: [
       {
         path: '',
         element: <Onlinegrievances />,
-        breadcrumb: 'Online Grievances',
+        // breadcrumb: 'Online Grievances',
       },
       {
         path: 'add',
@@ -105,19 +105,19 @@ export const routesConfig = [
     ]
   },
   {
-    path: '/comingsoon',
-    element: <ComingSoon />,
-    breadcrumb: 'ComingSoon',
+    path: '/examinations',
+    element: <NoRecordFound />,
+    breadcrumb: 'Examinations',
   },
   {
-    path: '/documents/:id',
+    path: '/documents',
     element: <DocumemtsCard />,
-    breadcrumb: 'Examinations',
+    breadcrumb: 'Documents',
   },
   {
     path: '/counselling',
     element: <StudentCounselling />,
-    breadcrumb: 'Counselling',
+    breadcrumb: 'Student Counselling',
   },
   {
     path: '/passwordmang',

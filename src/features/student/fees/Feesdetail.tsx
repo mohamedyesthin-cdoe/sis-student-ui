@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
@@ -11,11 +11,12 @@ import ReusableTable from "../../../components/table/table";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { exportToExcel } from "../../../constants/excelExport";
+import { getValue } from "../../../utils/localStorageUtil";
 
 export default function FeesDetail() {
   const navigate = useNavigate();
-  const { id } = useParams();
-
+  const student_id  = getValue("student_id");
+  
   const [payments, setPayments] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -26,7 +27,7 @@ export default function FeesDetail() {
     const fetchFees = async () => {
       try {
         const response = await apiRequest({
-          url: `${ApiRoutes.GETSTUDENTFEES}/${id}`,
+          url: `${ApiRoutes.GETSTUDENTFEES}/${student_id}`,
           method: "get",
         });
         if (response) {
@@ -39,11 +40,10 @@ export default function FeesDetail() {
         }
       } catch (err) {
         console.error("Failed to fetch fees", err);
-        navigate("/students/list");
       }
     };
-    if (id) fetchFees();
-  }, [id, navigate]);
+    if (student_id) fetchFees();
+  }, [student_id, navigate]);
 
   // Filter payments by search text
   const filteredPayments = payments.filter((p) => {

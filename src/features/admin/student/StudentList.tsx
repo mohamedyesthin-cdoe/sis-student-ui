@@ -16,6 +16,7 @@ import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useAlert } from '../../../context/AlertContext';
 import UploadExcelDialog from '../../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
+import { setValue } from '../../../utils/localStorageUtil';
 
 export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -46,8 +47,10 @@ export default function StudentTable() {
   React.useEffect(() => {
     fetchStudents();
   }, []);
-
-  const handleView = (id: any) => navigate(`/students/detail/${id}`);
+  const handleView = (id: any) => {
+    setValue('student_id', id)
+    navigate('/students/detail')
+  }
 
   const filteredStudents = students.filter((s) => {
     const fullName = `${s.title} ${s.first_name} ${s.last_name}`.toLowerCase();

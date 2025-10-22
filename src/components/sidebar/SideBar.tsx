@@ -78,11 +78,11 @@ export default function Sidebar({
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
     else if (path.startsWith('/counselling')) {
-      setSelectedItem('Counselling');
+      setSelectedItem('Student Counselling');
       setSelectedParent('');
       setOpenItems({});
     }
-    else if (path.startsWith('/comingsoon')) {
+    else if (path.startsWith('/examinations')) {
       setSelectedItem('Examinations');
       setSelectedParent('');
       setOpenItems({});
