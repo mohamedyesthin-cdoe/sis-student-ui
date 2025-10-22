@@ -10,7 +10,7 @@ from src.core.security.dependencies import require_superuser
 router = APIRouter()
 
 @router.post("/add", response_model=ProgrameResponse)
-def create_program(programe: ProgrameCreate, db: Session = Depends(get_db)):
+def create_program(programe: ProgrameCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = ProgrameService(db)
         return service.create_program(programe)
@@ -23,7 +23,7 @@ def create_program(programe: ProgrameCreate, db: Session = Depends(get_db)):
         )
     
 @router.get("/list", response_model=List[ProgrameResponse])
-def list_programs(db: Session = Depends(get_db)):
+def list_programs(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = ProgrameService(db)
         return service.list_programs()
@@ -36,7 +36,7 @@ def list_programs(db: Session = Depends(get_db)):
         )
 
 @router.put("/update/{id}", response_model=ProgrameResponse)
-def update_program(id: int, programe_data: ProgrameUpdate, db: Session = Depends(get_db)):
+def update_program(id: int, programe_data: ProgrameUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = ProgrameService(db)
         return service.update_programe(id, programe_data)
@@ -49,7 +49,7 @@ def update_program(id: int, programe_data: ProgrameUpdate, db: Session = Depends
         ) 
     
 @router.get("/{programe_id}", response_model=ProgrameResponse)
-def get_program_by_id(programe_id: int, db: Session = Depends(get_db)):
+def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = ProgrameService(db)
         program = service.get_program_by_id_with_fees(programe_id)

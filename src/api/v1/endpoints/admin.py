@@ -4,11 +4,13 @@ from src.db.session import get_db
 from src.services.admin_service import AdminService
 from fastapi import APIRouter, Depends, HTTPException,status
 from typing import List
+from src.models.user import User
+from src.core.security.dependencies import require_superuser
 
 router = APIRouter()
 
 @router.post("/roles/add", response_model = GroupOut, status_code=status.HTTP_201_CREATED)
-async def create_roles(role: GroupCreate, db:Session = Depends(get_db)):
+async def create_roles(role: GroupCreate, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Create a new role.
 
     Args:
@@ -26,7 +28,7 @@ async def create_roles(role: GroupCreate, db:Session = Depends(get_db)):
     return created_role
 
 @router.put("/update/{role_id}", response_model=GroupOut, status_code=status.HTTP_200_OK)
-async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends(get_db)):
+async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Update an existing role.
 
     Args:
@@ -45,7 +47,7 @@ async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends
     return updated_role
 
 @router.get("/roles", response_model = List[GroupOut])
-async def get_roles(db: Session = Depends(get_db)):
+async def get_roles(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
 
     """Retrieve a list of roles"""
 
@@ -54,7 +56,7 @@ async def get_roles(db: Session = Depends(get_db)):
     return response
 
 @router.delete("/delete/{role_id}", status_code=status.HTTP_200_OK)
-async def delete_role(role_id: int, db: Session = Depends(get_db)):
+async def delete_role(role_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Delete an existing role.
 
     Args:

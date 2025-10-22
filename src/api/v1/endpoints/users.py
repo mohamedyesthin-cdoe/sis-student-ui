@@ -43,7 +43,8 @@ def create_user(data: UserCreate, db: Session = Depends(get_db), current_user: U
 @router.post("/bulk-add", status_code=status.HTTP_201_CREATED)
 def bulk_create_users(
     request: BulkUserCreateRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
 ):
     """
     Bulk create users and assign to a group.
@@ -77,7 +78,6 @@ def change_password(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):  
-    print(current_user.hashed_password)
     if not verify_password(request.current_password, current_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -85,7 +85,6 @@ def change_password(
         )
     
     current_user.hashed_password = hash_password(request.new_password)
-    print(current_user.hashed_password)
     db.commit()
     db.refresh(current_user)
     message = {"message": "Password changed successfully"}

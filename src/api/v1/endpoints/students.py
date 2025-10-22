@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from src.db.session import get_db
 from src.schemas.students import StudentCreate, StudentResponse, SyncResponse, DebResponse
 from src.schemas.payment import PaymentResponse
-from src.core.security.dependencies import require_superuser
+from src.core.security.dependencies import require_superuser, require_staff
 from src.models.user import User
 
 router = APIRouter()
@@ -38,7 +38,7 @@ def get_all_students(db: Session = Depends(get_db), current_user: User = Depends
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
     
 @router.get("/{id}", response_model=StudentResponse)
-def get_students_by_id(id: int,db: Session = Depends(get_db)):
+def get_students_by_id(id: int,db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
     """Retrieve all students."""
     try:
         service = StudentService(db)
@@ -50,7 +50,7 @@ def get_students_by_id(id: int,db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
     
 @router.get("/fees/{id}", response_model=List[PaymentResponse])
-def get_fees(id: int, db: Session = Depends(get_db)):
+def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
     try:
         service = StudentService(db)
         payments = service.get_fees(id)
