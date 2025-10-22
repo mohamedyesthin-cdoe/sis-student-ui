@@ -18,7 +18,7 @@ def create_student(student_data: StudentCreate, db: Session = Depends(get_db), c
     return student_service.create_student(student_data)
 
 @router.post("/sync", response_model=SyncResponse)
-async def sync_students_endpoint(db: Session = Depends(get_db)):
+async def sync_students_endpoint(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = StudentService(db)
         return await service.sync_students()
@@ -28,7 +28,7 @@ async def sync_students_endpoint(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
 @router.get("/list", response_model=List[StudentResponse])
-def get_all_students(db: Session = Depends(get_db)):
+def get_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Retrieve all students."""
     try:
         service = StudentService(db)
