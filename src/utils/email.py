@@ -59,7 +59,7 @@ async def send_credentials_email(email_to: str, username: str, password: str, fu
 
                     <!-- CREDENTIALS BOX -->
                     <div class="credentials-box">
-                        <p>{username}</p>
+                        <p><strong>Username:</strong>{username}</p>
                         <p><strong>Password:</strong>{password}</p>
                     </div>
 
