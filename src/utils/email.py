@@ -20,7 +20,7 @@ async def send_credentials_email(email_to: str, username: str, password: str, fu
     """
     Send async credentials email to the new user.
     """
-    subject = "Welcome! Your Account Credentials"
+    subject = "Your Student Information System Portal Login Credentials"
     html_body = f"""
         <!DOCTYPE html>
         <html lang="en">
@@ -49,13 +49,13 @@ async def send_credentials_email(email_to: str, username: str, password: str, fu
 
                     <!-- HEADER IMAGE -->
                     <div class="header-image">
-                    <img src="https://sis.sriramachandradigilearn.edu.in/assets/logo.png" alt="Sri Ramachandra Digilearn">
+                    <img src="https://sis.sriramachandradigilearn.edu.in/assets/logo2.png" alt="Sri Ramachandra Digilearn">
                     </div>
 
                     <!-- CONTENT -->
                     <div class="content">
-                    <h1>Welcome, {fullname}</h1>
-                    <p>Your official Sri Ramachandra Digilearn email ID has been created. Please find your credentials below:</p>
+                    <h1>Dear {fullname},</h1>
+                    <p>Your SIS portal login credentials are as follows:</p>
 
                     <!-- CREDENTIALS BOX -->
                     <div class="credentials-box">
@@ -63,18 +63,13 @@ async def send_credentials_email(email_to: str, username: str, password: str, fu
                         <p><strong>Password:</strong>{password}</p>
                     </div>
 
-                    <p>You can access your Gmail account through the Gmail website or mobile app.</p> 
-                    <p>This email ID will be used for official communication, including:</p>
-                    <ul style="font-size:14px; color:#444; line-height:1.5; padding-left:20px;">
-                        <li>Receiving important announcements and updates</li>
-                        <li>Communicating with faculty and staff</li>
-                    </ul>
+                    <p>Please keep your login credentials safe and secure. If you have any issues accessing the portal, feel free to reach out to us.</p>
 
                     <div class="support">
                         For academic support, contact:
                         <br>
                         <a href="mailto:cdoesupport@sriramachandra.edu.in">cdoesupport@sriramachandra.edu.in</a> | 
-                        <a href="tel:+919940490118">+91 99404 90118</a>
+                        <a href="tel:+919043953673 ">+91 90439 53673</a>
                     </div>
                     </div>
 
