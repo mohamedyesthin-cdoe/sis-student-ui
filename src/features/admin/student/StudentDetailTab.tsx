@@ -77,9 +77,9 @@ export default function StudentDetailTab({
       const sampleDocs = tab.items.length
         ? tab.items
         : [
-            { name: 'Aadhaar Card', fileUrl: '/sample-aadhaar.pdf' },
-            { name: 'Passport', fileUrl: '/sample-passport.pdf' },
-          ];
+          { name: 'Aadhaar Card', fileUrl: '/sample-aadhaar.pdf' },
+          { name: 'Passport', fileUrl: '/sample-passport.pdf' },
+        ];
 
       return (
         <CardComponent>
@@ -157,20 +157,20 @@ export default function StudentDetailTab({
   const admintabs = ['Basic Info', 'Academic', 'DEB', 'Documents', 'ID Card'];
   const studenttabs = ['Basic Info', 'DEB', 'ID Card'];
   const tabs = rollid === 2 ? studenttabs : admintabs;
-
+  const formattedDate = new Date(student?.date_of_birth).toLocaleDateString("en-GB") // dd/mm/yyyy
   // Tab Contents
   const basicInfoTab: TabContent = {
     title: 'Basic Info',
     items: [
       ['Gender', student?.gender],
-      ['Date of Birth', student?.date_of_birth],
+      ['Date of Birth', formattedDate],
       ['Blood Group', student?.blood_group],
       ['Whatsapp Number', student?.whatsapp_number],
       ['Marital Status', student?.marital_status],
       ['Religion', student?.religion],
       ['Aadhar Number', student?.aadhaar_number],
       ['Personal EmailId', student?.email],
-      ['Nationality', student?.nationality === '101' ? 'Indian' : 'Others'],
+      ['Nationality', student?.nationality == '101' ? 'Indian' : 'Others'],
     ],
     customRender: () => (
       <>
@@ -184,14 +184,14 @@ export default function StudentDetailTab({
             <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 ['Gender', student?.gender],
-                ['Date of Birth', student?.date_of_birth],
+                ['Date of Birth', formattedDate],
                 ['Blood Group', student?.blood_group],
                 ['Whatsapp Number', student?.whatsapp_number],
                 ['Marital Status', student?.marital_status],
                 ['Religion', student?.religion],
                 ['Aadhar Number', student?.aadhaar_number],
                 ['Personal EmailId', student?.email],
-                ['Nationality', student?.nationality === '101' ? 'Indian' : 'Others'],
+                ['Nationality', student?.nationality == '101' ? 'Indian' : 'Others'],
               ].map(([label, value]) => (
                 <Box key={label}>{field(label, value)}</Box>
               ))}

@@ -44,13 +44,10 @@ const StudentIdCard: React.FC = () => {
   }, [student_id, navigate]);
 
   const personalInfo = {
-    fullName: `${student?.first_name} ${student?.last_name}`,
+    fullName: `${student?.first_name || ""} ${student?.last_name || ""}`,
     email: student?.email,
     phoneNumber: student?.mobile_number,
-    program:
-      // student?.program_id === "1500038"
-      "B.Sc Data Science",
-        // : "-",
+    program: "B.Sc Data Science",
     department: student?.department || "CDOE",
     batch: student?.batch || "July",
     year: student?.year || "2025",
@@ -65,7 +62,6 @@ const StudentIdCard: React.FC = () => {
 
   const handleDownloadBothSidesPDF = async () => {
     if (!cardRef.current) return;
-
     const pdf = new jsPDF({ orientation: "portrait", unit: "px", format: "a4" });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -109,42 +105,52 @@ const StudentIdCard: React.FC = () => {
   }
 
   return (
-    <Box className="flex flex-col items-center my-4 space-y-3">
-      {/* Card */}
+    <Box className="flex flex-col items-center my-6 space-y-5 px-3">
+      {/* CARD */}
       <Box
         ref={cardRef}
         sx={{
-          width: { xs: 260, sm: 300, md: 320 },
-          height: { xs: 420, sm: 480, md: 500 },
-          borderRadius: "16px",
+          width: { xs: 270, sm: 310, md: 340, lg: 360 },
+          height: { xs: 420, sm: 470, md: 500, lg: 520 },
+          borderRadius: "18px",
           overflow: "hidden",
-          boxShadow: 2,
+          boxShadow: 4,
           background: isBack
             ? "linear-gradient(to bottom, #e74c3c, #fbeedb)"
             : "linear-gradient(to bottom, #f44336, #fff3e0)",
           position: "relative",
-          p: 2.5,
+          p: { xs: 2, sm: 3 },
           transition: "all 0.3s ease-in-out",
         }}
       >
         {/* FRONT SIDE */}
         {!isBack ? (
           <>
+            {/* Header Logo */}
             <Box
-              className="bg-white flex justify-between items-center w-[98%] mx-auto mt-2 px-3 py-2 rounded-lg shadow-sm"
-              sx={{ border: "none", mb: 2 }}
+              className="bg-white flex justify-center items-center mx-auto mt-1 rounded-lg shadow-sm"
+              sx={{
+                width: "95%",
+                py: { xs: 1, sm: 1.5 },
+                mb: { xs: 2, sm: 3 },
+              }}
             >
-              <img src={logo2} alt="Logo" className="mx-auto object-contain h-12" />
+              <img
+                src={logo2}
+                alt="Logo"
+                className="object-contain"
+                style={{ height: "48px", maxWidth: "80%" }}
+              />
             </Box>
 
-            {/* Student Photo */}
+            {/* Avatar */}
             <Box
-              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center bg-white shadow-md rounded-full mt-2"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center bg-white shadow-md rounded-full"
               sx={{
-                top: { xs: 75, sm: 95 },
-                width: { xs: 130, sm: 170 },
-                height: { xs: 130, sm: 170 },
-                border: "5px solid #f44336",
+                top: { xs: 110, sm: 130, md: 140 },
+                width: { xs: 120, sm: 140, md: 150 },
+                height: { xs: 120, sm: 140, md: 150 },
+                border: "4px solid #f44336",
               }}
             >
               <Avatar
@@ -157,43 +163,70 @@ const StudentIdCard: React.FC = () => {
               />
             </Box>
 
-            {/* Aligned Info Section */}
+            {/* Info Section */}
             <Box
               className="absolute w-full"
               sx={{
-                bottom: { xs: 35, sm: 40 },
-                px: 3,
+                bottom: { xs: 35, sm: 45 },
+                px: { xs: 2, sm: 3 },
               }}
             >
               <Typography
                 sx={{
                   color: "#b71c1c",
                   fontWeight: 700,
-                  fontSize: { xs: "16px", sm: "18px" },
+                  fontSize: { xs: "15px", sm: "17px", md: "18px" },
                   textAlign: "center",
-                  mb: 2,
+                  mb: { xs: 1.5, sm: 2 },
                 }}
               >
                 {personalInfo.fullName}
               </Typography>
 
-              {/* Aligned Labels/Values (same as back side) */}
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Box display="flex" flexDirection="column" gap={1} sx={{ width: "100%", maxWidth: 350 }}>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  gap={0.8}
+                  sx={{ width: "100%", maxWidth: 350 }}
+                >
                   {[
                     { label: "Roll No", value: personalInfo.registration_no },
                     { label: "Program", value: personalInfo.program },
                     { label: "Dept", value: personalInfo.department },
                     { label: "Session", value: student?.session || "JULY – 2025" },
                   ].map(({ label, value }) => (
-                    <Box key={label} display="flex" alignItems="flex-start" mb={0}>
-                      <Typography sx={{ width: "35%", fontWeight: 600, fontSize: "13px", color: "#333" }}>
+                    <Box key={label} display="flex" alignItems="flex-start">
+                      <Typography
+                        sx={{
+                          width: "35%",
+                          fontWeight: 600,
+                          fontSize: { xs: "12px", sm: "13px", md: "14px" },
+                          color: "#333",
+                        }}
+                      >
                         {label}
                       </Typography>
-                      <Typography sx={{ width: "20px", fontWeight: 600, fontSize: "13px", textAlign: "center", color: "#333" }}>
+                      <Typography
+                        sx={{
+                          width: "20px",
+                          fontWeight: 600,
+                          fontSize: { xs: "12px", sm: "13px", md: "14px" },
+                          textAlign: "center",
+                          color: "#333",
+                        }}
+                      >
                         :
                       </Typography>
-                      <Typography sx={{ flex: 1, fontWeight: 500, fontSize: "14px", color: "#0a3d62", wordBreak: "break-word" }}>
+                      <Typography
+                        sx={{
+                          flex: 1,
+                          fontWeight: 500,
+                          fontSize: { xs: "12px", sm: "13.5px", md: "14px" },
+                          color: "#0a3d62",
+                          wordBreak: "break-word",
+                        }}
+                      >
                         {value || "-"}
                       </Typography>
                     </Box>
@@ -205,22 +238,56 @@ const StudentIdCard: React.FC = () => {
         ) : (
           <>
             {/* BACK SIDE */}
-            <Box sx={{ mt: 6, display: "flex", justifyContent: "center" }}>
-              <Box display="flex" flexDirection="column" gap={1} sx={{ width: "100%", maxWidth: 350 }}>
+            <Box
+              sx={{
+                mt: { xs: 5, sm: 7 },
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Box
+                display="flex"
+                flexDirection="column"
+                gap={0.7}
+                sx={{ width: "100%", maxWidth: 350 }}
+              >
                 {[
                   { label: "Father’s Name", value: personalInfo.parent_guardian_name },
                   { label: "Res Address", value: personalInfo.address },
                   { label: "Contact No", value: personalInfo.phoneNumber },
                   { label: "Blood Group", value: student?.blood_group },
                 ].map(({ label, value }) => (
-                  <Box key={label} display="flex" alignItems="flex-start" mb={0}>
-                    <Typography sx={{ width: "35%", fontWeight: 600, fontSize: "13px", color: "#333" }}>
+                  <Box key={label} display="flex" alignItems="flex-start">
+                    <Typography
+                      sx={{
+                        width: "35%",
+                        fontWeight: 600,
+                        fontSize: { xs: "12px", sm: "13px" },
+                        color: "#333",
+                      }}
+                    >
                       {label}
                     </Typography>
-                    <Typography sx={{ width: "20px", fontWeight: 600, fontSize: "13px", textAlign: "center", color: "#333" }}>
+                    <Typography
+                      sx={{
+                        width: "20px",
+                        fontWeight: 600,
+                        fontSize: { xs: "12px", sm: "13px" },
+                        textAlign: "center",
+                        color: "#333",
+                      }}
+                    >
                       :
                     </Typography>
-                    <Typography sx={{ flex: 1, fontWeight: 500, fontSize: "14px", color: "#0a3d62", wordBreak: "break-word" }}>
+                    <Typography
+                      sx={{
+                        flex: 1,
+                        fontWeight: 500,
+                        fontSize: { xs: "12px", sm: "13.5px" },
+                        color: "#0a3d62",
+                        wordBreak: "break-word",
+                      }}
+                    >
                       {value || "-"}
                     </Typography>
                   </Box>
@@ -229,15 +296,28 @@ const StudentIdCard: React.FC = () => {
             </Box>
 
             {/* Bottom Logo */}
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 4, mt: 18 }}>
-              <img src={logo2} alt="Logo" className="h-10 object-contain" />
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mb: { xs: 3, sm: 4 },
+                mt: { xs: 14, sm: 18 },
+              }}
+            >
+              <img
+                src={logo2}
+                alt="Logo"
+                className="object-contain"
+                style={{ height: "42px", maxWidth: "75%" }}
+              />
             </Box>
           </>
         )}
       </Box>
 
-      {/* Action Buttons */}
-      <Box display="flex" gap={2}>
+      {/* ACTION BUTTONS */}
+      <Box display="flex" gap={2} flexWrap="wrap" justifyContent="center">
         <Tooltip title={isBack ? "View Front Side" : "View Back Side"}>
           <IconButton
             onClick={() => setIsBack(!isBack)}
@@ -245,9 +325,11 @@ const StudentIdCard: React.FC = () => {
               backgroundColor: "#105c8e",
               color: "#fff",
               "&:hover": { backgroundColor: "#0a4368" },
+              width: { xs: 38, sm: 42 },
+              height: { xs: 38, sm: 42 },
             }}
           >
-            <FlipIcon />
+            <FlipIcon fontSize="small" />
           </IconButton>
         </Tooltip>
 
@@ -258,9 +340,11 @@ const StudentIdCard: React.FC = () => {
               backgroundColor: "#BF2728",
               color: "#fff",
               "&:hover": { backgroundColor: "#a11f20" },
+              width: { xs: 38, sm: 42 },
+              height: { xs: 38, sm: 42 },
             }}
           >
-            <DownloadIcon />
+            <DownloadIcon fontSize="small" />
           </IconButton>
         </Tooltip>
       </Box>

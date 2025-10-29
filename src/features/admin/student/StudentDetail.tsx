@@ -45,7 +45,7 @@ export default function StudentDetailUI() {
     program:
       student?.program_id == '1500038' ? (
         <Box component="span">
-          B.S.C (Hons) - (Data Science)
+          B.Sc (Hons) - (Data Science)
         </Box>
       ) : (
         '-'
@@ -175,6 +175,8 @@ export default function StudentDetailUI() {
                         fontSize: '0.875rem',
                         fontWeight: 'bold',
                         wordBreak: 'break-word', // wrap if label is long
+                textAlign: 'left',
+
                       }}
                     />
                   </Box>
