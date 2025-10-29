@@ -155,7 +155,7 @@ export default function StudentDetailTab({
 
   // Tabs
   const admintabs = ['Basic Info', 'Academic', 'DEB', 'Documents', 'ID Card'];
-  const studenttabs = ['Basic Info', 'DEB', 'Documents', 'ID Card'];
+  const studenttabs = ['Basic Info', 'DEB', 'ID Card'];
   const tabs = rollid === 2 ? studenttabs : admintabs;
 
   // Tab Contents
@@ -398,7 +398,7 @@ export default function StudentDetailTab({
   // ✅ Corrected tab content mapping for both roles
   const tabContents =
     rollid === 2
-      ? [basicInfoTab, debTab, documentsTab, IDCardTab]
+      ? [basicInfoTab, debTab, IDCardTab]
       : [basicInfoTab, academicTab, debTab, documentsTab, IDCardTab];
 
   return (

@@ -33,7 +33,7 @@ export default function StudentCounselling() {
 
                 {/* ===== Support Areas ===== */}
                 <Typography mb={1}>
-                    Feel free to reach out to me for:
+                    Feel free to reach out to us for:
                 </Typography>
 
                 <List sx={{ listStyleType: "disc", pl: 4 }}>

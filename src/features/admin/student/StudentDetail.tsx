@@ -45,9 +45,7 @@ export default function StudentDetailUI() {
     program:
       student?.program_id == '1500038' ? (
         <Box component="span">
-          Bachelor Of Science
-          <br />
-          (Hons) (Data Science)
+          B.S.C (Hons) - (Data Science)
         </Box>
       ) : (
         '-'
@@ -55,7 +53,7 @@ export default function StudentDetailUI() {
     department: student?.department,
     batch: student?.batch,
     year: student?.year,
-    registration_no: student?.registration_no
+    registration_no: student?.registration_no,
   };
 
   const infoList = [

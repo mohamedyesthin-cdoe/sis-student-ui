@@ -12,7 +12,6 @@ import {
   Typography,
 } from '@mui/material';
 import { ExpandLess, ExpandMore, } from '@mui/icons-material';
-import logo from '/assets/logo.png';
 import logo2 from '/assets/logo2.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS } from '../../constants/MenuItems';
@@ -135,7 +134,7 @@ export default function Sidebar({
     >
       <Box className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3 pb-2' : 'p-1 pb-3'}`}>
         {isSidebarVisible ? (
-          <img src={logo} alt="Logo" className="mx-auto object-contain h-12" />
+          <img src={logo2} alt="Logo" className="mx-auto object-contain h-12" />
         ) : (
           <img src={logo2} alt="Logo Small" className="mx-auto object-contain h-12" />
         )}

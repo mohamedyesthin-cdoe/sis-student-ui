@@ -76,6 +76,111 @@ export default function StudentTable() {
       'Students'
     );
   };
+//    const handleExportExcel = () => {
+//   // Flatten all fields including nested ones
+//   const formattedData = filteredStudents.map((s, index) => ({
+//     'S.No': index + 1,
+//     // 'Student ID': s.id,
+//     'Program ID': 'B.S.C (Hons) (Data Science)',
+//     'Registration No': s.registration_no,
+//     'Application No': s.application_no,
+//     'Title': s.title,
+//     'First Name': s.first_name,
+//     'Last Name': s.last_name,
+//     'Full Name': `${s.title} ${s.first_name} ${s.last_name}`,
+//     'Gender': s.gender,
+//     'Date of Birth': s.date_of_birth,
+//     'Blood Group': s.blood_group,
+//     'Email': s.email,
+//     'Mobile Number': s.mobile_number,
+//     'Alternative Phone': s.alternative_phone || "",
+//     'WhatsApp Number': s.whatsapp_number || "",
+//     'Marital Status': s.marital_status,
+//     'Religion': s.religion,
+//     'Nationality': 'INDIAN',
+//     'Category': s.category,
+//     'Caste': s.caste,
+//     'Aadhaar Number': s.aadhaar_number,
+//     'Parent/Guardian Name': s.parent_guardian_name,
+//     'Relationship With Student': s.relationship_with_student,
+//     'Locality': s.locality,
+//     'Created At': s.created_at,
+//     'Updated At': s.updated_at,
+
+//     // Address details
+//     'Corr Address Line 1': s.address_details?.corr_addr1 || "",
+//     'Corr Address Line 2': s.address_details?.corr_addr2 || "",
+//     'Corr City': s.address_details?.corr_city || "",
+//     'Corr State': s.address_details?.corr_state || "",
+//     'Corr District': s.address_details?.corr_district || "",
+//     'Corr Country': 'INDIA',
+//     'Corr Pin': s.address_details?.corr_pin || "",
+//     'Perm Address Line 1': s.address_details?.perm_addr1 || "",
+//     'Perm Address Line 2': s.address_details?.perm_addr2 || "",
+//     'Perm City': s.address_details?.perm_city || "",
+//     'Perm State': s.address_details?.perm_state || "",
+//     'Perm District': s.address_details?.perm_district || "",
+//     'Perm Country':  "INDIA",
+//     'Perm Pin': s.address_details?.perm_pin || "",
+
+//     // Academic details
+//     // 'SSC Board ID': s.academic_details?.ssc_board_id || "",
+//     'SSC School': s.academic_details?.ssc_school || "",
+//     'SSC Scheme': s.academic_details?.ssc_scheme || "",
+//     'SSC Score': s.academic_details?.ssc_score || "",
+//     'SSC Year': s.academic_details?.ssc_year || "",
+//     // 'HSC Board ID': s.academic_details?.hsc_board_id || "",
+//     'HSC School': s.academic_details?.hsc_school || "",
+//     'HSC Scheme': s.academic_details?.hsc_scheme || "",
+//     'HSC Score': s.academic_details?.hsc_score || "",
+//     'HSC Year': s.academic_details?.hsc_year || "",
+//     'Diploma Institute': s.academic_details?.diploma_institute || "",
+//     'Diploma Score': s.academic_details?.diploma_score || "",
+
+//     // Document details
+//     // 'Aadhar Doc': s.document_details?.aadhar || "",
+//     // 'Class 10th Marksheet': s.document_details?.class_10th_marksheet || "",
+//     // 'Class 12th Marksheet': s.document_details?.class_12th_marksheet || "",
+//     // 'Diploma Marksheet': s.document_details?.diploma_marksheet || "",
+//     // 'Signature': s.document_details?.signature || "",
+//     // 'Passport Doc': s.document_details?.passport || "",
+
+//     // Declaration
+//     // 'Declaration Agreed': s.declaration_details?.declaration_agreed ? "Yes" : "No",
+//     // 'Applicant Name (Declaration)': s.declaration_details?.applicant_name || "",
+//     // 'Parent Name (Declaration)': s.declaration_details?.parent_name || "",
+//     // 'Declaration Date': s.declaration_details?.declaration_date || "",
+//     // 'Declaration Place': s.declaration_details?.place || "",
+
+//     // DEB details
+//     'DEB ID': s.deb_details?.deb_id || "",
+//     'DEB Name': s.deb_details?.deb_name || "",
+//     'DEB Gender': s.deb_details?.deb_gender || "",
+//     'DEB DOB': s.deb_details?.deb_date_of_birth || "",
+//     'DEB ABC ID': s.deb_details?.deb_abcid || "",
+//     'DEB Status': s.deb_details?.deb_status || "",
+
+//     // Payment details (first payment if exists)
+//     // 'Payment Type': s.payments?.[0]?.payment_type || "",
+//     // 'Order ID': s.payments?.[0]?.order_id || "",
+//     // 'Transaction ID': s.payments?.[0]?.transaction_id || "",
+//     // 'Payment Date': s.payments?.[0]?.payment_date || "",
+//     // 'Payment Amount': s.payments?.[0]?.payment_amount || "",
+//     // 'Semester': s.payments?.[0]?.semester_fee?.semester || "",
+//     // 'Tuition Fee': s.payments?.[0]?.semester_fee?.tuition_fee || "",
+//     // 'Lab Fee': s.payments?.[0]?.semester_fee?.lab_fee || "",
+//     // 'LMS Fee': s.payments?.[0]?.semester_fee?.lms_fee || "",
+//     // 'Exam Fee': s.payments?.[0]?.semester_fee?.exam_fee || "",
+//     // 'Total Fee': s.payments?.[0]?.semester_fee?.total_fee || "",
+//   }));
+
+//   // Export to Excel
+//   const worksheet = XLSX.utils.json_to_sheet(formattedData);
+//   const workbook = XLSX.utils.book_new();
+//   XLSX.utils.book_append_sheet(workbook, worksheet, 'Students');
+//   XLSX.writeFile(workbook, 'Students_Full_Details.xlsx');
+// };
+
   // const customhandleExportExcel = () => {
   //   exportToExcel(
   //     filteredStudents,

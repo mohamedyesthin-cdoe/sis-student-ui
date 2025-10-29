@@ -207,6 +207,8 @@ import bgimage from '/assets/images/bgimage.png'
 import { encryptPassword } from "../../../../utils/encryption";
 import { apiRequest } from "../../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../../constants/ApiConstants";
+import logo2 from '/assets/logo2.png';
+
 
 function LoginPage() {
 
@@ -340,7 +342,7 @@ function LoginPage() {
 
       {/* Logo */}
       <img
-        src="https://sriramachandradigilearn.edu.in/wp-content/uploads/2025/06/CDOE-logo-1.png"
+        src={logo2}
         alt="Logo"
         className="absolute top-6 left-6 w-60 sm:w-60 md:w-80"
       />
