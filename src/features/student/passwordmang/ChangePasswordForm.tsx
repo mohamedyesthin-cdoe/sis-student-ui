@@ -102,6 +102,7 @@ const ChangePasswordForm = () => {
                                         type={showOldPassword ? "text" : "password"}
                                         fullWidth
                                         size="medium"
+                                        autoComplete="new-password" // ✅ Prevent autofill
                                         error={!!errors.oldPassword}
                                         helperText={errors.oldPassword?.message}
                                         InputProps={{
@@ -111,12 +112,13 @@ const ChangePasswordForm = () => {
                                                         onClick={() => setShowOldPassword(!showOldPassword)}
                                                         edge="end"
                                                     >
-                                                        {showOldPassword ? < Visibility /> : <VisibilityOff />}
+                                                        {showOldPassword ? <Visibility /> : <VisibilityOff />}
                                                     </IconButton>
                                                 </InputAdornment>
                                             ),
                                         }}
                                     />
+
                                 )}
                             />
                         </Grid>

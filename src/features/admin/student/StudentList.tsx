@@ -26,39 +26,39 @@ export default function StudentTable() {
   const [genderFilter, setGenderFilter] = React.useState('');
   const navigate = useNavigate();
   const { showAlert } = useAlert();
+  const [showSearch] = React.useState(true);
+  const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
 
-
-  // Add this helper function
+  // Fetch student list
   const fetchStudents = async () => {
     try {
       const data = await apiRequest({ url: ApiRoutes.GETSTUDENTSLIST, method: 'get' });
       setStudents(Array.isArray(data) ? data : data.data);
     } catch (error: any) {
-      showAlert(
-        error.response?.data?.message || "Failed to fetch students.",
-        "error"
-      );
+      showAlert(error.response?.data?.message || "Failed to fetch students.", "error");
       setStudents([]);
     }
   };
 
-
-  // Replace your useEffect with fetchStudents call
   React.useEffect(() => {
     fetchStudents();
   }, []);
-  const handleView = (id: any) => {
-    setValue('student_id', id)
-    navigate('/students/detail')
-  }
 
+  // Handle view details
+  const handleView = (id: any) => {
+    setValue('student_id', id);
+    navigate('/students/detail');
+  };
+
+  // Filter by search and gender
   const filteredStudents = students.filter((s) => {
     const fullName = `${s.title} ${s.first_name} ${s.last_name}`.toLowerCase();
     const combinedText = `${s.registration_no} ${fullName} ${s.email} ${s.mobile_number} ${s.gender} ${s.date_of_birth}`.toLowerCase();
-    return combinedText.includes(searchText.toLowerCase()) && (genderFilter === '' || s.gender === genderFilter);
+    return combinedText.includes(searchText.toLowerCase()) &&
+      (genderFilter === '' || s.gender === genderFilter);
   });
 
-  // EXPORT TO EXCEL FUNCTION
+  // Export to Excel
   const handleExportExcel = () => {
     exportToExcel(
       filteredStudents,
@@ -76,7 +76,7 @@ export default function StudentTable() {
       'Students'
     );
   };
-//    const handleExportExcel = () => {
+  //    const handleExportExcel = () => {
 //   // Flatten all fields including nested ones
 //   const formattedData = filteredStudents.map((s, index) => ({
 //     'S.No': index + 1,
@@ -197,40 +197,31 @@ export default function StudentTable() {
   //     'Students'
   //   );
   // };
-  // Update handleSync
+
+  // Handle sync
   const handleSync = async () => {
     try {
       await apiRequest({ url: ApiRoutes.STUDENTSYNC, method: 'post' });
-      // After successful sync, fetch updated student list
       await fetchStudents();
       setPage(0);
+      showAlert("Sync completed successfully!", "success");
     } catch (error: any) {
-      showAlert(
-        error.response?.data?.message || "Something went wrong. Please try again.",
-        "error"
-      );
+      showAlert(error.response?.data?.message || "Sync failed. Try again.", "error");
     }
   };
 
-  const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
-
-  const handleOpenUploadDialog = () => setOpenUploadDialog(true);
+  // Handle Excel Upload
   const handleExcelUpload = async (file: File) => {
     try {
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-
-      // Convert sheet to JSON
       const rows: any[] = XLSX.utils.sheet_to_json(worksheet);
 
       if (!rows.length) throw new Error("Excel file is empty");
 
-      // Extract group_id (take from first row or default 0)
       const group_id = rows[0].group_id || 0;
-
-      // Map each row to user object
       const users = rows.map(row => ({
         username: row.username,
         first_name: row.first_name,
@@ -240,14 +231,9 @@ export default function StudentTable() {
         student_id: row.student_id
       }));
 
-
-      // Build final payload
       const payload = { group_id, users };
-      console.log("Payload to send:", payload);
-
-      // Call API
       await apiRequest({
-        url: ApiRoutes.BULKADD, // your endpoint
+        url: ApiRoutes.BULKADD,
         method: "post",
         data: payload,
       });
@@ -258,99 +244,81 @@ export default function StudentTable() {
       showAlert("Failed to upload Excel. Please check the file and try again.", "error");
     }
   };
-  return (
-    <CardComponent sx={{
-      width: '100%',
-      maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
-      mx: 'auto',
-      p: 3,
-      mt: 3,
-    }}>
-      {/* Filters & Export */}
 
+  return (
+    <CardComponent
+      sx={{
+        width: '100%',
+        maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+        mx: 'auto',
+        p: 3,
+        mt: 3,
+      }}
+    >
+      {/* Filters & Export */}
       <TableToolbar
-        searchText={searchText}
-        onSearchChange={(val) => {
-          setSearchText(val);
-          setPage(0);
-        }}
-        searchPlaceholder="Search all fields"
         filters={[
           {
-            key: 'gender',
-            label: 'Gender',
+            key: "search",
+            label: "Search",
+            type: "text",
+            value: searchText,
+            onChange: (val) => setSearchText(val),
+            placeholder: "Search all fields",
+            visible: showSearch,
+          },
+          {
+            key: "gender",
+            label: "All Genders",
+            type: "select",
             value: genderFilter,
             onChange: (val) => {
               setGenderFilter(val);
               setPage(0);
             },
             options: [
-              { value: '', label: 'All Genders' },
               { value: 'Male', label: 'Male' },
               { value: 'Female', label: 'Female' },
               { value: 'Other', label: 'Other' },
-            ]
+            ],
           },
-          // {
-          //   key: 'pushed',
-          //   label: 'Pushed Status',
-          //   value: pushedFilter,
-          //   onChange: (val) => {
-          //     setPushedFilter(val);
-          //     setPage(0);
-          //   },
-          //   options: [
-          //     { value: '', label: 'All' },
-          //     { value: 'Pushed', label: 'Pushed' },
-          //     { value: 'NotPushed', label: 'Not Pushed' },
-          //   ],
-          // },
-
         ]}
-        actions={
-          [
-            {
-              label: 'Bulk Upload',
-              color: 'secondary',
-              variant: 'outlined',
-              startIcon: <CloudUploadIcon />,
-              onClick: handleOpenUploadDialog
+        actions={[
+          {
+            label: 'Bulk Upload',
+            color: 'secondary',
+            variant: 'outlined',
+            startIcon: <CloudUploadIcon />,
+            onClick: () => setOpenUploadDialog(true),
+          },
+          {
+            label: 'Sync',
+            color: 'primary',
+            variant: 'outlined',
+            startIcon: <SyncIcon />,
+            onClick: handleSync,
+          },
+          {
+            label: 'Push to Deb',
+            color: 'success',
+            variant: 'outlined',
+            startIcon: <CloudUploadIcon />,
+            onClick: async () => {
+              try {
+                const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                console.log(data);
+              } catch (error: any) {
+                showAlert(error?.detail || "Sync failed.", "error");
+              }
             },
-            {
-              label: 'Sync',
-              color: 'primary',
-              variant: 'outlined',
-              startIcon: <SyncIcon />,
-              onClick: handleSync,
-            },
-            {
-              label: 'Push to Deb',
-              color: 'success',
-              variant: 'outlined',
-              startIcon: <CloudUploadIcon />,
-              onClick: async () => {
-                try {
-                  const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
-                  console.log(data);
-                } catch (error: any) {
-                  showAlert(error?.detail || "Sync failed.", "error");
-                }
-              },
-            },
-            {
-              label: 'Export Excel',
-              color: 'secondary',
-              startIcon: <FileDownloadIcon />,
-              onClick: handleExportExcel,
-            },
-            //  {
-            //   label: 'Custom Excel',
-            //   color: 'secondary',
-            //   startIcon: <FileDownloadIcon />,
-            //   onClick: customhandleExportExcel,
-            // },
-          ]
-        }
+          },
+          {
+            label: 'Export Excel',
+            color: 'secondary',
+            startIcon: <FileDownloadIcon />,
+            onClick: handleExportExcel,
+          },
+        ]}
       />
 
       {/* Table */}
@@ -385,13 +353,17 @@ export default function StudentTable() {
           page={page}
           rowsPerPage={rowsPerPage}
           actions={[
-            { label: "View", icon: <VisibilityIcon fontSize="small" />, onClick: (row) => handleView(row.id), color: 'secondary' },
+            {
+              label: "View",
+              icon: <VisibilityIcon fontSize="small" />,
+              onClick: (row) => handleView(row.id),
+              color: 'secondary',
+            },
           ]}
         />
       )}
 
       {/* Pagination */}
-
       <TablePagination
         page={page}
         rowsPerPage={rowsPerPage}
@@ -408,7 +380,6 @@ export default function StudentTable() {
         onClose={() => setOpenUploadDialog(false)}
         onUpload={handleExcelUpload}
       />
-
     </CardComponent>
   );
 }

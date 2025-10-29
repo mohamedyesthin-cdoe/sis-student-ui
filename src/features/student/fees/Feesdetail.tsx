@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -15,12 +15,14 @@ import { getValue } from "../../../utils/localStorageUtil";
 
 export default function FeesDetail() {
   const navigate = useNavigate();
-  const student_id  = getValue("student_id");
-  
+  const student_id = getValue("student_id");
+
   const [payments, setPayments] = useState<any[]>([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchText, setSearchText] = useState("");
+  const [showSearch] = React.useState(true);
+
 
   // Fetch student fees
   useEffect(() => {
@@ -79,12 +81,23 @@ export default function FeesDetail() {
     >
       {/* Search and Export Toolbar */}
       <TableToolbar
-        searchText={searchText}
-        onSearchChange={(val) => {
-          setSearchText(val);
-          setPage(0);
-        }}
-        searchPlaceholder="Search all fields"
+        // searchText={searchText}
+        // onSearchChange={(val) => {
+        //   setSearchText(val);
+        //   setPage(0);
+        // }}
+        // searchPlaceholder="Search all fields"
+        filters={[
+          {
+            key: "search",
+            label: "Search Fees",
+            type: "text",
+            value: searchText,
+            onChange: (val) => setSearchText(val),
+            placeholder: "Search all fields",
+            visible: showSearch, // ✅ toggle visibility
+          },
+        ]}
         actions={[
           {
             label: "Export Excel",

@@ -30,6 +30,8 @@ export default function ProgramList() {
   const [rowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState('');
   // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [showSearch] = React.useState(true);
+
 
 
   const [programs, setPrograms] = React.useState<any[]>([]);
@@ -77,12 +79,17 @@ export default function ProgramList() {
     >
       {/* Filters & Export */}
       <TableToolbar
-        searchText={searchText}
-        onSearchChange={(val) => {
-          setSearchText(val);
-          setPage(0);
-        }}
-        searchPlaceholder="Search programs"
+        filters={[
+          {
+            key: "search",
+            label: "Search",
+            type: "text",
+            value: searchText,
+            onChange: (val) => setSearchText(val),
+            placeholder: "Search all fields",
+            visible: showSearch,
+          },
+        ]}
         actions={[
           {
             label: 'Export Excel',
@@ -91,7 +98,7 @@ export default function ProgramList() {
             onClick: handleExportExcel,
           },
           {
-            label: 'Add',
+            label: 'Add Program',
             color: 'primary',
             onClick: handleView,
           },

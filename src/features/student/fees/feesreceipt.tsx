@@ -115,14 +115,14 @@ export default function FeesReceipt() {
       }}
     >
       {/* ===== Header ===== */}
-      <Box display="flex" alignItems="center" justifyContent="space-between" borderBottom="1px solid #ddd" pb={2} mb={2} flexWrap="wrap">
+      <Box display="flex" alignItems="center" justifyContent="center" borderBottom="1px solid #ddd" pb={2} mb={2} flexWrap="wrap">
         <Box component="img" src={logo} alt="logo" sx={{ height: { xs: 60, sm: 80, md: 100 }, objectFit: "contain" }} />
-        <Box sx={{ flex: 1, textAlign: "center", ml: { xs: -4, sm: -6 } }}>
+        {/* <Box sx={{ flex: 1, textAlign: "center", ml: { xs: -4, sm: -6 } }}>
           <Typography fontWeight="bold" fontSize={{ xs: "16px", sm: "18px", md: "20px" }}>SRI RAMACHANDRA</Typography>
           <Typography fontWeight="bold" fontSize={{ xs: "14px", sm: "16px", md: "18px" }}>INSTITUTE OF HIGHER EDUCATION & RESEARCH</Typography>
           <Typography fontSize={{ xs: "12px", sm: "13px" }} mt={0.5}>(Deemed to be University)</Typography>
           <Typography fontSize={{ xs: "12px", sm: "13px" }} mt={0.5}>PORUR, CHENNAI - 600 0116</Typography>
-        </Box>
+        </Box> */}
         <Box sx={{ width: { xs: 40, sm: 80, md: 100 } }} />
       </Box>
 

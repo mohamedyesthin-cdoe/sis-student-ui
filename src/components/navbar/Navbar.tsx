@@ -78,6 +78,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   };
   const username = getValue('username')
   const email = getValue('email')
+  const rollid = Number(getValue("rollid"));
 
   return (
     <>
@@ -95,23 +96,25 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
             </IconButton>
 
             {/* Search Box */}
-            <Box className="flex-grow md:w-80">
-              <TextField
-                placeholder="Search..."
-                size="small"
-                variant="outlined"
-                fullWidth
-                className="bg-gray-50 rounded-lg shadow-sm"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon className="text-gray-400" />
-                    </InputAdornment>
-                  ),
-                  sx: { borderRadius: '10px', backgroundColor: '#f9fafb' },
-                }}
-              />
-            </Box>
+            {rollid === 1 && (
+              <Box className="flex-grow md:w-80">
+                <TextField
+                  placeholder="Search..."
+                  size="small"
+                  variant="outlined"
+                  fullWidth
+                  className="bg-gray-50 rounded-lg shadow-sm"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon className="text-gray-400" />
+                      </InputAdornment>
+                    ),
+                    sx: { borderRadius: '10px', backgroundColor: '#f9fafb' },
+                  }}
+                />
+              </Box>
+            )}
 
             {/* Avatar (mobile view: inside left section) */}
             <div className='md:hidden'>
