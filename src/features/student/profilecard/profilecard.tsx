@@ -12,7 +12,8 @@ import {
 import FlipIcon from "@mui/icons-material/FlipCameraAndroid";
 import DownloadIcon from "@mui/icons-material/Download";
 import logo2 from "/assets/logo2.png";
-import userimage from "/assets/images/man.png";
+import maleimage from '/assets/images/male-logo.jpg'
+import femaleimage from '/assets/images/female-logo.jpg'
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
@@ -53,11 +54,9 @@ const StudentIdCard: React.FC = () => {
     year: student?.year || "2025",
     registration_no: student?.registration_no,
     parent_guardian_name: student?.parent_guardian_name,
-    address: `${student?.address_details?.corr_addr1 || ""}, ${
-      student?.address_details?.corr_addr2 || ""
-    }, ${student?.address_details?.corr_city || ""} - ${
-      student?.address_details?.corr_pin || ""
-    }`,
+    address: `${student?.address_details?.corr_addr1 || ""}, ${student?.address_details?.corr_addr2 || ""
+      }, ${student?.address_details?.corr_city || ""} - ${student?.address_details?.corr_pin || ""
+      }`,
   };
 
   const handleDownloadBothSidesPDF = async () => {
@@ -87,6 +86,8 @@ const StudentIdCard: React.FC = () => {
     setIsBack(originalSide);
     pdf.save(`${student?.first_name || "Student"}_ID_Card.pdf`);
   };
+  const gender = getValue("gender");
+  const userimage = gender == 'Male' ? maleimage : femaleimage
 
   if (loading) {
     return (
@@ -154,7 +155,7 @@ const StudentIdCard: React.FC = () => {
               }}
             >
               <Avatar
-                src={student?.profile_photo || userimage}
+                src={userimage}
                 alt="Student"
                 sx={{
                   width: { xs: 100, sm: 120 },

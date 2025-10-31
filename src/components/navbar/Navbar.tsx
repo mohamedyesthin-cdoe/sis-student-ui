@@ -26,7 +26,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import NotificationsDrawer from '../drawer/drawer';
 import { useNavigate } from 'react-router-dom';
 import { getValue, removeSingleValue } from '../../utils/localStorageUtil';
-import userimage from '/assets/images/man.png'
+import maleimage from '/assets/images/male-logo.jpg'
+import femaleimage from '/assets/images/female-logo.jpg'
 import theme from '../../styles/theme';
 type NavbarProps = {
   onHamburgerClick?: () => void; // optional callback
@@ -79,6 +80,9 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   const username = getValue('username')
   const email = getValue('email')
   const rollid = Number(getValue("rollid"));
+  const gender = getValue("gender");
+
+  const userimage = gender == 'Male' ? maleimage :femaleimage
 
   return (
     <>

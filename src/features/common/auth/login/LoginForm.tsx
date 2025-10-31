@@ -300,6 +300,7 @@ function LoginPage() {
           is_encrypted: true,
         },
       });
+      
 
       setValue('ACCESS_TOKEN_KEY', result.access_token);
       const user = jwtDecode<JwtPayload>(result.access_token);
@@ -307,6 +308,9 @@ function LoginPage() {
       setValue('email', user.email);
       setValue('rollid', user.group_id);
       setValue('student_id', user.student_id)
+      setValue('gender', user?.gender)
+      console.log(user);
+
 
     } catch (error) {
       console.error('Login error:', error);

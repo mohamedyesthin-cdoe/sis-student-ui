@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import coverImage from '/assets/images/user-grid-bg1.png';
-import avatarImage from '/assets/images/man.png'
+import maleimage from '/assets/images/male-logo.jpg'
+import femaleimage from '/assets/images/female-logo.jpg'
 import { Avatar, Divider, Box } from '@mui/material';
 import CardComponent from '../../../components/card/Card';
 import StudentDetailTab from './StudentDetailTab';
@@ -65,6 +66,9 @@ export default function StudentDetailUI() {
     ['Batch', 'July'],
     ['Year', '2025'],
   ];
+  const gender = getValue("gender");
+  const userimage = gender == 'Male' ? maleimage : femaleimage
+
 
   return (
     <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2 mt-4"
@@ -91,13 +95,13 @@ export default function StudentDetailUI() {
               }}
             >
               <Avatar
-                src={avatarImage}
+                src={userimage}
                 sx={{
                   width: 80,
                   height: 80,
-                  border: `2px solid ${theme.palette.secondary.main}` ,
+                  border: `2px solid ${theme.palette.secondary.main}`,
                   mt: -6, // Negative margin to lift it over the cover image
-                  backgroundColor:'white'
+                  backgroundColor: 'white'
                 }}
               />
               <Customtext
@@ -135,7 +139,7 @@ export default function StudentDetailUI() {
                   mb: 2,
                   fontSize: { xs: '14px', sm: '16px' },
                   fontWeight: 'bold',
-                  color:theme.palette.text.primary
+                  color: theme.palette.text.primary
                 }}
               />
 
@@ -175,7 +179,7 @@ export default function StudentDetailUI() {
                         fontSize: '0.875rem',
                         fontWeight: 'bold',
                         wordBreak: 'break-word', // wrap if label is long
-                textAlign: 'left',
+                        textAlign: 'left',
 
                       }}
                     />
