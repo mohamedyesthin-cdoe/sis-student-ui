@@ -25,5 +25,7 @@ def login_user(username: str, password: str, db: Session, is_encrypted: bool = T
     user = authenticate_user(username, password, db, is_encrypted)
     group_id = get_group_by_id(db, user.id)
     student_info = get_student_id_by_user_id(db, user.id)
-    token = create_access_token(data={"id": user.id,"username": user.username, "email": user.email, "student_id": user.student_id, "group_id": group_id, "gender": student_info.gender})
+    if student_info is not None:
+        token = create_access_token(data={"id": user.id,"username": user.username, "email": user.email, "student_id": user.student_id, "group_id": group_id, "gender": student_info.gender})
+    token = create_access_token(data={"id": user.id,"username": user.username, "email": user.email, "student_id": user.student_id, "group_id": group_id})
     return {"access_token": token, "token_type": "bearer"}
