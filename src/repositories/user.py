@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from src.models.user import User, Group, user_group
+from src.models.students import Student
 from src.schemas.user import UserCreate
 from src.utils.hash import hash_password, generate_password
 from fastapi import HTTPException
@@ -16,6 +17,12 @@ def get_user_by_username(db: Session, username: str):
 def get_group_by_id(db: Session, user_id: int):
     stmt = select(user_group.c.group_id).where(user_group.c.user_id == user_id)
     result = db.execute(stmt).scalars().first()
+    return result
+
+def get_student_id_by_user_id(db: Session, user_id: int):
+    user = db.query(User).filter(User.id == user_id).first()
+    student = user.student_id
+    result = db.query(Student).filter(Student.id == student).first()
     return result
 
 class UserRepository:

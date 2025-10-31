@@ -1,7 +1,7 @@
 # src/services/auth_service.py
 from fastapi import HTTPException, status, Depends
 from sqlalchemy.orm import Session
-from src.repositories.user import get_group_by_id
+from src.repositories.user import get_group_by_id, get_student_id_by_user_id
 from src.core.security.jwt import create_access_token
 from src.db.session import get_db
 from src.models.user import User
@@ -24,5 +24,6 @@ def authenticate_user(username: str, password: str, db: Session, is_encrypted: b
 def login_user(username: str, password: str, db: Session, is_encrypted: bool = True):
     user = authenticate_user(username, password, db, is_encrypted)
     group_id = get_group_by_id(db, user.id)
-    token = create_access_token(data={"id": user.id,"username": user.username, "email": user.email, "student_id": user.student_id, "group_id": group_id})
+    student_info = get_student_id_by_user_id(db, user.id)
+    token = create_access_token(data={"id": user.id,"username": user.username, "email": user.email, "student_id": user.student_id, "group_id": group_id, "gender": student_info.gender})
     return {"access_token": token, "token_type": "bearer"}
