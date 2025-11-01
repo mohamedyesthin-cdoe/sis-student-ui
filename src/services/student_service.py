@@ -77,10 +77,11 @@ class StudentService:
             if last_sync_id == last_erp_id:
                 return {"message": "No new students to sync.", "total_sync_count": 0}
             
-            filtered_list = [item for item in value_list if item["application_no"] != "OLPGCIH100475"]
-
+            #filtered_list = [item for item in value_list if item["application_no"] != "OLPGCIH100475" or item["application_no"] != "OLPGCIH100508"]
+            filtered_list = [item for item in value_list if item["application_no"] not in ["OLPGCIH100475", "OLPGCIH100508"]]
+            
             # Filter only new students
-            new_students = [student for student in filtered_list if int(student.get("application_no", 0).strip('OLUGDS')) > int(last_sync_id) ]
+            new_students = [student for student in filtered_list if int(student.get("application_no", 0).strip('OLUGDS')) < int(last_sync_id) ]
             logger.info(f"Students to sync: {len(new_students)}")
             
             # Sync new students
