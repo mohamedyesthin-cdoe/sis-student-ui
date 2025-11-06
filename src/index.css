@@ -133,6 +133,25 @@ body {
     background-color: #cbcaca;
   }
 
+.pdf-mode * {
+  font-size: 0.75rem !important; /* ↓ Smaller text in PDF */
+  line-height: 1rem !important;
+}
+
+.pdf-mode img {
+  transform: scale(0.9);
+}
+
+.pdf-mode .w-\[130px\] {
+  width: 100px !important;
+}
+
+.pdf-mode .h-\[160px\] {
+  height: 120px !important;
+}
+
+
+
 }
 
 @layer components {
