@@ -39,7 +39,7 @@ app = FastAPI(
 origins = [
     "http://13.234.63.113:80",
     "http://13.234.63.113",
-    "https://sis.sriramachandradigilearn.edu.in"
+    "https://uat.sriramachandradigilearn.edu.in"
 ]
 
 app.add_middleware(
