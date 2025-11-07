@@ -30,6 +30,11 @@ class BaseConfig(BaseSettings):
     MAIL_FROM_NAME: str
     MAIL_STARTTLS: bool = Field(default=True)
     MAIL_SSL_TLS: bool = Field(default=False)
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    AWS_REGION: str
+    AWS_S3_BUCKET: str
+    AWS_S3_FOLDER: str = "cdoedocument"
 
     class Config:
         env_file = ".env.dev"

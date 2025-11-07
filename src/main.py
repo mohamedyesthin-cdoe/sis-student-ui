@@ -24,7 +24,11 @@ from src.api.v1.endpoints.address import router as address_router
 from src.api.v1.endpoints.students import router as students_router
 from src.api.v1.endpoints.api import router as api_router
 from src.api.v1.endpoints.programe import router as program_router
+from src.api.v1.endpoints.document import router as s3_router
 from src.utils.hash import decode_token, encode_token
+from src.core.security.dependencies import require_superuser
+from src.models.user import User
+
 
 app = FastAPI(
     title=settings.APP_NAME,    
@@ -33,11 +37,9 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 origins = [
-    "http://localhost:5173",  # Example: React/Vue frontend
-    "http://127.0.0.1:5173",
     "http://13.234.63.113:80",
     "http://13.234.63.113",
-    #"https://your-frontend-domain.com",
+    "https://sis.sriramachandradigilearn.edu.in"
 ]
 
 app.add_middleware(
@@ -63,6 +65,7 @@ app.include_router(faculty_router, prefix="/faculty", tags=["Faculty"])
 app.include_router(students_router, prefix="/student", tags=["Student"])
 app.include_router(api_router, prefix="/api", tags=["API"])
 app.include_router(program_router, prefix="/programe", tags=["Programe"])
+app.include_router(s3_router, prefix="/s3", tags=["S3"])
 
 
 # Create database tables on startup
@@ -97,7 +100,7 @@ async def get_deb_student(deb_id: str):
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
 
 @app.router.post("/push/ugc/", response_model=DebResponse, tags=["Deb"])
-async def push_student_deb(db: Session = Depends(get_db)):
+async def push_student_deb(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Push student by DEB"""
     try:
         students = await push_deb_student_details(db)

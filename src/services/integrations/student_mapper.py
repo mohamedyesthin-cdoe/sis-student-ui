@@ -144,7 +144,8 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
             "work_experience_certificates": api_response.get("field_73434") or None,
             "passport": api_response.get("upload_passport") or None,
             "aadhar": get_first_item(api_response.get("color_copy_of_aadhar_card")),
-            "signature": get_first_item(api_response.get("signature_image"))
+            "signature": get_first_item(api_response.get("signature_image")),
+            "profile_image": get_first_item(api_response.get("profile_image"))
         },
 
         "declaration_details": {

@@ -64,6 +64,7 @@ class Student(AuditableBase):
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)
     is_pushed = Column(Boolean, default=False)
+    is_synced = Column(Boolean, default=False)
     
     # Relationships
     #nationality_country = relationship("Country", back_populates="students_nationality")
@@ -154,6 +155,7 @@ class DocumentDetails(Base):
     passport = Column(Text)
     aadhar = Column(Text)
     signature = Column(Text)
+    profile_image = Column(Text)
 
     student = relationship("Student", back_populates="document_details")
 

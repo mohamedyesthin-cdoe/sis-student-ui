@@ -106,6 +106,7 @@ class DocumentDetailsBase(BaseModel):
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None
+    profile_image: Optional[str] = None
 
 class DocumentDetailsUpdate(DocumentDetailsBase):
     pass
@@ -120,6 +121,7 @@ class DocumentDetailsResponse(BaseModel):
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None
+    profile_image: Optional[str] = None
 
 # -----------------------------
 # Declaration Details Schemas
