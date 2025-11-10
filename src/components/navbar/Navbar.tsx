@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -69,12 +69,28 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
 
   const profilePopoverOpen = Boolean(profileAnchorEl);
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = getValue('ACCESS_TOKEN_KEY');
+    const username = getValue('username');
+
+    if (!token || !username) {
+      console.warn('No localStorage data found — logging out automatically.');
+      removeSingleValue('ACCESS_TOKEN_KEY');
+      removeSingleValue('email');
+      removeSingleValue('rollid');
+      removeSingleValue('username');
+      removeSingleValue('student_id');
+      removeSingleValue('gender');
+      navigate('/login');
+    }
+  }, [navigate]);
   const clearLocalStorage = () => {
     removeSingleValue('ACCESS_TOKEN_KEY');
     removeSingleValue('email');
     removeSingleValue('rollid');
     removeSingleValue('username');
     removeSingleValue('student_id');
+    removeSingleValue('gender');
     navigate("/login");
   };
   const username = getValue('username')
@@ -82,7 +98,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   const rollid = Number(getValue("rollid"));
   const gender = getValue("gender");
 
-  const userimage = gender == 'Male' ? maleimage :femaleimage
+  const userimage = gender == 'Male' ? maleimage : femaleimage
 
   return (
     <>

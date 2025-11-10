@@ -68,7 +68,7 @@ const StudentHorizontalIDCard = () => {
       return;
     }
 
-    const cardWidth = 340;
+    const cardWidth = 324;
     const cardHeight = 204;
     const pageWidth = 595;
     const pageHeight = 842;
@@ -124,7 +124,7 @@ const StudentHorizontalIDCard = () => {
           });
 
           const grid = detailsBox.querySelector(".grid") as HTMLElement;
-          if (grid) grid.style.gridTemplateColumns = "70px 20px auto";
+          if (grid) grid.style.gridTemplateColumns = "65px 10px auto";
         }
 
         // 4️⃣ Signature section
