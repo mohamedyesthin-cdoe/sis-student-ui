@@ -309,6 +309,7 @@ function LoginPage() {
       setValue('rollid', user.group_id);
       setValue('student_id', user.student_id)
       setValue('gender', user?.gender)
+      setValue('token_time',JSON.stringify(user?.exp))
       console.log(user);
 
 
