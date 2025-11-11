@@ -84,7 +84,7 @@ const StudentIdCard: React.FC = () => {
     setIsBack(originalSide);
     pdf.save(`${student?.first_name || "Student"}_ID_Card.pdf`);
   };
-  const gender = getValue("gender");
+  // const gender = getValue("gender");
   // const userimage = gender == 'Male' ? maleimage : femaleimage
   const userimage = 'https://d1jgwwhd2xazx1.cloudfront.net/uploads/student/document/6719/21235/2025/09/16/68c93391d0bdf518716830_PHOTO.jpg?Expires=1762317025&Signature=LX8EPDqTM8Mgz3kRXuYLnHVP1FUNVaFmNKks-AcmEmhw23MmnBlylsNwW5pYKQZxh1UV7JixF9aIzeD0yZ3smRFmLhmOxIZCjkuunDfZndCdWZSlhgRcoiw151ECXu9Vhim4qb513g7BRpHFs310IVOPSCgAoxfvVV7iQI7YdoOZiMjs99UgFPB1uqQi4y7SXG4BrgHd44NSHWX5OSD-LFlEjAQ9fQZNXr~21BuqGo1GKIfAEGbYSSXcM3fbdij8~RUtOdU82j7RbIPElBVEfsZM~yg2nD-1Z2nDKrV6QC~DrdCNBSy~en0atuJgAZPRrCIQvsCW0NSaFw~-JIL7gQ__&Key-Pair-Id=K3KU6FKMGSED79'
 
