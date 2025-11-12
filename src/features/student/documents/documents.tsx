@@ -11,8 +11,10 @@ export default function DocumentsCard() {
 
   // ✅ Only one document (Academic Calendar)
   const academicPdf ="https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Academic+calender+2025-26.pdf"
+  const regulationPdf ="https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/regulation.pdf"
   const docs = [
     { label: "Academic Calendar 2025-26", file: academicPdf },
+    { label: "Regulations 2025-26", file: regulationPdf },
   ];
 
   const availableDocs = docs.filter((doc) => doc.file);

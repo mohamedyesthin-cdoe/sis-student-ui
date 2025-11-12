@@ -14,7 +14,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   // If the user is logged in, redirect based on their role
   if (token) {
     if (rollid === 1) {
-      return <Navigate to="/dashboard" />;
+      return <Navigate to="/students/list" />;
     }
     if (rollid === 2 && student_id) {
       return <Navigate to={`/students/detail`} />;

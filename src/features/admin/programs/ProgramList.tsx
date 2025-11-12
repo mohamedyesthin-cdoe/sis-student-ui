@@ -132,6 +132,7 @@ export default function ProgramList() {
           data={filteredPrograms}
           page={page}
           rowsPerPage={rowsPerPage}
+          isRowExpandable={(row) => Array.isArray(row.fee) && row.fee.length > 0}
           renderExpanded={(program) => (
             <Table size="small">
               <TableHead>
@@ -201,6 +202,7 @@ export default function ProgramList() {
               </TableBody>
             </Table>
           )}
+          
 
           actions={[
             {

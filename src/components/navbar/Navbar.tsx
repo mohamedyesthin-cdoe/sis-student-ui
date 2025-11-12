@@ -77,7 +77,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   const email = getValue('email');
   const rollid = Number(getValue('rollid'));
   const gender = getValue('gender');
-  const userimage = gender === 'Male' ? maleimage : femaleimage;
+  const userimage = gender == "Female" ? femaleimage : maleimage;
 
   const handleProfileClick = (event: any) => setProfileAnchorEl(event.currentTarget);
   const handleProfileClose = () => setProfileAnchorEl(null);
@@ -177,7 +177,16 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
               <Typography className="font-bold text-lg" sx={{ textTransform: 'capitalize' }}>
                 {username}
               </Typography>
-              <Typography className="text-gray-500 text-sm break-words">{email}</Typography>
+              <Typography
+                className="text-gray-500 text-sm"
+                sx={{
+                  wordBreak: "break-word",
+                  whiteSpace: "normal",
+                }}
+              >
+                {email}
+              </Typography>
+
             </Box>
           </Box>
 

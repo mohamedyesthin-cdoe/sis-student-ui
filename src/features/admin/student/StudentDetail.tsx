@@ -67,9 +67,7 @@ export default function StudentDetailUI() {
     ['Year', '2025'],
   ];
   const gender = getValue("gender");
-  const userimage = gender == 'Male' ? maleimage : femaleimage
-
-
+  const userimage = gender == "Female" ? femaleimage : maleimage;
   return (
     <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2 mt-4"
       sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: 'auto' }}>

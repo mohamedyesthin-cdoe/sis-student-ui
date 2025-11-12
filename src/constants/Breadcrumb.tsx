@@ -43,7 +43,8 @@ const Breadcrumb = () => {
       display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.5, p: 2
     }}>
       {allPaths.map((to, index) => {
-        const text = routeMap[to] || 'Dashboard';
+        // const text = routeMap[to] || 'Dashboard';
+        const text = routeMap[to] || '';
         const isLast = index === allPaths.length - 1;
 
         return (
