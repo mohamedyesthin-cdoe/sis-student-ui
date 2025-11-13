@@ -1,7 +1,8 @@
-import { Box, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Divider, IconButton, useTheme } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CardComponent from "../../../components/card/Card";
+import Customtext from "../../../components/customtext/Customtext";
 
 // ✅ Only import the academic PDF
 // import academicPdf from "/assets/documents/Academic calender 2025-26.pdf";
@@ -10,8 +11,8 @@ export default function DocumentsCard() {
   const theme = useTheme();
 
   // ✅ Only one document (Academic Calendar)
-  const academicPdf ="https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Academic+calender+2025-26.pdf"
-  const regulationPdf ="https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/regulation.pdf"
+  const academicPdf = "https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Academic+calender+2025-26.pdf"
+  const regulationPdf = "https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/regulation.pdf"
   const docs = [
     { label: "Academic Calendar 2025-26", file: academicPdf },
     { label: "Regulations 2025-26", file: regulationPdf },
@@ -66,12 +67,8 @@ export default function DocumentsCard() {
                     sx={{ color: theme.palette.grey[500], fontSize: "18px" }}
                   />
                 </Box>
-                <Typography
-                  variant="body2"
-                  sx={{ fontWeight: 600, color: theme.palette.text.primary }}
-                >
-                  {doc.label}
-                </Typography>
+                <Customtext variantName='body2' fieldName={doc.label}
+                  sx={{ fontWeight: 600, color: theme.palette.text.primary }} />
               </Box>
 
               {/* View Button */}
@@ -105,18 +102,10 @@ export default function DocumentsCard() {
             p: 2,
           }}
         >
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 700, color: theme.palette.text.primary, mb: 1 }}
-          >
-            🚧 Coming Soon
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: theme.palette.text.secondary, maxWidth: 300 }}
-          >
-            No documents available yet. Please check back later.
-          </Typography>
+          <Customtext variantName='h4' fieldName={'🚧 Coming Soon'}
+            sx={{ fontWeight: 700, color: theme.palette.text.primary, mb: 1 }} />
+          <Customtext variantName='body2' fieldName={'No documents available yet. Please check back later.'}
+            sx={{ color: theme.palette.text.secondary, maxWidth: 300 }} />
         </Box>
       )}
     </CardComponent>

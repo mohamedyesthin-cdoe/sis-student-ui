@@ -1,6 +1,8 @@
 import React from "react";
 import { Card, CardContent, Typography, Button, Chip } from "@mui/material";
 import CardComponent from "../card/Card";
+import Customtext from "../customtext/Customtext";
+import theme from "../../styles/theme";
 
 interface Course {
   title: string;
@@ -52,12 +54,15 @@ const CoursesSection: React.FC = () => {
     <CardComponent className="rounded-2xl shadow-sm ">
       <CardContent>
         <div className="flex justify-between items-center mb-4">
-          <Typography variant="h6" className="font-bold">
-            Top Courses 
-          </Typography>
-          <Typography variant="body2" color="primary" className="cursor-pointer">
-            See All
-          </Typography>
+          <Customtext
+            fieldName={'Top Courses'}
+            variantName="h6"
+          />
+          <Customtext
+            fieldName={'See All'}
+            variantName="body2"
+            sx={{ cursor: 'pointer', color: theme.palette.primary.main }}
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {courses.map((course, i) => (
@@ -74,9 +79,10 @@ const CoursesSection: React.FC = () => {
                   className="mb-2"
                   color="primary"
                 />
-                <Typography variant="h6" className="font-bold">
-                  {course.title}
-                </Typography>
+                <Customtext
+                  fieldName= {course.title}
+                  variantName="h6"
+                />
                 <Typography variant="body2" className="text-gray-600 mb-2">
                   Created by <span className="font-medium">{course.author}</span>
                 </Typography>

@@ -9,7 +9,6 @@ import {
   Tooltip,
   useTheme,
   Box,
-  Typography,
 } from '@mui/material';
 import { ExpandLess, ExpandMore, } from '@mui/icons-material';
 import logo2 from '/assets/logo2.png';
@@ -17,6 +16,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { getValue } from '../../utils/localStorageUtil';
+import Customtext from '../customtext/Customtext';
 
 
 interface SidebarProps {
@@ -298,7 +298,11 @@ export default function Sidebar({
       </List>
 
       <Box className="text-left ml-5 border-t border-gray-200 p-2">
-        <Typography className="text-sm text-gray-500" variant='caption' sx={{fontWeight:'bold',color:theme.palette.warning.main}}>version 1.0.0</Typography>
+        <Customtext
+          fieldName={'version 1.0.0'}
+          variantName="caption"
+          sx={{color: theme.palette.warning.main}}
+        />
       </Box>
     </Box>
   );

@@ -109,8 +109,6 @@ export default function StudentDetailUI() {
                   mb: 0,
                   width: { xs: '100%', sm: '50%' },
                   color: theme.palette.text.primary,
-                  fontSize: { xs: '14px', sm: '16px' },
-                  fontWeight: 'bold',
                   wordBreak: 'break-word', // wrap if label is long
                 }}
               />
@@ -127,16 +125,14 @@ export default function StudentDetailUI() {
             </Box>
 
 
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: { xs: 2, sm: 2, md: 2, lg: 0, xl: 2 } }} />
 
-            <Box sx={{ mt: 3 }}>
+            <Box sx={{ mt: { xs: 3, sm: 3, md: 3, lg: 2, xl: 3 } }}>
               <Customtext
                 fieldName='Personal Info'
 
                 sx={{
                   mb: 2,
-                  fontSize: { xs: '14px', sm: '16px' },
-                  fontWeight: 'bold',
                   color: theme.palette.text.primary
                 }}
               />
@@ -162,8 +158,6 @@ export default function StudentDetailUI() {
                       sx={{
                         width: { xs: '100%', sm: '50%' },
                         color: theme.palette.custom.accent,
-                        fontSize: '0.875rem',
-                        fontWeight: 'bold',
                         wordBreak: 'break-word', // wrap if label is long
                       }}
                     />
@@ -174,11 +168,8 @@ export default function StudentDetailUI() {
                       sx={{
                         width: { xs: '100%', sm: '50%' },
                         color: theme.palette.secondary.main,
-                        fontSize: '0.875rem',
-                        fontWeight: 'bold',
                         wordBreak: 'break-word', // wrap if label is long
                         textAlign: 'left',
-
                       }}
                     />
                   </Box>

@@ -16,6 +16,8 @@ import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { getValue } from "../../../utils/localStorageUtil";
 import { toWords } from "number-to-words";
+import Customtext from "../../../components/customtext/Customtext";
+import theme from "../../../styles/theme";
 
 export default function FeesReceipt() {
   const { id } = useParams();
@@ -209,10 +211,8 @@ export default function FeesReceipt() {
               borderRight={{ xs: "none", sm: i % 2 === 0 ? "1px solid #ddd" : "none" }}
               borderTop={i >= 2 ? "1px solid #ddd" : "none"}
             >
-              <Typography fontWeight="bold" sx={{ width: { xs: "100px", sm: "120px" } }}>
-                {label}
-              </Typography>
-              <Typography>{value}</Typography>
+              <Customtext fieldName={label} sx={{ width: { xs: "100px", sm: "120px" }, fontSize: '1rem', color: theme.palette.text.primary }} />
+              <Customtext fieldName={value}  sx={{fontSize:'1rem',color:theme.palette.text.primary,fontWeight:400}}/>
             </Box>
           ))}
         </Box>

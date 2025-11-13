@@ -8,8 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { CardContent, Typography } from "@mui/material";
+import { CardContent } from "@mui/material";
 import CardComponent from "../card/Card";
+import Customtext from "../customtext/Customtext";
 
 const data = [
   { month: "Jan", Study: 10, Test: 5 },
@@ -30,9 +31,11 @@ const StudyStatistics: React.FC = () => {
   return (
     <CardComponent className="rounded-2xl shadow-sm h-full flex flex-col">
       <CardContent className="flex flex-col flex-1">
-        <Typography variant="h6" className="font-bold mb-4">
-          Study Statistics
-        </Typography>
+        <Customtext
+          fieldName={'Study Statistics'}
+          variantName="h6"
+          sx={{ mb: 4 }}
+        />
         <div className="flex-1">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>

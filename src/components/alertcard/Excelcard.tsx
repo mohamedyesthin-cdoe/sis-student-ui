@@ -5,7 +5,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  Typography,
   Box,
   IconButton,
   Menu,
@@ -13,6 +12,8 @@ import {
 } from "@mui/material";
 import { CloudUpload, Close, CloudDownload } from "@mui/icons-material";
 import * as XLSX from "xlsx";
+import Customtext from "../customtext/Customtext";
+import theme from "../../styles/theme";
 
 interface UploadExcelDialogProps {
   open: boolean;
@@ -162,12 +163,10 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
           <Box mt={0.5}>
             {file ? (
               <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
-                <Typography
-                  variant="body1"
-                  sx={{ fontSize: { xs: "0.8rem", sm: "0.9rem" } }}
-                >
-                  {file.name}
-                </Typography>
+                <Customtext
+                  fieldName={file.name}
+                  variantName="body1"
+                />
                 <Button
                   size="small"
                   color="error"
@@ -187,22 +186,18 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
                 </Button>
               </Box>
             ) : (
-              <Typography
-                variant="body1"
-                sx={{ fontSize: { xs: "0.8rem", sm: "0.9rem" } }}
-              >
-                Click or drag file to upload
-              </Typography>
+              <Customtext
+                fieldName={'Click or drag file to upload'}
+                variantName="body1"
+              />
             )}
           </Box>
 
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            sx={{ fontSize: { xs: "0.65rem", sm: "0.75rem" } }}
-          >
-            Supported formats: .xlsx, .xls, .csv, .pdf
-          </Typography>
+            <Customtext
+                fieldName={'Supported formats: .xlsx, .xls, .csv, .pdf'}
+                variantName="body2"
+                sx={{color:theme.palette.custom.accent}}
+              />
 
           <input
             id="file-input"

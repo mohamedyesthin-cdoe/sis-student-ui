@@ -11,12 +11,14 @@ import TableToolbar from '../../../components/tabletoolbar/tableToolbar';
 import TablePagination from '../../../components/tablepagination/tablepagination';
 import { exportToExcel } from '../../../constants/excelExport';
 import { CloudUploadIcon } from 'lucide-react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useAlert } from '../../../context/AlertContext';
 import UploadExcelDialog from '../../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
 import { setValue } from '../../../utils/localStorageUtil';
+import Customtext from '../../../components/customtext/Customtext';
+import theme from '../../../styles/theme';
 
 export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -334,10 +336,9 @@ export default function StudentTable() {
           }}
         >
           <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Typography variant="h6">No records found</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Please check your search or filters.
-          </Typography>
+          <Customtext variantName='h6' fieldName={'No records found'} />
+          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
+          sx={{color:theme.palette.secondary.main}} />
         </Box>
       ) : (
         <ReusableTable

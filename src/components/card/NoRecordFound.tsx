@@ -1,6 +1,7 @@
-import { Typography, Box } from '@mui/material';
+import {  Box } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 import CardComponent from '../../components/card/Card';
+import Customtext from '../customtext/Customtext';
 
 export default function NoRecordFound() {
   return (
@@ -25,10 +26,10 @@ export default function NoRecordFound() {
         }}
       >
         <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-        <Typography variant="h6">No records found</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {/* Please check your search or filters. */}
-        </Typography>
+        <Customtext
+          fieldName={'No records found'}
+          variantName="h6"
+        />
       </Box>
 
     </CardComponent>

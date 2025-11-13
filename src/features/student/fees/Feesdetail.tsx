@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
@@ -12,6 +12,8 @@ import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { exportToExcel } from "../../../constants/excelExport";
 import { getValue } from "../../../utils/localStorageUtil";
+import Customtext from "../../../components/customtext/Customtext";
+import theme from "../../../styles/theme";
 
 export default function FeesDetail() {
   const navigate = useNavigate();
@@ -121,10 +123,9 @@ export default function FeesDetail() {
           }}
         >
           <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Typography variant="h6">No records found</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Please check your search or filters.
-          </Typography>
+          <Customtext variantName='h6' fieldName={'No records found'} />
+          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
+          sx={{color:theme.palette.secondary.main}} />
         </Box>
       ) : (
         <ReusableTable

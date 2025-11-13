@@ -1,5 +1,7 @@
-import { Box, Typography, Divider, Table, TableBody, TableCell, TableHead, TableRow, List, ListItem, ListItemText } from "@mui/material";
+import { Box, Divider, Table, TableBody, TableCell, TableHead, TableRow, List, ListItem, ListItemText } from "@mui/material";
 import CardComponent from "../../../components/card/Card"; // adjust path if needed
+import Customtext from "../../../components/customtext/Customtext";
+import theme from "../../../styles/theme";
 
 export default function StudentCounselling() {
     const counsellors = [
@@ -18,23 +20,17 @@ export default function StudentCounselling() {
         <CardComponent>
             <Box sx={{ p: { xs: 2, sm: 4 } }}>
                 {/* ===== Title ===== */}
-                <Typography variant="h5" fontWeight="bold" mb={2}>
-                    Student Counselling Service
-                </Typography>
+                <Customtext variantName='h6' fieldName={'Student Counselling Service'} sx={{fontSize:'1.5rem',color:theme.palette.text.primary}} />
 
                 <Divider sx={{ mb: 3 }} />
 
                 {/* ===== Introduction ===== */}
-                <Typography mb={2}>
-                    Welcome to Sri Ramachandra Digilearn! As your counsellors, we are here to support you throughout your academic journey.
-                    Our role is to provide guidance on academic matters, career choices, and personal issues.
-                    We are committed to helping you achieve your goals and overcome challenges.
-                </Typography>
+                <Customtext fieldName={'Welcome to Sri Ramachandra Digilearn! As your counsellors, we are here to support you throughout your academic journey.Our role is to provide guidance on academic matters, career choices, and personal issues.We are committed to helping you achieve your goals and overcome challenges.'} 
+                sx={{fontSize:'1rem',color:theme.palette.text.primary,fontWeight:'400'}} />
 
                 {/* ===== Support Areas ===== */}
-                <Typography mb={1}>
-                    Feel free to reach out to us for:
-                </Typography>
+                <Customtext variantName='h6' fieldName={'Feel free to reach out to us for:'} 
+                sx={{fontSize:'1rem',color:theme.palette.text.primary,mb:1,fontWeight:'400'}} />
 
                 <List sx={{ listStyleType: "disc", pl: 4 }}>
                     {services.map((item, index) => (

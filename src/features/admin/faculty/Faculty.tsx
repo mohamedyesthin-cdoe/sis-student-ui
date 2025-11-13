@@ -5,7 +5,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
   Box
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,6 +20,7 @@ import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
+import Customtext from '../../../components/customtext/Customtext';
 
 
 export default function Faculty() {
@@ -89,20 +89,20 @@ export default function Faculty() {
             placeholder: "Search all fields",
             visible: showSearch,
           },
-            // {
-            // key: "gender",
-            // label: "All Genders",
-            // type: "select",
-            // value: genderFilter,
-            // onChange: (val) => {
-            //   setGenderFilter(val);
-            //   setPage(0);
-            // },
-            // options: [
-            //   { value: 'Male', label: 'Male' },
-            //   { value: 'Female', label: 'Female' },
-            //   { value: 'Other', label: 'Other' },
-            // ],
+          // {
+          // key: "gender",
+          // label: "All Genders",
+          // type: "select",
+          // value: genderFilter,
+          // onChange: (val) => {
+          //   setGenderFilter(val);
+          //   setPage(0);
+          // },
+          // options: [
+          //   { value: 'Male', label: 'Male' },
+          //   { value: 'Female', label: 'Female' },
+          //   { value: 'Other', label: 'Other' },
+          // ],
           // },
         ]}
         actions={[
@@ -132,10 +132,10 @@ export default function Faculty() {
           }}
         >
           <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Typography variant="h6">No records found</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Please check your search or filters.
-          </Typography>
+          <Customtext variantName='h6' fieldName={'No records found'} />
+          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
+          sx={{color:theme.palette.secondary.main}} />
+
         </Box>
       ) : (
         <ReusableTable

@@ -1,7 +1,9 @@
 import React from "react";
-import { CardContent, Typography } from "@mui/material";
+import { CardContent } from "@mui/material";
 import { TrendingUp } from "@mui/icons-material";
 import CardComponent from "../card/Card";
+import Customtext from "../customtext/Customtext";
+import theme from "../../styles/theme";
 
 interface Stat {
   value: string;
@@ -23,12 +25,15 @@ const StatsCards: React.FC = () => {
         <CardComponent key={idx} className="rounded-2xl shadow-sm">
           <CardContent className="flex items-center justify-between">
             <div>
-              <Typography variant="h6" className="font-bold">
-                {stat.value}
-              </Typography>
-              <Typography variant="body2" className="text-gray-500">
-                {stat.label}
-              </Typography>
+              <Customtext
+                fieldName={stat.value}
+                variantName="h6"
+              />
+              <Customtext
+                fieldName={stat.label}
+                variantName="body2"
+                sx={{color:theme.palette.custom.accent}}
+              />
             </div>
             <TrendingUp className={`${stat.color}`} />
           </CardContent>

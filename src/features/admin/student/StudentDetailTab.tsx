@@ -43,8 +43,6 @@ export default function StudentDetailTab({
         sx={{
           width: { xs: '100%', sm: '50%' },
           color: theme.palette.custom.accent,
-          fontSize: '0.875rem',
-          fontWeight: 'bold',
           wordBreak: 'break-word',
         }}
       />
@@ -54,8 +52,6 @@ export default function StudentDetailTab({
           flex: 1,
           width: { xs: '100%', sm: 'auto' },
           color: theme.palette.text.secondary,
-          fontSize: '0.875rem',
-          fontWeight: 'bold',
           wordBreak: 'break-word',
           whiteSpace: 'normal',
         }}
@@ -105,9 +101,7 @@ export default function StudentDetailTab({
                     <Customtext
                       fieldName={doc.name}
                       sx={{
-                        color: theme.palette.custom.accent,
-                        fontSize: '0.875rem',
-                        fontWeight: 'bold',
+                        color: theme.palette.custom.accent
                       }}
                     />
                     <IconButton
@@ -122,7 +116,6 @@ export default function StudentDetailTab({
               ) : (
                 <Customtext
                   fieldName="No Documents Available"
-                  sx={{ fontSize: '0.875rem', fontWeight: 'bold' }}
                 />
               )}
             </Box>
@@ -144,7 +137,6 @@ export default function StudentDetailTab({
               : (
                 <Customtext
                   fieldName="No Data Available"
-                  sx={{ fontSize: '0.875rem', fontWeight: 'bold' }}
                 />
               )}
           </Box>
@@ -248,17 +240,13 @@ export default function StudentDetailTab({
                         sx={{
                           width: { xs: '100%', sm: '50%' },
                           color: theme.palette.custom.accent,
-                          fontSize: '0.875rem',
-                          fontWeight: 'bold',
                           mb: 0,
                         }}
                       />
                       <Customtext
                         fieldName={card.value}
                         sx={{
-                          color: theme.palette.text.primary,
-                          fontSize: '0.875rem',
-                          fontWeight: 'bold',
+                          color: theme.palette.text.primary
                         }}
                       />
                     </Box>
@@ -354,7 +342,7 @@ export default function StudentDetailTab({
                       </Box>
                       <Customtext
                         fieldName={doc.label}
-                        sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}
+                        sx={{color: theme.palette.text.primary }}
                       />
                     </Box>
                     <IconButton
@@ -372,7 +360,7 @@ export default function StudentDetailTab({
                 ))}
               </Box>
             ) : (
-              <Customtext fieldName="No Documents Available" sx={{ fontWeight: 'bold', color: theme.palette.text.secondary }} />
+              <Customtext fieldName="No Documents Available" sx={{color: theme.palette.text.secondary }} />
             )}
           </CardComponent>
         </CardComponent>

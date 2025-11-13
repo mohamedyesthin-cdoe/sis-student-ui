@@ -1,6 +1,8 @@
 import React from "react";
-import {CardContent, Typography, Checkbox } from "@mui/material";
+import { CardContent,Checkbox } from "@mui/material";
 import CardComponent from "../card/Card";
+import Customtext from "../customtext/Customtext";
+import theme from "../../styles/theme";
 
 interface Assignment {
   title: string;
@@ -18,12 +20,15 @@ const Assignments: React.FC = () => {
     <CardComponent className="rounded-2xl shadow-sm">
       <CardContent>
         <div className="flex justify-between items-center mb-2">
-          <Typography variant="h6" className="font-bold">
-            Assignments
-          </Typography>
-          <Typography variant="body2" color="primary" className="cursor-pointer">
-            See All
-          </Typography>
+          <Customtext
+            fieldName={'Assignments'}
+            variantName="h6"
+          />
+          <Customtext
+            fieldName={'See All'}
+            variantName="body2"
+            sx={{ color: theme.palette.primary.main, cursor: 'pointer' }}
+          />
         </div>
         <div className="flex flex-col gap-2">
           {assignments.map((a, i) => (
@@ -31,10 +36,15 @@ const Assignments: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Checkbox size="small" />
                 <div>
-                  <Typography variant="body1">{a.title}</Typography>
-                  <Typography variant="caption" className="text-gray-500">
-                    {a.due}
-                  </Typography>
+                  <Customtext
+                    fieldName={a.title}
+                    variantName="body1"
+                  />
+                  <Customtext
+                    fieldName={a.due}
+                    variantName="caption"
+                    sx={{ color: theme.palette.custom.accent }}
+                  />
                 </div>
               </div>
             </div>

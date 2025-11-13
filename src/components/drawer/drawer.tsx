@@ -4,7 +4,6 @@ import {
   Drawer,
   List,
   ListItem,
-  Typography,
   Divider,
   Button,
   Avatar,
@@ -12,6 +11,8 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import Customtext from '../customtext/Customtext';
+import theme from '../../styles/theme';
 interface NotificationsDrawerProps {
   open: boolean;
   onClose: () => void;
@@ -53,9 +54,10 @@ export default function NotificationsDrawer({ open, onClose }: NotificationsDraw
           bgcolor="secondary.main"
           color="white"
         >
-          <Typography variant="subtitle1" sx={{ fontWeight: '600', fontSize: '0.875rem' }}>
-            Notifications
-          </Typography>
+          <Customtext
+            fieldName={'Notifications'}
+            variantName="subtitle1"
+          />
 
           <IconButton onClick={onClose} sx={{ color: 'white' }}>
             <CloseIcon fontSize="medium" />
@@ -73,19 +75,19 @@ export default function NotificationsDrawer({ open, onClose }: NotificationsDraw
                   </Avatar>
 
                   <Box className="flex-1">
-                    <Typography className="font-medium text-gray-800 text-sm">
-                      {item.message}
-                    </Typography>
-
+                    <Customtext
+                      fieldName={item.message}
+                      sx={{color:theme.palette.custom.accent}}
+                    />
                     {item.extra && (
                       <Box className="flex items-center text-gray-600 text-xs mt-1">
                         {item.extra}
                       </Box>
                     )}
-
-                    <Typography className="text-xs text-gray-400 mt-1">
-                      {item.time}
-                    </Typography>
+                    <Customtext
+                      fieldName={item.time}
+                      sx={{color:theme.palette.custom.accent,mt:1}}
+                    />
                   </Box>
                 </ListItem>
 

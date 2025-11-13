@@ -1,6 +1,7 @@
 import { createContext, useState, useContext, type ReactNode } from 'react';
-import { Box, Button, Typography, Fade, Backdrop, Modal, Snackbar, Alert as MuiAlert } from '@mui/material';
+import { Box, Button, Fade, Backdrop, Modal, Snackbar, Alert as MuiAlert } from '@mui/material';
 import theme from '../styles/theme';
+import Customtext from '../components/customtext/Customtext';
 
 type AlertType = 'success' | 'error' | 'info';
 
@@ -96,10 +97,15 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
               textAlign: 'center',
             }}
           >
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
-              Are you sure?
-            </Typography>
-            <Typography sx={{ mb: 3 }}>{confirmMessage}</Typography>
+            <Customtext
+              fieldName={'Are you sure?'}
+              variantName="h6"
+              sx={{ mb: 2 }}
+            />
+            <Customtext
+              fieldName={confirmMessage}
+              sx={{ mb: 3 }}
+            />
             <Box display="flex" justifyContent="center" gap={2}>
               <Button
                 variant="outlined"

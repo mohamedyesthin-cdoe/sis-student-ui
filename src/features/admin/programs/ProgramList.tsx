@@ -5,7 +5,6 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Typography,
   Box
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,6 +20,7 @@ import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
+import Customtext from '../../../components/customtext/Customtext';
 
 
 export default function ProgramList() {
@@ -117,10 +117,9 @@ export default function ProgramList() {
           }}
         >
           <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Typography variant="h6">No records found</Typography>
-          <Typography variant="body2" color="text.secondary">
-            Please check your search or filters.
-          </Typography>
+          <Customtext variantName='h6' fieldName={'No records found'} />
+          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
+            sx={{ color: theme.palette.secondary.main }} />
         </Box>
       ) : (
         <ReusableTable
@@ -202,7 +201,7 @@ export default function ProgramList() {
               </TableBody>
             </Table>
           )}
-          
+
 
           actions={[
             {

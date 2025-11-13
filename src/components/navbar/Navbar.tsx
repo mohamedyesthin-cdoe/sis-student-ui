@@ -6,7 +6,6 @@ import {
   Avatar,
   Popover,
   Button,
-  Typography,
   Divider,
   TextField,
   InputAdornment,
@@ -20,6 +19,7 @@ import { getValue, removeSingleValue } from '../../utils/localStorageUtil';
 import maleimage from '/assets/images/male-logo.jpg';
 import femaleimage from '/assets/images/female-logo.jpg';
 import theme from '../../styles/theme';
+import Customtext from '../customtext/Customtext';
 
 type NavbarProps = {
   onHamburgerClick?: () => void; // optional callback
@@ -174,18 +174,18 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
           <Box className="flex items-center space-x-3">
             <Avatar src={userimage} className="w-12 h-12" />
             <Box>
-              <Typography className="font-bold text-lg" sx={{ textTransform: 'capitalize' }}>
-                {username}
-              </Typography>
-              <Typography
-                className="text-gray-500 text-sm"
+              <Customtext
+                fieldName={username}
+                sx={{ textTransform: 'capitalize' }}
+              />
+              <Customtext
+                fieldName={email}
                 sx={{
                   wordBreak: "break-word",
                   whiteSpace: "normal",
+                  color:theme.palette.custom.accent
                 }}
-              >
-                {email}
-              </Typography>
+              />
 
             </Box>
           </Box>
