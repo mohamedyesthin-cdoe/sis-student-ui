@@ -165,7 +165,6 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
               <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
                 <Customtext
                   fieldName={file.name}
-                  variantName="body1"
                 />
                 <Button
                   size="small"
@@ -188,14 +187,13 @@ const UploadExcelDialog: React.FC<UploadExcelDialogProps> = ({ open, onClose, on
             ) : (
               <Customtext
                 fieldName={'Click or drag file to upload'}
-                variantName="body1"
+                sx={{color:theme.palette.text.primary}}
               />
             )}
           </Box>
 
             <Customtext
                 fieldName={'Supported formats: .xlsx, .xls, .csv, .pdf'}
-                variantName="body2"
                 sx={{color:theme.palette.custom.accent}}
               />
 
