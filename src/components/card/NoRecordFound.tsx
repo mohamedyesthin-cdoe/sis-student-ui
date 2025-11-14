@@ -1,38 +1,26 @@
-import {  Box } from '@mui/material';
+import { Box } from '@mui/material';
 import SearchOffIcon from "@mui/icons-material/SearchOff";
-import CardComponent from '../../components/card/Card';
 import Customtext from '../customtext/Customtext';
+import theme from '../../styles/theme';
 
 export default function NoRecordFound() {
   return (
-    <CardComponent
-      sx={{
-        width: '100%',
-        maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
-        mx: 'auto',
-        p: 3,
-        mt: 3,
-      }}
-    >
-      {/* No Data Found */}
-      <Box
+    <Box
         sx={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          py: 8,
           color: "text.secondary",
         }}
       >
         <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
         <Customtext
-          fieldName={'No records found'}
-          variantName="h6"
-        />
+          fieldName={'No records found'} sx={{fontSize:'1.25rem',color:theme.palette.text.secondary}}/>
+           <Customtext
+          fieldName={'Please check your search or filters.'} 
+          sx={{fontSize:'0.95rem',color:theme.palette.text.secondary,fontWeight:'400'}}/>
       </Box>
 
-    </CardComponent>
   );
 }
 

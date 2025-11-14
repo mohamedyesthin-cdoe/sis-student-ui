@@ -1,35 +1,24 @@
 import * as React from "react";
 import { Typography, Box } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import CardComponent from "../../../components/card/Card";
-import TableToolbar from "../../../components/tabletoolbar/tableToolbar";
 import TablePagination from "../../../components/tablepagination/tablepagination";
 import NoRecordFound from "../../../components/card/NoRecordFound";
 
-export default function Onlinegrievances() {
+export default function Examination() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(10);
-  const [searchText, setSearchText] = React.useState("");
-  const [showSearch] = React.useState(false);
   const [data, setData] = React.useState<any[]>([]);
-  const navigate = useNavigate();
 
   // ✅ Simulate fetching data (replace with API call)
   React.useEffect(() => {
     const fetchData = async () => {
-      await new Promise((res) => setTimeout(res, 1000)); // simulate API delay
-      // Uncomment to test different states
-      // setData([]); // No data
+      await new Promise((res) => setTimeout(res, 1000));
       setData([
-        // { id: 1, name: "Network Issue" },
-        // { id: 2, name: "Login Problem" },
-        // { id: 3, name: "Course Access Issue" },
       ]);
     };
     fetchData();
   }, []);
 
-  const handleView = () => navigate(`/grievances/add`);
 
   return (
     <CardComponent
@@ -41,29 +30,6 @@ export default function Onlinegrievances() {
         mt: 3,
       }}
     >
-      {/* ✅ Toolbar with Search Toggle */}
-      {data.length > 0 && (
-        <TableToolbar
-          filters={[
-            {
-              key: "search",
-              label: "Search Grievances",
-              type: "text",
-              value: searchText,
-              onChange: (val) => setSearchText(val),
-              placeholder: "Search Grievances...",
-              visible: showSearch, // ✅ controlled visibility
-            },
-          ]}
-          actions={[
-            {
-              label: "Add Grievance",
-              color: "primary",
-              onClick: handleView,
-            },
-          ]}
-        />
-      )}
 
       {/* ✅ Conditional Rendering */}
       {data.length === 0 ? (
@@ -78,7 +44,7 @@ export default function Onlinegrievances() {
             color: "text.secondary",
           }}
         >
-          <NoRecordFound />
+        <NoRecordFound />
         </Box>
       ) : (
         // ✅ Data Table (placeholder list)

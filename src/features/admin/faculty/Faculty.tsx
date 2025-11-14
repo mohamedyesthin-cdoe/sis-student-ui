@@ -19,8 +19,7 @@ import TablePagination from '../../../components/tablepagination/tablepagination
 import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
-import SearchOffIcon from "@mui/icons-material/SearchOff";
-import Customtext from '../../../components/customtext/Customtext';
+import NoRecordFound from '../../../components/card/NoRecordFound';
 
 
 export default function Faculty() {
@@ -31,8 +30,6 @@ export default function Faculty() {
   const [searchText, setSearchText] = React.useState('');
   // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [showSearch] = React.useState(true);
-
-
 
   const [programs, setPrograms] = React.useState<any[]>([]);
 
@@ -48,7 +45,6 @@ export default function Faculty() {
     const combinedText = `${c.programe_code} ${c.programe} ${c.duration}`.toLowerCase();
     return combinedText.includes(searchText.toLowerCase());
   });
-
 
 
   // Excel export
@@ -78,47 +74,34 @@ export default function Faculty() {
       }}
     >
       {/* Filters & Export */}
-      <TableToolbar
-        filters={[
-          {
-            key: "search",
-            label: "Search",
-            type: "text",
-            value: searchText,
-            onChange: (val) => setSearchText(val),
-            placeholder: "Search all fields",
-            visible: showSearch,
-          },
-          // {
-          // key: "gender",
-          // label: "All Genders",
-          // type: "select",
-          // value: genderFilter,
-          // onChange: (val) => {
-          //   setGenderFilter(val);
-          //   setPage(0);
-          // },
-          // options: [
-          //   { value: 'Male', label: 'Male' },
-          //   { value: 'Female', label: 'Female' },
-          //   { value: 'Other', label: 'Other' },
-          // ],
-          // },
-        ]}
-        actions={[
-          {
-            label: 'Export Excel',
-            color: 'secondary',
-            startIcon: <FileDownloadIcon />,
-            onClick: handleExportExcel,
-          },
-          {
-            label: 'Add User',
-            color: 'primary',
-            onClick: handleView,
-          },
-        ]}
-      />
+      {filteredPrograms.length > 0 && (
+        <TableToolbar
+          filters={[
+            {
+              key: "search",
+              label: "Search",
+              type: "text",
+              value: searchText,
+              onChange: (val) => setSearchText(val),
+              placeholder: "Search all fields",
+              visible: showSearch,
+            }
+          ]}
+          actions={[
+            {
+              label: 'Export Excel',
+              color: 'secondary',
+              startIcon: <FileDownloadIcon />,
+              onClick: handleExportExcel,
+            },
+            {
+              label: 'Add User',
+              color: 'primary',
+              onClick: handleView,
+            },
+          ]}
+        />
+      )}
 
       {filteredPrograms.length === 0 ? (
         <Box
@@ -131,11 +114,7 @@ export default function Faculty() {
             color: "text.secondary",
           }}
         >
-          <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Customtext variantName='h6' fieldName={'No records found'} />
-          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
-          sx={{color:theme.palette.secondary.main}} />
-
+          <NoRecordFound />
         </Box>
       ) : (
         <ReusableTable
@@ -229,14 +208,16 @@ export default function Faculty() {
           ]}
         />
       )}
-
+      
       {/* Pagination */}
-      <TablePagination
-        page={page}
-        rowsPerPage={rowsPerPage}
-        totalCount={filteredPrograms.length}
-        onPageChange={(newPage) => setPage(newPage)}
-      />
+      {filteredPrograms.length > 0 && (
+        <TablePagination
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalCount={filteredPrograms.length}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      )}
 
     </CardComponent >
   );

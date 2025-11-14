@@ -9,12 +9,11 @@ import DashboardStudent from "../features/student/dashboard/DashboardStudent";
 import FeesDetail from "../features/student/fees/Feesdetail";
 import FeesReceipt from "../features/student/fees/feesreceipt";
 import Onlinegrievances from "../features/student/grievances/onlinegrievances";
-// import Offlinegrievances from "../features/student/grievances/offlinegrievances";
 import Grievanceadd from "../features/student/grievances/grievanceadd";
 import DocumemtsCard from "../features/student/documents/documents"
-import NoRecordFound from "../components/card/NoRecordFound";
 import StudentCounselling from "../features/student/counselling/counselling";
 import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordForm";
+import Examination from "../features/student/examination/examination";
 
 export const routesConfig = [
   {
@@ -106,7 +105,7 @@ export const routesConfig = [
   },
   {
     path: '/examinations',
-    element: <NoRecordFound />,
+    element: <Examination />,
     breadcrumb: 'Examinations',
   },
   {

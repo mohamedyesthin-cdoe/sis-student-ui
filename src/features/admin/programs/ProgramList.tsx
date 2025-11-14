@@ -19,8 +19,7 @@ import TablePagination from '../../../components/tablepagination/tablepagination
 import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
-import SearchOffIcon from "@mui/icons-material/SearchOff";
-import Customtext from '../../../components/customtext/Customtext';
+import NoRecordFound from '../../../components/card/NoRecordFound';
 
 
 export default function ProgramList() {
@@ -78,32 +77,35 @@ export default function ProgramList() {
       }}
     >
       {/* Filters & Export */}
-      <TableToolbar
-        filters={[
-          {
-            key: "search",
-            label: "Search",
-            type: "text",
-            value: searchText,
-            onChange: (val) => setSearchText(val),
-            placeholder: "Search all fields",
-            visible: showSearch,
-          },
-        ]}
-        actions={[
-          {
-            label: 'Export Excel',
-            color: 'secondary',
-            startIcon: <FileDownloadIcon />,
-            onClick: handleExportExcel,
-          },
-          {
-            label: 'Add Program',
-            color: 'primary',
-            onClick: handleView,
-          },
-        ]}
-      />
+      {filteredPrograms.length > 0 && (
+
+        <TableToolbar
+          filters={[
+            {
+              key: "search",
+              label: "Search",
+              type: "text",
+              value: searchText,
+              onChange: (val) => setSearchText(val),
+              placeholder: "Search all fields",
+              visible: showSearch,
+            },
+          ]}
+          actions={[
+            {
+              label: 'Export Excel',
+              color: 'secondary',
+              startIcon: <FileDownloadIcon />,
+              onClick: handleExportExcel,
+            },
+            {
+              label: 'Add Program',
+              color: 'primary',
+              onClick: handleView,
+            },
+          ]}
+        />
+      )}
 
       {filteredPrograms.length === 0 ? (
         <Box
@@ -116,10 +118,7 @@ export default function ProgramList() {
             color: "text.secondary",
           }}
         >
-          <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Customtext variantName='h6' fieldName={'No records found'} />
-          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
-            sx={{ color: theme.palette.secondary.main }} />
+          <NoRecordFound />
         </Box>
       ) : (
         <ReusableTable
@@ -215,12 +214,15 @@ export default function ProgramList() {
       )}
 
       {/* Pagination */}
-      <TablePagination
-        page={page}
-        rowsPerPage={rowsPerPage}
-        totalCount={filteredPrograms.length}
-        onPageChange={(newPage) => setPage(newPage)}
-      />
+      {filteredPrograms.length > 0 && (
+        <TablePagination
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalCount={filteredPrograms.length}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      )}
+
 
     </CardComponent >
   );

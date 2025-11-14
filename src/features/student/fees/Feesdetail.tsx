@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Box, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import SearchOffIcon from "@mui/icons-material/SearchOff";
 import CardComponent from "../../../components/card/Card";
 import TableToolbar from "../../../components/tabletoolbar/tableToolbar";
 import TablePagination from "../../../components/tablepagination/tablepagination";
@@ -12,8 +11,7 @@ import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { exportToExcel } from "../../../constants/excelExport";
 import { getValue } from "../../../utils/localStorageUtil";
-import Customtext from "../../../components/customtext/Customtext";
-import theme from "../../../styles/theme";
+import NoRecordFound from "../../../components/card/NoRecordFound";
 
 export default function FeesDetail() {
   const navigate = useNavigate();
@@ -82,33 +80,29 @@ export default function FeesDetail() {
       }}
     >
       {/* Search and Export Toolbar */}
-      <TableToolbar
-        // searchText={searchText}
-        // onSearchChange={(val) => {
-        //   setSearchText(val);
-        //   setPage(0);
-        // }}
-        // searchPlaceholder="Search all fields"
-        filters={[
-          {
-            key: "search",
-            label: "Search Fees",
-            type: "text",
-            value: searchText,
-            onChange: (val) => setSearchText(val),
-            placeholder: "Search all fields",
-            visible: showSearch, // ✅ toggle visibility
-          },
-        ]}
-        actions={[
-          {
-            label: "Export Excel",
-            color: "secondary",
-            startIcon: <FileDownloadIcon />,
-            onClick: handleExportExcel,
-          },
-        ]}
-      />
+      {filteredPayments.length > 0 && (
+        <TableToolbar
+          filters={[
+            {
+              key: "search",
+              label: "Search Fees",
+              type: "text",
+              value: searchText,
+              onChange: (val) => setSearchText(val),
+              placeholder: "Search all fields",
+              visible: showSearch, // ✅ toggle visibility
+            },
+          ]}
+          actions={[
+            {
+              label: "Export Excel",
+              color: "secondary",
+              startIcon: <FileDownloadIcon />,
+              onClick: handleExportExcel,
+            },
+          ]}
+        />
+      )}
 
       {/* Table */}
       {filteredPayments.length === 0 ? (
@@ -122,10 +116,7 @@ export default function FeesDetail() {
             color: "text.secondary",
           }}
         >
-          <SearchOffIcon sx={{ fontSize: 50, mb: 1, color: "grey.500" }} />
-          <Customtext variantName='h6' fieldName={'No records found'} />
-          <Customtext variantName='body2' fieldName={'Please check your search or filters.'}
-          sx={{color:theme.palette.secondary.main}} />
+          <NoRecordFound />
         </Box>
       ) : (
         <ReusableTable
@@ -176,18 +167,20 @@ export default function FeesDetail() {
           ]}
         />
       )}
-
       {/* Pagination */}
-      <TablePagination
-        page={page}
-        rowsPerPage={rowsPerPage}
-        totalCount={filteredPayments.length}
-        onPageChange={(newPage) => setPage(newPage)}
-        onRowsPerPageChange={(newRowsPerPage) => {
-          setRowsPerPage(newRowsPerPage);
-          setPage(0);
-        }}
-      />
+
+      {filteredPayments.length > 0 && (
+        <TablePagination
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalCount={filteredPayments.length}
+          onPageChange={(newPage) => setPage(newPage)}
+          onRowsPerPageChange={(newRowsPerPage) => {
+            setRowsPerPage(newRowsPerPage);
+            setPage(0);
+          }}
+        />
+      )}
     </CardComponent>
   );
 }
