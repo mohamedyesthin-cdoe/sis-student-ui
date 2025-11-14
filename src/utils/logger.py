@@ -1,35 +1,35 @@
 import logging
-import os
 from logging.handlers import TimedRotatingFileHandler
+from datetime import datetime
+import os
 
-def setup_logger() -> logging.Logger:
-    # Create logs directory if it doesn't exist
-    log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
-    
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
 
-    # Logger configuration
-    logger = logging.getLogger("student_api_logger")
+LOG_FILE = os.path.join(LOG_DIR, f"app_log_{datetime.now().strftime('%Y-%m-%d')}.log")
+
+def setup_logger():
+    logger = logging.getLogger("app_logger")
     logger.setLevel(logging.INFO)
 
-    # Console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    console_handler.setFormatter(console_format)
-    logger.addHandler(console_handler)
+    if not logger.hasHandlers():
+        formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+            datefmt = "%Y-%m-%d %H:%M:%S"
+        )
 
-    # File handler with daily rotation
-    file_handler = TimedRotatingFileHandler(
-        filename=os.path.join(log_dir, "app.log"),
-        interval=1,
-        backupCount=30,
-        encoding="utf-8"
-    )
-    file_handler.setLevel(logging.INFO)
-    file_format = logging.Formatter('%(asctime)s - %(levelname)s - %(module)s - %(message)s')
-    file_handler.setFormatter(file_format)
-    file_handler.suffix = "%Y-%m-%d.log"
-    logger.addHandler(file_handler)
+        handler = TimedRotatingFileHandler(
+            LOG_FILE,
+            when="midnight",
+            interval=1,
+            backupCount=30,
+            encoding="utf-8"
+        )
 
+        handler.suffix = "%Y-%m-%d"
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    logger.propagate = False
+    return logger
+    

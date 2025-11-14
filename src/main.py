@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Header
+from fastapi import FastAPI, Depends, HTTPException, Header, Request
 from sqlalchemy.orm import Session
 from src.core.security.jwt import SECRET_KEY, ACCESS_KEY, verify_api_key
 from src.core.config import settings
@@ -14,11 +14,12 @@ from src.services.integrations.student_api import get_deb_student_details, push_
 from src.repositories.students import StudentRepository
 from typing import List, Optional
 from src.schemas.payment import StudentSchema, StandardResponse, DataResponse, PaginationResponse
-
+import time
+from src.utils.logger import setup_logger
 from src.api.v1.endpoints.auth import router as auth_router
 from src.api.v1.endpoints.users import router as users_router
 from src.api.v1.endpoints.menu import router as menu_router
-from src.api.v1.endpoints.faculty import router as faculty_router
+from src.api.v1.endpoints.staff import router as staff_router
 from src.api.v1.endpoints.admin import router as admin_router
 from src.api.v1.endpoints.address import router as address_router
 from src.api.v1.endpoints.students import router as students_router
@@ -29,6 +30,7 @@ from src.utils.hash import decode_token, encode_token
 from src.core.security.dependencies import require_superuser
 from src.models.user import User
 
+logger = setup_logger()
 
 app = FastAPI(
     title=settings.APP_NAME,    
@@ -50,6 +52,20 @@ app.add_middleware(
     allow_headers=["*"],     
 )
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    logger.info(f"{request.method} {request.url.path} started from {request.client.host if request.client else 'unknown'}")
+    try:
+        response = await call_next(request)
+    except Exception:
+        logger.exception(f"Error processing request {request.url.path}")
+        raise
+    process_time = round(time.time() - start_time, 3)
+    logger.info(f"{request.method} {request.url.path} completed in {process_time}s → {response.status_code}")
+    return response
+
+logger.info("FastAPI application started successfully")
 # Request ID middleware for tracing
 #app.add_middleware(RequestIDMiddleware)
 
@@ -60,7 +76,7 @@ app.include_router(admin_router, prefix="/admin", tags=["Admin"])
 app.include_router(auth_router, prefix="/auth", tags=["Auth"])
 app.include_router(users_router, prefix="/user", tags=["User"])
 app.include_router(menu_router, prefix="", tags=["Menu"])
-app.include_router(faculty_router, prefix="/faculty", tags=["Faculty"])
+app.include_router(staff_router, prefix="/staff", tags=["Staff"])
 #app.include_router(address_router, prefix="", tags=["Address"])
 app.include_router(students_router, prefix="/student", tags=["Student"])
 app.include_router(api_router, prefix="/api", tags=["API"])

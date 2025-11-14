@@ -43,8 +43,6 @@ class ApiRepository:
         else:
             students = query.limit(limit).all()
 
-
-
         # Generate tokens
         new_next_token = encode_token(students[-1].id) if len(students) == limit else None
         prev_token = encode_token(students[0].id) if (next_page or previous_page) and students[0].id != self.get_first_student_id() else None

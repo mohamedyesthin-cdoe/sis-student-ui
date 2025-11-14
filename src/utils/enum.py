@@ -61,9 +61,9 @@ class CategoryEnum(str, Enum):
     NOCASTE = "NoCaste"
 
 class EmploymentTypeEnum(str, Enum):
+    internal = "Internal"
+    external = "External"
     permanent = "Permanent"
-    contract = "Contract"
-    visiting = "Visiting"
 
 class FacultyStatusEnum(str, Enum):
     active = "Active"

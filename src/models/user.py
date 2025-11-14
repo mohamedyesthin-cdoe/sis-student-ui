@@ -36,6 +36,7 @@ class User(Base):
 
     groups = relationship("Group", secondary=user_group, back_populates="users")
     permissions = relationship("Permission", secondary=user_permission, back_populates="users")
+    staff = relationship("Staff", back_populates="user", uselist=False)
 
 class Group(Base):
     __tablename__ = "groups"

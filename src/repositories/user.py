@@ -1,12 +1,15 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.models.user import User, Group, user_group
 from src.models.students import Student
 from src.schemas.user import UserCreate
 from src.utils.hash import hash_password, generate_password
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from src.utils.email import send_credentials_email
 import asyncio
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
@@ -38,29 +41,44 @@ class UserRepository:
         Retrieves all available groups (roles) from the database.
     """
     @staticmethod
-    def create_user(db:Session, user_data: UserCreate) -> User:
-        group = db.query(Group).filter(Group.id == user_data.group_id).first()
-        if not group:
-            raise HTTPException(status_code=404, detail="Group not found")
+    def create_user(db: Session, user_data: UserCreate) -> User:
+        try:
+            group = db.query(Group).filter(Group.id == user_data.group_id).first()
+            if not group:
+                raise HTTPException(status_code=404, detail="Group not found")
+            
+            hashed_password = hash_password(user_data.password)
+
+            user = User(
+                username=user_data.username,
+                first_name=user_data.first_name,
+                last_name=user_data.last_name,
+                email=user_data.email,
+                phone=user_data.phone,
+                hashed_password=hashed_password
+            )
+            # db.flush()
+            # db.add(user)
+            user.groups.append(group)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return user
         
-        hashed_password = hash_password(user_data.password)
-        user = User(
-            username=user_data.username,
-            first_name=user_data.first_name,
-            last_name=user_data.last_name,
-            email=user_data.email,
-            phone=user_data.phone,
-            hashed_password=hashed_password
-        )
-        user.groups.append(group)
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        return user
+        except SQLAlchemyError as e:
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while creating user: {str(e)}",
+            )
     
     @staticmethod
-    def get_all_roles(db:Session):
-        return db.query(Group).all()
+    def get_all_roles(db: Session):
+        try:
+            result = db.query(Group).all()
+            return result
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
     
     @staticmethod
     def bulk_create_users(db: Session, users_data: list, group_id: int):
@@ -124,3 +142,7 @@ class UserRepository:
                 } for entry in created_users
             ]
         }
+
+    def get_user_by_username(self, db: Session, username: str) -> User:
+        result = db.query(User).filter(User.username == username).first()
+        return result

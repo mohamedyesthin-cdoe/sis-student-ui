@@ -1,9 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import Any, TypeVar, Generic, Optional, List, Type, Dict, Union
 from sqlalchemy.exc import SQLAlchemyError
-import logging
 import os
-#from src.utils.logging import get_logger
 from src.utils.hash import hash_password, generate_password
 from src.models.user import User
 
@@ -201,39 +199,3 @@ class BaseRepository(Generic[T]):
             #self.logger.error("Exists check failed for %s: %s", self.model.__name__, str(e))
             raise e
         
-    # def _create_user(self, obj_data: dict) -> User:
-    #     """Internal method to create a user object. Not for external use."""
-
-    #     password = generate_password()
-    #     hashed_password = hash_password(password)
-
-    #     user = User(
-    #         username=obj_data.get("username"),
-    #         email=obj_data.get("email"),
-    #         first_name=obj_data.get("first_name"),
-    #         last_name=obj_data.get("last_name"),
-    #         phone=obj_data.get("phone"),
-    #         is_active=obj_data.get("is_active", True),
-    #         is_superuser=obj_data.get("is_superuser", False),
-    #         hashed_password=hashed_password,
-    #         is_active=True,
-    #         is_superuser=False,
-    #     )
-
-    #     if hasattr(obj_data, "dict"):
-    #         obj_data = obj_data.dict()
-    #     elif hasattr(obj_data, "model_dump"):
-    #         obj_data = obj_data.model_dump()
-        
-    #     obj = self.model(**obj_data)
-    #     self.db.add(obj)
-    #     try:
-    #         self.commit()
-    #         self.refresh(obj)
-    #         #self.logger.info("User object created successfully for model: %s", self.model.__name__)
-    #         return obj
-        
-    #     except SQLAlchemyError as e:
-    #         self.db.rollback()
-    #         #self.logger.error("User creation failed for %s: %s", self.model.__name__, str(e))
-    #         raise e
