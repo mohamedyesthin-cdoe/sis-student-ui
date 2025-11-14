@@ -104,7 +104,7 @@ export default function FeesDetail() {
         />
       )}
 
-      {/* Table */}
+      {/* TableData */}
       {filteredPayments.length === 0 ? (
         <Box
           sx={{

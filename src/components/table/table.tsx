@@ -289,22 +289,24 @@ interface TableAction {
 interface ReusableTableProps {
   columns: Column[];
   data: any[];
-  page: number;
-  rowsPerPage: number;
+  page?: number;              // optional
+  rowsPerPage?: number;       // optional
   actions?: TableAction[];
   renderExpanded?: (row: any) => React.ReactNode;
   isRowExpandable?: (row: any) => boolean;
 }
 
+
 const ReusableTable: React.FC<ReusableTableProps> = ({
   columns,
   data,
-  page,
-  rowsPerPage,
+  page = 0,              // default: first page
+  rowsPerPage = data.length,    // default: show full table
   actions = [],
   renderExpanded,
   isRowExpandable,
 }) => {
+
   const theme = useTheme();
 
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -328,6 +330,10 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
     columns.length +
     (actions.length > 0 ? 1 : 0) +
     (renderExpanded && isRowExpandable ? 1 : 0);
+  const paginatedData =
+    rowsPerPage && rowsPerPage > 0
+      ? data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+      : data;
 
   return (
     <Box sx={{ overflowX: 'auto', width: '100%' }}>
@@ -348,59 +354,58 @@ const ReusableTable: React.FC<ReusableTableProps> = ({
         </TableHead>
 
         <TableBody>
-          {data
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row, index) => {
-              const isExpanded = expandedRow === index;
-              const canExpand = isRowExpandable ? isRowExpandable(row) : false;
+          {paginatedData.map((row, index) => {
 
-              return (
-                <React.Fragment key={row.id || index}>
-                  <TableRow hover>
-                    <TableCell sx={{ py: 0.5, px: 1 }}>
-                      {page * rowsPerPage + index + 1}
+            const isExpanded = expandedRow === index;
+            const canExpand = isRowExpandable ? isRowExpandable(row) : false;
+
+            return (
+              <React.Fragment key={row.id || index}>
+                <TableRow hover>
+                  <TableCell sx={{ py: 0.5, px: 1 }}>
+                    {page * rowsPerPage + index + 1}
+                  </TableCell>
+
+                  {columns.map((col) => (
+                    <TableCell key={col.key} align={col.align || "left"} sx={{ py: 0.5, px: 1 }}>
+                      {col.render ? col.render(row, index) : row[col.key] || "-"}
                     </TableCell>
+                  ))}
 
-                    {columns.map((col) => (
-                      <TableCell key={col.key} align={col.align || "left"} sx={{ py: 0.5, px: 1 }}>
-                        {col.render ? col.render(row, index) : row[col.key] || "-"}
-                      </TableCell>
-                    ))}
-
-                    {/* Actions */}
-                    {actions.length > 0 && (
-                      <TableCell align="center">
-                        <IconButton size="small" onClick={(e) => handleMenuOpen(e, row)}>
-                          <MoreVertIcon fontSize="small" />
-                        </IconButton>
-                      </TableCell>
-                    )}
-
-                    {/* Expand toggle */}
-                    {renderExpanded && isRowExpandable && (
-                      <TableCell align="center">
-                        {canExpand && (
-                          <IconButton size="small" onClick={() => setExpandedRow(isExpanded ? null : index)}>
-                            {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                          </IconButton>
-                        )}
-                      </TableCell>
-                    )}
-                  </TableRow>
-
-                  {/* Expanded content */}
-                  {renderExpanded && isRowExpandable && canExpand && (
-                    <TableRow>
-                      <TableCell colSpan={expandedColSpan} sx={{ py: 0, px: 0, borderBottom: 0 }}>
-                        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                          <Box sx={{ p: 2 }}>{renderExpanded(row)}</Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
+                  {/* Actions */}
+                  {actions.length > 0 && (
+                    <TableCell align="center">
+                      <IconButton size="small" onClick={(e) => handleMenuOpen(e, row)}>
+                        <MoreVertIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
                   )}
-                </React.Fragment>
-              );
-            })}
+
+                  {/* Expand toggle */}
+                  {renderExpanded && isRowExpandable && (
+                    <TableCell align="center">
+                      {canExpand && (
+                        <IconButton size="small" onClick={() => setExpandedRow(isExpanded ? null : index)}>
+                          {isExpanded ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        </IconButton>
+                      )}
+                    </TableCell>
+                  )}
+                </TableRow>
+
+                {/* Expanded content */}
+                {renderExpanded && isRowExpandable && canExpand && (
+                  <TableRow>
+                    <TableCell colSpan={expandedColSpan} sx={{ py: 0, px: 0, borderBottom: 0 }}>
+                      <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                        <Box sx={{ p: 2 }}>{renderExpanded(row)}</Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
+            );
+          })}
         </TableBody>
 
         {/* Actions Menu */}

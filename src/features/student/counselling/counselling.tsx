@@ -1,12 +1,15 @@
-import { Box, Divider, Table, TableBody, TableCell, TableHead, TableRow, List, ListItem, ListItemText } from "@mui/material";
-import CardComponent from "../../../components/card/Card"; // adjust path if needed
+import { Box, Divider, List, ListItem, ListItemText } from "@mui/material";
+import CardComponent from "../../../components/card/Card";
+import ReusableTable from "../../../components/table/table";
+import NoRecordFound from "../../../components/card/NoRecordFound";
 import Customtext from "../../../components/customtext/Customtext";
 import theme from "../../../styles/theme";
 
 export default function StudentCounselling() {
+
     const counsellors = [
-        { name: "Ms. M. Mary Esther", contact: "mary@sriramachandra.edu.in" },
-        { name: "Mr. P. Madhusudhanan", contact: "madhusudhanan@sriramachandra.edu.in" },
+        { name: "Ms. M. Mary Esther", email: "mary@sriramachandra.edu.in" },
+        { name: "Mr. P. Madhusudhanan", email: "madhusudhanan@sriramachandra.edu.in" },
     ];
 
     const services = [
@@ -16,21 +19,31 @@ export default function StudentCounselling() {
         "Personal support and mentoring",
     ];
 
+
+
     return (
-        <CardComponent>
-            <Box sx={{ p: { xs: 2, sm: 4 } }}>
+        <CardComponent
+            sx={{
+                width: "100%",
+                maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+                mx: "auto",
+                p: { xs: 3, sm: 4 },
+                mt: 3,
+            }}
+        >
+            <Box mb={2}>
                 {/* ===== Title ===== */}
-                <Customtext variantName='h6' fieldName={'Student Counselling Service'} sx={{fontSize:'1.5rem',color:theme.palette.text.primary}} />
+                <Customtext variantName='h6' fieldName={'Student Counselling Service'} sx={{ fontSize: '1.5rem', color: theme.palette.text.primary }} />
 
                 <Divider sx={{ mb: 3 }} />
 
                 {/* ===== Introduction ===== */}
-                <Customtext fieldName={'Welcome to Sri Ramachandra Digilearn! As your counsellors, we are here to support you throughout your academic journey.Our role is to provide guidance on academic matters, career choices, and personal issues.We are committed to helping you achieve your goals and overcome challenges.'} 
-                sx={{fontSize:'1rem',color:theme.palette.text.primary,fontWeight:'400'}} />
+                <Customtext fieldName={'Welcome to Sri Ramachandra Digilearn! As your counsellors, we are here to support you throughout your academic journey.Our role is to provide guidance on academic matters, career choices, and personal issues.We are committed to helping you achieve your goals and overcome challenges.'}
+                    sx={{ fontSize: '1rem', color: theme.palette.text.primary, fontWeight: '400' }} />
 
                 {/* ===== Support Areas ===== */}
-                <Customtext variantName='h6' fieldName={'Feel free to reach out to us for:'} 
-                sx={{fontSize:'1rem',color:theme.palette.text.primary,mb:1,fontWeight:'400'}} />
+                <Customtext variantName='h6' fieldName={'Feel free to reach out to us for:'}
+                    sx={{ fontSize: '1rem', color: theme.palette.text.primary, mb: 1, fontWeight: '400' }} />
 
                 <List sx={{ listStyleType: "disc", pl: 4 }}>
                     {services.map((item, index) => (
@@ -39,31 +52,31 @@ export default function StudentCounselling() {
                         </ListItem>
                     ))}
                 </List>
-
-                {/* ===== Counsellor Table ===== */}
-                <Box sx={{ overflowX: "auto", mt: 2 }}>
-                    <Table sx={{ minWidth: 400, border: "1px solid #ddd" }}>
-                        <TableHead>
-                            <TableRow sx={{ backgroundColor: "grey.100" }}>
-                                <TableCell sx={{ fontWeight: "bold", border: "1px solid #ddd" }}>S. No.</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", border: "1px solid #ddd" }}>Name of the Counsellor</TableCell>
-                                <TableCell sx={{ fontWeight: "bold", border: "1px solid #ddd" }}>Email</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {counsellors.map((c, index) => (
-                                <TableRow key={index}>
-                                    <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
-                                        {index + 1}
-                                    </TableCell>
-                                    <TableCell sx={{ border: "1px solid #ddd" }}>{c.name}</TableCell>
-                                    <TableCell sx={{ border: "1px solid #ddd" }}>{c.contact}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </Box>
             </Box>
+            {/* TableData */}
+            {counsellors.length === 0 ? (
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        py: 8,
+                        color: "text.secondary",
+                    }}
+                >
+                    <NoRecordFound />
+                </Box>
+            ) : (
+                <ReusableTable
+                    columns={[
+                        { key: "name", label: "Name of the Counsellor" },
+                        { key: "email", label: "Email" }
+                    ]}
+                    data={counsellors}
+                />
+            )}
         </CardComponent>
     );
 }
+

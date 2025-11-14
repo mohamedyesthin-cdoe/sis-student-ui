@@ -47,7 +47,7 @@ export default function Examination() {
         <NoRecordFound />
         </Box>
       ) : (
-        // ✅ Data Table (placeholder list)
+        // ✅  TableData (placeholder list)
         <Box sx={{ py: 3 }}>
           {data
             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)

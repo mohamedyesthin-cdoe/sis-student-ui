@@ -323,7 +323,7 @@ export default function StudentTable() {
         />
       )}
 
-      {/* Table */}
+      {/* TableData */}
       {filteredStudents.length === 0 ? (
         <Box
           sx={{

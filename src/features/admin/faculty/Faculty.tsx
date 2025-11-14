@@ -1,16 +1,8 @@
 import * as React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Box
-} from '@mui/material';
+import { Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import theme from '../../../styles/theme';
 import CardComponent from '../../../components/card/Card';
 import { useNavigate } from 'react-router-dom';
 import ReusableTable from '../../../components/table/table';
@@ -128,76 +120,6 @@ export default function Faculty() {
           data={filteredPrograms}
           page={page}
           rowsPerPage={rowsPerPage}
-          renderExpanded={(program) => (
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  {[
-                    "Semester",
-                    "Application Fee",
-                    "Admission Fee",
-                    "Tuition Fee",
-                    "Exam Fee",
-                    "LMS Fee",
-                    "Lab Fee",
-                    "Total Fee",
-                  ].map((h) => (
-                    // <TableCell
-                    //   key={h}
-                    //   sx={{
-                    //     fontWeight: 600,
-                    //     color: theme.palette.secondary.main,
-                    //   }}
-                    // >
-                    //   {h}
-                    // </TableCell>
-                    <TableCell
-                      key={h}
-                      sx={{
-                        fontWeight: 600,
-                        color: theme.palette.secondary.main,
-                      }}
-                    >
-                      {h}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {Array.isArray(program.fee) &&
-                  program.fee.map((fee: any, idx: number) => (
-                    <TableRow key={idx}>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.application_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.admission_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.tuition_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.exam_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.lms_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1 }}>{fee.lab_fee || "-"}</TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{ py: 0.5, px: 1, fontWeight: 'bold' }}>{fee.total_fee || "-"}</TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          )}
-
           actions={[
             {
               label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
@@ -208,7 +130,7 @@ export default function Faculty() {
           ]}
         />
       )}
-      
+
       {/* Pagination */}
       {filteredPrograms.length > 0 && (
         <TablePagination

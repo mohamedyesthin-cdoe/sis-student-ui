@@ -183,7 +183,15 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
                 sx={{
                   wordBreak: "break-word",
                   whiteSpace: "normal",
-                  color:theme.palette.custom.accent
+                  color: theme.palette.custom.accent,
+                  fontWeight: '400',
+                  fontSize: {
+                    xs: '0.875rem', // 14px
+                    sm: '1rem',     // 16px
+                    md: '1.125rem', // 18px
+                    lg: '0.9rem',  // 20px
+                    xl: '1.5rem',   // 24px
+                  },
                 }}
               />
 

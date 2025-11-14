@@ -225,7 +225,7 @@ export default function FeesReceipt() {
           <Typography fontWeight="bold">{amountInWords || "-"}</Typography>
         </Box>
 
-        {/* ===== Fee Table ===== */}
+        {/* =====  TableData ===== */}
         <Box sx={{ overflowX: "auto", mb: 2 }}>
           <Table sx={{ border: "1px solid #ddd", minWidth: 400 }}>
             <TableHead>
