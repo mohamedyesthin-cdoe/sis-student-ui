@@ -11,7 +11,7 @@ import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { exportToExcel } from "../../../constants/excelExport";
 import { getValue } from "../../../utils/localStorageUtil";
-import NoRecordFound from "../../../components/card/NoRecordFound";
+import { NoDataFoundUI } from "../../../components/card/NoDataFoundUI";
 
 export default function FeesDetail() {
   const navigate = useNavigate();
@@ -116,7 +116,7 @@ export default function FeesDetail() {
             color: "text.secondary",
           }}
         >
-          <NoRecordFound />
+          <NoDataFoundUI />
         </Box>
       ) : (
         <ReusableTable

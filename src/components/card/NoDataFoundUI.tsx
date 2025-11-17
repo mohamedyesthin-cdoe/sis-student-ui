@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 import Customtext from "../customtext/Customtext";
+import theme from "../../styles/theme";
 
-export default function NoRecordFound() {
+export function NoDataFoundUI() {
   return (
     <Box
       sx={{
@@ -33,7 +34,7 @@ export default function NoRecordFound() {
 
 
       <Customtext
-        fieldName="No records found"
+        fieldName='No Record Found'
         sx={{
           fontSize: { xs: "1rem", md: "1.4rem" },
           fontWeight: 600,
@@ -41,10 +42,11 @@ export default function NoRecordFound() {
       />
 
       <Customtext
-        fieldName="Please check your search or filters."
+        fieldName='There is currently no information to display.'
         sx={{
           fontSize: { xs: "0.8rem", md: "1rem" },
           fontWeight: 400,
+          color: theme.palette.text.secondary
         }}
       />
     </Box>

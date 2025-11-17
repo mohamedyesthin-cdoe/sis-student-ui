@@ -2,7 +2,7 @@ import * as React from "react";
 import { Typography, Box } from "@mui/material";
 import CardComponent from "../../../components/card/Card";
 import TablePagination from "../../../components/tablepagination/tablepagination";
-import NoRecordFound from "../../../components/card/NoRecordFound";
+import { NoDataFoundUI } from "../../../components/card/NoDataFoundUI";
 
 export default function Examination() {
   const [page, setPage] = React.useState(0);
@@ -44,7 +44,7 @@ export default function Examination() {
             color: "text.secondary",
           }}
         >
-        <NoRecordFound />
+        <NoDataFoundUI />
         </Box>
       ) : (
         // ✅  TableData (placeholder list)

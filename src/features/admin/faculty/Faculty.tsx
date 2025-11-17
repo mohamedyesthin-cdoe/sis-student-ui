@@ -11,7 +11,7 @@ import TablePagination from '../../../components/tablepagination/tablepagination
 import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
-import NoRecordFound from '../../../components/card/NoRecordFound';
+import { NoDataFoundUI } from '../../../components/card/NoDataFoundUI';
 
 
 export default function Faculty() {
@@ -106,7 +106,7 @@ export default function Faculty() {
             color: "text.secondary",
           }}
         >
-          <NoRecordFound />
+          <NoDataFoundUI />
         </Box>
       ) : (
         <ReusableTable

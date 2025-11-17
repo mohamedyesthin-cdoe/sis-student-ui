@@ -1,9 +1,9 @@
 import { Box, Divider, List, ListItem, ListItemText } from "@mui/material";
 import CardComponent from "../../../components/card/Card";
 import ReusableTable from "../../../components/table/table";
-import NoRecordFound from "../../../components/card/NoRecordFound";
 import Customtext from "../../../components/customtext/Customtext";
 import theme from "../../../styles/theme";
+import { NoDataFoundUI } from "../../../components/card/NoDataFoundUI";
 
 export default function StudentCounselling() {
 
@@ -65,7 +65,7 @@ export default function StudentCounselling() {
                         color: "text.secondary",
                     }}
                 >
-                    <NoRecordFound />
+                    <NoDataFoundUI />
                 </Box>
             ) : (
                 <ReusableTable

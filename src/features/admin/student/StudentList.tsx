@@ -16,7 +16,7 @@ import { useAlert } from '../../../context/AlertContext';
 import UploadExcelDialog from '../../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
 import { setValue } from '../../../utils/localStorageUtil';
-import NoRecordFound from '../../../components/card/NoRecordFound';
+import { NoDataFoundUI } from '../../../components/card/NoDataFoundUI';
 
 export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -335,7 +335,7 @@ export default function StudentTable() {
             color: "text.secondary",
           }}
         >
-          <NoRecordFound />
+          <NoDataFoundUI />
         </Box>
       ) : (
         <ReusableTable
