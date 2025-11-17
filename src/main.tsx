@@ -5,11 +5,24 @@ import App from './App.tsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AlertProvider } from './context/AlertContext.tsx';
+import { ErrorProvider, registerErrorContext, useGlobalError } from './context/ErrorContext.tsx';
+
+function ErrorContextBridge() {
+  const errorContext = useGlobalError();
+
+  // register context functions so globalErrorHandler can use them
+  registerErrorContext(errorContext);
+
+  return null;
+}
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <AlertProvider>
-      <App />
+      <ErrorProvider>
+        <ErrorContextBridge />
+        <App />
+      </ErrorProvider>
     </AlertProvider>
   </BrowserRouter>
 );
