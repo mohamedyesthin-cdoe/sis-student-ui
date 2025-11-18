@@ -4,11 +4,15 @@ import Navbar from '../components/navbar/Navbar';
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Breadcrumb from '../constants/Breadcrumb';
+import { useGlobalError } from '../context/ErrorContext';
+import { ConnectionLostUI } from '../components/card/connectionlost';
+import CardComponent from '../components/card/Card';
 
 export default function DashboardLayout() {
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [sidebarDrawerOpen, setSidebarDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const { error } = useGlobalError();
 
 
   useEffect(() => {
@@ -32,7 +36,6 @@ export default function DashboardLayout() {
 
   return (
     <Box className="flex h-screen bg-[#FBFBFD]">
-
       {isMobile && (
         <Sidebar
           isDrawer={true}
@@ -61,6 +64,19 @@ export default function DashboardLayout() {
         <Breadcrumb></Breadcrumb>
         <main className="px-6 py-2 overflow-auto">
           <Outlet />
+          {error.type === "CONNECTION_LOST" && (
+            <CardComponent
+              sx={{
+                width: "100%",
+                maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+                mx: "auto",
+                p: 3,
+                mt: 3,
+              }}
+            >
+              <ConnectionLostUI />
+            </CardComponent>
+          )}
         </main>
 
       </Box>

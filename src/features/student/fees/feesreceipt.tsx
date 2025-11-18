@@ -18,6 +18,7 @@ import { getValue } from "../../../utils/localStorageUtil";
 import { toWords } from "number-to-words";
 import Customtext from "../../../components/customtext/Customtext";
 import theme from "../../../styles/theme";
+import { useGlobalError } from "../../../context/ErrorContext";
 
 export default function FeesReceipt() {
   const { id } = useParams();
@@ -32,6 +33,8 @@ export default function FeesReceipt() {
   const [paymentDate, setPaymentDate] = useState<string>("");
 
   const printRef = useRef<HTMLDivElement>(null);
+  const { error } = useGlobalError();
+
 
   useEffect(() => {
     const fetchFees = async () => {
@@ -105,9 +108,10 @@ export default function FeesReceipt() {
 
   return (
     <>
-      {/* ✅ Print Styles */}
-      <style>
-        {`
+      {error.type === "NONE" && (
+        <>
+          <style>
+            {`
     @media print {
       body * {
         visibility: hidden;
@@ -153,175 +157,167 @@ export default function FeesReceipt() {
       }
     }
   `}
-      </style>
-
-
-      {/* ✅ Receipt Box - Only this will print */}
-      <Box
-        ref={printRef}
-        id="print-section"
-        sx={{
-          backgroundColor: "white",
-          width: "100%",
-          maxWidth: { xs: "95%", sm: "90%", md: "1300px" },
-          borderRadius: "8px",
-          border: "1px solid #ddd",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-          p: { xs: 2, sm: 3, md: 4 },
-          overflow: "hidden",
-          mx: "auto",
-          my: 2,
-        }}
-      >
-        {/* ===== Header ===== */}
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          borderBottom="1px solid #ddd"
-          pb={2}
-          mb={2}
-          flexWrap="wrap"
-        >
-          <Box component="img" src={logo} alt="logo" sx={{ height: { xs: 60, sm: 80, md: 100 } }} />
-          <Box sx={{ width: { xs: 40, sm: 80, md: 100 } }} />
-        </Box>
-
-        {/* ===== Title ===== */}
-        <Typography
-          textAlign="center"
-          fontWeight="bold"
-          sx={{ textDecoration: "underline", mb: 2, fontSize: { xs: "14px", sm: "16px" } }}
-        >
-          FEE RECEIPT
-        </Typography>
-
-        {/* ===== Programme Info ===== */}
-        <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} border="1px solid #ddd" mb={2}>
-          {[
-            ["Programme :", "Bachelor Of Science (Hons) (Data Science)"],
-            ["Order ID :", orderId || "-"],
-            ["Batch :", "July - 2025"],
-            ["Date :", paymentDate || "-"],
-          ].map(([label, value], i) => (
+          </style >
+          <Box
+            ref={printRef}
+            id="print-section"
+            sx={{
+              backgroundColor: "white",
+              width: "100%",
+              maxWidth: { xs: "95%", sm: "90%", md: "1300px" },
+              borderRadius: "8px",
+              border: "1px solid #ddd",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              p: { xs: 2, sm: 3, md: 4 },
+              overflow: "hidden",
+              mx: "auto",
+              my: 2,
+            }}
+          >
             <Box
-              key={label}
-              p={1.2}
               display="flex"
-              borderRight={{ xs: "none", sm: i % 2 === 0 ? "1px solid #ddd" : "none" }}
-              borderTop={i >= 2 ? "1px solid #ddd" : "none"}
+              alignItems="center"
+              justifyContent="center"
+              borderBottom="1px solid #ddd"
+              pb={2}
+              mb={2}
+              flexWrap="wrap"
             >
-              <Customtext fieldName={label} sx={{ width: { xs: "100px", sm: "120px" }, fontSize: '1rem', color: theme.palette.text.primary }} />
-              <Customtext fieldName={value}  sx={{fontSize:'1rem',color:theme.palette.text.primary,fontWeight:400}}/>
+              <Box component="img" src={logo} alt="logo" sx={{ height: { xs: 60, sm: 80, md: 100 } }} />
+              <Box sx={{ width: { xs: 40, sm: 80, md: 100 } }} />
             </Box>
-          ))}
-        </Box>
 
-        {/* ===== Acknowledgment ===== */}
-        <Box border="1px solid #ddd" p={1.5} mb={2} textAlign="center">
-          <Typography fontWeight="bold">
-            Received with thanks from {username} / Bachelor Of Science (Hons) (Data Science) July - 2025
-          </Typography>
-          <Typography fontWeight="bold">{amountInWords || "-"}</Typography>
-        </Box>
+            <Typography
+              textAlign="center"
+              fontWeight="bold"
+              sx={{ textDecoration: "underline", mb: 2, fontSize: { xs: "14px", sm: "16px" } }}
+            >
+              FEE RECEIPT
+            </Typography>
 
-        {/* =====  TableData ===== */}
-        <Box sx={{ overflowX: "auto", mb: 2 }}>
-          <Table sx={{ border: "1px solid #ddd", minWidth: 400 }}>
-            <TableHead>
-              <TableRow>
-                {["Sno", "Towards", "Amount (in Rs)"].map((head) => (
-                  <TableCell key={head} align="center" sx={{ border: "1px solid #ddd", fontWeight: "bold" }}>
-                    {head}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {feeRows.map((row) => (
-                <TableRow key={row.sno}>
-                  <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
-                    {row.sno}
-                  </TableCell>
-                  <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
-                    {row.towards}
-                  </TableCell>
-                  <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
-                    {row.amount.toLocaleString()}
-                  </TableCell>
-                </TableRow>
+            <Box display="grid" gridTemplateColumns={{ xs: "1fr", sm: "1fr 1fr" }} border="1px solid #ddd" mb={2}>
+              {[
+                ["Programme :", "Bachelor Of Science (Hons) (Data Science)"],
+                ["Order ID :", orderId || "-"],
+                ["Batch :", "July - 2025"],
+                ["Date :", paymentDate || "-"],
+              ].map(([label, value], i) => (
+                <Box
+                  key={label}
+                  p={1.2}
+                  display="flex"
+                  borderRight={{ xs: "none", sm: i % 2 === 0 ? "1px solid #ddd" : "none" }}
+                  borderTop={i >= 2 ? "1px solid #ddd" : "none"}
+                >
+                  <Customtext fieldName={label} sx={{ width: { xs: "100px", sm: "120px" }, fontSize: '1rem', color: theme.palette.text.primary }} />
+                  <Customtext fieldName={value} sx={{ fontSize: '1rem', color: theme.palette.text.primary, fontWeight: 400 }} />
+                </Box>
               ))}
-              <TableRow>
-                <TableCell colSpan={2} align="right" sx={{ border: "1px solid #ddd", fontWeight: "bold" }}>
-                  Total
-                </TableCell>
-                <TableCell align="center" sx={{ border: "1px solid #ddd", fontWeight: "bold" }}>
-                  {totalAmount.toLocaleString()}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </Box>
+            </Box>
 
-        {/* ===== Payment Info ===== */}
-        <Box border="1px solid #ddd" p={1.5} mb={2}>
-          <Typography fontWeight="bold" mb={1}>
-            FEE FOR THE ACAD. YEAR July - 2025
-          </Typography>
-          {payments.length > 0 && (
-            <>
-              <Box display="flex" mb={0.5}>
-                <Typography fontWeight="bold" sx={{ width: { xs: "120px", sm: "160px" } }}>
-                  Mode :
-                </Typography>
-                <Typography>{payments[0].payment_mode || "ONLINE"}</Typography>
-              </Box>
-              <Box display="flex" mb={0.5}>
-                <Typography fontWeight="bold" sx={{ width: { xs: "120px", sm: "160px" } }}>
-                  Date :
-                </Typography>
-                <Typography>
-                  {payments[0].payment_date
-                    ? new Date(payments[0].payment_date).toLocaleDateString("en-GB")
-                    : "-"}
-                </Typography>
-              </Box>
-              <Box display="flex" mb={0.5}>
-                <Typography fontWeight="bold" sx={{ width: { xs: "120px", sm: "160px" } }}>
-                  Transaction ID :
-                </Typography>
-                <Typography>{payments[0].transaction_id || "-"}</Typography>
-              </Box>
-            </>
-          )}
-        </Box>
+            <Box border="1px solid #ddd" p={1.5} mb={2} textAlign="center">
+              <Typography fontWeight="bold">
+                Received with thanks from {username} / Bachelor Of Science (Hons) (Data Science) July - 2025
+              </Typography>
+              <Typography fontWeight="bold">{amountInWords || "-"}</Typography>
+            </Box>
 
-        {/* ===== Signature ===== */}
-        <Box textAlign="center" mb={1}>
-          <Typography fontWeight="bold">SRI RAMACHANDRA</Typography>
-          <Typography fontWeight="bold">INSTITUTE OF HIGHER EDUCATION & RESEARCH</Typography>
-          <Typography fontSize={{ xs: "12px", sm: "13px" }}>(Deemed to be University)</Typography>
-          <Typography fontWeight="bold" mt={1}>
-            Authorized Signatory
-          </Typography>
-          <Typography fontSize={{ xs: "12px", sm: "13px" }} mt={0.5}>
-            (Electronically generated. No Signature required)
-          </Typography>
-        </Box>
-      </Box>
+            <Box sx={{ overflowX: "auto", mb: 2 }}>
+              <Table sx={{ border: "1px solid #ddd", minWidth: 400 }}>
+                <TableHead>
+                  <TableRow>
+                    {["Sno", "Towards", "Amount (in Rs)"].map((head) => (
+                      <TableCell key={head} align="center" sx={{ border: "1px solid #ddd", fontWeight: "bold" }}>
+                        {head}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {feeRows.map((row) => (
+                    <TableRow key={row.sno}>
+                      <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
+                        {row.sno}
+                      </TableCell>
+                      <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
+                        {row.towards}
+                      </TableCell>
+                      <TableCell align="center" sx={{ border: "1px solid #ddd" }}>
+                        {row.amount.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell colSpan={2} align="right" sx={{ border: "1px solid #ddd", fontWeight: "bold" }}>
+                      Total
+                    </TableCell>
+                    <TableCell align="center" sx={{ border: "1px solid #ddd", fontWeight: "bold" }}>
+                      {totalAmount.toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </Box>
 
-      {/* ✅ Print Button (won't appear in print) */}
-      <Box display="flex" justifyContent="center" mt={2} className="no-print">
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<PrintIcon />}
-          onClick={handlePrint}
-          sx={{ fontSize: { xs: "12px", sm: "14px" }, px: { xs: 2, sm: 3 }, py: { xs: 0.8, sm: 1 } }}
-        >
-          Print
-        </Button>
-      </Box>
+            <Box border="1px solid #ddd" p={1.5} mb={2}>
+              <Typography fontWeight="bold" mb={1}>
+                FEE FOR THE ACAD. YEAR July - 2025
+              </Typography>
+              {payments.length > 0 && (
+                <>
+                  <Box display="flex" mb={0.5}>
+                    <Typography fontWeight="bold" sx={{ width: { xs: "120px", sm: "160px" } }}>
+                      Mode :
+                    </Typography>
+                    <Typography>{payments[0].payment_mode || "ONLINE"}</Typography>
+                  </Box>
+                  <Box display="flex" mb={0.5}>
+                    <Typography fontWeight="bold" sx={{ width: { xs: "120px", sm: "160px" } }}>
+                      Date :
+                    </Typography>
+                    <Typography>
+                      {payments[0].payment_date
+                        ? new Date(payments[0].payment_date).toLocaleDateString("en-GB")
+                        : "-"}
+                    </Typography>
+                  </Box>
+                  <Box display="flex" mb={0.5}>
+                    <Typography fontWeight="bold" sx={{ width: { xs: "120px", sm: "160px" } }}>
+                      Transaction ID :
+                    </Typography>
+                    <Typography>{payments[0].transaction_id || "-"}</Typography>
+                  </Box>
+                </>
+              )}
+            </Box>
+
+            <Box textAlign="center" mb={1}>
+              <Typography fontWeight="bold">SRI RAMACHANDRA</Typography>
+              <Typography fontWeight="bold">INSTITUTE OF HIGHER EDUCATION & RESEARCH</Typography>
+              <Typography fontSize={{ xs: "12px", sm: "13px" }}>(Deemed to be University)</Typography>
+              <Typography fontWeight="bold" mt={1}>
+                Authorized Signatory
+              </Typography>
+              <Typography fontSize={{ xs: "12px", sm: "13px" }} mt={0.5}>
+                (Electronically generated. No Signature required)
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box display="flex" justifyContent="center" mt={2} className="no-print">
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              sx={{ fontSize: { xs: "12px", sm: "14px" }, px: { xs: 2, sm: 3 }, py: { xs: 0.8, sm: 1 } }}
+            >
+              Print
+            </Button>
+          </Box>
+        </>
+      )
+      }
     </>
   );
 }

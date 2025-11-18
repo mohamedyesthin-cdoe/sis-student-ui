@@ -18,6 +18,7 @@ import { useAlert } from "../../../context/AlertContext";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { apiRequest } from "../../../utils/ApiRequest";
 import theme from "../../../styles/theme";
+import { useGlobalError } from "../../../context/ErrorContext";
 
 
 // ✅ Validation schema
@@ -130,6 +131,7 @@ const SemesterFormGroup: React.FC<SemesterProps> = ({
 const ProgramForm = () => {
   const { id } = useParams();
   const { showConfirm, showAlert } = useAlert();
+  const { error } = useGlobalError();
 
   const initialSemesterData: Semester[] = Array.from({ length: 6 }, () => ({
     applicationFee: 0,
@@ -288,187 +290,193 @@ const ProgramForm = () => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
-      sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
-    >
-      {/* Program Details */}
-      <CardComponent sx={{ p: 3 }}>
-        <Customtext fieldName="Program Details" sx={{ mb: 2 }} />
-        <Grid container spacing={2}>
-          {/* Program ID */}
-          <Grid size={{ xs: 12, md: 3 }} my={1}>
-            <Controller
-              name="programId"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Program ID"
-                  fullWidth
-                  size="small"
-                  disabled={!!id}
-                  error={!!errors.programId}
-                  helperText={errors.programId?.message as string}
-                />
-              )}
-            />
-          </Grid>
+    <>
+      {
+        error.type === "NONE" && (
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
+          >
+            {/* Program Details */}
+            <CardComponent sx={{ p: 3 }}>
+              <Customtext fieldName="Program Details" sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                {/* Program ID */}
+                <Grid size={{ xs: 12, md: 3 }} my={1}>
+                  <Controller
+                    name="programId"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Program ID"
+                        fullWidth
+                        size="small"
+                        disabled={!!id}
+                        error={!!errors.programId}
+                        helperText={errors.programId?.message as string}
+                      />
+                    )}
+                  />
+                </Grid>
 
-          {/* Program Name */}
-          <Grid size={{ xs: 12, md: 3 }} my={1}>
-            <Controller
-              name="programName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Program Name"
-                  fullWidth
-                  size="small"
-                  error={!!errors.programName}
-                  helperText={errors.programName?.message as string}
-                />
-              )}
-            />
-          </Grid>
+                {/* Program Name */}
+                <Grid size={{ xs: 12, md: 3 }} my={1}>
+                  <Controller
+                    name="programName"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Program Name"
+                        fullWidth
+                        size="small"
+                        error={!!errors.programName}
+                        helperText={errors.programName?.message as string}
+                      />
+                    )}
+                  />
+                </Grid>
 
-          {/* Duration (dropdown) */}
-          <Grid container size={{ xs: 12, md: 3 }} my={1}>
-            <Controller
-              name="duration"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Duration"
-                  fullWidth
-                  size="small"
-                  error={!!errors.duration}
-                  helperText={errors.duration?.message as string}
-                >
-                  <MenuItem value="1">1 Year</MenuItem>
-                  <MenuItem value="2">2 Years</MenuItem>
-                  <MenuItem value="3">3 Years</MenuItem>
-                  <MenuItem value="4">4 Years</MenuItem>
-                </TextField>
-              )}
-            />
-          </Grid>
+                {/* Duration (dropdown) */}
+                <Grid container size={{ xs: 12, md: 3 }} my={1}>
+                  <Controller
+                    name="duration"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        label="Duration"
+                        fullWidth
+                        size="small"
+                        error={!!errors.duration}
+                        helperText={errors.duration?.message as string}
+                      >
+                        <MenuItem value="1">1 Year</MenuItem>
+                        <MenuItem value="2">2 Years</MenuItem>
+                        <MenuItem value="3">3 Years</MenuItem>
+                        <MenuItem value="4">4 Years</MenuItem>
+                      </TextField>
+                    )}
+                  />
+                </Grid>
 
-          {/* Faculty */}
-          <Grid container size={{ xs: 12, md: 3 }} my={1}>
-            <Controller
-              name="faculty"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Faculty"
-                  fullWidth
-                  size="small"
-                  error={!!errors.faculty}
-                  helperText={errors.faculty?.message as string}
-                />
-              )}
-            />
-          </Grid>
+                {/* Faculty */}
+                <Grid container size={{ xs: 12, md: 3 }} my={1}>
+                  <Controller
+                    name="faculty"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Faculty"
+                        fullWidth
+                        size="small"
+                        error={!!errors.faculty}
+                        helperText={errors.faculty?.message as string}
+                      />
+                    )}
+                  />
+                </Grid>
 
-          {/* Category (dropdown) */}
-          <Grid container size={{ xs: 12, md: 3 }} my={1}>
-            <Controller
-              name="category"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  label="Category"
-                  fullWidth
-                  size="small"
-                  error={!!errors.category}
-                  helperText={errors.category?.message as string}
-                >
-                  <MenuItem value="UG">UG</MenuItem>
-                  <MenuItem value="PG">PG</MenuItem>
-                </TextField>
-              )}
-            />
-          </Grid>
-        </Grid>
+                {/* Category (dropdown) */}
+                <Grid container size={{ xs: 12, md: 3 }} my={1}>
+                  <Controller
+                    name="category"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        select
+                        label="Category"
+                        fullWidth
+                        size="small"
+                        error={!!errors.category}
+                        helperText={errors.category?.message as string}
+                      >
+                        <MenuItem value="UG">UG</MenuItem>
+                        <MenuItem value="PG">PG</MenuItem>
+                      </TextField>
+                    )}
+                  />
+                </Grid>
+              </Grid>
 
-      </CardComponent>
+            </CardComponent>
 
-      {/* Semester Fees */}
-      <CardComponent sx={{ p: 3, mt: 4 }}>
-        <Customtext fieldName="Semester Fee Details" />
-        {Array.from({ length: 6 }).map((_, index) => (
-          <Box key={index} sx={{ mt: 3, mb: 3 }}>
-            <Customtext
-              fieldName={`Semester ${index + 1}`}
-              sx={{ mb: 2, color: theme.palette.text.primary }}
-            />
-            <SemesterFormGroup
-              semesterIndex={index}
-              control={control}
-              handleFeeChange={handleFeeChange}
-              errors={errors}
-            />
-            {index < 5 && (
-              <Divider
-                sx={{
-                  mt: 3,
-                  mb: 3,
-                  borderColor: theme.palette.text.disabled,
-                  borderBottomWidth: 1,
-                  width: "80%",
-                  mx: "auto",
-                }}
-              />
-            )}
+            {/* Semester Fees */}
+            <CardComponent sx={{ p: 3, mt: 4 }}>
+              <Customtext fieldName="Semester Fee Details" />
+              {Array.from({ length: 6 }).map((_, index) => (
+                <Box key={index} sx={{ mt: 3, mb: 3 }}>
+                  <Customtext
+                    fieldName={`Semester ${index + 1}`}
+                    sx={{ mb: 2, color: theme.palette.text.primary }}
+                  />
+                  <SemesterFormGroup
+                    semesterIndex={index}
+                    control={control}
+                    handleFeeChange={handleFeeChange}
+                    errors={errors}
+                  />
+                  {index < 5 && (
+                    <Divider
+                      sx={{
+                        mt: 3,
+                        mb: 3,
+                        borderColor: theme.palette.text.disabled,
+                        borderBottomWidth: 1,
+                        width: "80%",
+                        mx: "auto",
+                      }}
+                    />
+                  )}
+                </Box>
+              ))}
+            </CardComponent>
+
+            {/* Buttons */}
+            <Box
+              mt={4}
+              display="flex"
+              gap={2}
+              sx={{
+                justifyContent: {
+                  xs: "center", // center on mobile
+                  sm: "flex-end", // right align on tablet and above
+                },
+              }}
+            >
+              <Button variant="contained" color="primary" onClick={handleBack}>
+                Back
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() =>
+                  reset({
+                    programId: "",
+                    programName: "",
+                    duration: "3",
+                    faculty: "",
+                    category: "UG",
+                    semesters: initialSemesterData.map((s) => ({ ...s })),
+                  })
+                }
+              >
+                Reset
+              </Button>
+              <Button variant="contained" color="secondary" type="submit">
+                {id ? "Update" : "Submit"}
+              </Button>
+            </Box>
+
           </Box>
-        ))}
-      </CardComponent>
-
-      {/* Buttons */}
-      <Box
-        mt={4}
-        display="flex"
-        gap={2}
-        sx={{
-          justifyContent: {
-            xs: "center", // center on mobile
-            sm: "flex-end", // right align on tablet and above
-          },
-        }}
-      >
-        <Button variant="contained" color="primary" onClick={handleBack}>
-          Back
-        </Button>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() =>
-            reset({
-              programId: "",
-              programName: "",
-              duration: "3",
-              faculty: "",
-              category: "UG",
-              semesters: initialSemesterData.map((s) => ({ ...s })),
-            })
-          }
-        >
-          Reset
-        </Button>
-        <Button variant="contained" color="secondary" type="submit">
-          {id ? "Update" : "Submit"}
-        </Button>
-      </Box>
-
-    </Box>
+        )
+      }
+    </>
   );
 };
 

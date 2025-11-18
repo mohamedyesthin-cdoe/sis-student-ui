@@ -21,7 +21,6 @@ import { exportToExcel } from "../../../constants/excelExport";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import apiClient from "../../../services/ApiClient";
 import { useGlobalError } from "../../../context/ErrorContext";
-import { ConnectionLostUI } from "../../../components/card/connectionlost";
 
 export default function ProgramList() {
   const navigate = useNavigate();
@@ -75,42 +74,34 @@ export default function ProgramList() {
     );
   };
 
-
+  {
+    error.type === "NO_DATA" && (
+      <TableToolbar
+        actions={[
+          {
+            label: "Add Program",
+            color: "primary",
+            onClick: handleView,
+          },
+        ]}
+      />
+    )
+  }
   // ----------------------------------------------------------
   // 🎯 MAIN UI – only when data exists
   // ----------------------------------------------------------
   return (
-    <CardComponent
-      sx={{
-        width: "100%",
-        maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-        mx: "auto",
-        p: 3,
-        mt: 3,
-      }}
-    >
-      {error.type === "CONNECTION_LOST" && (
-        <ConnectionLostUI />
-      )}
-
-      {error.type === "SERVER_ERROR" && (
-        <p>Server Error Occurred</p>
-      )}
-
-      {error.type === "NO_DATA" && (
-        <TableToolbar
-          actions={[
-            {
-              label: "Add Program",
-              color: "primary",
-              onClick: handleView,
-            },
-          ]}
-        />
-      )}
-
-      {error.type === "NONE" && (
-        <>
+    <>
+      {error.type == "NONE" && (
+        <CardComponent
+          sx={{
+            width: '100%',
+            maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+            mx: 'auto',
+            p: 3,
+            mt: 3,
+          }}
+        >
           <TableToolbar
             filters={[
               {
@@ -213,8 +204,8 @@ export default function ProgramList() {
             totalCount={filteredPrograms.length}
             onPageChange={(newPage) => setPage(newPage)}
           />
-        </>
+        </CardComponent>
       )}
-    </CardComponent>
+    </>
   );
 }

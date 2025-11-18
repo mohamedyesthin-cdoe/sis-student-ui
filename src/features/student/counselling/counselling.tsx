@@ -3,7 +3,7 @@ import CardComponent from "../../../components/card/Card";
 import ReusableTable from "../../../components/table/table";
 import Customtext from "../../../components/customtext/Customtext";
 import theme from "../../../styles/theme";
-import { NoDataFoundUI } from "../../../components/card/NoDataFoundUI";
+import { useGlobalError } from "../../../context/ErrorContext";
 
 export default function StudentCounselling() {
 
@@ -18,65 +18,54 @@ export default function StudentCounselling() {
         "Stress management and wellness tips",
         "Personal support and mentoring",
     ];
-
-
+    const { error } = useGlobalError()
 
     return (
-        <CardComponent
-            sx={{
-                width: "100%",
-                maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-                mx: "auto",
-                p: { xs: 3, sm: 4 },
-                mt: 3,
-            }}
-        >
-            <Box mb={2}>
-                {/* ===== Title ===== */}
-                <Customtext variantName='h6' fieldName={'Student Counselling Service'} sx={{ fontSize: '1.5rem', color: theme.palette.text.primary }} />
-
-                <Divider sx={{ mb: 3 }} />
-
-                {/* ===== Introduction ===== */}
-                <Customtext fieldName={'Welcome to Sri Ramachandra Digilearn! As your counsellors, we are here to support you throughout your academic journey.Our role is to provide guidance on academic matters, career choices, and personal issues.We are committed to helping you achieve your goals and overcome challenges.'}
-                    sx={{ fontSize: '1rem', color: theme.palette.text.primary, fontWeight: '400' }} />
-
-                {/* ===== Support Areas ===== */}
-                <Customtext variantName='h6' fieldName={'Feel free to reach out to us for:'}
-                    sx={{ fontSize: '1rem', color: theme.palette.text.primary, mb: 1, fontWeight: '400' }} />
-
-                <List sx={{ listStyleType: "disc", pl: 4 }}>
-                    {services.map((item, index) => (
-                        <ListItem key={index} sx={{ display: "list-item", py: 0 }}>
-                            <ListItemText primary={item} />
-                        </ListItem>
-                    ))}
-                </List>
-            </Box>
-            {/* TableData */}
-            {counsellors.length === 0 ? (
-                <Box
+        <>
+            {error.type == "NONE" && (
+                <CardComponent
                     sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        py: 8,
-                        color: "text.secondary",
+                        width: "100%",
+                        maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+                        mx: "auto",
+                        p: { xs: 3, sm: 4 },
+                        mt: 3,
                     }}
                 >
-                    <NoDataFoundUI />
-                </Box>
-            ) : (
-                <ReusableTable
-                    columns={[
-                        { key: "name", label: "Name of the Counsellor" },
-                        { key: "email", label: "Email" }
-                    ]}
-                    data={counsellors}
-                />
-            )}
-        </CardComponent>
+                    <Box mb={2}>
+                        {/* ===== Title ===== */}
+                        <Customtext variantName='h6' fieldName={'Student Counselling Service'} sx={{ fontSize: '1.5rem', color: theme.palette.text.primary }} />
+
+                        <Divider sx={{ mb: 3 }} />
+
+                        {/* ===== Introduction ===== */}
+                        <Customtext fieldName={'Welcome to Sri Ramachandra Digilearn! As your counsellors, we are here to support you throughout your academic journey.Our role is to provide guidance on academic matters, career choices, and personal issues.We are committed to helping you achieve your goals and overcome challenges.'}
+                            sx={{ fontSize: '1rem', color: theme.palette.text.primary, fontWeight: '400' }} />
+
+                        {/* ===== Support Areas ===== */}
+                        <Customtext variantName='h6' fieldName={'Feel free to reach out to us for:'}
+                            sx={{ fontSize: '1rem', color: theme.palette.text.primary, mb: 1, fontWeight: '400' }} />
+
+                        <List sx={{ listStyleType: "disc", pl: 4 }}>
+                            {services.map((item, index) => (
+                                <ListItem key={index} sx={{ display: "list-item", py: 0 }}>
+                                    <ListItemText primary={item} />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </Box>
+                    {/* TableData */}
+                    <ReusableTable
+                        columns={[
+                            { key: "name", label: "Name of the Counsellor" },
+                            { key: "email", label: "Email" }
+                        ]}
+                        data={counsellors}
+                    />
+                </CardComponent>
+            )
+            }
+        </>
     );
 }
 

@@ -6,15 +6,38 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AlertProvider } from './context/AlertContext.tsx';
 import { ErrorProvider, registerErrorContext, useGlobalError } from './context/ErrorContext.tsx';
+import { useEffect } from 'react';
 
 function ErrorContextBridge() {
-  const errorContext = useGlobalError();
+  const { setConnectionLost, clearError, ...rest } = useGlobalError();
 
-  // register context functions so globalErrorHandler can use them
-  registerErrorContext(errorContext);
+  // Register context in globalErrorHandler
+  registerErrorContext({ setConnectionLost, clearError, ...rest });
+
+  // Add browsers online/offline event listeners
+  useEffect(() => {
+    const handleOffline = () => {
+      console.log("🔴 Internet disconnected");
+      setConnectionLost();
+    };
+
+    const handleOnline = () => {
+      console.log("🟢 Internet restored");
+      clearError();
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
 
   return null;
 }
+
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
