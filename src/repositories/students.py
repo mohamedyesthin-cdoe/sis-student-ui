@@ -100,8 +100,8 @@ class StudentRepository(BaseRepository[Student]):
             self.db.rollback()
             raise e
         
-    def get_last_sync_student(self):
-        result = self.db.query(Student).order_by(Student.id.desc()).first()
+    def get_last_sync_student(self, program_code):
+        result = self.db.query(Student).filter(Student.registration_no.like(f"{program_code}%")).order_by(Student.id.desc()).first()
         return result
     
     def get_last_paymentdate(self, student_id: int):
@@ -121,7 +121,7 @@ class StudentRepository(BaseRepository[Student]):
             program_code = program.programe_code
 
             # --- 2. Get last registration number (only 1 DB call) ---
-            last_student = self.get_last_sync_student()
+            last_student = self.get_last_sync_student(program_code)
             last_reg_no = last_student.registration_no if last_student else None
 
             # Generate new registration number
