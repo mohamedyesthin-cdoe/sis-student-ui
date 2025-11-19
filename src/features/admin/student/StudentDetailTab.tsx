@@ -8,6 +8,9 @@ import type { JSX } from 'react';
 import StudentIdCard from '../../student/profilecard/profilecard';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import BasicDetailsSkeleton from '../../../components/card/BasicDetailsSkeleton';
+import { useLoader } from '../../../context/LoaderContext';
+import AddressSkeleton from '../../../components/card/AddressSkeleton';
 
 type TabContent = {
   title: string;
@@ -28,6 +31,8 @@ export default function StudentDetailTab({
 }: StudentDetailTabsProps) {
   const theme = useTheme();
   const rollid = Number(getValue('rollid'));
+  const { loading } = useLoader();
+
 
   const field = (label: string, value: any) => (
     <Box
@@ -114,9 +119,7 @@ export default function StudentDetailTab({
                   </Box>
                 ))
               ) : (
-                <Customtext
-                  fieldName="No Documents Available"
-                />
+                <BasicDetailsSkeleton />
               )}
             </Box>
           </CardComponent>
@@ -125,23 +128,30 @@ export default function StudentDetailTab({
     }
 
     return (
-      <CardComponent>
-        <Box className="py-2 px-3">
-          <Customtext fieldName={tab.title} sx={{ mb: 0 }} />
-        </Box>
-        <Divider sx={{ borderColor: '#899000' }} />
-        <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', mb: 0, border: 'none' }}>
-          <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {tab.items.length
-              ? tab.items.map(([label, value]) => <Box key={label}>{field(label, value)}</Box>)
-              : (
-                <Customtext
-                  fieldName="No Data Available"
-                />
-              )}
-          </Box>
-        </CardComponent>
-      </CardComponent>
+      <>
+        {loading ? (
+          <BasicDetailsSkeleton />
+        ) : (
+          <CardComponent>
+            <Box className="py-2 px-3">
+              <Customtext fieldName={tab.title} sx={{ mb: 0 }} />
+            </Box>
+            <Divider sx={{ borderColor: '#899000' }} />
+            <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', mb: 0, border: 'none' }}>
+              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {tab.items.length
+                  ? tab.items.map(([label, value]) => <Box key={label}>{field(label, value)}</Box>)
+                  : (
+                    <Customtext
+                      fieldName="No Data Available"
+                    />
+                  )}
+              </Box>
+            </CardComponent>
+          </CardComponent>
+        )
+        }
+      </>
     );
   };
 
@@ -167,95 +177,106 @@ export default function StudentDetailTab({
     customRender: () => (
       <>
         {/* Basic Details */}
-        <CardComponent>
-          <Box className="py-2 px-3">
-            <Customtext fieldName="Basic Details" sx={{ mb: 0 }} />
-          </Box>
-          <Divider sx={{ borderColor: '#899000' }} />
-          <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', mb: 0, border: 'none' }}>
-            <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {[
-                ['Gender', student?.gender],
-                ['Date of Birth', formattedDate],
-                ['Blood Group', student?.blood_group],
-                ['Whatsapp Number', student?.whatsapp_number],
-                ['Marital Status', student?.marital_status],
-                ['Religion', student?.religion],
-                ['Aadhar Number', student?.aadhaar_number],
-                ['Personal EmailId', student?.email],
-                ['Nationality', student?.nationality == '101' ? 'Indian' : 'Others'],
-              ].map(([label, value]) => (
-                <Box key={label}>{field(label, value)}</Box>
-              ))}
+        {loading ? (
+          <BasicDetailsSkeleton />
+        ) : (
+          <CardComponent>
+            <Box className="py-2 px-3">
+              <Customtext fieldName="Basic Details" sx={{ mb: 0 }} />
             </Box>
+            <Divider sx={{ borderColor: '#899000' }} />
+
+            <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', mb: 0, border: 'none' }}>
+              <Box className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  ['Gender', student?.gender],
+                  ['Date of Birth', formattedDate],
+                  ['Blood Group', student?.blood_group],
+                  ['Whatsapp Number', student?.whatsapp_number],
+                  ['Marital Status', student?.marital_status],
+                  ['Religion', student?.religion],
+                  ['Aadhar Number', student?.aadhaar_number],
+                  ['Personal EmailId', student?.email],
+                  ['Nationality', student?.nationality == '101' ? 'Indian' : 'Others'],
+                ].map(([label, value]) => (
+                  <Box key={label}>{field(label, value)}</Box>
+                ))}
+              </Box>
+            </CardComponent>
           </CardComponent>
-        </CardComponent>
+        )}
 
         {/* Address */}
-        <CardComponent>
-          <Box className="py-2 px-3">
-            <Customtext fieldName="Address" sx={{ mb: 0 }} />
-          </Box>
-          <Divider sx={{ borderColor: '#899000' }} />
-          <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', mb: 0, border: 'none' }}>
-            {[
-              {
-                title: 'Current Address',
-                value: `${student?.address_details?.corr_addr1}, ${student?.address_details?.corr_addr2}, ${student?.address_details?.corr_city} - ${student?.address_details?.corr_pin}`,
-                icon: <LocationOnIcon sx={{ color: '#105c8e', fontSize: 32 }} />,
-              },
-              {
-                title: 'Permanent Address',
-                value: `${student?.address_details?.perm_addr1}, ${student?.address_details?.perm_addr2}, ${student?.address_details?.perm_city} - ${student?.address_details?.perm_pin}`,
-                icon: <LocationOnIcon sx={{ color: '#BF2728', fontSize: 32 }} />,
-              },
-            ].map((card, index) => (
-              <Grid container spacing={2} key={index}>
-                <Box
-                  sx={{
-                    backgroundColor: 'white',
-                    p: 1,
-                    width: '100%',
-                  }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      sx={{
-                        width: 50,
-                        height: 50,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: theme.palette.background.default,
-                        borderRadius: 3,
-                        mr: 2,
-                        mb: 1,
-                      }}
-                    >
-                      {card.icon}
-                    </Box>
-                    <Box>
-                      <Customtext
-                        fieldName={card.title}
+        {loading ? (
+          <AddressSkeleton />
+        ) : (
+          <CardComponent>
+            <Box className="py-2 px-3">
+              <Customtext fieldName="Address" sx={{ mb: 0 }} />
+            </Box>
+            <Divider sx={{ borderColor: '#899000' }} />
+
+
+            <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', mb: 0, border: 'none' }}>
+              {[
+                {
+                  title: 'Current Address',
+                  value: `${student?.address_details?.corr_addr1}, ${student?.address_details?.corr_addr2}, ${student?.address_details?.corr_city} - ${student?.address_details?.corr_pin}`,
+                  icon: <LocationOnIcon sx={{ color: '#105c8e', fontSize: 32 }} />,
+                },
+                {
+                  title: 'Permanent Address',
+                  value: `${student?.address_details?.perm_addr1}, ${student?.address_details?.perm_addr2}, ${student?.address_details?.perm_city} - ${student?.address_details?.perm_pin}`,
+                  icon: <LocationOnIcon sx={{ color: '#BF2728', fontSize: 32 }} />,
+                },
+              ].map((card, index) => (
+                <Grid container spacing={2} key={index}>
+                  <Box
+                    sx={{
+                      backgroundColor: 'white',
+                      p: 1,
+                      width: '100%',
+                    }}
+                  >
+                    <Box display="flex" alignItems="center">
+                      <Box
                         sx={{
-                          width: { xs: '100%', sm: '50%' },
-                          color: theme.palette.custom.accent,
-                          mb: 0,
+                          width: 50,
+                          height: 50,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: theme.palette.background.default,
+                          borderRadius: 3,
+                          mr: 2,
+                          mb: 1,
                         }}
-                      />
-                      <Customtext
-                        fieldName={card.value}
-                        sx={{
-                          color: theme.palette.text.primary
-                        }}
-                      />
+                      >
+                        {card.icon}
+                      </Box>
+                      <Box>
+                        <Customtext
+                          fieldName={card.title}
+                          sx={{
+                            width: { xs: '100%', sm: '50%' },
+                            color: theme.palette.custom.accent,
+                            mb: 0,
+                          }}
+                        />
+                        <Customtext
+                          fieldName={card.value}
+                          sx={{
+                            color: theme.palette.text.primary
+                          }}
+                        />
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-              </Grid>
-            ))}
+                </Grid>
+              ))}
+            </CardComponent>
           </CardComponent>
-        </CardComponent>
+        )}
       </>
     ),
   };
@@ -292,6 +313,9 @@ export default function StudentDetailTab({
     title: 'Documents',
     items: [],
     customRender: () => {
+      if (loading) {
+        return <BasicDetailsSkeleton />;
+      }
       const theme = useTheme();
       const docs = [
         { label: 'Aadhar', value: student?.document_details?.aadhar },
@@ -313,55 +337,51 @@ export default function StudentDetailTab({
           </Box>
           <Divider sx={{ borderColor: '#899000' }} />
           <CardComponent mb={3} p={2} sx={{ boxShadow: 'none', border: 'none' }}>
-            {availableDocs.length ? (
-              <Box display="flex" flexDirection="column" gap={1}>
-                {availableDocs.map(doc => (
-                  <Box
-                    key={doc.label}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    p={1}
-                    sx={{
-                      backgroundColor: theme.palette.background.default,
-                      borderRadius: 1,
-                    }}
-                  >
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Box
-                        sx={{
-                          backgroundColor: theme.palette.grey[100],
-                          borderRadius: '4px',
-                          p: 0.5,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        <PictureAsPdfIcon sx={{ color: theme.palette.grey[500], fontSize: '18px' }} />
-                      </Box>
-                      <Customtext
-                        fieldName={doc.label}
-                        sx={{color: theme.palette.text.primary }}
-                      />
-                    </Box>
-                    <IconButton
-                      onClick={() => window.open(doc.value, '_blank')}
+            <Box display="flex" flexDirection="column" gap={1}>
+              {availableDocs.map(doc => (
+                <Box
+                  key={doc.label}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p={1}
+                  sx={{
+                    backgroundColor: theme.palette.background.default,
+                    borderRadius: 1,
+                  }}
+                >
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Box
                       sx={{
-                        backgroundColor: 'black',
-                        color: theme.palette.grey[300],
-                        p: 0.6,
-                        '&:hover': { backgroundColor: 'black' },
+                        backgroundColor: theme.palette.grey[100],
+                        borderRadius: '4px',
+                        p: 0.5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
                     >
-                      <FileDownloadIcon sx={{ fontSize: '18px' }} />
-                    </IconButton>
+                      <PictureAsPdfIcon sx={{ color: theme.palette.grey[500], fontSize: '18px' }} />
+                    </Box>
+                    <Customtext
+                      fieldName={doc.label}
+                      sx={{ color: theme.palette.text.primary }}
+                    />
                   </Box>
-                ))}
-              </Box>
-            ) : (
-              <Customtext fieldName="No Documents Available" sx={{color: theme.palette.text.secondary }} />
-            )}
+                  <IconButton
+                    onClick={() => window.open(doc.value, '_blank')}
+                    sx={{
+                      backgroundColor: 'black',
+                      color: theme.palette.grey[300],
+                      p: 0.6,
+                      '&:hover': { backgroundColor: 'black' },
+                    }}
+                  >
+                    <FileDownloadIcon sx={{ fontSize: '18px' }} />
+                  </IconButton>
+                </Box>
+              ))}
+            </Box>
           </CardComponent>
         </CardComponent>
       );
@@ -369,19 +389,25 @@ export default function StudentDetailTab({
   };
 
   const IDCardTab: TabContent = {
-    title: 'ID Card',
+    title: "ID Card",
     items: [],
+
     customRender: () => (
       <CardComponent>
         <Box className="py-2 px-3">
           <Customtext fieldName="ID Card" sx={{ mb: 0 }} />
         </Box>
-        <Divider sx={{ borderColor: '#899000' }} />
-        {/* ✅ Pass student as prop */}
+        <Divider sx={{ borderColor: "#899000" }} />
+
+        {/* Outer Card Skeleton */}
         <StudentIdCard />
       </CardComponent>
     ),
   };
+
+
+
+
 
   // ✅ Corrected tab content mapping for both roles
   const tabContents =

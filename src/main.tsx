@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AlertProvider } from './context/AlertContext.tsx';
 import { ErrorProvider, registerErrorContext, useGlobalError } from './context/ErrorContext.tsx';
 import { useEffect } from 'react';
+import { LoaderProvider } from './context/LoaderContext.tsx';
 
 function ErrorContextBridge() {
   const { setConnectionLost, clearError, ...rest } = useGlobalError();
@@ -42,10 +43,12 @@ function ErrorContextBridge() {
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <AlertProvider>
-      <ErrorProvider>
-        <ErrorContextBridge />
-        <App />
-      </ErrorProvider>
+      <LoaderProvider>
+        <ErrorProvider>
+          <ErrorContextBridge />
+          <App />
+        </ErrorProvider>
+      </LoaderProvider>
     </AlertProvider>
   </BrowserRouter>
 );

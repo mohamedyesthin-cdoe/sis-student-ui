@@ -6,7 +6,6 @@ import maleimage from "/assets/images/male-logo.jpg";
 import femaleimage from "/assets/images/female-logo.jpg";
 import signature from "/assets/images/signature.jpg";
 import { getValue } from "../../../utils/localStorageUtil";
-import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import Barcode from "react-barcode";
@@ -14,12 +13,11 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import DownloadIcon from "@mui/icons-material/Download";
+import IDCardSkeleton from "../../../components/card/IDCardSkeleton";
 
 const StudentHorizontalIDCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const navigate = useNavigate();
   const student_id = getValue("student_id");
-  const [student, setStudent] = useState<any>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const toggleFlip = () => setIsFlipped((prev) => !prev);
@@ -27,21 +25,32 @@ const StudentHorizontalIDCard = () => {
   const userimage = gender == "Female" ? femaleimage : maleimage;
   // const userimage = 'https://d1jgwwhd2xazx1.cloudfront.net/uploads/student/document/6719/21235/2025/09/16/68c93391d0bdf518716830_PHOTO.jpg?Expires=1762406006&Signature=oS64gV0VFWIhRgFVS2YrSkqpNorE9t8LGO8xsKS~5AcSdsjd971shggcnxuIK53R5wsYxrevrVGunfFHI9xoo0DaDAfxSAbGRkfLpY5cvUFLC~w5rtxdteRueuR1WRHkO5NYF-bpvwMRDZrBrPmIr964UygDXiu9dWAZXYYVlLCibtU4a-yFtL6knE73Q68xc5uwOxS41st4K9qL6uvOx-uGu4FWJA-5y-zCWsYDJJKSDMiADyixTXeuOtOjWp3X1LFwSVjlWPmygNZF~OXnxdET1hiFKkB1caEywM5o0vKXj-3kHhwdG6fuKB4k9x5Y-ddOYzyBFq1cs01djPGrYg__&Key-Pair-Id=K3KU6FKMGSED79'
 
+const [student, setStudent] = useState<any>(null);
+const [localLoading, setLocalLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchStudent = async () => {
-      try {
-        const response = await apiRequest({
-          url: `${ApiRoutes.GETSTUDENTBYID}/${student_id}`,
-          method: "get",
-        });
-        if (response) setStudent(response);
-      } catch (error) {
-        console.error("Failed to fetch student:", error);
-      }
-    };
-    if (student_id) fetchStudent();
-  }, [student_id, navigate]);
+useEffect(() => {
+  const fetchStudent = async () => {
+    try {
+      setLocalLoading(true);
+      const response = await apiRequest({
+        url: `${ApiRoutes.GETSTUDENTBYID}/${student_id}`,
+        method: "get",
+      });
+      setStudent(response);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLocalLoading(false);
+    }
+  };
+
+  if (student_id) fetchStudent();
+}, [student_id]);
+
+if (localLoading) {
+  return <IDCardSkeleton />;
+}
+
 
   const formatDate = (dateString: any) => {
     if (!dateString) return "—";
