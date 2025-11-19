@@ -13,7 +13,7 @@ import Customtext from '../../../components/customtext/Customtext';
 import { getValue } from '../../../utils/localStorageUtil';
 import { useGlobalError } from '../../../context/ErrorContext';
 import { useLoader } from '../../../context/LoaderContext';
-import ProfileSkeleton from '../../../components/card/profileskeleton';
+import ProfileSkeleton from '../../../components/card/skeletonloader/Profileskeleton';
 
 export default function StudentDetailUI() {
   const navigate = useNavigate();

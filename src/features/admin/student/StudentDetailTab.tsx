@@ -8,9 +8,9 @@ import type { JSX } from 'react';
 import StudentIdCard from '../../student/profilecard/profilecard';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import BasicDetailsSkeleton from '../../../components/card/BasicDetailsSkeleton';
+import BasicDetailsSkeleton from '../../../components/card/skeletonloader/BasicDetailsSkeleton';
 import { useLoader } from '../../../context/LoaderContext';
-import AddressSkeleton from '../../../components/card/AddressSkeleton';
+import AddressSkeleton from '../../../components/card/skeletonloader/AddressSkeleton';
 
 type TabContent = {
   title: string;

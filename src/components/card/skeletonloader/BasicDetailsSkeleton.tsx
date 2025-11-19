@@ -1,5 +1,5 @@
 import { Box, Skeleton, Divider } from "@mui/material";
-import CardComponent from "./Card";
+import CardComponent from "../Card";
 
 export default function BasicDetailsSkeleton() {
   return (

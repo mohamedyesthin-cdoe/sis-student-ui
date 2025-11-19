@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CardComponent from "../../../components/card/Card";
 import TableToolbar from "../../../components/tabletoolbar/tableToolbar";
 import TablePagination from "../../../components/tablepagination/tablepagination";
-import { NoDataFoundUI } from "../../../components/card/NoDataFoundUI";
+import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 
 export default function Onlinegrievances() {
   const [page, setPage] = React.useState(0);

@@ -16,6 +16,8 @@ import UploadExcelDialog from '../../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
 import { setValue } from '../../../utils/localStorageUtil';
 import { useGlobalError } from '../../../context/ErrorContext';
+import TableSkeleton from '../../../components/card/skeletonloader/Tableskeleton';
+import { useLoader } from '../../../context/LoaderContext';
 
 export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -28,6 +30,8 @@ export default function StudentTable() {
   const [showSearch] = React.useState(true);
   const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
   const { error } = useGlobalError();
+  const { loading } = useLoader();
+
 
 
   // Fetch student list
@@ -247,118 +251,123 @@ export default function StudentTable() {
 
   return (
     <>
-      {error.type == "NONE" && (
-        <CardComponent
-          sx={{
-            width: '100%',
-            maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
-            mx: 'auto',
-            p: 3,
-            mt: 3,
-          }}
-        >
+      {error.type === "NONE" && (
+        loading ? (
+          <TableSkeleton />
+        )
+          : (
+            <CardComponent
+              sx={{
+                width: '100%',
+                maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+                mx: 'auto',
+                p: 3,
+                mt: 3,
+              }}
+            >
 
-          <TableToolbar
-            filters={[
-              {
-                key: "search",
-                label: "Search",
-                type: "text",
-                value: searchText,
-                onChange: (val) => setSearchText(val),
-                placeholder: "Search all fields",
-                visible: showSearch,
-              },
-              {
-                key: "gender",
-                label: "All Genders",
-                type: "select",
-                value: genderFilter,
-                onChange: (val) => {
-                  setGenderFilter(val);
+              <TableToolbar
+                filters={[
+                  {
+                    key: "search",
+                    label: "Search",
+                    type: "text",
+                    value: searchText,
+                    onChange: (val) => setSearchText(val),
+                    placeholder: "Search all fields",
+                    visible: showSearch,
+                  },
+                  {
+                    key: "gender",
+                    label: "All Genders",
+                    type: "select",
+                    value: genderFilter,
+                    onChange: (val) => {
+                      setGenderFilter(val);
+                      setPage(0);
+                    },
+                    options: [
+                      { value: 'Male', label: 'Male' },
+                      { value: 'Female', label: 'Female' },
+                      { value: 'Other', label: 'Other' },
+                    ],
+                  },
+                ]}
+                actions={[
+                  {
+                    label: 'Bulk Upload',
+                    color: 'secondary',
+                    variant: 'outlined',
+                    startIcon: <CloudUploadIcon />,
+                    onClick: () => setOpenUploadDialog(true),
+                  },
+                  {
+                    label: 'Sync',
+                    color: 'primary',
+                    variant: 'outlined',
+                    startIcon: <SyncIcon />,
+                    onClick: handleSync,
+                  },
+                  {
+                    label: 'Push to Deb',
+                    color: 'success',
+                    variant: 'outlined',
+                    startIcon: <CloudUploadIcon />,
+                    onClick: async () => {
+                      try {
+                        const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                        console.log(data);
+                      } catch (error: any) {
+                        showAlert(error?.detail || "Sync failed.", "error");
+                      }
+                    },
+                  },
+                  {
+                    label: 'Export Excel',
+                    color: 'secondary',
+                    startIcon: <FileDownloadIcon />,
+                    onClick: handleExportExcel,
+                  },
+                ]}
+              />
+              <ReusableTable
+                columns={[
+                  { key: "registration_no", label: "Registration No" },
+                  { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
+                  { key: "email", label: "Email" },
+                  { key: "mobile_number", label: "Mobile" },
+                  { key: "gender", label: "Gender" },
+                  { key: "date_of_birth", label: "DOB" },
+                ]}
+                data={filteredStudents}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                actions={[
+                  {
+                    label: "View",
+                    icon: <VisibilityIcon fontSize="small" />,
+                    onClick: (row) => handleView(row.id),
+                    color: 'secondary',
+                  },
+                ]}
+              />
+              <TablePagination
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={filteredStudents.length}
+                onPageChange={(newPage) => setPage(newPage)}
+                onRowsPerPageChange={(newRowsPerPage) => {
+                  setRowsPerPage(newRowsPerPage);
                   setPage(0);
-                },
-                options: [
-                  { value: 'Male', label: 'Male' },
-                  { value: 'Female', label: 'Female' },
-                  { value: 'Other', label: 'Other' },
-                ],
-              },
-            ]}
-            actions={[
-              {
-                label: 'Bulk Upload',
-                color: 'secondary',
-                variant: 'outlined',
-                startIcon: <CloudUploadIcon />,
-                onClick: () => setOpenUploadDialog(true),
-              },
-              {
-                label: 'Sync',
-                color: 'primary',
-                variant: 'outlined',
-                startIcon: <SyncIcon />,
-                onClick: handleSync,
-              },
-              {
-                label: 'Push to Deb',
-                color: 'success',
-                variant: 'outlined',
-                startIcon: <CloudUploadIcon />,
-                onClick: async () => {
-                  try {
-                    const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
-                    console.log(data);
-                  } catch (error: any) {
-                    showAlert(error?.detail || "Sync failed.", "error");
-                  }
-                },
-              },
-              {
-                label: 'Export Excel',
-                color: 'secondary',
-                startIcon: <FileDownloadIcon />,
-                onClick: handleExportExcel,
-              },
-            ]}
-          />
-          <ReusableTable
-            columns={[
-              { key: "registration_no", label: "Registration No" },
-              { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
-              { key: "email", label: "Email" },
-              { key: "mobile_number", label: "Mobile" },
-              { key: "gender", label: "Gender" },
-              { key: "date_of_birth", label: "DOB" },
-            ]}
-            data={filteredStudents}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            actions={[
-              {
-                label: "View",
-                icon: <VisibilityIcon fontSize="small" />,
-                onClick: (row) => handleView(row.id),
-                color: 'secondary',
-              },
-            ]}
-          />
-          <TablePagination
-            page={page}
-            rowsPerPage={rowsPerPage}
-            totalCount={filteredStudents.length}
-            onPageChange={(newPage) => setPage(newPage)}
-            onRowsPerPageChange={(newRowsPerPage) => {
-              setRowsPerPage(newRowsPerPage);
-              setPage(0);
-            }}
-          />
-          <UploadExcelDialog
-            open={openUploadDialog}
-            onClose={() => setOpenUploadDialog(false)}
-            onUpload={handleExcelUpload}
-          />
-        </CardComponent>
+                }}
+              />
+              <UploadExcelDialog
+                open={openUploadDialog}
+                onClose={() => setOpenUploadDialog(false)}
+                onUpload={handleExcelUpload}
+              />
+            </CardComponent>
+          )
       )}
     </>
   )

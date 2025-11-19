@@ -13,7 +13,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 import FlipCameraAndroidIcon from "@mui/icons-material/FlipCameraAndroid";
 import DownloadIcon from "@mui/icons-material/Download";
-import IDCardSkeleton from "../../../components/card/IDCardSkeleton";
+import IDCardSkeleton from "../../../components/card/skeletonloader/IDCardSkeleton";
 
 const StudentHorizontalIDCard = () => {
   const [isFlipped, setIsFlipped] = useState(false);

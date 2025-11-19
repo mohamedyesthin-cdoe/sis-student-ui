@@ -5,8 +5,8 @@ import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Breadcrumb from '../constants/Breadcrumb';
 import { useGlobalError } from '../context/ErrorContext';
-import { ConnectionLostUI } from '../components/card/connectionlost';
 import CardComponent from '../components/card/Card';
+import { ConnectionLostUI } from '../components/card/errorUi/connectionlost';
 
 export default function DashboardLayout() {
   const [sidebarVisible, setSidebarVisible] = useState(true);

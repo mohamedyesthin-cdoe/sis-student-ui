@@ -2,7 +2,7 @@ import * as React from "react";
 import { Typography, Box } from "@mui/material";
 import CardComponent from "../../../components/card/Card";
 import TablePagination from "../../../components/tablepagination/tablepagination";
-import { NoDataFoundUI } from "../../../components/card/NoDataFoundUI";
+import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 
 export default function Examination() {
   const [page, setPage] = React.useState(0);

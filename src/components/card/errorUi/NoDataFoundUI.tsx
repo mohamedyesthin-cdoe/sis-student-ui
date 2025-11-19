@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
-import Customtext from "../customtext/Customtext";
-import theme from "../../styles/theme";
+import Customtext from "../../customtext/Customtext";
+import theme from "../../../styles/theme";
 
 export function NoDataFoundUI() {
   return (

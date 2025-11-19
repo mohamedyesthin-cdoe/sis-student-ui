@@ -11,7 +11,7 @@ import TablePagination from '../../../components/tablepagination/tablepagination
 import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
-import { NoDataFoundUI } from '../../../components/card/NoDataFoundUI';
+import { NoDataFoundUI } from '../../../components/card/errorUi/NoDataFoundUI';
 
 
 export default function Faculty() {
