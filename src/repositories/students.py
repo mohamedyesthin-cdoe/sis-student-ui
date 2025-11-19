@@ -1,6 +1,8 @@
+import contextlib
 from typing import List, Optional
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.future import select
+from sqlalchemy import delete
 from src.models.students import *
 from src.models.payment import *
 from src.models.master import Programe, FeeDetails
@@ -11,6 +13,7 @@ from src.utils.register_number import generate_registration_number
 from src.services.integrations.student_mapper import (
     map_api_to_student_schema, timestamp_to_date, safe_float, parse_date, ensure_datetime
 )
+from sqlalchemy.exc import SQLAlchemyError
 
 class StudentRepository(BaseRepository[Student]):
     def __init__(self, db: Session):
@@ -41,6 +44,13 @@ class StudentRepository(BaseRepository[Student]):
             
             #students = self.db.query(Student).all()
             return students
+        except Exception as e:
+            raise e
+        
+    def get_all_application_nos(self) -> List[str]:
+        try:
+            application_nos = self.db.query(Student.application_no).all()
+            return [app_no[0] for app_no in application_nos]
         except Exception as e:
             raise e
     
@@ -217,3 +227,118 @@ class StudentRepository(BaseRepository[Student]):
         except Exception as e:
             self.db.rollback()
             raise ValueError(f"Error creating student: {str(e)}")
+
+    def delete_payments(self, student_id: int) -> dict:
+        """
+        Delete all ApplicationFee and SemesterFee rows referencing payments of the student,
+        then delete the payments themselves. Returns counts.
+        """
+        # collect payment ids for the student
+        payment_ids = (
+            self.db.execute(select(Payment.id).where(Payment.student_id == student_id))
+            .scalars()
+            .all()
+        )
+
+        if not payment_ids:
+            return {"deleted_application_rows": 0, "deleted_semester_rows": 0, "deleted_payments": 0}
+
+        # delete child mapping rows first
+        res_app = self.db.execute(
+            delete(ApplicationFee).where(ApplicationFee.payment_id.in_(payment_ids))
+        )
+        deleted_application_rows = res_app.rowcount or 0
+
+        res_sem = self.db.execute(
+            delete(SemesterFee).where(SemesterFee.payment_id.in_(payment_ids))
+        )
+        deleted_semester_rows = res_sem.rowcount or 0
+
+        # then delete payments
+        res_pay = self.db.execute(
+            delete(Payment).where(Payment.id.in_(payment_ids))
+        )
+        deleted_payments = res_pay.rowcount or 0
+
+        return {
+            "deleted_application_rows": deleted_application_rows,
+            "deleted_semester_rows": deleted_semester_rows,
+            "deleted_payments": deleted_payments,
+        }
+    
+    def delete_student_mapping_table(self, student_id: int) -> dict:
+        related_models = [
+            AddressDetails,
+            AcademicDetails,
+            DocumentDetails,
+            DeclarationDetails,
+            DebDetails
+        ]
+
+        results = {}
+
+        for model in related_models:
+            res = self.db.execute(delete(model).where(model.student_id == student_id))
+            results[model.__name__] = res.rowcount or 0
+        
+        return results
+
+    def delete_student_by_id(self, student_id: int) -> dict:
+        ctx = self.db.begin() if not self.db.in_transaction() else contextlib.nullcontext()
+        try:
+            with ctx:
+                payment_detele = self.delete_payments(student_id)
+                mapping_delete = self.delete_student_mapping_table(student_id)
+                res_student = self.db.execute(delete(Student).where(Student.id == student_id))
+                deleted_student = res_student.rowcount or 0
+        
+            summary = {
+                "deleted_student": deleted_student,
+                "payment_deletion": payment_detele,
+                "mapping_deletion": mapping_delete
+            }
+            return summary
+        except SQLAlchemyError as e:
+            print(f"Failed to delete student {student_id}: {e}")
+            raise
+
+    def delete_all_students(self) -> None:
+        """
+        Perform deletes in order so FK constraints do not block us:
+        1) payment mapping tables (ApplicationFee, SemesterFee)
+        2) Payments
+        3) other student mapping tables (address, academic, documents, etc.)
+        4) Users (which reference students)
+        5) Students
+        Return a dict with counts (optional).
+        """
+        # 1) Payment mapping tables
+        res_app = self.db.execute(delete(ApplicationFee))
+        res_sem = self.db.execute(delete(SemesterFee))
+
+        # 2) Payments
+        res_pay = self.db.execute(delete(Payment))
+
+        # 3) Other student mapping tables
+        related_models = [
+            AddressDetails,
+            AcademicDetails,
+            DocumentDetails,
+            DeclarationDetails,
+            DebDetails,
+        ]
+        mapping_counts = {}
+        for model in related_models:
+            r = self.db.execute(delete(model))
+            mapping_counts[model.__name__] = r.rowcount or 0
+
+        # 5) Students last
+        res_students = self.db.execute(delete(Student))
+
+        return {
+            "deleted_application_rows": res_app.rowcount or 0,
+            "deleted_semester_rows": res_sem.rowcount or 0,
+            "deleted_payments": res_pay.rowcount or 0,
+            "deleted_mappings": mapping_counts,
+            "deleted_students": res_students.rowcount or 0,
+        }

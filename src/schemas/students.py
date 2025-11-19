@@ -15,8 +15,8 @@ class AddressBase(BaseModel):
     corr_addr1: str
     corr_addr2: Optional[str] = None
     corr_city: str
-    corr_state: str
-    corr_district: str
+    corr_state: Optional[str] = None
+    corr_district: Optional[str] = None
     corr_country: int
     corr_pin: str
     corr_addr_same: bool = True
@@ -102,7 +102,7 @@ class DocumentDetailsBase(BaseModel):
     class_12th_marksheet: Optional[str] = None
     graduation_marksheet: Optional[List[str]] = None
     diploma_marksheet: Optional[List[str]] = None
-    work_experience_certificates: Optional[str] = None
+    work_experience_certificates: Optional[List[str]] = None
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None
@@ -117,7 +117,7 @@ class DocumentDetailsResponse(BaseModel):
     class_12th_marksheet: Optional[str] = None
     graduation_marksheet: Optional[List[str]] = None
     diploma_marksheet: Optional[str] = None
-    work_experience_certificates: Optional[str] = None
+    work_experience_certificates: Optional[List[str]] = None
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None

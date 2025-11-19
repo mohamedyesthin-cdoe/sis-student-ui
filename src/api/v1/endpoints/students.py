@@ -1,13 +1,14 @@
 from typing import List
 from src.services.student_service import StudentService
 from src.services.integrations.student_api import get_deb_student_details, push_deb_student_details
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from src.db.session import get_db
 from src.schemas.students import StudentCreate, StudentResponse, SyncResponse, DebResponse
 from src.schemas.payment import PaymentResponse
 from src.core.security.dependencies import require_superuser, require_staff
 from src.models.user import User
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
 
@@ -18,7 +19,7 @@ def create_student(student_data: StudentCreate, db: Session = Depends(get_db), c
     return student_service.create_student(student_data)
 
 @router.post("/sync", response_model=SyncResponse)
-async def sync_students_endpoint(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+async def sync_students_endpoint(db: Session = Depends(get_db)):
     try:
         service = StudentService(db)
         return await service.sync_students()
@@ -59,3 +60,22 @@ def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depend
         return payments
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve payments: {str(e)}")
+    
+@router.delete("/delete/all", status_code=204, response_model=None)
+def delete_all_students(db: Session = Depends(get_db)):
+    try:
+        StudentService(db).delete_all_students()
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail="Failed to delete all students")
+    
+@router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_student_by_id(student_id: int, db: Session = Depends(get_db)):
+    """Delete a payment by ID."""
+    try:
+        service = StudentService(db)
+        success = service.delete_student_by_id(student_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Payment not found")
+        return
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete payment: {str(e)}")
