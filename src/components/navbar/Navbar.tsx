@@ -11,6 +11,7 @@ import {
   InputAdornment,
   Box,
   Tooltip,
+  Dialog,
 } from '@mui/material';
 import { Search as SearchIcon, Menu as MenuIcon } from '@mui/icons-material';
 import NotificationsDrawer from '../drawer/drawer';
@@ -32,6 +33,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
   // const [selectedLanguage, setSelectedLanguage] = useState('English');
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const navigate = useNavigate();
+  const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   // ✅ Auto logout based on token_time
   useEffect(() => {
@@ -150,7 +152,7 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
                 <Avatar
                   alt="User Avatar"
                   src={userimage}
-                  sx={{ width: 40, height: 40, border: '2px solid #105c8e' }}
+                  sx={{ width: 40, height: 40, border: `2px solid ${theme.palette.primary.main}` }}
                 />
               </IconButton>
             </Tooltip>
@@ -202,18 +204,98 @@ export default function Navbar({ onHamburgerClick }: NavbarProps) {
             variant="outlined"
             color="error"
             fullWidth
-            onClick={() => {
-              clearLocalStorage();
-              handleProfileClose();
-              console.log('User logged out');
-            }}
+            onClick={() => setLogoutConfirmOpen(true)}
           >
             Logout
           </Button>
+
         </Box>
       </Popover>
 
       <NotificationsDrawer open={notificationsDrawerOpen} onClose={handleNotificationsDrawerClose} />
+      <Dialog
+        open={logoutConfirmOpen}
+        onClose={() => setLogoutConfirmOpen(false)}
+        PaperProps={{
+          className: "rounded-2xl shadow-xl w-[320px] md:w-[380px]",
+        }}
+      >
+        <Box className="p-6 text-center">
+
+          {/* Title */}
+          <Customtext
+            fieldName="Logout Confirmation"
+            sx={{
+              fontSize: {
+                xs: '0.875rem', // 14px
+                sm: '1rem',     // 16px
+                md: '1.125rem', // 18px
+                lg: '1.2rem',  // 20px
+                xl: '1.5rem',   // 24px
+              },
+              fontWeight: 700,
+              color: theme.palette.secondary.main,
+            }}
+          />
+
+          {/* Subtext */}
+          <Customtext
+            fieldName="Are you sure you want to logout?"
+            sx={{
+              fontSize: "0.95rem",
+              marginTop: "10px",
+              color: theme.palette.text.secondary,
+            }}
+          />
+
+          {/* Buttons */}
+          <Box className="flex justify-center gap-4 mt-6">
+
+            <Button
+              variant="outlined"
+              onClick={() => setLogoutConfirmOpen(false)}
+              sx={{
+                borderRadius: "10px",
+                px: 3,
+                py: 1,
+                textTransform: "none",
+                fontWeight: 600,
+                borderColor: theme.palette.primary.main,
+                color: theme.palette.primary.main,
+                "&:hover": {
+                  borderColor: theme.palette.primary.main,
+                  backgroundColor: "rgba(16,92,142,0.05)",
+                }
+              }}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                setLogoutConfirmOpen(false);
+                handleProfileClose();
+                clearLocalStorage();
+              }}
+              sx={{
+                borderRadius: "10px",
+                px: 3,
+                py: 1,
+                textTransform: "none",
+                fontWeight: 600
+              }}
+            >
+              Logout
+            </Button>
+
+          </Box>
+
+        </Box>
+      </Dialog>
+
+
     </>
   );
 }
