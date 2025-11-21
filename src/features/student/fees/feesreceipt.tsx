@@ -229,7 +229,7 @@ export default function FeesReceipt() {
               </Box>
 
               <Box sx={{ overflowX: "auto", mb: 2 }}>
-                <Table sx={{ border: "1px solid #ddd", minWidth: 400 }}>
+                <Table sx={{ border: "1px solid #ddd" }}>
                   <TableHead>
                     <TableRow>
                       {["Sno", "Towards", "Amount (in Rs)"].map((head) => (
@@ -316,7 +316,8 @@ export default function FeesReceipt() {
                 color="primary"
                 startIcon={<PrintIcon />}
                 onClick={handlePrint}
-                sx={{ fontSize: { xs: "12px", sm: "14px" }, px: { xs: 2, sm: 3 }, py: { xs: 0.8, sm: 1 } }}
+                sx={{ fontSize: { xs: "12px", sm: "14px" }, px: { xs: 2, sm: 3 }, py: { xs: 0.8, sm: 1 },
+              my:2 }}
               >
                 Print
               </Button>

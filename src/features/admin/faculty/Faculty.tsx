@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -11,7 +10,9 @@ import TablePagination from '../../../components/tablepagination/tablepagination
 import { exportToExcel } from '../../../constants/excelExport';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
-import { NoDataFoundUI } from '../../../components/card/errorUi/NoDataFoundUI';
+import TableSkeleton from '../../../components/card/skeletonloader/Tableskeleton';
+import { useGlobalError } from '../../../context/ErrorContext';
+import { useLoader } from '../../../context/LoaderContext';
 
 
 export default function Faculty() {
@@ -24,10 +25,12 @@ export default function Faculty() {
   const [showSearch] = React.useState(true);
 
   const [programs, setPrograms] = React.useState<any[]>([]);
+  const { error } = useGlobalError();
+  const { loading } = useLoader()
 
   // Fetch programs from API on component mount
   React.useEffect(() => {
-    apiRequest({ url: ApiRoutes.GETPROGRAMLIST, method: 'get' })
+    apiRequest({ url: ApiRoutes.GETFACULTYLIST, method: 'get' })
       .then((data) => setPrograms(Array.isArray(data) ? data : data.data))
       .catch(() => setPrograms([]));
   }, []);
@@ -56,91 +59,83 @@ export default function Faculty() {
 
 
   return (
-    <CardComponent
-      sx={{
-        width: '100%',
-        maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
-        mx: 'auto',
-        p: 3,
-        mt: 3,
-      }}
-    >
-      {/* Filters & Export */}
-      {filteredPrograms.length > 0 && (
-        <TableToolbar
-          filters={[
-            {
-              key: "search",
-              label: "Search",
-              type: "text",
-              value: searchText,
-              onChange: (val) => setSearchText(val),
-              placeholder: "Search all fields",
-              visible: showSearch,
-            }
-          ]}
-          actions={[
-            {
-              label: 'Export Excel',
-              color: 'secondary',
-              startIcon: <FileDownloadIcon />,
-              onClick: handleExportExcel,
-            },
-            {
-              label: 'Add User',
-              color: 'primary',
-              onClick: handleView,
-            },
-          ]}
-        />
-      )}
+    <>
+      {error.type === "NONE" && (
+        loading ? (
+          <TableSkeleton />
+        )
+          : (
+            <CardComponent
+              sx={{
+                width: '100%',
+                maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+                mx: 'auto',
+                p: 3,
+                mt: 3,
+              }}
+            >
+              {/* Filters & Export */}
+              <TableToolbar
+                filters={[
+                  {
+                    key: "search",
+                    label: "Search",
+                    type: "text",
+                    value: searchText,
+                    onChange: (val) => setSearchText(val),
+                    placeholder: "Search all fields",
+                    visible: showSearch,
+                  }
+                ]}
+                actions={[
+                  {
+                    label: 'Export Excel',
+                    color: 'secondary',
+                    startIcon: <FileDownloadIcon />,
+                    onClick: handleExportExcel,
+                  },
+                  {
+                    label: 'Add User',
+                    color: 'primary',
+                    onClick: handleView,
+                  },
+                ]}
+              />
 
-      {filteredPrograms.length === 0 ? (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            py: 8,
-            color: "text.secondary",
-          }}
-        >
-          <NoDataFoundUI />
-        </Box>
-      ) : (
-        <ReusableTable
-          columns={[
-            { key: "programe_code", label: "Employee ID" },
-            { key: "programe", label: "Full Name" },
-            { key: "duration", label: "Email" },
-            { key: "duration", label: "Mobile" },
-            { key: "duration", label: "Roll" },
-          ]}
-          data={filteredPrograms}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          actions={[
-            {
-              label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
-                navigate(`/programs/add/${row.id}`);
-              }, color: "primary",
-            },
-            { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
-          ]}
-        />
-      )}
 
-      {/* Pagination */}
-      {filteredPrograms.length > 0 && (
-        <TablePagination
-          page={page}
-          rowsPerPage={rowsPerPage}
-          totalCount={filteredPrograms.length}
-          onPageChange={(newPage) => setPage(newPage)}
-        />
-      )}
+              <ReusableTable
+                columns={[
+                  { key: "programe_code", label: "Employee ID" },
+                  { key: "programe", label: "Full Name" },
+                  { key: "duration", label: "Email" },
+                  { key: "duration", label: "Mobile" },
+                  { key: "duration", label: "Roll" },
+                ]}
+                data={filteredPrograms}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                actions={[
+                  {
+                    label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
+                      navigate(`/programs/add/${row.id}`);
+                    }, color: "primary",
+                  },
+                  { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
+                ]}
+              />
 
-    </CardComponent >
-  );
+              {/* Pagination */}
+              <TablePagination
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={filteredPrograms.length}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+
+
+            </CardComponent >
+          )
+      )}
+    </>
+  )
 }

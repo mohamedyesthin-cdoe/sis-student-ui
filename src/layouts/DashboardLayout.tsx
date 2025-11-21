@@ -62,7 +62,7 @@ export default function DashboardLayout() {
 
         <Navbar onHamburgerClick={handleHamburgerClick} />
         <Breadcrumb></Breadcrumb>
-        <main className="px-6 py-2 overflow-auto">
+        <main className="px-2 lg:px-6 xl:mx-6 py-2 overflow-auto">
           <Outlet />
           {error.type === "CONNECTION_LOST" && (
             <CardComponent

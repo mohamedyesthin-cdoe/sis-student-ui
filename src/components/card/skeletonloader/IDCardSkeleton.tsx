@@ -7,8 +7,8 @@ export default function IDCardSkeleton() {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        mx:3,
-        my:6
+        mx: 3,
+        my: 6,
       }}
     >
       <Box
@@ -21,7 +21,7 @@ export default function IDCardSkeleton() {
           p: 0,
         }}
       >
-        {/* TOP BLUE HEADER */}
+        {/* TOP HEADER */}
         <Box
           sx={{
             height: "80px",
@@ -41,43 +41,72 @@ export default function IDCardSkeleton() {
         </Box>
 
         {/* CONTENT SECTION */}
-        <Box sx={{ display: "flex", padding: "24px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            padding: "24px",
+            gap: { xs: 3, md: 0 },
+          }}
+        >
           {/* PROFILE IMAGE */}
-          <Skeleton
-            variant="rectangular"
-            width={120}
-            height={150}
+          <Box
             sx={{
-              borderRadius: "12px",
-              mr: 3,
+              display: "flex",
+              justifyContent: { xs: "center", md: "flex-start" },
+              mr: { md: 3 },
             }}
-          />
-
-          {/* TEXT LINES */}
-          <Box sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
-              <Skeleton width="20%" height={22} sx={{ mr: 2 }} />
-              <Skeleton width="40%" height={22} />
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
-              <Skeleton width="20%" height={22} sx={{ mr: 2 }} />
-              <Skeleton width="50%" height={22} />
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
-              <Skeleton width="20%" height={22} sx={{ mr: 2 }} />
-              <Skeleton width="70%" height={22} />
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
-              <Skeleton width="20%" height={22} sx={{ mr: 2 }} />
-              <Skeleton width="35%" height={22} />
-            </Box>
+          >
+            <Skeleton
+              variant="rectangular"
+              width={120}
+              height={150}
+              sx={{
+                borderRadius: "12px",
+              }}
+            />
           </Box>
 
-          {/* SIGNATURE */}
-          <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+          {/* TEXT LINES */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              mt: { xs: 1, md: 0 },
+            }}
+          >
+            {/* 4 ROWS */}
+            {[40, 50, 70, 35].map((width, i) => (
+              <Box
+                key={i}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 1.5,
+                }}
+              >
+                {/* LABEL (small width) */}
+                <Box sx={{ width: { xs: "35%", md: "20%" }, mr: 2 }}>
+                  <Skeleton width="100%" height={22} />
+                </Box>
+
+                {/* VALUE (dynamic width) */}
+                <Box sx={{ width: { xs: "65%", md: `${width}%` } }}>
+                  <Skeleton width="100%" height={22} />
+                </Box>
+              </Box>
+            ))}
+          </Box>
+
+          {/* SIGNATURE SECTION */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              alignItems: { xs: "center", md: "flex-end" },
+              mt: { xs: 2, md: 0 },
+            }}
+          >
             <Skeleton width={70} height={40} sx={{ mb: 1 }} />
             <Skeleton width={100} height={18} />
           </Box>

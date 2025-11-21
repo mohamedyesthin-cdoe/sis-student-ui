@@ -51,14 +51,14 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     ],
     routePath: '',
   },
-  // {
-  //   text: 'Faculty',
-  //   icon: 'Faculty',
-  //   subItems: [
-  //     { text: 'Faculty List', routePath: '/faculty' },
-  //   ],
-  //   routePath: '',
-  // },
+  {
+    text: 'Faculty',
+    icon: 'Faculty',
+    subItems: [
+      { text: 'Faculty List', routePath: '/faculty' },
+    ],
+    routePath: '',
+  },
 ];
 export const STUDENT_MENU_ITEMS: MenuItem[] = [
   // {

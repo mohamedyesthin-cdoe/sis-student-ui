@@ -9,42 +9,47 @@ export default function BasicDetailsSkeleton() {
         <Skeleton variant="text" width="30%" height={25} />
       </Box>
 
-      <Divider sx={{ borderColor: '#899000' }} />
+      <Divider sx={{ borderColor: "#899000" }} />
 
-      {/* Body */}
+      {/* Inner content */}
       <CardComponent
         p={2}
         sx={{
           boxShadow: "none",
           border: "none",
+          mb: 0,
         }}
       >
-        {/* Two-column layout */}
-        <Box
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
-          {/* LEFT COLUMN (5 rows) */}
-          <Box className="flex flex-col gap-4">
-            {[...Array(3)].map((_, i) => (
-              <Box key={i} className="grid grid-cols-2 gap-2 items-center">
+        {/* Two-column grid */}
+        <Box className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* LEFT COLUMN */}
+          <Box className="flex flex-col gap-5">
+            {[...Array(3)].map((_, index) => (
+              <Box
+                key={index}
+                className="grid grid-cols-2 gap-3 items-center"
+              >
                 {/* Label */}
-                <Skeleton variant="text" width="80%" height={20} />
+                <Skeleton variant="text" width="70%" height={20} />
 
                 {/* Value */}
-                <Skeleton variant="text" width="90%" height={22} />
+                <Skeleton variant="rounded" width="95%" height={20} />
               </Box>
             ))}
           </Box>
 
-          {/* RIGHT COLUMN (4 rows) */}
-          <Box className="flex flex-col gap-4">
-            {[...Array(3)].map((_, i) => (
-              <Box key={i} className="grid grid-cols-2 gap-2 items-center">
+          {/* RIGHT COLUMN */}
+          <Box className="flex flex-col gap-5">
+            {[...Array(3)].map((_, index) => (
+              <Box
+                key={index}
+                className="grid grid-cols-2 gap-3 items-center"
+              >
                 {/* Label */}
-                <Skeleton variant="text" width="80%" height={20} />
+                <Skeleton variant="text" width="70%" height={20} />
 
                 {/* Value */}
-                <Skeleton variant="text" width="90%" height={22} />
+                <Skeleton variant="rounded" width="95%" height={20} />
               </Box>
             ))}
           </Box>
