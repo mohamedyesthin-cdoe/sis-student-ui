@@ -14,6 +14,7 @@ import { getValue } from "../../../utils/localStorageUtil";
 import { useGlobalError } from "../../../context/ErrorContext";
 import { useLoader } from "../../../context/LoaderContext";
 import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton";
+import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 
 export default function FeesDetail() {
   const navigate = useNavigate();
@@ -79,6 +80,8 @@ export default function FeesDetail() {
         error.type === "NONE" && (
           loading ? (
             <TableSkeleton />
+          ) : filteredPayments.length === 0 ? (
+            <NoDataFoundUI />
           )
             : (
               <CardComponent

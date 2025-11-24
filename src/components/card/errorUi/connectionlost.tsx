@@ -1,5 +1,7 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
+import Customtext from "../../customtext/Customtext";
+import theme from "../../../styles/theme";
 
 export function ConnectionLostUI() {
   return (
@@ -16,14 +18,21 @@ export function ConnectionLostUI() {
       }}
     >
       <CloudOffIcon sx={{ fontSize: 80, color: "grey.600", mb: 2 }} />
-
-      <Typography sx={{ fontSize: "1.2rem", fontWeight: 700 }}>
-        Connection Lost
-      </Typography>
-
-      <Typography sx={{ color: "text.secondary", mt: 1 }}>
-        Please check your internet connection.
-      </Typography>
+      <Customtext
+        fieldName='Connection Lost'
+        sx={{
+          fontSize: { xs: "1rem", md: "1.4rem" },
+          fontWeight: 600,
+        }}
+      />
+      <Customtext
+        fieldName='Please check your internet connection.'
+        sx={{
+          fontSize: { xs: "0.8rem", md: "1rem" },
+          fontWeight: 400,
+          color: theme.palette.text.secondary
+        }}
+      />
     </Box>
   );
 }

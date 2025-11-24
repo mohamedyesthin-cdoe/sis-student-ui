@@ -18,6 +18,7 @@ import { setValue } from '../../../utils/localStorageUtil';
 import { useGlobalError } from '../../../context/ErrorContext';
 import TableSkeleton from '../../../components/card/skeletonloader/Tableskeleton';
 import { useLoader } from '../../../context/LoaderContext';
+import { NoDataFoundUI } from '../../../components/card/errorUi/NoDataFoundUI';
 
 export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
@@ -254,6 +255,8 @@ export default function StudentTable() {
       {error.type === "NONE" && (
         loading ? (
           <TableSkeleton />
+        ) : filteredStudents.length == 0 ? (
+          <NoDataFoundUI />
         )
           : (
             <CardComponent

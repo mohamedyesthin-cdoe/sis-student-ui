@@ -23,6 +23,7 @@ import apiClient from "../../../services/ApiClient";
 import { useGlobalError } from "../../../context/ErrorContext";
 import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton";
 import { useLoader } from "../../../context/LoaderContext";
+import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 
 export default function ProgramList() {
   const navigate = useNavigate();
@@ -98,6 +99,8 @@ export default function ProgramList() {
       {error.type == "NONE" && (
         loading ? (
           <TableSkeleton />
+        ) : filteredPrograms.length == 0 ? (
+          <NoDataFoundUI />
         )
           : (
             <CardComponent

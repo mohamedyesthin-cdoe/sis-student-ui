@@ -13,6 +13,7 @@ import { ApiRoutes } from '../../../constants/ApiConstants';
 import TableSkeleton from '../../../components/card/skeletonloader/Tableskeleton';
 import { useGlobalError } from '../../../context/ErrorContext';
 import { useLoader } from '../../../context/LoaderContext';
+import { NoDataFoundUI } from '../../../components/card/errorUi/NoDataFoundUI';
 
 
 export default function Faculty() {
@@ -36,7 +37,7 @@ export default function Faculty() {
   }, []);
 
   // Filtered programs based on search text
-  const filteredPrograms = programs.filter((c) => {
+  const filteredFaculties = programs.filter((c) => {
     const combinedText = `${c.programe_code} ${c.programe} ${c.duration}`.toLowerCase();
     return combinedText.includes(searchText.toLowerCase());
   });
@@ -45,7 +46,7 @@ export default function Faculty() {
   // Excel export
   const handleExportExcel = () => {
     exportToExcel(
-      filteredPrograms,
+      filteredFaculties,
       [
         { header: 'S.No', key: 'sno' },
         { header: 'Program ID', key: 'programe_code' },
@@ -63,79 +64,91 @@ export default function Faculty() {
       {error.type === "NONE" && (
         loading ? (
           <TableSkeleton />
+        ) : filteredFaculties.length == 0 ? (
+          <CardComponent
+            sx={{
+              width: '100%',
+              maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+              mx: 'auto',
+              p: 3,
+              mt: 3,
+            }}
+          >
+            <NoDataFoundUI />
+          </CardComponent>
+        ) : (
+          <CardComponent
+            sx={{
+              width: '100%',
+              maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+              mx: 'auto',
+              p: 3,
+              mt: 3,
+            }}
+          >
+            {/* Filters & Export */}
+            <TableToolbar
+              filters={[
+                {
+                  key: "search",
+                  label: "Search",
+                  type: "text",
+                  value: searchText,
+                  onChange: (val) => setSearchText(val),
+                  placeholder: "Search all fields",
+                  visible: showSearch,
+                }
+              ]}
+              actions={[
+                {
+                  label: 'Export Excel',
+                  color: 'secondary',
+                  startIcon: <FileDownloadIcon />,
+                  onClick: handleExportExcel,
+                },
+                {
+                  label: 'Add User',
+                  color: 'primary',
+                  onClick: handleView,
+                },
+              ]}
+            />
+
+
+            <ReusableTable
+              columns={[
+                { key: "programe_code", label: "Employee ID" },
+                { key: "programe", label: "Full Name" },
+                { key: "duration", label: "Email" },
+                { key: "duration", label: "Mobile" },
+                { key: "duration", label: "Roll" },
+              ]}
+              data={filteredFaculties}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              actions={[
+                {
+                  label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
+                    navigate(`/programs/add/${row.id}`);
+                  }, color: "primary",
+                },
+                { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
+              ]}
+            />
+
+            {/* Pagination */}
+            <TablePagination
+              page={page}
+              rowsPerPage={rowsPerPage}
+              totalCount={filteredFaculties.length}
+              onPageChange={(newPage) => setPage(newPage)}
+            />
+
+
+          </CardComponent >
         )
-          : (
-            <CardComponent
-              sx={{
-                width: '100%',
-                maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
-                mx: 'auto',
-                p: 3,
-                mt: 3,
-              }}
-            >
-              {/* Filters & Export */}
-              <TableToolbar
-                filters={[
-                  {
-                    key: "search",
-                    label: "Search",
-                    type: "text",
-                    value: searchText,
-                    onChange: (val) => setSearchText(val),
-                    placeholder: "Search all fields",
-                    visible: showSearch,
-                  }
-                ]}
-                actions={[
-                  {
-                    label: 'Export Excel',
-                    color: 'secondary',
-                    startIcon: <FileDownloadIcon />,
-                    onClick: handleExportExcel,
-                  },
-                  {
-                    label: 'Add User',
-                    color: 'primary',
-                    onClick: handleView,
-                  },
-                ]}
-              />
-
-
-              <ReusableTable
-                columns={[
-                  { key: "programe_code", label: "Employee ID" },
-                  { key: "programe", label: "Full Name" },
-                  { key: "duration", label: "Email" },
-                  { key: "duration", label: "Mobile" },
-                  { key: "duration", label: "Roll" },
-                ]}
-                data={filteredPrograms}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                actions={[
-                  {
-                    label: "Edit", icon: <EditIcon fontSize="small" />, onClick: (row) => {
-                      navigate(`/programs/add/${row.id}`);
-                    }, color: "primary",
-                  },
-                  { label: "Delete", icon: <DeleteIcon fontSize="small" />, onClick: () => { }, color: "error", },
-                ]}
-              />
-
-              {/* Pagination */}
-              <TablePagination
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalCount={filteredPrograms.length}
-                onPageChange={(newPage) => setPage(newPage)}
-              />
-
-
-            </CardComponent >
-          )
       )}
     </>
   )
+
 }
