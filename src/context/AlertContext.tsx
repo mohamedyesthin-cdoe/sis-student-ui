@@ -129,12 +129,12 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
                 variant="outlined"
                 onClick={handleCancel}
                 sx={{
-                  color: theme.palette.error.main,
-                  borderColor: theme.palette.error.main,
+                  color: theme.palette.primary.main,
+                  borderColor: theme.palette.primary.main,
                   "&:hover": {
-                    backgroundColor: theme.palette.error.main,
+                    backgroundColor: theme.palette.primary.main,
                     color: "#fff",
-                    borderColor: theme.palette.error.main,
+                    borderColor: theme.palette.primary.main,
                   },
                 }}
               >
@@ -145,10 +145,10 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
                 variant="contained"
                 onClick={handleConfirm}
                 sx={{
-                  backgroundColor: theme.palette.secondary.main,
+                  backgroundColor: theme.palette.error.main,
                   color: "#fff",
                   "&:hover": {
-                    backgroundColor: theme.palette.secondary.main,
+                    backgroundColor: theme.palette.error.main,
                   },
                 }}
               >
