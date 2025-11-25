@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { ExpandLess, ExpandMore, } from '@mui/icons-material';
 import logo2 from '/assets/logo2.png';
+import sidebarlogo from '/assets/sidebar-logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -58,7 +59,7 @@ export default function Sidebar({
       setOpenItems((prev) => ({ ...prev, Programs: true }));
     } else if (path.startsWith('/faculty')) {
       setSelectedItem('Faculty List');
-      setSelectedParent('Faculty');
+      setSelectedParent('Faculty List');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
     else if (path.startsWith('/students/detail')) {
@@ -136,7 +137,7 @@ export default function Sidebar({
         {isSidebarVisible ? (
           <img src={logo2} alt="Logo" className="mx-auto object-contain h-12" />
         ) : (
-          <img src={logo2} alt="Logo Small" className="mx-auto object-contain h-12" />
+          <img src={sidebarlogo} alt="Logo Small" className="mx-auto object-contain h-12" />
         )}
       </Box>
 

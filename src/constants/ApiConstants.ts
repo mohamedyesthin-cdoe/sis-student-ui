@@ -17,5 +17,6 @@ export const ApiRoutes = {
   GETSTUDENTFEES:'student/fees',
   CHANGEPASSWORD:'user/change-password',
   GETFACULTYLIST:'faculty/list',
+  FACULTYADD:'faculty/add',
 
 };

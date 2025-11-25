@@ -2,7 +2,6 @@
 import DashboardAdmin from "../features/admin/dashboard/DashboardAdmin";
 import StudentList from "../features/admin/student/StudentList";
 import StudentDetail from "../features/admin/student/StudentDetail";
-import Faculty from "../features/admin/faculty/Faculty";
 import ProgramAdd from "../features/admin/programs/ProgramAdd";
 import ProgramList from "../features/admin/programs/ProgramList";
 import DashboardStudent from "../features/student/dashboard/DashboardStudent";
@@ -14,6 +13,8 @@ import DocumemtsCard from "../features/student/documents/documents"
 import StudentCounselling from "../features/student/counselling/counselling";
 import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordForm";
 import Examination from "../features/student/examination/examination";
+import FacultyList from "../features/admin/faculty/FacultyList";
+import FacultyAdd from "../features/admin/faculty/FacultyAdd";
 
 export const routesConfig = [
   {
@@ -47,8 +48,24 @@ export const routesConfig = [
   },
   {
     path: '/faculty',
-    element: <Faculty />,
     breadcrumb: 'Faculty List',
+    children: [
+      {
+        path: '',
+        element: <FacultyList />,
+        breadcrumb: 'Faculty List',
+      },
+      {
+        path: 'add',
+        element: <FacultyAdd />,
+        breadcrumb: 'Faculty Add',
+      },
+      {
+        path: 'add/:id',   // ✅ edit program route
+        element: <FacultyAdd />,
+        breadcrumb: 'Faculty Edit',
+      },
+    ],
   },
   {
     path: '/programs',

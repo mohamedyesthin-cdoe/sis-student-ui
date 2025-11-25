@@ -238,7 +238,7 @@ const ProgramForm = () => {
   const handleBack = () => {
     if (isDirty) {
       showConfirm(
-        "You have unsaved changes. Are you sure you want to leave?",
+        "You have unsaved changes. Your changes will be lost if you continue.",
         () => window.history.back(),
         () => { }
       );

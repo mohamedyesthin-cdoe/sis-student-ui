@@ -98,13 +98,31 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
             }}
           >
             <Customtext
-              fieldName={'Are you sure?'}
-              variantName="h6"
-              sx={{ mb: 2 }}
+              fieldName={'Leave this page?'}
+              sx={{
+                mb: 2, fontSize: {
+                  xs: '0.875rem', // 14px
+                  sm: '1rem',     // 16px
+                  md: '1.125rem', // 18px
+                  lg: '1.125rem',  // 20px
+                  xl: '1.5rem',   // 24px
+                },
+                color: theme.palette.text.primary,
+              }}
             />
             <Customtext
               fieldName={confirmMessage}
-              sx={{ mb: 3 }}
+              sx={{
+                mb: 3,
+                fontSize: {
+                  xs: '0.875rem', // 14px
+                  sm: '1rem',     // 16px
+                  md: '1.125rem', // 18px
+                  lg: '1rem',  // 20px
+                  xl: '1.5rem',   // 24px
+                },
+                color: theme.palette.grey[500],
+              }}
             />
             <Box display="flex" justifyContent="center" gap={2}>
               <Button
