@@ -256,7 +256,17 @@ export default function StudentTable() {
         loading ? (
           <TableSkeleton />
         ) : filteredStudents.length == 0 ? (
-          <NoDataFoundUI />
+          <CardComponent
+            sx={{
+              width: "100%",
+              maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+              mx: "auto",
+              p: 3,
+              mt: 3,
+            }}
+          >
+            <NoDataFoundUI />
+          </CardComponent>
         )
           : (
             <CardComponent
