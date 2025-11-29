@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, CardContent, Typography, Button, Chip } from "@mui/material";
 import CardComponent from "../card/Card";
-import Customtext from "../customtext/Customtext";
 import theme from "../../styles/theme";
+import Customtext from "../inputs/customtext/Customtext";
 
 interface Course {
   title: string;

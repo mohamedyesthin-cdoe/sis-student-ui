@@ -15,8 +15,8 @@ import CardComponent from "../../../components/card/Card";
 import { useAlert } from "../../../context/AlertContext";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
-import Customtext from "../../../components/customtext/Customtext";
 import { useGlobalError } from "../../../context/ErrorContext";
+import Customtext from "../../../components/inputs/customtext/Customtext";
 
 // Validation schema
 const PasswordSchema = Yup.object().shape({

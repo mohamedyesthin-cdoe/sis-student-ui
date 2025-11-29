@@ -20,7 +20,7 @@ import { getValue, removeSingleValue } from '../../utils/localStorageUtil';
 import maleimage from '/assets/images/male-logo.jpg';
 import femaleimage from '/assets/images/female-logo.jpg';
 import theme from '../../styles/theme';
-import Customtext from '../customtext/Customtext';
+import Customtext from '../inputs/customtext/Customtext';
 
 type NavbarProps = {
   onHamburgerClick?: () => void; // optional callback

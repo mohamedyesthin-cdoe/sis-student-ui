@@ -16,11 +16,11 @@ import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { getValue } from "../../../utils/localStorageUtil";
 import { toWords } from "number-to-words";
-import Customtext from "../../../components/customtext/Customtext";
 import theme from "../../../styles/theme";
 import { useGlobalError } from "../../../context/ErrorContext";
 import FeesReceiptSkeleton from "../../../components/card/skeletonloader/FeesReceiptSkeleton";
 import { useLoader } from "../../../context/LoaderContext";
+import Customtext from "../../../components/inputs/customtext/Customtext";
 
 export default function FeesReceipt() {
   const { id } = useParams();

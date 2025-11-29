@@ -13,7 +13,7 @@ import { encryptPassword } from "../../../../utils/encryption";
 import { apiRequest } from "../../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../../constants/ApiConstants";
 import logo2 from '/assets/logo2.png';
-import Customtext from "../../../../components/customtext/Customtext";
+import Customtext from "../../../../components/inputs/customtext/Customtext";
 
 
 function LoginPage() {

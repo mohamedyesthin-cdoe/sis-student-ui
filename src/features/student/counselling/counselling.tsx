@@ -1,9 +1,9 @@
 import { Box, Divider, List, ListItem, ListItemText } from "@mui/material";
 import CardComponent from "../../../components/card/Card";
 import ReusableTable from "../../../components/table/table";
-import Customtext from "../../../components/customtext/Customtext";
 import theme from "../../../styles/theme";
 import { useGlobalError } from "../../../context/ErrorContext";
+import Customtext from "../../../components/inputs/customtext/Customtext";
 
 export default function StudentCounselling() {
 

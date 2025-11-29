@@ -1,6 +1,5 @@
 import { Box, Divider, Grid, IconButton, useTheme } from '@mui/material';
 import CardComponent from '../../../components/card/Card';
-import Customtext from '../../../components/customtext/Customtext';
 import { getValue } from '../../../utils/localStorageUtil';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -11,6 +10,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import BasicDetailsSkeleton from '../../../components/card/skeletonloader/BasicDetailsSkeleton';
 import { useLoader } from '../../../context/LoaderContext';
 import AddressSkeleton from '../../../components/card/skeletonloader/AddressSkeleton';
+import Customtext from '../../../components/inputs/customtext/Customtext';
 
 type TabContent = {
   title: string;

@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import CloudOffIcon from "@mui/icons-material/CloudOff";
-import Customtext from "../../customtext/Customtext";
 import theme from "../../../styles/theme";
+import Customtext from "../../inputs/customtext/Customtext";
 
 export function ConnectionLostUI() {
   return (

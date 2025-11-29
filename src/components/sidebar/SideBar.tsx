@@ -17,7 +17,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { getValue } from '../../utils/localStorageUtil';
-import Customtext from '../customtext/Customtext';
+import Customtext from '../inputs/customtext/Customtext';
 
 
 interface SidebarProps {

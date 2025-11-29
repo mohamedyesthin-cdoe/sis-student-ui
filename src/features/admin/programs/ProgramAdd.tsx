@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import {
   Grid,
-  TextField,
-  MenuItem,
   Box,
   Button,
   Divider,
@@ -13,7 +11,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
 import CardComponent from "../../../components/card/Card";
-import Customtext from "../../../components/customtext/Customtext";
 import { useAlert } from "../../../context/AlertContext";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { apiRequest } from "../../../utils/ApiRequest";
@@ -21,6 +18,10 @@ import theme from "../../../styles/theme";
 import { useGlobalError } from "../../../context/ErrorContext";
 import { useLoader } from "../../../context/LoaderContext";
 import ProgramFeeSkeleton from "../../../components/card/skeletonloader/ProgramFeeSkeleton";
+import CustomInputText from "../../../components/inputs/customtext/CustomInputText";
+import Customtext from "../../../components/inputs/customtext/Customtext";
+import CustomSelect from "../../../components/inputs/customtext/CustomSelect";
+import CustomNumberInput from "../../../components/inputs/customtext/CustomNumberInput";
 
 
 // ✅ Validation schema
@@ -104,23 +105,16 @@ const SemesterFormGroup: React.FC<SemesterProps> = ({
             render={({ field: controllerField }) => {
               const value = controllerField.value ?? "";
               return (
-                <TextField
-                  {...controllerField}
-                  value={value}
+                <CustomNumberInput
                   label={label}
-                  fullWidth
-                  size="small"
-                  type="number"
-                  InputProps={readOnly ? { readOnly: true } : {}}
+                  value={value}
+                  readOnly={readOnly}
                   error={!!errors.semesters?.[semesterIndex]?.[field]}
-                  helperText={errors.semesters?.[semesterIndex]?.[field]?.message as string}
-                  onChange={(e) =>
-                    !readOnly &&
-                    handleFeeChange(semesterIndex, field, Number(e.target.value) || 0)
+                  helperText={errors.semesters?.[semesterIndex]?.[field]?.message}
+                  onChange={(val) =>
+                    handleFeeChange(semesterIndex, field, val)
                   }
-
                 />
-
               );
             }}
           />
@@ -322,14 +316,12 @@ const ProgramForm = () => {
                         name="programId"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
+                          <CustomInputText
                             label="Program ID"
-                            fullWidth
-                            size="small"
-                            disabled={!!id}
+                            field={field}
                             error={!!errors.programId}
                             helperText={errors.programId?.message as string}
+                            disabled={!!id}
                           />
                         )}
                       />
@@ -341,16 +333,15 @@ const ProgramForm = () => {
                         name="programName"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
+                          <CustomInputText
                             label="Program Name"
-                            fullWidth
-                            size="small"
+                            field={field}
                             error={!!errors.programName}
-                            helperText={errors.programName?.message as string}
+                            helperText={errors.programName?.message}
                           />
                         )}
                       />
+
                     </Grid>
 
                     {/* Duration (dropdown) */}
@@ -359,20 +350,18 @@ const ProgramForm = () => {
                         name="duration"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
-                            select
+                          <CustomSelect
                             label="Duration"
-                            fullWidth
-                            size="small"
-                            error={!!errors.duration}
-                            helperText={errors.duration?.message as string}
-                          >
-                            <MenuItem value="1">1 Year</MenuItem>
-                            <MenuItem value="2">2 Years</MenuItem>
-                            <MenuItem value="3">3 Years</MenuItem>
-                            <MenuItem value="4">4 Years</MenuItem>
-                          </TextField>
+                            field={field}
+                            options={[
+                              { label: "1 Year", value: "1" },
+                              { label: "2 Years", value: "2" },
+                              { label: "3 Years", value: "3" },
+                              { label: "4 Years", value: "4" },
+                            ]}
+                            error={errors.duration}
+                            helperText={errors.duration?.message}
+                          />
                         )}
                       />
                     </Grid>
@@ -383,11 +372,9 @@ const ProgramForm = () => {
                         name="faculty"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
+                          <CustomInputText
                             label="Faculty"
-                            fullWidth
-                            size="small"
+                            field={field}
                             error={!!errors.faculty}
                             helperText={errors.faculty?.message as string}
                           />
@@ -401,18 +388,16 @@ const ProgramForm = () => {
                         name="category"
                         control={control}
                         render={({ field }) => (
-                          <TextField
-                            {...field}
-                            select
+                          <CustomSelect
                             label="Category"
-                            fullWidth
-                            size="small"
-                            error={!!errors.category}
-                            helperText={errors.category?.message as string}
-                          >
-                            <MenuItem value="UG">UG</MenuItem>
-                            <MenuItem value="PG">PG</MenuItem>
-                          </TextField>
+                            field={field}
+                            options={[
+                              { label: "UG", value: "UG" },
+                              { label: "PG", value: "PG" },
+                            ]}
+                            error={errors.category}
+                            helperText={errors.category?.message}
+                          />
                         )}
                       />
                     </Grid>

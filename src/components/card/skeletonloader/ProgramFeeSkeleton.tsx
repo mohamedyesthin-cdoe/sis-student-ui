@@ -1,7 +1,7 @@
 import { Box, Grid, Skeleton } from "@mui/material";
 import CardComponent from "../Card";
-import Customtext from "../../customtext/Customtext";
 import theme from "../../../styles/theme";
+import Customtext from "../../inputs/customtext/Customtext";
 
 export default function ProgramFeeSkeleton() {
     return (

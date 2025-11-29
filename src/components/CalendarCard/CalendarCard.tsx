@@ -4,7 +4,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import CardComponent from "../card/Card";
-import Customtext from "../customtext/Customtext";
+import Customtext from "../inputs/customtext/Customtext";
 
 const CalendarCard: React.FC = () => {
   const [date, setDate] = useState<Date | null>(new Date());

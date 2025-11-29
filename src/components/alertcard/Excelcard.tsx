@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import { CloudUpload, Close, CloudDownload } from "@mui/icons-material";
 import * as XLSX from "xlsx";
-import Customtext from "../customtext/Customtext";
 import theme from "../../styles/theme";
+import Customtext from "../inputs/customtext/Customtext";
 
 interface UploadExcelDialogProps {
   open: boolean;

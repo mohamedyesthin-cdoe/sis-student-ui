@@ -1,8 +1,8 @@
 import React from "react";
 import { CardContent, Typography, CircularProgress } from "@mui/material";
 import CardComponent from "../card/Card";
-import Customtext from "../customtext/Customtext";
 import theme from "../../styles/theme";
+import Customtext from "../inputs/customtext/Customtext";
 
 const ProgressCard: React.FC = () => {
   const progress = 82;

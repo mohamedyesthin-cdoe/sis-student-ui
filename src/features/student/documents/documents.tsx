@@ -2,8 +2,8 @@ import { Box, Divider, IconButton, useTheme } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CardComponent from "../../../components/card/Card";
-import Customtext from "../../../components/customtext/Customtext";
 import { useGlobalError } from "../../../context/ErrorContext";
+import Customtext from "../../../components/inputs/customtext/Customtext";
 
 // ✅ Only import the academic PDF
 // import academicPdf from "/assets/documents/Academic calender 2025-26.pdf";

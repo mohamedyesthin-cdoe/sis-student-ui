@@ -9,11 +9,11 @@ import StudentDetailTab from './StudentDetailTab';
 import theme from '../../../styles/theme';
 import { apiRequest } from '../../../utils/ApiRequest';
 import { ApiRoutes } from '../../../constants/ApiConstants';
-import Customtext from '../../../components/customtext/Customtext';
 import { getValue } from '../../../utils/localStorageUtil';
 import { useGlobalError } from '../../../context/ErrorContext';
 import { useLoader } from '../../../context/LoaderContext';
 import ProfileSkeleton from '../../../components/card/skeletonloader/Profileskeleton';
+import Customtext from '../../../components/inputs/customtext/Customtext';
 
 export default function StudentDetailUI() {
   const navigate = useNavigate();

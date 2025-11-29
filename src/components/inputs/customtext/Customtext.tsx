@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material'
-import theme from '../../styles/theme'
 import type { SxProps, Theme, TypographyVariant } from '@mui/material'; // 👈 type-only import
+import theme from '../../../styles/theme';
 
 interface CustomtextProps {
   fieldName: any,

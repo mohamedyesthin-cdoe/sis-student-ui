@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { CardContent } from "@mui/material";
 import CardComponent from "../card/Card";
-import Customtext from "../customtext/Customtext";
+import Customtext from "../inputs/customtext/Customtext";
 
 const data = [
   { month: "Jan", Study: 10, Test: 5 },

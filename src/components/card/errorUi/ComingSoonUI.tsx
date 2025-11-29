@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-import Customtext from "../../customtext/Customtext";
 import theme from "../../../styles/theme";
+import Customtext from "../../inputs/customtext/Customtext";
 
 export function ComingSoonUI() {
     return (

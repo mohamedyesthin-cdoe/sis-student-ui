@@ -1,7 +1,7 @@
 import { createContext, useState, useContext, type ReactNode } from 'react';
 import { Box, Button, Fade, Backdrop, Modal, Snackbar, Alert as MuiAlert } from '@mui/material';
 import theme from '../styles/theme';
-import Customtext from '../components/customtext/Customtext';
+import Customtext from '../components/inputs/customtext/Customtext';
 
 type AlertType = 'success' | 'error' | 'info';
 

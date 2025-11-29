@@ -11,8 +11,8 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import Customtext from '../customtext/Customtext';
 import theme from '../../styles/theme';
+import Customtext from '../inputs/customtext/Customtext';
 interface NotificationsDrawerProps {
   open: boolean;
   onClose: () => void;
