@@ -67,3 +67,55 @@ class LookupMaster(AuditableBase):
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=False, index=True)
 
     category = relationship("Category", back_populates="lookups")
+
+class CourseCode(AuditableBase):
+    __tablename__ = "course_code"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(50), nullable=False, unique=True, index=True)
+
+    syllabuses = relationship("SemesterSyllabus", back_populates="course_code")
+
+
+class CourseCategory(AuditableBase):
+    __tablename__ = "course_category"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False, unique=True, index=True)
+
+    syllabuses = relationship("SemesterSyllabus", back_populates="course_category")
+
+
+class CourseTitle(AuditableBase):
+    __tablename__ = "course_title"
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(255), nullable=False, unique=True, index=True)
+
+    syllabuses = relationship("SemesterSyllabus", back_populates="course_title")
+
+
+class SemesterSyllabus(AuditableBase):     # ✔ name fixed
+    __tablename__ = "semester_syllabus"    # ✔ table name fixed
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    course_code_id = Column(Integer, ForeignKey("course_code.id"), nullable=False, index=True)
+    course_category_id = Column(Integer, ForeignKey("course_category.id"), nullable=False, index=True)
+    course_title_id = Column(Integer, ForeignKey("course_title.id"), nullable=False, index=True)
+
+    semester = Column(String(50), nullable=False, index=True)  # ✔ removed unique=True
+
+    credits = Column(Integer, nullable=False)
+    tutorial_hours = Column(Integer, default=0)
+    lecture_hours = Column(Integer, default=0)
+    practical_hours = Column(Integer, default=0)
+    total_hours = Column(Integer, default=0)
+
+    cia = Column(Integer, default=0)
+    esa = Column(Integer, default=0)
+    total_marks = Column(Integer, default=0)
+
+    course_code = relationship("CourseCode", back_populates="syllabuses")
+    course_category = relationship("CourseCategory", back_populates="syllabuses")
+    course_title = relationship("CourseTitle", back_populates="syllabuses")

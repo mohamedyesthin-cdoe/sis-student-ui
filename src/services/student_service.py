@@ -132,7 +132,7 @@ class StudentService:
             logger.info(f"Existing students in DB: {len(existing_ids)}")
 
             # IDENTIFY ONLY NEW STUDENTS
-            new_students = []
+            new_students = []  
             for student in value_list:
                 app_no = student.get("application_no")
                 if not app_no:

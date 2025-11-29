@@ -24,7 +24,7 @@ from src.api.v1.endpoints.admin import router as admin_router
 from src.api.v1.endpoints.address import router as address_router
 from src.api.v1.endpoints.students import router as students_router
 from src.api.v1.endpoints.api import router as api_router
-from src.api.v1.endpoints.programe import router as program_router
+from src.api.v1.endpoints.master import router as master_router
 from src.api.v1.endpoints.document import router as s3_router
 from src.utils.hash import decode_token, encode_token
 from src.core.security.dependencies import require_superuser
@@ -66,9 +66,9 @@ async def log_requests(request: Request, call_next):
     return response
 
 logger.info("FastAPI application started successfully")
+
 # Request ID middleware for tracing
 #app.add_middleware(RequestIDMiddleware)
-
 # Rate limiting (100 requests per minute per user)
 #app.state.limiter = RateLimiter(rate_limit=100, per=60)
 
@@ -80,9 +80,8 @@ app.include_router(staff_router, prefix="/staff", tags=["Staff"])
 #app.include_router(address_router, prefix="", tags=["Address"])
 app.include_router(students_router, prefix="/student", tags=["Student"])
 app.include_router(api_router, prefix="/api", tags=["API"])
-app.include_router(program_router, prefix="/programe", tags=["Programe"])
+app.include_router(master_router, prefix="/master", tags=["master"])
 app.include_router(s3_router, prefix="/s3", tags=["S3"])
-
 
 # Create database tables on startup
 @app.on_event("startup")

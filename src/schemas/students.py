@@ -115,9 +115,9 @@ class DocumentDetailsResponse(BaseModel):
     id: int
     class_10th_marksheet: Optional[str] = None
     class_12th_marksheet: Optional[str] = None
-    graduation_marksheet: Optional[List[str]] = None
+    #graduation_marksheet: Optional[List[str]] = None
     diploma_marksheet: Optional[str] = None
-    work_experience_certificates: Optional[List[str]] = None
+    #work_experience_certificates: Optional[List[str]] = None
     passport: Optional[str] = None
     aadhar: Optional[str] = None
     signature: Optional[str] = None

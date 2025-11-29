@@ -39,7 +39,7 @@ class StaffBase(BaseModel):
     phone: Optional[str] = None
     dob: Optional[date] = None
     gender: Optional[str] = None
-    department: str
+    department: Optional[str] = None
     designation: Optional[str] = None
     qualification: Optional[str] = None
     specialization: Optional[str] = None

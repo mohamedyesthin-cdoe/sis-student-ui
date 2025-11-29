@@ -1,12 +1,18 @@
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from typing import List, Optional
 from fastapi import HTTPException, status
 from src.repositories.base import BaseRepository
-from src.models.master import Programe, FeeDetails
-from src.schemas.master import ProgrameCreate, ProgrameUpdate, ProgrameResponse
+from src.models.master import (
+    Programe, FeeDetails, CourseCode, 
+    CourseCategory, CourseTitle, SemesterSyllabus
+)
+from src.schemas.master import (
+    ProgrameCreate, ProgrameUpdate, ProgrameResponse, CourseCodeResponse,
+    CourseCategoryResponse
+)
 
-class ProgrameRepository:
+class MasterRepository:
     def __init__(self, db: Session):
         self.db = db
         self.model = Programe
@@ -125,5 +131,59 @@ class ProgrameRepository:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching program by code: {str(e)}",
+            )
+        
+    def get_course_code(self, course_code: str) -> Optional[CourseCode]:
+        return (
+            self.db.query(CourseCode)
+            .filter(CourseCode.code == course_code)
+            .first()
+        )
+    
+    def get_course_category(self, category_name: str) -> Optional[CourseCategory]:
+        return (
+            self.db.query(CourseCategory)
+            .filter(CourseCategory.name == category_name)
+            .first()
+        )
+    
+    def get_course_title(self, title_name: str) -> Optional[CourseTitle]:
+        return (
+            self.db.query(CourseTitle)
+            .filter(CourseTitle.title == title_name)
+            .first()
+        )
+    
+    def get_syllabus(self, course_code_id: int, course_category_id: int,course_title_id: int) -> Optional[CourseTitle]:
+        return (
+            self.db.query(SemesterSyllabus)
+            .filter(
+                SemesterSyllabus.course_code_id == course_code_id,
+                SemesterSyllabus.course_category_id == course_category_id,
+                SemesterSyllabus.course_title_id == course_title_id
+            )
+            .first()
+        )
+
+    def create_fields(self, data, model, response_model):
+        try:
+            obj = model(**data.dict())
+            self.db.add(obj)
+            self.db.commit()
+            self.db.refresh(obj)
+            return obj
+        
+        except IntegrityError:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Course Code already Exists.",
+            )
+        
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while creating course code: {str(e)}",
             )
         
