@@ -11,7 +11,9 @@ interface CustomInputTextProps {
   type?: string;
   defaultValue?: any;
   multiline?: boolean;       // <-- new
-  rows?: number;             // <-- new
+  rows?: number;
+  value?: string | number;
+  onChange?: (...event: any[]) => void;       // <-- new
 }
 
 export default function CustomInputText({
