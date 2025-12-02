@@ -24,6 +24,7 @@ import CustomRadioInput from "../../../components/inputs/customtext/CustomRadioI
 import CustomDateInput from "../../../components/inputs/customtext/CustomDateInput";
 import CardComponent from "../../../components/card/Card";
 import { useLoader } from "../../../context/LoaderContext";
+import { useGlobalError } from "../../../context/ErrorContext";
 
 const employmentOptions = ["Permanent", "Contract", "Temporary"];
 const genderOptions = ["Male", "Female", "Other"];
@@ -81,6 +82,7 @@ export default function FacultyAdd() {
   const { showConfirm, showAlert } = useAlert();
   const { id } = useParams(); // if present => edit mode
   const { loading } = useLoader()
+  const { error } = useGlobalError();
   const [initialData, setInitialData] = useState<any>(null); // store fetched for reset
   // const [avatarPreview, setAvatarPreview] = useState<string>("");
   // const fileInputRef: any = useRef(null);
@@ -313,337 +315,348 @@ export default function FacultyAdd() {
   // );
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box sx={{ p: { xs: 2, md: 4 } }}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* <Grid container > */}
-          {/* Left column - profile card */}
-          {/* <Grid size={{ xs: 12, md: 4 }}>{leftCard}</Grid> */}
+    <>
+      {
+        error.type === "NONE" && (
+          loading ? (
+            <ProgramFeeSkeleton />
+          )
+            : (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Box sx={{ p: { xs: 2, md: 4 } }}>
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    {/* <Grid container > */}
+                    {/* Left column - profile card */}
+                    {/* <Grid size={{ xs: 12, md: 4 }}>{leftCard}</Grid> */}
 
-          {/* Right column - form */}
-          <CardComponent sx={{ p: 3 }}>
-            <Customtext
-              fieldName="Profile & Account"
-              sx={{
-                mb: 2,
-                fontSize: {
-                  xs: "0.875rem", // 14px
-                  sm: "1rem", // 16px
-                  md: "1.125rem", // 18px
-                  lg: "1rem", // 20px
-                  xl: "1.5rem", // 24px
-                },
-              }}
-            />
-
-            <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="employee_id"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Employee ID"
-                      field={field}
-                      error={!!errors.employee_id}
-                      helperText={errors.employee_id?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="username"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Username"
-                      field={field}
-                      error={!!errors.username}
-                      helperText={errors.username?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="first_name"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="First Name"
-                      field={field}
-                      error={!!errors.first_name}
-                      helperText={errors.first_name?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="last_name"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Last Name"
-                      field={field}
-                      error={!!errors.last_name}
-                      helperText={errors.last_name?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Email"
-                      field={field}
-                      error={!!errors.email}
-                      helperText={errors.email?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="phone"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Phone"
-                      field={field}
-                      error={!!errors.phone}
-                      helperText={errors.phone?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="department"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Department"
-                      field={field}
-                      error={!!errors.department}
-                      helperText={errors.department?.message}
-                      disabled
-                      // ensure the field shows the value from the controller
-                      value={field.value ?? "CDOE"}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="designation"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Designation"
-                      field={field}
-                      error={!!errors.designation}
-                      helperText={errors.designation?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="qualification"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Qualification"
-                      field={field}
-                      error={!!errors.qualification}
-                      helperText={errors.qualification?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="specialization"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Specialization"
-                      field={field}
-                      error={!!errors.specialization}
-                      helperText={errors.specialization?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="joining_date"
-                  control={control}
-                  render={({ field }) => (
-                    // pass dayjs value explicitly to avoid label overlap issues
-                    <CustomDateInput
-                      label="Joining Date"
-                      field={{
-                        ...field,
-                        value: field.value ? dayjs(field.value) : null,
-                        onChange: (v: any) => field.onChange(v),
-                      }}
-                      error={!!errors.joining_date}
-                      helperText={errors.joining_date?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="experience_years"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Experience (Years)"
-                      field={field}
-                      type="number"
-                      error={!!errors.experience_years}
-                      helperText={errors.experience_years?.message}
-                      defaultValue={0}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="employment_type"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomSelect
-                      label="Employment Type"
-                      field={field}
-                      options={employmentOptions}
-                      error={errors.employment_type}
-                      helperText={errors.employment_type?.message}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="publications_count"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Publications Count"
-                      field={field}
-                      type="number"
-                      error={!!errors.publications_count}
-                      helperText={errors.publications_count?.message}
-                      defaultValue={0}
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, md: 4 }} display={"flex"} alignItems="center">
-                <FormControl component="fieldset">
-                  <Controller
-                    name="gender"
-                    control={control}
-                    render={({ field }) => (
-                      <CustomRadioInput
-                        label="Gender  :"
-                        field={field}
-                        options={genderOptions}
-                        error={!!errors.gender}
-                        helperText={errors.gender?.message}
+                    {/* Right column - form */}
+                    <CardComponent sx={{ p: 3 }}>
+                      <Customtext
+                        fieldName="Profile & Account"
+                        sx={{
+                          mb: 2,
+                          fontSize: {
+                            xs: "0.875rem", // 14px
+                            sm: "1rem", // 16px
+                            md: "1.125rem", // 18px
+                            lg: "1rem", // 20px
+                            xl: "1.5rem", // 24px
+                          },
+                        }}
                       />
-                    )}
-                  />
-                </FormControl>
-              </Grid>
 
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="dob"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomDateInput
-                      label="Date of Birth"
-                      field={{
-                        ...field,
-                        value: field.value ? dayjs(field.value) : null,
-                        onChange: (v: any) => field.onChange(v),
-                      }}
-                      error={!!errors.dob}
-                      helperText={errors.dob?.message}
-                    />
-                  )}
-                />
-              </Grid>
+                      <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="employee_id"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Employee ID"
+                                field={field}
+                                error={!!errors.employee_id}
+                                helperText={errors.employee_id?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
 
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="research_area"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="Research Area"
-                      field={field}
-                      error={!!errors.research_area}
-                      helperText={errors.research_area?.message}
-                      multiline
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
-                <Controller
-                  name="linkedin_url"
-                  control={control}
-                  render={({ field }) => (
-                    <CustomInputText
-                      label="LinkedIn URL"
-                      field={field}
-                      error={!!errors.linkedin_url}
-                      helperText={errors.linkedin_url?.message}
-                    />
-                  )}
-                />
-              </Grid>
-            </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="username"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Username"
+                                field={field}
+                                error={!!errors.username}
+                                helperText={errors.username?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
 
-            <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end",mt:4 }}>
-              <Button variant="contained" color="primary" onClick={handleBack}>
-                Back
-              </Button>
-              <Button variant="outlined" color="error" onClick={handleReset}>
-                Reset
-              </Button>
-              <Button type="submit" variant="contained" color="secondary" disabled={loading}>
-                {loading ? <CircularProgress size={20} /> : id ? "Update" : "Submit"}
-              </Button>
-            </Box>
-          </CardComponent>
-          {/* </Grid> */}
-        </form>
-      </Box>
-    </LocalizationProvider>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="first_name"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="First Name"
+                                field={field}
+                                error={!!errors.first_name}
+                                helperText={errors.first_name?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="last_name"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Last Name"
+                                field={field}
+                                error={!!errors.last_name}
+                                helperText={errors.last_name?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="email"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Email"
+                                field={field}
+                                error={!!errors.email}
+                                helperText={errors.email?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="phone"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Phone"
+                                field={field}
+                                error={!!errors.phone}
+                                helperText={errors.phone?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="department"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Department"
+                                field={field}
+                                error={!!errors.department}
+                                helperText={errors.department?.message}
+                                disabled
+                                // ensure the field shows the value from the controller
+                                value={field.value ?? "CDOE"}
+                                onChange={field.onChange}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="designation"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Designation"
+                                field={field}
+                                error={!!errors.designation}
+                                helperText={errors.designation?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="qualification"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Qualification"
+                                field={field}
+                                error={!!errors.qualification}
+                                helperText={errors.qualification?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="specialization"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Specialization"
+                                field={field}
+                                error={!!errors.specialization}
+                                helperText={errors.specialization?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="joining_date"
+                            control={control}
+                            render={({ field }) => (
+                              // pass dayjs value explicitly to avoid label overlap issues
+                              <CustomDateInput
+                                label="Joining Date"
+                                field={{
+                                  ...field,
+                                  value: field.value ? dayjs(field.value) : null,
+                                  onChange: (v: any) => field.onChange(v),
+                                }}
+                                error={!!errors.joining_date}
+                                helperText={errors.joining_date?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="experience_years"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Experience (Years)"
+                                field={field}
+                                type="number"
+                                error={!!errors.experience_years}
+                                helperText={errors.experience_years?.message}
+                                defaultValue={0}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="employment_type"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomSelect
+                                label="Employment Type"
+                                field={field}
+                                options={employmentOptions}
+                                error={errors.employment_type}
+                                helperText={errors.employment_type?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="publications_count"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Publications Count"
+                                field={field}
+                                type="number"
+                                error={!!errors.publications_count}
+                                helperText={errors.publications_count?.message}
+                                defaultValue={0}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }} display={"flex"} alignItems="center">
+                          <FormControl component="fieldset">
+                            <Controller
+                              name="gender"
+                              control={control}
+                              render={({ field }) => (
+                                <CustomRadioInput
+                                  label="Gender  :"
+                                  field={field}
+                                  options={genderOptions}
+                                  error={!!errors.gender}
+                                  helperText={errors.gender?.message}
+                                />
+                              )}
+                            />
+                          </FormControl>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="dob"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomDateInput
+                                label="Date of Birth"
+                                field={{
+                                  ...field,
+                                  value: field.value ? dayjs(field.value) : null,
+                                  onChange: (v: any) => field.onChange(v),
+                                }}
+                                error={!!errors.dob}
+                                helperText={errors.dob?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="research_area"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="Research Area"
+                                field={field}
+                                error={!!errors.research_area}
+                                helperText={errors.research_area?.message}
+                                multiline
+                              />
+                            )}
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 4 }}>
+                          <Controller
+                            name="linkedin_url"
+                            control={control}
+                            render={({ field }) => (
+                              <CustomInputText
+                                label="LinkedIn URL"
+                                field={field}
+                                error={!!errors.linkedin_url}
+                                helperText={errors.linkedin_url?.message}
+                              />
+                            )}
+                          />
+                        </Grid>
+                      </Grid>
+
+                      <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end", mt: 4 }}>
+                        <Button variant="contained" color="primary" onClick={handleBack}>
+                          Back
+                        </Button>
+                        <Button variant="outlined" color="error" onClick={handleReset}>
+                          Reset
+                        </Button>
+                        <Button type="submit" variant="contained" color="secondary" disabled={loading}>
+                          {loading ? <CircularProgress size={20} /> : id ? "Update" : "Submit"}
+                        </Button>
+                      </Box>
+                    </CardComponent>
+                    {/* </Grid> */}
+                  </form>
+                </Box>
+              </LocalizationProvider>
+            )
+        )
+      }
+    </>
   );
 }
