@@ -62,6 +62,11 @@ export default function Sidebar({
       setSelectedParent('Faculty List');
       setOpenItems((prev) => ({ ...prev, Faculty: true }));
     }
+    else if (path.startsWith('/syllabus')) {
+      setSelectedItem('Syllabus List');
+      setSelectedParent('Syllabus List');
+      setOpenItems((prev) => ({ ...prev, Syllabus: true }));
+    }
     else if (path.startsWith('/students/detail')) {
       setSelectedItem('Profile');
       setSelectedParent('');
@@ -302,7 +307,7 @@ export default function Sidebar({
         <Customtext
           fieldName={'version 1.0.0'}
           variantName="caption"
-          sx={{color: theme.palette.warning.main}}
+          sx={{ color: theme.palette.warning.main }}
         />
       </Box>
     </Box>

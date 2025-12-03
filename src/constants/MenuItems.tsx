@@ -14,6 +14,7 @@ import {
   Settings as SettingsIcon,
   BarChart as BarChartIcon,
   ReportProblem as ReportProblemIcon,
+  Category as MasterIcon
 } from '@mui/icons-material';
 
 import type { JSX } from 'react';
@@ -56,6 +57,14 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     icon: 'Faculty',
     subItems: [
       { text: 'Faculty List', routePath: '/faculty' },
+    ],
+    routePath: '',
+  },
+  {
+    text: 'Master',
+    icon: 'Master',
+    subItems: [
+      { text: 'Syllabus List', routePath: '/syllabus' },
     ],
     routePath: '',
   },
@@ -149,4 +158,5 @@ export const ICON_MAP: Record<string, JSX.Element> = {
   Documents: <DescriptionIcon />,
   Library: <LibraryBooksIcon />,
   Password: <LockIcon />,
+  Master: <MasterIcon />,
 };

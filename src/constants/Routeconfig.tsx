@@ -15,6 +15,7 @@ import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordF
 import Examination from "../features/student/examination/examination";
 import FacultyList from "../features/admin/faculty/FacultyList";
 import FacultyAdd from "../features/admin/faculty/FacultyAdd";
+import SyllabusList from "../features/admin/master/syllabus/syllabusadd";
 
 export const routesConfig = [
   {
@@ -65,6 +66,22 @@ export const routesConfig = [
         element: <FacultyAdd />,
         breadcrumb: 'Faculty Edit',
       },
+    ],
+  },
+  {
+    path: '/syllabus',
+    breadcrumb: 'Syllabus List',
+    children: [
+      {
+        path: '',
+        element: <SyllabusList />,
+        breadcrumb: 'Syllabus List',
+      },
+      // {
+      //   path: 'add',
+      //   element: <FacultyAdd />,
+      //   breadcrumb: 'Faculty Add',
+      // }
     ],
   },
   {

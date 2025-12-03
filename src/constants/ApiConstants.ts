@@ -18,5 +18,6 @@ export const ApiRoutes = {
   CHANGEPASSWORD:'user/change-password',
   GETFACULTYLIST:'faculty/list',
   FACULTYADD:'faculty/add',
+  GETSYLLABUSLIST:'faculty/list',
 
 };
