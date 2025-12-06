@@ -40,7 +40,7 @@ export default function CustomDateInput({
                     sx: {
                         ...sx,
                         "& .MuiPickersInputBase-root": {
-                            height: "40px !important",
+                            height: "45px !important",
                         },
                         "& .MuiOutlinedInput-input": {
                             padding: "0 12px !important",

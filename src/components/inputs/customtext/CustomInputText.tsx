@@ -10,10 +10,10 @@ interface CustomInputTextProps {
   disabled?: boolean;
   type?: string;
   defaultValue?: any;
-  multiline?: boolean;       // <-- new
+  multiline?: boolean;
   rows?: number;
   value?: string | number;
-  onChange?: (...event: any[]) => void;       // <-- new
+  onChange?: (...event: any[]) => void;
 }
 
 export default function CustomInputText({
@@ -43,11 +43,25 @@ export default function CustomInputText({
       disabled={disabled}
       error={error}
       helperText={helperText}
-      sx={sx}
-      value={field.value ?? defaultValue}
-      onChange={handleChange}
       multiline={multiline}
       rows={rows}
+      value={field.value ?? defaultValue}
+      onChange={handleChange}
+      sx={{
+        // APPLY DEFAULT HEIGHT
+        "& .MuiOutlinedInput-root": {
+          height: !multiline ? "45px" : "auto", // ⬅️ only single-line inputs
+          display: "flex",
+          alignItems: "center",
+        },
+
+        "& .MuiInputBase-input": {
+          padding: "0 14px !important", // fixes vertical alignment
+        },
+
+        // merge custom sx (user override)
+        ...sx,
+      }}
     />
   );
 }

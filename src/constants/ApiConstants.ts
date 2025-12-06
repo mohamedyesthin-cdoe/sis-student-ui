@@ -1,5 +1,5 @@
-export const BASE_URL = 'https://api.sriramachandradigilearn.edu.in/';
-// export const BASE_URL = 'https://uat-api.sriramachandradigilearn.edu.in/';
+// export const BASE_URL = 'https://api.sriramachandradigilearn.edu.in/';
+export const BASE_URL = 'https://uat-api.sriramachandradigilearn.edu.in/';
 export const ApiRoutes = {
   LOGIN: '/auth/login',
   REGISTER: '/auth/register',
@@ -19,5 +19,11 @@ export const ApiRoutes = {
   GETFACULTYLIST:'faculty/list',
   FACULTYADD:'faculty/add',
   GETSYLLABUSLIST:'faculty/list',
-
+  SYLLABUSADD:'master/syllabus/add',
+  COURSECODELIST:'master/coursecode/list',
+  COURSECATEGORYLIST:'master/coursecategory/list',
+  COURSETITLELIST:'master/coursetitle/list',
+  COURSECODEADD:'master/coursecode/add',
+  COURSECATEGORYADD:'master/coursecategory/add',
+  COURSETITLEADD:'master/coursetitle/add',
 };

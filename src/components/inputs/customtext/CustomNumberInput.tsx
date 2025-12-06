@@ -33,6 +33,30 @@ export default function CustomNumberInput({
           onChange(val);
         }
       }}
+      sx={{
+        // FIXED HEIGHT
+        "& .MuiOutlinedInput-root": {
+          height: "45px",
+          display: "flex",
+          alignItems: "center",
+        },
+
+        // CENTER TEXT VERTICALLY
+        "& .MuiInputBase-input": {
+          padding: "0 14px !important",
+        },
+
+        // FLOATING LABEL FIX
+        "& .MuiInputLabel-root": {
+          lineHeight: "45px",
+          top: "-2px",
+        },
+
+        "& .MuiInputLabel-shrink": {
+          top: "0px",
+          lineHeight: "normal",
+        }
+      }}
     />
   );
 }
