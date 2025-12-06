@@ -126,6 +126,25 @@ class MasterService:
             data=obj_data
         )
     
+    def list_course_codes(self) -> List[CourseCodeList]:
+        try:
+            items = self.repo.get_all_course_codes()
+            return [
+                CourseCodeList(
+                    message="Course codes retrieved successfully",
+                    code=status.HTTP_200_OK,
+                    status=True,
+                    data=[CourseCodeOut.from_orm(item) for item in items]
+                )
+            ]
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing course codes: {str(e)}",
+            )
+    
     def create_course_category(self, data: CourseCategoryBase) -> CourseCategoryResponse:
         
         existing = self.repo.get_course_category(data.name)
@@ -144,6 +163,25 @@ class MasterService:
             data=course_category
         )
     
+    def list_course_category(self) -> List[CourseCategoryList]:
+        try:
+            items = self.repo.get_all_course_category()
+            return [
+                CourseCategoryList(
+                    message="Course codes retrieved successfully",
+                    code=status.HTTP_200_OK,
+                    status=True,
+                    data=[CourseCategoryOut.from_orm(item) for item in items]
+                )
+            ]
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing course codes: {str(e)}",
+            )
+    
     def create_course_title(self, data: CourseTitleBase) -> CourseTitleResponse:
         
         existing = self.repo.get_course_title(data.title)
@@ -161,6 +199,25 @@ class MasterService:
             status=True,
             data=course_title
         )
+    
+    def list_course_Title(self) -> List[CourseTitleList]:
+        try:
+            items = self.repo.get_all_course_title()
+            return [
+                CourseTitleList(
+                    message="Course codes retrieved successfully",
+                    code=status.HTTP_200_OK,
+                    status=True,
+                    data=[CourseTitleOut.from_orm(item) for item in items]
+                )
+            ]
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing course codes: {str(e)}",
+            )
     
     def create_syllabus(self, data: SyllabusCreate) -> SyllabusResponse:
         try:

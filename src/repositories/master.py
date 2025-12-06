@@ -140,6 +140,9 @@ class MasterRepository:
             .first()
         )
     
+    def get_all_course_codes(self) -> List[CourseCode]:
+        return self.db.query(CourseCode).all()
+    
     def get_course_category(self, category_name: str) -> Optional[CourseCategory]:
         return (
             self.db.query(CourseCategory)
@@ -147,12 +150,18 @@ class MasterRepository:
             .first()
         )
     
+    def get_all_course_category(self) -> List[CourseCategory]:
+        return self.db.query(CourseCategory).all()
+    
     def get_course_title(self, title_name: str) -> Optional[CourseTitle]:
         return (
             self.db.query(CourseTitle)
             .filter(CourseTitle.title == title_name)
             .first()
         )
+    
+    def get_all_course_title(self) -> List[CourseTitle]:
+        return self.db.query(CourseTitle).all()
     
     def get_syllabus(self, course_code_id: int, course_category_id: int,course_title_id: int) -> Optional[CourseTitle]:
         return (

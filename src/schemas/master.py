@@ -76,6 +76,12 @@ class CourseCodeOut(BaseModel):
     class Config:
         from_attributes = True
 
+class CourseCodeList(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[CourseCodeOut]
+
 class CourseCodeResponse(BaseModel):
     message: str
     code: int
@@ -93,7 +99,13 @@ class CourseCategoryOut(BaseModel):
     name: str
 
     class Config:
-        from_attributes = True  
+        from_attributes = True 
+
+class CourseCategoryList(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[CourseCategoryOut]
 
 class CourseCategoryResponse(BaseModel):
     message: str
@@ -113,6 +125,12 @@ class CourseTitleOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class CourseTitleList(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[CourseTitleOut]
 
 class CourseTitleResponse(BaseModel):
     message: str
