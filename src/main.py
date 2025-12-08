@@ -80,7 +80,7 @@ app.include_router(staff_router, prefix="/staff", tags=["Staff"])
 #app.include_router(address_router, prefix="", tags=["Address"])
 app.include_router(students_router, prefix="/student", tags=["Student"])
 app.include_router(api_router, prefix="/api", tags=["API"])
-app.include_router(master_router, prefix="/master", tags=["master"])
+app.include_router(master_router, prefix="", tags=["master"])
 app.include_router(s3_router, prefix="/s3", tags=["S3"])
 
 # Create database tables on startup

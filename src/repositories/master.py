@@ -196,3 +196,12 @@ class MasterRepository:
                 detail=f"Database error while creating course code: {str(e)}",
             )
         
+    def get_all_syllabuses(self) -> List[SemesterSyllabus]:
+        try:
+            return self.db.query(SemesterSyllabus).all()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching syllabuses: {str(e)}",
+            )
+        

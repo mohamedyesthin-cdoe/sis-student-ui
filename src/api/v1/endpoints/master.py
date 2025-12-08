@@ -9,7 +9,7 @@ from src.core.security.dependencies import require_superuser
 
 router = APIRouter()
 
-@router.post("/add", response_model=ProgrameResponse)
+@router.post("/programe/add", response_model=ProgrameResponse)
 def create_program(programe: ProgrameCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
@@ -22,7 +22,7 @@ def create_program(programe: ProgrameCreate, db: Session = Depends(get_db), curr
             detail=f"Unexpected error in endpoint: {str(e)}",
         )
     
-@router.get("/list", response_model=List[ProgrameResponse])
+@router.get("/programe/list", response_model=List[ProgrameResponse])
 def list_programs(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
@@ -35,7 +35,7 @@ def list_programs(db: Session = Depends(get_db), current_user: User = Depends(re
             detail=f"Unexpected error in endpoint: {str(e)}",
         )
 
-@router.put("/update/{id}", response_model=ProgrameResponse)
+@router.put("/programe/update/{id}", response_model=ProgrameResponse)
 def update_program(id: int, programe_data: ProgrameUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
@@ -48,7 +48,7 @@ def update_program(id: int, programe_data: ProgrameUpdate, db: Session = Depends
             detail=f"Unexpected error in endpoint: {str(e)}",
         ) 
     
-@router.get("/{programe_id}", response_model=ProgrameResponse)
+@router.get("/programe/{programe_id}", response_model=ProgrameResponse)
 def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
@@ -145,6 +145,19 @@ def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db)):
     try:
         service = MasterService(db)
         return service.create_syllabus(syllabus)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+    
+@router.post("/syllabus/list", response_model=List[SyllabusResponse])
+def list_syllabuses(db: Session = Depends(get_db)):
+    try:
+        service = MasterService(db)
+        return service.list_syllabuses()
     except HTTPException:
         raise
     except Exception as e:

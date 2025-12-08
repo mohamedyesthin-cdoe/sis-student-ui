@@ -247,3 +247,22 @@ class MasterService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while creating syllabus: {str(e)}",
             )
+
+    def list_syllabuses(self) -> List[SyllabusResponse]:
+        try:
+            items = self.repo.get_all_syllabuses()
+            return [
+                SyllabusResponse(
+                    message="Syllabuses retrieved successfully",
+                    code=status.HTTP_200_OK,
+                    status=True,
+                    data=SyllabusOut.from_orm(item)
+                ) for item in items
+            ]
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing syllabuses: {str(e)}",
+            )
