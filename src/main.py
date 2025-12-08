@@ -39,6 +39,10 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
 origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://13.234.63.113:80",
     "http://13.234.63.113",
     "https://uat.sriramachandradigilearn.edu.in"
