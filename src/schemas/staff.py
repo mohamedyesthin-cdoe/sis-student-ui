@@ -32,11 +32,13 @@ class StateResponse(BaseModel):
         from_attributes = True
 
 class StaffBase(BaseModel):
-    employee_id: str
-    first_name: str
-    last_name: str
+    employee_id: str = Field(..., min_length=3, max_length=15)
+    first_name: str = Field(..., min_length=1, max_length=30)
+    last_name: str = Field(..., min_length=1, max_length=30)
     email: EmailStr
-    phone: Optional[str] = None
+    phone: Optional[str] = Field(
+        ..., min_length=7, max_length=15, 
+        description="Phone number must be between 7 and 15 digits")
     dob: Optional[date] = None
     gender: Optional[str] = None
     department: Optional[str] = None
@@ -44,14 +46,22 @@ class StaffBase(BaseModel):
     qualification: Optional[str] = None
     specialization: Optional[str] = None
     joining_date: Optional[date] = None
-    experience_years: Optional[float] = None
+    experience_years: Optional[float] = Field(default=0.0, ge=0.0)
     employment_type: EmploymentTypeEnum = EmploymentTypeEnum.permanent
     research_area: Optional[str] = None
-    publications_count: Optional[int] = 0
+    publications_count: Optional[int] = Field(default=0, ge=0)
     status: FacultyStatusEnum = FacultyStatusEnum.active
     linkedin_url: Optional[str] = None
     profile_photo: Optional[str] = None
     role: Optional[int] = None
+
+    @validator('phone')
+    def validate_phone(cls, v):
+        if v:
+            pattern = re.compile(r'^\+?\d{7,15}$')
+            if not pattern.match(v):
+                raise ValueError('Invalid phone number format')
+        return v
 
 class StaffCreate(StaffBase):
     id: int
@@ -81,7 +91,7 @@ class StaffUpdate(BaseModel):
     profile_photo: Optional[str] = None
     role: Optional[str] = None
 
-class StaffResponse(BaseModel):
+class StaffResponse(StaffBase):
     id: int
     user_id: int
 
