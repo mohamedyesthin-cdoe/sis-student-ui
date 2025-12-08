@@ -48,7 +48,7 @@ class ProgrameResponse(ProgrameBase):
     id: int
     fees: Optional[List[FeeSchema]] = Field(default_factory=list, alias="fee")
     created_at: datetime
-    updated_at: datetime
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True
