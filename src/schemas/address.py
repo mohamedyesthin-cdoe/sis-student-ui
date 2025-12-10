@@ -30,6 +30,14 @@ class StateResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class CityResponse(BaseModel):
+    id: int
+    city_name: str
+    state_id: int
+
+    class Config:
+        from_attributes = True
+
 class AddressCreate(BaseModel):
     street: Annotated[str, Field(min_length=2, max_length=100)]
     city: Annotated[str, Field(min_length=2, max_length=50)]

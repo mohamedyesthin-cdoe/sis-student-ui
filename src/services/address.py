@@ -74,3 +74,15 @@ class GeoService:
             State: A single State object matching the IDs.
         """
         return self.repo.get_state_by_id(state_id, country_id)
+    
+    def get_city_by_state_id(self, state_id: int):
+        """Retrieve a list of states for a given country ID.
+
+        Args:
+            country_id (int): The ID of the country.
+
+        Returns:
+            List[State]: List of State objects.
+        """
+        return self.repo.get_city_by_state_id(state_id)
+    

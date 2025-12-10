@@ -4,7 +4,7 @@ from pytest import Session
 from src.db.session import get_db
 from src.services.address import GeoService
 from src.schemas.address import (
-    CountryResponse, StateResponse, 
+    CountryResponse, StateResponse, CityResponse
 )
 router = APIRouter()
 
@@ -47,3 +47,9 @@ async def get_state_by_id(state_id: int, country_id: int, db: Session = Depends(
     """Retrive state object for a given country id and state id based"""
     service = GeoService(db)
     return service.get_state_by_id(state_id, country_id)
+
+@router.get("/city/{state_id}", response_model=List[CityResponse])
+async def get_states_by_country_id(state_id: int, db: Session = Depends(get_db)):
+    """Retrieve a list of states for a given country id"""
+    service = GeoService(db)
+    return service.get_city_by_state_id(state_id)

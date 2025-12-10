@@ -1,6 +1,6 @@
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
-from src.models.address import Country, State, Address
+from src.models.address import Country, State, Address, City
 from fastapi import HTTPException, status 
 from typing import List, Optional
 
@@ -105,3 +105,20 @@ class GeoRepository:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="State not found")
 
         return state
+
+    def get_city_by_state_id(self, state_id: int) -> List[City] :
+        """Retrieve a list of states for a given country ID.
+
+        Args:
+            state_id (int): The ID of the country to filter states.
+
+        Returns:
+            List[State]: List of State objects.
+
+        Raises:
+            HTTPException: If state_id is invalid.
+        """
+        if not isinstance(state_id, int) or state_id <= 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid country ID")
+        
+        return self.db.query(City).filter(City.state_id == state_id).all()
