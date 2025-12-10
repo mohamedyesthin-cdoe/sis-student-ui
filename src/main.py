@@ -45,6 +45,7 @@ origins = [
     "http://127.0.0.1:3000",
     "http://13.234.63.113:80",
     "http://13.234.63.113",
+    "http://127.0.0.1:5500",
     "https://uat.sriramachandradigilearn.edu.in"
 ]
 
