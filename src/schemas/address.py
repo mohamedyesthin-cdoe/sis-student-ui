@@ -14,6 +14,7 @@ class CountryResponse(BaseModel):
     id: int
     name: str
     country_code: str
+    phone_code: str
 
     class Config:
         from_attributes = True
