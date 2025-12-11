@@ -54,6 +54,18 @@ class ProgrameResponse(ProgrameBase):
         from_attributes = True
         populate_by_name = True
 
+class OfferingResponse(BaseModel):
+    id: int
+    programe: str
+    short_name: Optional[str] = None
+    programe_code: str
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
 class DataOut(BaseModel):
     list: List[ProgrameResponse]
 
