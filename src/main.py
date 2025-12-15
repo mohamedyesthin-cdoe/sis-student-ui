@@ -46,7 +46,9 @@ origins = [
     "http://13.234.63.113:80",
     "http://13.234.63.113",
     "http://127.0.0.1:5500",
-    "https://uat.sriramachandradigilearn.edu.in"
+    "https://uat.sriramachandradigilearn.edu.in",
+    "https://staging.sriramachandradigilearn.edu.in",
+    "https://sriramachandradigilearn.edu.in"
 ]
 
 app.add_middleware(
