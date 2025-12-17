@@ -28,7 +28,7 @@ import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 export default function ProgramList() {
   const navigate = useNavigate();
   const handleView = () => navigate(`/programs/add`);
-
+  const { clearError } = useGlobalError();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState("");
@@ -38,6 +38,7 @@ export default function ProgramList() {
   // API CALL
   // ----------------------------------------------------------
   React.useEffect(() => {
+    clearError();
     const fetchData = async () => {
       apiClient.get(ApiRoutes.GETPROGRAMLIST)
         .then(res => {
@@ -50,7 +51,6 @@ export default function ProgramList() {
 
     fetchData();
   }, []);
-  const { error } = useGlobalError();
   const { loading } = useLoader()
 
   // ----------------------------------------------------------
@@ -77,26 +77,12 @@ export default function ProgramList() {
       "Programs"
     );
   };
-
-  {
-    error.type === "NO_DATA" && (
-      <TableToolbar
-        actions={[
-          {
-            label: "Add Program",
-            color: "primary",
-            onClick: handleView,
-          },
-        ]}
-      />
-    )
-  }
   // ----------------------------------------------------------
   // 🎯 MAIN UI – only when data exists
   // ----------------------------------------------------------
   return (
     <>
-      {error.type == "NONE" && (
+      {
         loading ? (
           <TableSkeleton />
         ) : filteredPrograms.length == 0 ? (
@@ -226,7 +212,7 @@ export default function ProgramList() {
               />
             </CardComponent>
           )
-      )}
+      }
     </>
   );
 }

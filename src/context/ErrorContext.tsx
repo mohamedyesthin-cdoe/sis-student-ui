@@ -1,32 +1,53 @@
-// ================================
-// 🔵 ErrorBridge.tsx (Single File)
-// ================================
+import React, { createContext, useContext, useState } from "react";
 
-import { createContext, useContext, useState } from "react";
+/* --------------------------------------------------
+   1️⃣ Error Types
+-------------------------------------------------- */
+export type ErrorType =
+  | "NONE"
+  | "NO_DATA"
+  | "SERVER_ERROR"
+  | "CONNECTION_LOST";
 
-// --------------------------------------------------
-// 1️⃣ Error State Types
-// --------------------------------------------------
-interface ErrorState {
-  type: "NONE" | "NO_DATA" | "SERVER_ERROR" | "CONNECTION_LOST";
+export interface ErrorState {
+  type: ErrorType;
   message?: string;
 }
 
-// --------------------------------------------------
-// 2️⃣ Create Error Context
-// --------------------------------------------------
-const ErrorContext = createContext<any>(null);
+/* --------------------------------------------------
+   2️⃣ Context Shape
+-------------------------------------------------- */
+interface ErrorContextType {
+  error: ErrorState;
+  setNoData: () => void;
+  setServerError: (message?: string) => void;
+  setConnectionLost: () => void;
+  clearError: () => void;
+}
 
-// --------------------------------------------------
-// 3️⃣ Error Provider (Global State)
-// --------------------------------------------------
-export function ErrorProvider({ children }: any) {
+/* --------------------------------------------------
+   3️⃣ Create Context
+-------------------------------------------------- */
+const ErrorContext = createContext<ErrorContextType | undefined>(undefined);
+
+/* --------------------------------------------------
+   4️⃣ Provider
+-------------------------------------------------- */
+export const ErrorProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [error, setError] = useState<ErrorState>({ type: "NONE" });
 
   const setNoData = () => setError({ type: "NO_DATA" });
-  const setServerError = () => setError({ type: "SERVER_ERROR" });
-  const setConnectionLost = () => setError({ type: "CONNECTION_LOST" });
-  const clearError = () => setError({ type: "NONE" });
+
+  const setServerError = (message?: string) =>
+    setError({ type: "SERVER_ERROR", message });
+
+  const setConnectionLost = () =>
+    setError({ type: "CONNECTION_LOST" });
+
+  const clearError = () =>
+    setError({ type: "NONE" });
 
   return (
     <ErrorContext.Provider
@@ -41,38 +62,43 @@ export function ErrorProvider({ children }: any) {
       {children}
     </ErrorContext.Provider>
   );
-}
+};
 
-// Hook to use error anywhere
-export const useGlobalError = () => useContext(ErrorContext);
+/* --------------------------------------------------
+   5️⃣ Hook
+-------------------------------------------------- */
+export const useGlobalError = (): ErrorContextType => {
+  const context = useContext(ErrorContext);
+  if (!context) {
+    throw new Error("useGlobalError must be used within ErrorProvider");
+  }
+  return context;
+};
 
-// --------------------------------------------------
-// 4️⃣ Global Error Handler (Uses Context Functions)
-// --------------------------------------------------
-export function globalErrorHandler(error: any) {
-  const { setNoData, setServerError, setConnectionLost } =
-    errorContextFunctions;
+/* --------------------------------------------------
+   6️⃣ Global Error Handler (Axios Safe)
+-------------------------------------------------- */
+let errorActions: ErrorContextType | null = null;
 
-  if (error.code === "ERR_NETWORK") {
-    setConnectionLost();
+export const registerErrorContext = (ctx: ErrorContextType) => {
+  errorActions = ctx;
+};
+
+export const globalErrorHandler = (err: any) => {
+  if (!errorActions) return;
+
+  if (err?.code === "ERR_NETWORK") {
+    errorActions.setConnectionLost();
     return;
   }
 
-  const status = error?.response?.status;
+  const status = err?.response?.status;
 
   if (status === 404) {
-    setNoData();
-  } else if (status === 500 || status >= 501) {
-    setServerError();
+    errorActions.setNoData();
+  } else if (status >= 500) {
+    errorActions.setServerError(
+      err?.response?.data?.message || "Server error"
+    );
   }
-}
-
-// --------------------------------------------------
-// 5️⃣ Bridge to access context functions inside handler
-// --------------------------------------------------
-let errorContextFunctions: any = {};
-
-// Called from App.tsx
-export function registerErrorContext(funcs: any) {
-  errorContextFunctions = funcs;
-}
+};

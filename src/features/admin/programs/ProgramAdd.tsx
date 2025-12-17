@@ -5,7 +5,7 @@ import {
   Button,
   Divider,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -126,8 +126,9 @@ const SemesterFormGroup: React.FC<SemesterProps> = ({
 
 const ProgramForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { showConfirm, showAlert } = useAlert();
-  const { error } = useGlobalError();
+  const { clearError } = useGlobalError();
   const { loading } = useLoader()
   const initialSemesterData: Semester[] = Array.from({ length: 6 }, () => ({
     applicationFee: 0,
@@ -241,24 +242,22 @@ const ProgramForm = () => {
     }
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: ProgramFormValues) => {
     const fees = data.semesters.map((s: Semester, idx: number) => ({
       semester: `Semester ${idx + 1}`,
-      application_fee: s.applicationFee,
-      admission_fee: s.admissionFee,
-      tuition_fee: s.tuitionFee,
-      exam_fee: s.examFee,
-      lms_fee: s.lmsFee,
-      lab_fee: s.labFee,
-      total_fee: String(s.totalFee || 0)
+      application_fee: String(s.applicationFee ?? 0),
+      admission_fee: String(s.admissionFee ?? 0),
+      tuition_fee: String(s.tuitionFee ?? 0),
+      exam_fee: String(s.examFee ?? 0),
+      lms_fee: String(s.lmsFee ?? 0),
+      lab_fee: String(s.labFee ?? 0),
+      total_fee: String(s.totalFee ?? 0),
     }));
-    console.log("dta", fees);
-
 
     const payload = {
       programe: data.programName,
       programe_code: data.programId,
-      duration: data.duration,
+      duration: String(data.duration),
       faculty: data.faculty,
       category: data.category,
       fees,
@@ -276,8 +275,9 @@ const ProgramForm = () => {
         id ? "Program updated successfully!" : "Program added successfully!",
         "success"
       );
+      clearError();
+      navigate('/programs');
     } catch (err: any) {
-      console.error("Program save failed:", err.response?.data || err.message);
       showAlert(
         err.response?.data?.message || "Something went wrong. Please try again.",
         "error"
@@ -285,23 +285,131 @@ const ProgramForm = () => {
     }
   };
 
+
   return (
     <>
       {
-        error.type === "NONE" && (
-          loading ? (
-            <ProgramFeeSkeleton />
-          )
-            : (
-              <Box
-                component="form"
-                onSubmit={handleSubmit(onSubmit)}
-                sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
-              >
-                {/* Program Details */}
-                <CardComponent sx={{ p: 3 }}>
-                  <Customtext fieldName="Program Details" sx={{
-                    mb: 2, fontSize: {
+        loading ? (
+          <ProgramFeeSkeleton />
+        )
+          : (
+            <Box
+              component="form"
+              onSubmit={handleSubmit(onSubmit)}
+              sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
+            >
+              {/* Program Details */}
+              <CardComponent sx={{ p: 3 }}>
+                <Customtext fieldName="Program Details" sx={{
+                  mb: 2, fontSize: {
+                    xs: '0.875rem', // 14px
+                    sm: '1rem',     // 16px
+                    md: '1.125rem', // 18px
+                    lg: '1rem',  // 20px
+                    xl: '1.5rem',   // 24px
+                  },
+                }} />
+                <Grid container spacing={2}>
+                  {/* Program ID */}
+                  <Grid size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="programId"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomInputText
+                          label="Program ID"
+                          field={field}
+                          error={!!errors.programId}
+                          helperText={errors.programId?.message as string}
+                          disabled={!!id}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  {/* Program Name */}
+                  <Grid size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="programName"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomInputText
+                          label="Program Name"
+                          field={field}
+                          error={!!errors.programName}
+                          helperText={errors.programName?.message}
+                        />
+                      )}
+                    />
+
+                  </Grid>
+
+                  {/* Duration (dropdown) */}
+                  <Grid container size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="duration"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomSelect
+                          label="Duration"
+                          field={field}
+                          options={[
+                            { name: "1 Year", id: "1" },
+                            { name: "2 Years", id: "2" },
+                            { name: "3 Years", id: "3" },
+                            { name: "4 Years", id: "4" },
+                          ]}
+                          error={errors.duration}
+                          helperText={errors.duration?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  {/* Faculty */}
+                  <Grid container size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="faculty"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomInputText
+                          label="Faculty"
+                          field={field}
+                          error={!!errors.faculty}
+                          helperText={errors.faculty?.message as string}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  {/* Category (dropdown) */}
+                  <Grid container size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="category"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomSelect
+                          label="Category"
+                          field={field}
+                          options={[
+                            { name: "UG", id: "UG" },
+                            { name: "PG", id: "PG" },
+                          ]}
+                          error={errors.category}
+                          helperText={errors.category?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+
+              </CardComponent>
+
+              {/* Semester Fees */}
+              <CardComponent sx={{ p: 3, mt: 4 }}>
+                <Customtext fieldName="Semester Fee Details"
+                  sx={{
+                    fontSize: {
                       xs: '0.875rem', // 14px
                       sm: '1rem',     // 16px
                       md: '1.125rem', // 18px
@@ -309,181 +417,72 @@ const ProgramForm = () => {
                       xl: '1.5rem',   // 24px
                     },
                   }} />
-                  <Grid container spacing={2}>
-                    {/* Program ID */}
-                    <Grid size={{ xs: 12, md: 3 }} my={1}>
-                      <Controller
-                        name="programId"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomInputText
-                            label="Program ID"
-                            field={field}
-                            error={!!errors.programId}
-                            helperText={errors.programId?.message as string}
-                            disabled={!!id}
-                          />
-                        )}
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <Box key={index} sx={{ mt: 3, mb: 3 }}>
+                    <Customtext
+                      fieldName={`Semester ${index + 1}`}
+                      sx={{ mb: 2, color: theme.palette.text.primary }}
+                    />
+                    <SemesterFormGroup
+                      semesterIndex={index}
+                      control={control}
+                      handleFeeChange={handleFeeChange}
+                      errors={errors}
+                    />
+                    {index < 5 && (
+                      <Divider
+                        sx={{
+                          mt: 3,
+                          mb: 3,
+                          borderColor: theme.palette.text.disabled,
+                          borderBottomWidth: 1,
+                          width: "80%",
+                          mx: "auto",
+                        }}
                       />
-                    </Grid>
+                    )}
+                  </Box>
+                ))}
+              </CardComponent>
 
-                    {/* Program Name */}
-                    <Grid size={{ xs: 12, md: 3 }} my={1}>
-                      <Controller
-                        name="programName"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomInputText
-                            label="Program Name"
-                            field={field}
-                            error={!!errors.programName}
-                            helperText={errors.programName?.message}
-                          />
-                        )}
-                      />
-
-                    </Grid>
-
-                    {/* Duration (dropdown) */}
-                    <Grid container size={{ xs: 12, md: 3 }} my={1}>
-                      <Controller
-                        name="duration"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomSelect
-                            label="Duration"
-                            field={field}
-                            options={[
-                              { label: "1 Year", value: "1" },
-                              { label: "2 Years", value: "2" },
-                              { label: "3 Years", value: "3" },
-                              { label: "4 Years", value: "4" },
-                            ]}
-                            error={errors.duration}
-                            helperText={errors.duration?.message}
-                          />
-                        )}
-                      />
-                    </Grid>
-
-                    {/* Faculty */}
-                    <Grid container size={{ xs: 12, md: 3 }} my={1}>
-                      <Controller
-                        name="faculty"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomInputText
-                            label="Faculty"
-                            field={field}
-                            error={!!errors.faculty}
-                            helperText={errors.faculty?.message as string}
-                          />
-                        )}
-                      />
-                    </Grid>
-
-                    {/* Category (dropdown) */}
-                    <Grid container size={{ xs: 12, md: 3 }} my={1}>
-                      <Controller
-                        name="category"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomSelect
-                            label="Category"
-                            field={field}
-                            options={[
-                              { label: "UG", value: "UG" },
-                              { label: "PG", value: "PG" },
-                            ]}
-                            error={errors.category}
-                            helperText={errors.category?.message}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-
-                </CardComponent>
-
-                {/* Semester Fees */}
-                <CardComponent sx={{ p: 3, mt: 4 }}>
-                  <Customtext fieldName="Semester Fee Details"
-                    sx={{
-                      fontSize: {
-                        xs: '0.875rem', // 14px
-                        sm: '1rem',     // 16px
-                        md: '1.125rem', // 18px
-                        lg: '1rem',  // 20px
-                        xl: '1.5rem',   // 24px
-                      },
-                    }} />
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <Box key={index} sx={{ mt: 3, mb: 3 }}>
-                      <Customtext
-                        fieldName={`Semester ${index + 1}`}
-                        sx={{ mb: 2, color: theme.palette.text.primary }}
-                      />
-                      <SemesterFormGroup
-                        semesterIndex={index}
-                        control={control}
-                        handleFeeChange={handleFeeChange}
-                        errors={errors}
-                      />
-                      {index < 5 && (
-                        <Divider
-                          sx={{
-                            mt: 3,
-                            mb: 3,
-                            borderColor: theme.palette.text.disabled,
-                            borderBottomWidth: 1,
-                            width: "80%",
-                            mx: "auto",
-                          }}
-                        />
-                      )}
-                    </Box>
-                  ))}
-                </CardComponent>
-
-                {/* Buttons */}
-                <Box
-                  mt={4}
-                  display="flex"
-                  gap={2}
-                  sx={{
-                    justifyContent: {
-                      xs: "center", // center on mobile
-                      sm: "flex-end", // right align on tablet and above
-                    },
-                  }}
+              {/* Buttons */}
+              <Box
+                mt={4}
+                display="flex"
+                gap={2}
+                sx={{
+                  justifyContent: {
+                    xs: "center", // center on mobile
+                    sm: "flex-end", // right align on tablet and above
+                  },
+                }}
+              >
+                <Button variant="contained" color="primary" onClick={handleBack}>
+                  Back
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() =>
+                    reset({
+                      programId: "",
+                      programName: "",
+                      duration: "3",
+                      faculty: "",
+                      category: "UG",
+                      semesters: initialSemesterData.map((s) => ({ ...s })),
+                    })
+                  }
                 >
-                  <Button variant="contained" color="primary" onClick={handleBack}>
-                    Back
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() =>
-                      reset({
-                        programId: "",
-                        programName: "",
-                        duration: "3",
-                        faculty: "",
-                        category: "UG",
-                        semesters: initialSemesterData.map((s) => ({ ...s })),
-                      })
-                    }
-                  >
-                    Reset
-                  </Button>
-                  <Button variant="contained" color="secondary" type="submit">
-                    {id ? "Update" : "Submit"}
-                  </Button>
-                </Box>
-
+                  Reset
+                </Button>
+                <Button variant="contained" color="secondary" type="submit">
+                  {id ? "Update" : "Submit"}
+                </Button>
               </Box>
-            )
-        )
+
+            </Box>
+          )
       }
     </>
   );

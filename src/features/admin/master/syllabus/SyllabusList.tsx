@@ -16,17 +16,18 @@ import { exportToExcel } from "../../../../constants/excelExport";
 
 export default function SyllabusList() {
   const navigate = useNavigate();
+  const { clearError } = useGlobalError();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState("");
   const [showSearch] = React.useState(true);
 
   const [faculties, setFaculties] = React.useState<any[]>([]);
-  const { error } = useGlobalError();
   const { loading } = useLoader();
 
   // Fetch Faculty List
   React.useEffect(() => {
+    clearError();
     apiRequest({ url: ApiRoutes.GETSYLLABUSLIST, method: "get" })
       .then((data) => setFaculties(Array.isArray(data) ? data : data.data))
       .catch(() => setFaculties([]));
@@ -70,100 +71,100 @@ export default function SyllabusList() {
 
   return (
     <>
-      {error.type === "NONE" && (
+      {
         loading ? (
           <TableSkeleton />
-        ) 
-        // : filteredFaculties.length === 0 ? (
-        //   <CardComponent
-        //     sx={{
-        //       width: "100%",
-        //       maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-        //       mx: "auto",
-        //       p: 3,
-        //       mt: 3,
-        //     }}
-        //   >
-        //     <NoDataFoundUI />
-        //   </CardComponent>
-        // ) 
-        : (
-          <CardComponent
-            sx={{
-              width: "100%",
-              maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-              mx: "auto",
-              p: 3,
-              mt: 3,
-            }}
-          >
-            {/* Toolbar */}
-            <TableToolbar
-              filters={[
-                {
-                  key: "search",
-                  label: "Search",
-                  type: "text",
-                  value: searchText,
-                  onChange: (val) => setSearchText(val),
-                  placeholder: "Search by name, email, phone...",
-                  visible: showSearch,
-                },
-              ]}
-              actions={[
-                {
-                  label: "Export Excel",
-                  color: "secondary",
-                  startIcon: <FileDownloadIcon />,
-                  onClick: handleExportExcel,
-                },
-                {
-                  label: "Add Syllabus",
-                  color: "primary",
-                  onClick: handleAdd,
-                },
-              ]}
-            />
-
-            {/* Table */}
-            <ReusableTable
-              columns={[
-                { key: "employee_id", label: "Employee ID" },
-                { key: "full_name", label: "Full Name" },
-                { key: "email", label: "Email" },
-                { key: "phone", label: "Mobile" },
-                { key: "department", label: "Department" },
-                { key: "designation", label: "Designation" },
-              ]}
-              data={filteredFaculties}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              actions={[
-                {
-                  label: "Edit",
-                  icon: <EditIcon fontSize="small" />,
-                  onClick: (row) => handleEdit(row),
-                  color: "primary",
-                },
-                {
-                  label: "Delete",
-                  icon: <DeleteIcon fontSize="small" />,
-                  onClick: () => {},
-                  color: "error",
-                },
-              ]}
-            />
-
-            {/* Pagination */}
-            <TablePagination
-              page={page}
-              rowsPerPage={rowsPerPage}
-              totalCount={filteredFaculties.length}
-              onPageChange={(newPage) => setPage(newPage)}
-            />
-          </CardComponent>
         )
-      )}
+          // : filteredFaculties.length === 0 ? (
+          //   <CardComponent
+          //     sx={{
+          //       width: "100%",
+          //       maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+          //       mx: "auto",
+          //       p: 3,
+          //       mt: 3,
+          //     }}
+          //   >
+          //     <NoDataFoundUI />
+          //   </CardComponent>
+          // ) 
+          : (
+            <CardComponent
+              sx={{
+                width: "100%",
+                maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+                mx: "auto",
+                p: 3,
+                mt: 3,
+              }}
+            >
+              {/* Toolbar */}
+              <TableToolbar
+                filters={[
+                  {
+                    key: "search",
+                    label: "Search",
+                    type: "text",
+                    value: searchText,
+                    onChange: (val) => setSearchText(val),
+                    placeholder: "Search by name, email, phone...",
+                    visible: showSearch,
+                  },
+                ]}
+                actions={[
+                  {
+                    label: "Export Excel",
+                    color: "secondary",
+                    startIcon: <FileDownloadIcon />,
+                    onClick: handleExportExcel,
+                  },
+                  {
+                    label: "Add Syllabus",
+                    color: "primary",
+                    onClick: handleAdd,
+                  },
+                ]}
+              />
+
+              {/* Table */}
+              <ReusableTable
+                columns={[
+                  { key: "employee_id", label: "Employee ID" },
+                  { key: "full_name", label: "Full Name" },
+                  { key: "email", label: "Email" },
+                  { key: "phone", label: "Mobile" },
+                  { key: "department", label: "Department" },
+                  { key: "designation", label: "Designation" },
+                ]}
+                data={filteredFaculties}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                actions={[
+                  {
+                    label: "Edit",
+                    icon: <EditIcon fontSize="small" />,
+                    onClick: (row) => handleEdit(row),
+                    color: "primary",
+                  },
+                  {
+                    label: "Delete",
+                    icon: <DeleteIcon fontSize="small" />,
+                    onClick: () => { },
+                    color: "error",
+                  },
+                ]}
+              />
+
+              {/* Pagination */}
+              <TablePagination
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={filteredFaculties.length}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </CardComponent>
+          )
+      }
     </>
   );
 }

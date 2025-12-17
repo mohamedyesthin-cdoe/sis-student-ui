@@ -2,7 +2,6 @@ import { Box, Divider, List, ListItem, ListItemText } from "@mui/material";
 import CardComponent from "../../../components/card/Card";
 import ReusableTable from "../../../components/table/table";
 import theme from "../../../styles/theme";
-import { useGlobalError } from "../../../context/ErrorContext";
 import Customtext from "../../../components/inputs/customtext/Customtext";
 
 export default function StudentCounselling() {
@@ -18,11 +17,10 @@ export default function StudentCounselling() {
         "Stress management and wellness tips",
         "Personal support and mentoring",
     ];
-    const { error } = useGlobalError()
 
     return (
         <>
-            {error.type == "NONE" && (
+            {
                 <CardComponent
                     sx={{
                         width: "100%",
@@ -63,7 +61,6 @@ export default function StudentCounselling() {
                         data={counsellors}
                     />
                 </CardComponent>
-            )
             }
         </>
     );

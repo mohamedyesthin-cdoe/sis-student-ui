@@ -8,8 +8,6 @@
 
 import { useNavigate } from "react-router-dom";
 import CardComponent from "../../../components/card/Card";
-import { ComingSoonUI } from "../../../components/card/errorUi/ComingSoonUI";
-import { useGlobalError } from "../../../context/ErrorContext";
 import TableToolbar from "../../../components/tabletoolbar/tableToolbar";
 import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 
@@ -117,14 +115,13 @@ import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 // import { useGlobalError } from "../../../context/ErrorContext";
 
 export default function Onlinegrievances() {
-  const { error } = useGlobalError();
   const navigate = useNavigate();
   const handleView = () => navigate(`/grievances/add`);
 
 
   return (
     <>
-      {error.type === "NONE" && (
+      {
         <CardComponent
           sx={{
             width: "100%",
@@ -155,7 +152,7 @@ export default function Onlinegrievances() {
             <NoDataFoundUI />
           </CardComponent>
         </CardComponent>
-      )}
+      }
     </>
   )
 }

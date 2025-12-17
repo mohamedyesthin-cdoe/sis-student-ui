@@ -2,7 +2,6 @@ import { Box, Divider, IconButton, useTheme } from "@mui/material";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CardComponent from "../../../components/card/Card";
-import { useGlobalError } from "../../../context/ErrorContext";
 import Customtext from "../../../components/inputs/customtext/Customtext";
 
 // ✅ Only import the academic PDF
@@ -20,11 +19,10 @@ export default function DocumentsCard() {
   ];
 
   const availableDocs = docs.filter((doc) => doc.file);
-  const { error } = useGlobalError()
 
   return (
     <>
-      {error.type == "NONE" && (
+      {
         <CardComponent sx={{ height: 'auto', display: "flex", flexDirection: "column" }}>
           {/* <Box className="py-2 px-3">
         <Customtext fieldName="Documents" sx={{ mb: 0 }} />
@@ -113,7 +111,7 @@ export default function DocumentsCard() {
             </Box>
           )}
         </CardComponent>
-      )}
+      }
     </>
   );
 }

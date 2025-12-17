@@ -20,7 +20,7 @@ import { ApiRoutes } from "../../../../constants/ApiConstants";
 
 import CustomInputText from "../../../../components/inputs/customtext/CustomInputText";
 import CardComponent from "../../../../components/card/Card";
-import ProgramFeeSkeleton from "../../../../components/card/skeletonloader/ProgramFeeSkeleton";
+import SyllabusAddSkeleton from "../../../../components/card/skeletonloader/SyllabusAddSkeleton";
 import CustomAutoComplete from "../../../../components/inputs/customtext/CustomAutoComplete";
 import AddButtonWithDialog from "./AddButtonWithDialog";
 
@@ -62,7 +62,7 @@ export default function SyllabusAdd() {
     const { id } = useParams();
     const { showAlert, showConfirm } = useAlert();
     const { loading } = useLoader();
-    const { error } = useGlobalError();
+    const { clearError } = useGlobalError();
     const [initialData, setInitialData] = useState(null);
 
     // Dynamic dropdowns
@@ -202,6 +202,8 @@ export default function SyllabusAdd() {
                     data: payload,
                 });
                 showAlert("Syllabus updated", "success");
+                clearError();
+                navigate('syllabus')
             } else {
                 await apiRequest({
                     url: ApiRoutes.SYLLABUSADD,
@@ -209,6 +211,8 @@ export default function SyllabusAdd() {
                     data: payload,
                 });
                 showAlert("Syllabus created", "success");
+                clearError();
+                navigate('syllabus')
             }
 
         } catch (err) {
@@ -220,308 +224,307 @@ export default function SyllabusAdd() {
 
     return (
         <>
-            {error.type === "NONE" &&
-                (loading ? (
-                    <ProgramFeeSkeleton />
-                ) : (
-                    <Box sx={{ p: { xs: 2, md: 4 } }}>
-                        <form onSubmit={handleSubmit(onSubmit)}>
-                            <CardComponent sx={{ p: 4 }}>
-                                <Grid container spacing={3}>
-                                    {/* COURSE CODE */}
-                                    <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Controller
-                                                name="course_code_id"
-                                                control={control}
-                                                render={({ field }) => (
-                                                    <CustomAutoComplete
-                                                        label="Course Code"
-                                                        field={field}
-                                                        options={courseCodeOptions}
-                                                        error={errors.course_code_id}
-                                                        helperText={errors.course_code_id?.message}
-                                                    />
-                                                )}
-                                            />
-                                        </Box>
-                                        <AddButtonWithDialog
-                                            label="Course Code"
-                                            onAdd={async (newValue) => {
-                                                const res = await apiRequest({
-                                                    url: ApiRoutes.COURSECODEADD,
-                                                    method: "post",
-                                                    data: { code: newValue },
-                                                });
-
-                                                const saved = res?.data || res;
-
-                                                // Refresh list from API
-                                                const list = await apiRequest({ url: ApiRoutes.COURSECODELIST, method: "get" });
-                                                setCourseCodeOptions((list[0].data || []).map(item => ({
-                                                    value: item.id,
-                                                    label: item.code,
-                                                })));
-
-                                                setValue("course_code_id", saved.id); // select added value
-                                            }}
-                                        />
-
-                                    </Grid>
-
-                                    {/* COURSE TITLE */}
-                                    <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Controller
-                                                name="course_title_id"
-                                                control={control}
-                                                render={({ field }) => (
-                                                    <CustomAutoComplete
-                                                        label="Course Title"
-                                                        field={field}
-                                                        options={courseTitleOptions}
-                                                        error={errors.course_title_id}
-                                                        helperText={errors.course_title_id?.message}
-                                                    />
-                                                )}
-                                            />
-                                        </Box>
-                                        <AddButtonWithDialog
-                                            label="Course Title"
-                                            onAdd={async (newValue) => {
-                                                const res = await apiRequest({
-                                                    url: ApiRoutes.COURSETITLEADD,
-                                                    method: "post",
-                                                    data: { title: newValue },
-                                                });
-
-                                                const saved = res?.data || res;
-
-                                                const list = await apiRequest({ url: ApiRoutes.COURSETITLELIST, method: "get" });
-                                                setCourseTitleOptions((list[0].data || []).map(item => ({
-                                                    value: item.id,
-                                                    label: item.title,
-                                                })));
-
-                                                setValue("course_title_id", saved.id);
-                                            }}
-                                        />
-
-                                    </Grid>
-
-                                    {/* CATEGORY */}
-                                    <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
-                                        <Box sx={{ flexGrow: 1 }}>
-                                            <Controller
-                                                name="course_category_id"
-                                                control={control}
-                                                render={({ field }) => (
-                                                    <CustomAutoComplete
-                                                        label="Category"
-                                                        field={field}
-                                                        options={categoryOptions}
-                                                        error={errors.course_category_id}
-                                                        helperText={errors.course_category_id?.message}
-                                                    />
-                                                )}
-                                            />
-                                        </Box>
-                                        <AddButtonWithDialog
-                                            label="Category"
-                                            onAdd={async (newValue) => {
-
-                                                const res = await apiRequest({
-                                                    url: ApiRoutes.COURSECATEGORYADD,
-                                                    method: "post",
-                                                    data: { name: newValue },
-                                                });
-
-                                                const saved = res?.data || res;
-
-                                                const list = await apiRequest({ url: ApiRoutes.COURSECATEGORYLIST, method: "get" });
-                                                setCategoryOptions((list[0].data || []).map(item => ({
-                                                    value: item.id,
-                                                    label: item.name,
-                                                })));
-
-                                                setValue("course_category_id", saved.id);
-                                            }}
-                                        />
-
-                                    </Grid>
-
-                                    {/* SEMESTER */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
+            {loading ? (
+                <SyllabusAddSkeleton />
+            ) : (
+                <Box sx={{ p: { xs: 2, md: 4 } }}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <CardComponent sx={{ p: 4 }}>
+                            <Grid container spacing={3}>
+                                {/* COURSE CODE */}
+                                <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
+                                    <Box sx={{ flexGrow: 1 }}>
                                         <Controller
-                                            name="semester"
+                                            name="course_code_id"
                                             control={control}
                                             render={({ field }) => (
                                                 <CustomAutoComplete
-                                                    label="Semester"
+                                                    label="Course Code"
                                                     field={field}
-                                                    options={semesterOptions.map(s => ({ value: s, label: s }))}
-                                                    error={errors.semester}
-                                                    helperText={errors.semester?.message}
+                                                    options={courseCodeOptions}
+                                                    error={errors.course_code_id}
+                                                    helperText={errors.course_code_id?.message}
                                                 />
                                             )}
                                         />
-                                    </Grid>
+                                    </Box>
+                                    <AddButtonWithDialog
+                                        label="Course Code"
+                                        onAdd={async (newValue) => {
+                                            const res = await apiRequest({
+                                                url: ApiRoutes.COURSECODEADD,
+                                                method: "post",
+                                                data: { code: newValue },
+                                            });
 
-                                    {/* CREDITS */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="credits"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="Credits"
-                                                    field={field}
-                                                    type="number"
-                                                    error={!!errors.credits}
-                                                    helperText={errors.credits?.message}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
+                                            const saved = res?.data || res;
 
-                                    {/* HOURS */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="tutorial_hours"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="Tutorial Hours"
-                                                    field={field}
-                                                    type="number"
-                                                    error={!!errors.tutorial_hours}
-                                                    helperText={errors.tutorial_hours?.message}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
+                                            // Refresh list from API
+                                            const list = await apiRequest({ url: ApiRoutes.COURSECODELIST, method: "get" });
+                                            setCourseCodeOptions((list[0].data || []).map(item => ({
+                                                value: item.id,
+                                                label: item.code,
+                                            })));
 
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="lecture_hours"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="Lecture Hours"
-                                                    field={field}
-                                                    type="number"
-                                                    error={!!errors.lecture_hours}
-                                                    helperText={errors.lecture_hours?.message}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
+                                            setValue("course_code_id", saved.id); // select added value
+                                        }}
+                                    />
 
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="practical_hours"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="Practical Hours"
-                                                    field={field}
-                                                    type="number"
-                                                    error={!!errors.practical_hours}
-                                                    helperText={errors.practical_hours?.message}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-
-                                    {/* TOTAL HOURS */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="total_hours"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="Total Hours (Auto)"
-                                                    field={field}
-                                                    type="number"
-                                                    disabled
-                                                    helperText="Calculated: Credits × 30"
-                                                    error={!!errors.total_hours}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-
-                                    {/* CIA */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="cia"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="CIA"
-                                                    field={field}
-                                                    type="number"
-                                                    error={!!errors.cia}
-                                                    helperText={errors.cia?.message}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-
-                                    {/* ESA */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="esa"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="ESA"
-                                                    field={field}
-                                                    type="number"
-                                                    error={!!errors.esa}
-                                                    helperText={errors.esa?.message}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
-
-                                    {/* TOTAL MARKS */}
-                                    <Grid size={{ xs: 12, md: 6 }}>
-                                        <Controller
-                                            name="total_marks"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <CustomInputText
-                                                    label="Total Marks (Auto)"
-                                                    field={field}
-                                                    type="number"
-                                                    disabled
-                                                    helperText="Calculated: CIA + ESA"
-                                                    error={!!errors.total_marks}
-                                                />
-                                            )}
-                                        />
-                                    </Grid>
                                 </Grid>
 
-                                {/* Buttons */}
-                                <Box sx={{ display: "flex", gap: 2, mt: 4, justifyContent: "flex-end" }}>
-                                    <Button variant="contained" onClick={handleBack}>
-                                        Back
-                                    </Button>
+                                {/* COURSE TITLE */}
+                                <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Controller
+                                            name="course_title_id"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <CustomAutoComplete
+                                                    label="Course Title"
+                                                    field={field}
+                                                    options={courseTitleOptions}
+                                                    error={errors.course_title_id}
+                                                    helperText={errors.course_title_id?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                    <AddButtonWithDialog
+                                        label="Course Title"
+                                        onAdd={async (newValue) => {
+                                            const res = await apiRequest({
+                                                url: ApiRoutes.COURSETITLEADD,
+                                                method: "post",
+                                                data: { title: newValue },
+                                            });
 
-                                    <Button variant="outlined" color="error" onClick={handleReset}>
-                                        Reset
-                                    </Button>
+                                            const saved = res?.data || res;
 
-                                    <Button type="submit" variant="contained" color="secondary" disabled={loading}>
-                                        {loading ? <CircularProgress size={20} /> : id ? "Update" : "Submit"}
-                                    </Button>
-                                </Box>
-                            </CardComponent>
-                        </form>
-                    </Box>
-                ))}
+                                            const list = await apiRequest({ url: ApiRoutes.COURSETITLELIST, method: "get" });
+                                            setCourseTitleOptions((list[0].data || []).map(item => ({
+                                                value: item.id,
+                                                label: item.title,
+                                            })));
+
+                                            setValue("course_title_id", saved.id);
+                                        }}
+                                    />
+
+                                </Grid>
+
+                                {/* CATEGORY */}
+                                <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Controller
+                                            name="course_category_id"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <CustomAutoComplete
+                                                    label="Category"
+                                                    field={field}
+                                                    options={categoryOptions}
+                                                    error={errors.course_category_id}
+                                                    helperText={errors.course_category_id?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                    <AddButtonWithDialog
+                                        label="Category"
+                                        onAdd={async (newValue) => {
+
+                                            const res = await apiRequest({
+                                                url: ApiRoutes.COURSECATEGORYADD,
+                                                method: "post",
+                                                data: { name: newValue },
+                                            });
+
+                                            const saved = res?.data || res;
+
+                                            const list = await apiRequest({ url: ApiRoutes.COURSECATEGORYLIST, method: "get" });
+                                            setCategoryOptions((list[0].data || []).map(item => ({
+                                                value: item.id,
+                                                label: item.name,
+                                            })));
+
+                                            setValue("course_category_id", saved.id);
+                                        }}
+                                    />
+
+                                </Grid>
+
+                                {/* SEMESTER */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="semester"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomAutoComplete
+                                                label="Semester"
+                                                field={field}
+                                                options={semesterOptions.map(s => ({ value: s, label: s }))}
+                                                error={errors.semester}
+                                                helperText={errors.semester?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* CREDITS */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="credits"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="Credits"
+                                                field={field}
+                                                type="number"
+                                                error={!!errors.credits}
+                                                helperText={errors.credits?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* HOURS */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="tutorial_hours"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="Tutorial Hours"
+                                                field={field}
+                                                type="number"
+                                                error={!!errors.tutorial_hours}
+                                                helperText={errors.tutorial_hours?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="lecture_hours"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="Lecture Hours"
+                                                field={field}
+                                                type="number"
+                                                error={!!errors.lecture_hours}
+                                                helperText={errors.lecture_hours?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="practical_hours"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="Practical Hours"
+                                                field={field}
+                                                type="number"
+                                                error={!!errors.practical_hours}
+                                                helperText={errors.practical_hours?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* TOTAL HOURS */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="total_hours"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="Total Hours (Auto)"
+                                                field={field}
+                                                type="number"
+                                                disabled
+                                                helperText="Calculated: Credits × 30"
+                                                error={!!errors.total_hours}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* CIA */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="cia"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="CIA"
+                                                field={field}
+                                                type="number"
+                                                error={!!errors.cia}
+                                                helperText={errors.cia?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* ESA */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="esa"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="ESA"
+                                                field={field}
+                                                type="number"
+                                                error={!!errors.esa}
+                                                helperText={errors.esa?.message}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+
+                                {/* TOTAL MARKS */}
+                                <Grid size={{ xs: 12, md: 6 }}>
+                                    <Controller
+                                        name="total_marks"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <CustomInputText
+                                                label="Total Marks (Auto)"
+                                                field={field}
+                                                type="number"
+                                                disabled
+                                                helperText="Calculated: CIA + ESA"
+                                                error={!!errors.total_marks}
+                                            />
+                                        )}
+                                    />
+                                </Grid>
+                            </Grid>
+
+                            {/* Buttons */}
+                            <Box sx={{ display: "flex", gap: 2, mt: 4, justifyContent: "flex-end" }}>
+                                <Button variant="contained" onClick={handleBack}>
+                                    Back
+                                </Button>
+
+                                <Button variant="outlined" color="error" onClick={handleReset}>
+                                    Reset
+                                </Button>
+
+                                <Button type="submit" variant="contained" color="secondary" disabled={loading}>
+                                    {loading ? <CircularProgress size={20} /> : id ? "Update" : "Submit"}
+                                </Button>
+                            </Box>
+                        </CardComponent>
+                    </form>
+                </Box>
+            )}
         </>
     );
 }

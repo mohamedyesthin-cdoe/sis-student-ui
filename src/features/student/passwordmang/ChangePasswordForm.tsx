@@ -15,7 +15,6 @@ import CardComponent from "../../../components/card/Card";
 import { useAlert } from "../../../context/AlertContext";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
-import { useGlobalError } from "../../../context/ErrorContext";
 import Customtext from "../../../components/inputs/customtext/Customtext";
 
 // Validation schema
@@ -40,7 +39,6 @@ const ChangePasswordForm = () => {
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const { error } = useGlobalError()
 
     const {
         control,
@@ -79,7 +77,7 @@ const ChangePasswordForm = () => {
 
     return (
         <>
-            {error.type == "NONE" && (
+            {
                 <Box sx={{ maxWidth: 500, mx: "auto", mt: 5 }}>
                     <CardComponent sx={{ p: 4, borderRadius: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                         <Customtext fieldName={'Change Password'} sx={{
@@ -204,7 +202,7 @@ const ChangePasswordForm = () => {
                         </form>
                     </CardComponent>
                 </Box>
-            )}
+            }
         </>
     );
 };

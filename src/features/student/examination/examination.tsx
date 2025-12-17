@@ -1,13 +1,11 @@
 import CardComponent from "../../../components/card/Card";
 import { ComingSoonUI } from "../../../components/card/errorUi/ComingSoonUI";
-import { useGlobalError } from "../../../context/ErrorContext";
 
 export default function Examination() {
-  const { error } = useGlobalError();
 
   return (
     <>
-      {error.type === "NONE" && (
+      {
         <CardComponent
           sx={{
             width: "100%",
@@ -19,7 +17,7 @@ export default function Examination() {
         >
           <ComingSoonUI />
         </CardComponent>
-      )}
+      }
     </>
   )
 }

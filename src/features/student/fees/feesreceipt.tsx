@@ -17,7 +17,6 @@ import { ApiRoutes } from "../../../constants/ApiConstants";
 import { getValue } from "../../../utils/localStorageUtil";
 import { toWords } from "number-to-words";
 import theme from "../../../styles/theme";
-import { useGlobalError } from "../../../context/ErrorContext";
 import FeesReceiptSkeleton from "../../../components/card/skeletonloader/FeesReceiptSkeleton";
 import { useLoader } from "../../../context/LoaderContext";
 import Customtext from "../../../components/inputs/customtext/Customtext";
@@ -35,7 +34,6 @@ export default function FeesReceipt() {
   const [paymentDate, setPaymentDate] = useState<string>("");
 
   const printRef = useRef<HTMLDivElement>(null);
-  const { error } = useGlobalError();
   const { loading } = useLoader();
 
 
@@ -111,7 +109,7 @@ export default function FeesReceipt() {
 
   return (
     <>
-      {error.type === "NONE" && (
+      {
         loading ? (
           <FeesReceiptSkeleton />
         ) : (
@@ -316,15 +314,16 @@ export default function FeesReceipt() {
                 color="primary"
                 startIcon={<PrintIcon />}
                 onClick={handlePrint}
-                sx={{ fontSize: { xs: "12px", sm: "14px" }, px: { xs: 2, sm: 3 }, py: { xs: 0.8, sm: 1 },
-              my:2 }}
+                sx={{
+                  fontSize: { xs: "12px", sm: "14px" }, px: { xs: 2, sm: 3 }, py: { xs: 0.8, sm: 1 },
+                  my: 2
+                }}
               >
                 Print
               </Button>
             </Box>
           </>
         )
-      )
       }
     </>
   );

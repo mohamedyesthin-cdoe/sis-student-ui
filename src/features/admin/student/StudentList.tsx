@@ -15,7 +15,6 @@ import { useAlert } from '../../../context/AlertContext';
 import UploadExcelDialog from '../../../components/alertcard/Excelcard';
 import * as XLSX from "xlsx";
 import { setValue } from '../../../utils/localStorageUtil';
-import { useGlobalError } from '../../../context/ErrorContext';
 import TableSkeleton from '../../../components/card/skeletonloader/Tableskeleton';
 import { useLoader } from '../../../context/LoaderContext';
 import { NoDataFoundUI } from '../../../components/card/errorUi/NoDataFoundUI';
@@ -30,7 +29,6 @@ export default function StudentTable() {
   const { showAlert } = useAlert();
   const [showSearch] = React.useState(true);
   const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
-  const { error } = useGlobalError();
   const { loading } = useLoader();
 
 
@@ -252,7 +250,7 @@ export default function StudentTable() {
 
   return (
     <>
-      {error.type === "NONE" && (
+      {
         loading ? (
           <TableSkeleton />
         ) : filteredStudents.length == 0 ? (
@@ -381,7 +379,7 @@ export default function StudentTable() {
               />
             </CardComponent>
           )
-      )}
+      }
     </>
   )
 

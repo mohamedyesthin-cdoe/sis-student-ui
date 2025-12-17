@@ -11,9 +11,8 @@ import { exportToExcel } from "../../../constants/excelExport";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton";
-import { useGlobalError } from "../../../context/ErrorContext";
 import { useLoader } from "../../../context/LoaderContext";
-import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
+import { useGlobalError } from "../../../context/ErrorContext";
 
 export default function FacultyList() {
   const navigate = useNavigate();
@@ -21,13 +20,15 @@ export default function FacultyList() {
   const [rowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState("");
   const [showSearch] = React.useState(true);
+  const { clearError } = useGlobalError();
+
 
   const [faculties, setFaculties] = React.useState<any[]>([]);
-  const { error } = useGlobalError();
   const { loading } = useLoader();
 
   // Fetch Faculty List
   React.useEffect(() => {
+    clearError();
     apiRequest({ url: ApiRoutes.GETFACULTYLIST, method: "get" })
       .then((data) => setFaculties(Array.isArray(data) ? data : data.data))
       .catch(() => setFaculties([]));
@@ -67,104 +68,104 @@ export default function FacultyList() {
 
   // Navigate to Add/Edit
   const handleAdd = () => navigate("/faculty/add");
-  const handleEdit = (row: any) => navigate(`/faculty/add?id=${row.id}`);
+  const handleEdit = (row: any) => navigate(`/faculty/add?id=${row.employee_id}`);
 
   return (
     <>
-      {error.type === "NONE" && (
+      {
         loading ? (
           <TableSkeleton />
-        ) 
-        // : filteredFaculties.length === 0 ? (
-        //   <CardComponent
-        //     sx={{
-        //       width: "100%",
-        //       maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-        //       mx: "auto",
-        //       p: 3,
-        //       mt: 3,
-        //     }}
-        //   >
-        //     <NoDataFoundUI />
-        //   </CardComponent>
-        // ) 
-        : (
-          <CardComponent
-            sx={{
-              width: "100%",
-              maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-              mx: "auto",
-              p: 3,
-              mt: 3,
-            }}
-          >
-            {/* Toolbar */}
-            <TableToolbar
-              filters={[
-                {
-                  key: "search",
-                  label: "Search",
-                  type: "text",
-                  value: searchText,
-                  onChange: (val) => setSearchText(val),
-                  placeholder: "Search by name, email, phone...",
-                  visible: showSearch,
-                },
-              ]}
-              actions={[
-                {
-                  label: "Export Excel",
-                  color: "secondary",
-                  startIcon: <FileDownloadIcon />,
-                  onClick: handleExportExcel,
-                },
-                {
-                  label: "Add Faculty",
-                  color: "primary",
-                  onClick: handleAdd,
-                },
-              ]}
-            />
-
-            {/* Table */}
-            <ReusableTable
-              columns={[
-                { key: "employee_id", label: "Employee ID" },
-                { key: "full_name", label: "Full Name" },
-                { key: "email", label: "Email" },
-                { key: "phone", label: "Mobile" },
-                { key: "department", label: "Department" },
-                { key: "designation", label: "Designation" },
-              ]}
-              data={filteredFaculties}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              actions={[
-                {
-                  label: "Edit",
-                  icon: <EditIcon fontSize="small" />,
-                  onClick: (row) => handleEdit(row),
-                  color: "primary",
-                },
-                {
-                  label: "Delete",
-                  icon: <DeleteIcon fontSize="small" />,
-                  onClick: () => {},
-                  color: "error",
-                },
-              ]}
-            />
-
-            {/* Pagination */}
-            <TablePagination
-              page={page}
-              rowsPerPage={rowsPerPage}
-              totalCount={filteredFaculties.length}
-              onPageChange={(newPage) => setPage(newPage)}
-            />
-          </CardComponent>
         )
-      )}
+          // : filteredFaculties.length === 0 ? (
+          //   <CardComponent
+          //     sx={{
+          //       width: "100%",
+          //       maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+          //       mx: "auto",
+          //       p: 3,
+          //       mt: 3,
+          //     }}
+          //   >
+          //     <NoDataFoundUI />
+          //   </CardComponent>
+          // ) 
+          : (
+            <CardComponent
+              sx={{
+                width: "100%",
+                maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+                mx: "auto",
+                p: 3,
+                mt: 3,
+              }}
+            >
+              {/* Toolbar */}
+              <TableToolbar
+                filters={[
+                  {
+                    key: "search",
+                    label: "Search",
+                    type: "text",
+                    value: searchText,
+                    onChange: (val) => setSearchText(val),
+                    placeholder: "Search by name, email, phone...",
+                    visible: showSearch,
+                  },
+                ]}
+                actions={[
+                  {
+                    label: "Export Excel",
+                    color: "secondary",
+                    startIcon: <FileDownloadIcon />,
+                    onClick: handleExportExcel,
+                  },
+                  {
+                    label: "Add Faculty",
+                    color: "primary",
+                    onClick: handleAdd,
+                  },
+                ]}
+              />
+
+              {/* Table */}
+              <ReusableTable
+                columns={[
+                  { key: "employee_id", label: "Employee ID" },
+                  { key: "full_name", label: "Full Name" },
+                  { key: "email", label: "Email" },
+                  { key: "phone", label: "Mobile" },
+                  { key: "department", label: "Department" },
+                  { key: "designation", label: "Designation" },
+                ]}
+                data={filteredFaculties}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                actions={[
+                  {
+                    label: "Edit",
+                    icon: <EditIcon fontSize="small" />,
+                    onClick: (row) => handleEdit(row),
+                    color: "primary",
+                  },
+                  {
+                    label: "Delete",
+                    icon: <DeleteIcon fontSize="small" />,
+                    onClick: () => { },
+                    color: "error",
+                  },
+                ]}
+              />
+
+              {/* Pagination */}
+              <TablePagination
+                page={page}
+                rowsPerPage={rowsPerPage}
+                totalCount={filteredFaculties.length}
+                onPageChange={(newPage) => setPage(newPage)}
+              />
+            </CardComponent>
+          )
+      }
     </>
   );
 }
