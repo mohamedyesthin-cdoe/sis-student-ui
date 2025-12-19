@@ -29,7 +29,7 @@ async def fetch_students_list() -> dict:
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Error decoding payload JSON")
     
-    async with httpx.AsyncClient(timeout=10.0) as client:
+    async with httpx.AsyncClient(timeout=100.0) as client:
         try:
             response = await client.post(api_url, headers=headers, json=payload)
             response.raise_for_status()
@@ -158,3 +158,23 @@ async def push_deb_student_details(db: Session) -> dict:
             raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")
         except json.JSONDecodeError as e:
             raise HTTPException(status_code=500, detail=f"JSON decode error: {str(e)}")
+        
+from typing import Dict, Any
+
+async def create_odl_student(token: str, student_data: Dict[str, Any]) -> Dict[str, Any]:
+    url = "https://digicampus.sriramachandra.edu.in/api/api-external/save-ext-stu"
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "multipart/form-data",
+    }
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            url,
+            headers=headers,
+            data=student_data,
+        )
+
+        response.raise_for_status()
+        return response.json()

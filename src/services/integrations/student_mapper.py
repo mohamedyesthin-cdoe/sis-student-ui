@@ -67,7 +67,7 @@ def safe_float(value):
 
 def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
     mapped_data = {
-        "program_id": int(get_first_id(api_response.get("campus"))),
+        "program_id": int(get_first_id(api_response.get("campus")) or 0),
         "application_no": api_response.get("application_no"),
         "registration_no": "",
         "title": get_title(api_response.get("applicant_title")),
@@ -82,7 +82,7 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
         "whatsapp_number": api_response.get("field_73702", ""),
         "marital_status": get_title(api_response.get("marital_status")),
         "religion": get_title(api_response.get("religion")),
-        "nationality": get_first_country(api_response.get("nationality")),
+        "nationality": get_title(api_response.get("nationality")),
         "category": get_title(api_response.get("category")),
         "caste": api_response.get("field_73695") or None,
         "aadhaar_number": api_response.get("aadhar_card_no") or None,
@@ -103,7 +103,7 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
             "corr_city": get_title(api_response.get("correspondence_city")),
             "corr_district": get_title(api_response.get("correspondence_district")),
             "corr_state": get_title(api_response.get("correspondence_state")),
-            "corr_country": get_first_country(api_response.get("correspondence_country")),
+            "corr_country": get_title(api_response.get("correspondence_country")),
             "corr_pin": api_response.get("correspondence_pincode", ""),
             "corr_addr_same": api_response.get("permanent_same_as_correspondence") == "Yes",
             "perm_addr1": api_response.get("permanent_address1") or None,
@@ -111,7 +111,7 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
             "perm_city": get_title(api_response.get("permanent_city")),
             "perm_district": get_title(api_response.get("permanent_district")),
             "perm_state": get_title(api_response.get("permanent_state")),
-            "perm_country": get_first_country(api_response.get("permanent_country")),
+            "perm_country": get_title(api_response.get("permanent_country")),
             "perm_pin": api_response.get("permanent_pincode") or None
         },
 

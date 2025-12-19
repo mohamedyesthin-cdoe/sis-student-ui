@@ -9,7 +9,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.utils.hash import generate_password, hash_password
 from src.utils.email import send_credentials_email
-    
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from src.utils.logger import setup_logger
+
+logger = setup_logger()
+
 class StaffService:
     def __init__(self, db: Session):
         """Initialize the StaffService with a database session.
@@ -24,8 +28,8 @@ class StaffService:
     def create_staff(self, data: StaffBase) -> Staff :
         try:
             existing_user = self.user_repo.get_user_by_username(self.db, data.employee_id)
-            print("Existing User:", existing_user)
             if existing_user:
+                logger.warning(f"Attempt to create staff with existing employee ID: {data.employee_id}")
                 raise HTTPException(status_code=400, detail="User with this employee ID already exists.")
         
             password = generate_password()
@@ -45,20 +49,33 @@ class StaffService:
             staff_data["user_id"] = user.id
             staff = self.repo.create_staff(staff_data)
             #await send_credentials_email(data.email, data.employee_id, password)
+            logger.info(f"Staff created successfully with ID: {staff.id} and linked User ID: {user.id}")
             return {
                 "id": staff.id,
                 "user_id": user.id,
             }
         
-        except HTTPException:
+        except IntegrityError:
             self.db.rollback()
-            raise
+            logger.error(f"Integrity error while creating staff with email: {data.email} or employee ID: {data.employee_id}")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Staff with this email or employee ID already exists."
+            )
 
-        except Exception as e:
+        except SQLAlchemyError as e:
             self.db.rollback()
+            logger.error(f"Database error while creating staff: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Error creating staff: {str(e)}"
+            )
+        
+        except Exception as e:
+            logger.error(f"Unexpected error while creating staff: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="An unexpected error occurred while creating staff."
             )
 
     

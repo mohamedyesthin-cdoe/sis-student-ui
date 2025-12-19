@@ -15,9 +15,9 @@ class Country(Base):
     
     # Relationships
     states = relationship("State", back_populates="country", cascade="all, delete-orphan")
-    address_details_corr = relationship("AddressDetails", back_populates="corr_country_rel", foreign_keys="[AddressDetails.corr_country]")
-    address_details_perm = relationship("AddressDetails", back_populates="perm_country_rel", foreign_keys="[AddressDetails.perm_country]")
-    students_nationality = relationship("Student", back_populates="nationality_country", foreign_keys="Student.nationality")
+    #address_details_corr = relationship("AddressDetails", back_populates="corr_country_rel", foreign_keys="[AddressDetails.corr_country]")
+    #address_details_perm = relationship("AddressDetails", back_populates="perm_country_rel", foreign_keys="[AddressDetails.perm_country]")
+    #students_nationality = relationship("Student", back_populates="nationality_country", foreign_keys="Student.nationality")
     addresses = relationship("Address", back_populates="country")  # <-- Add this
 
 class State(Base):

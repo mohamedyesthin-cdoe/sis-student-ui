@@ -9,7 +9,6 @@ from src.models.base import AuditableBase
 from datetime import datetime
 from src.models.master import Programe
 
-
 class Student(AuditableBase):
     __tablename__ = "students"
 
@@ -37,7 +36,7 @@ class Student(AuditableBase):
     # Demographics
     marital_status = Column(String(10), nullable=False)
     religion = Column(String(20), nullable=False)
-    nationality = Column(Integer, ForeignKey("countries.id"), nullable=False)
+    nationality = Column(String(30), nullable=False)
     
     # Caste/Category
     category = Column(String(10), nullable=False)
@@ -57,18 +56,19 @@ class Student(AuditableBase):
     locality = Column(String(10), nullable=True)
 
     # Passport Details
-    passport_issued_country = Column(Integer, ForeignKey("countries.id"), nullable=True)
+    passport_issued_country = Column(String(30), nullable=False)
     passport_number = Column(String(20), nullable=True)
     passport_expiry_date = Column(Date, nullable=True)
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)
     is_pushed = Column(Boolean, default=False)
+    is_pushed_digi = Column(Boolean, default=False)
     is_synced = Column(Boolean, default=False)
     
     # Relationships
     #nationality_country = relationship("Country", back_populates="students_nationality")
-    nationality_country = relationship("Country", back_populates="students_nationality", foreign_keys=[nationality])
+    #nationality_country = relationship("Country", back_populates="students_nationality", foreign_keys=[nationality])
     programe = relationship("Programe", backref="students")
     address_details = relationship("AddressDetails", back_populates="student", uselist=False)
     academic_details = relationship("AcademicDetails", back_populates="student", uselist=False)
@@ -95,10 +95,10 @@ class AddressDetails(Base):
     # Correspondence Address
     corr_addr1 = Column(String(100), nullable=False)
     corr_addr2 = Column(String(100))
-    corr_city = Column(String(30), nullable=False)  
+    corr_city = Column(String(30))  
     corr_state = Column(String(30))
     corr_district = Column(String(30))
-    corr_country = Column(Integer, ForeignKey("countries.id"), nullable=False)
+    corr_country = Column(String(30), nullable=False)
     corr_pin = Column(String(10), nullable=False)
     corr_addr_same = Column(Boolean, default=True)
     # Permanent Address
@@ -107,11 +107,9 @@ class AddressDetails(Base):
     perm_city = Column(String(30))
     perm_state = Column(String(30))
     perm_district = Column(String(30))
-    perm_country = Column(Integer, ForeignKey("countries.id"))
+    perm_country = Column(String(30), nullable=False)
     perm_pin = Column(String(10))
 
-    corr_country_rel = relationship("Country", foreign_keys=[corr_country], back_populates="address_details_corr")
-    perm_country_rel = relationship("Country", foreign_keys=[perm_country], back_populates="address_details_perm")
     student = relationship("Student", back_populates="address_details")
 
 class AcademicDetails(Base):

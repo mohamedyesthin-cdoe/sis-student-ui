@@ -108,6 +108,33 @@ class StudentRepository(BaseRepository[Student]):
         result = self.db.query(Payment).filter(Payment.student_id == student_id).order_by(Payment.payment_date.desc()).first()
         return result.payment_date if result else None
         
+    def bulk_update_student(self, api_response: dict):
+        try:
+            student_data = map_api_to_student_schema(api_response)
+            # Fetch existing student by application_no or email
+            existing_student = self.db.query(Student).filter(
+                (Student.application_no == student_data["application_no"]) |
+                (Student.email == student_data["email"])
+            ).first()
+            if not existing_student:
+                raise ValueError("Student does not exist for update")
+
+            # Update fields
+            for key, value in student_data.items():
+                if hasattr(existing_student, key):
+                    setattr(existing_student, key, value)
+
+            # self.db.commit()
+            # self.db.refresh(existing_student)
+            return existing_student.id
+
+        except IntegrityError as e:
+            self.db.rollback()
+            raise ValueError(f"Database integrity error during update: {str(e)}")
+        except Exception as e:
+            self.db.rollback()
+            raise ValueError(f"Error updating student: {str(e)}")
+        
     def bulk_create_student(self, api_response: dict):
         try:
             # --- 1. Fetch program and validate ---

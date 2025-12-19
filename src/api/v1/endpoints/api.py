@@ -5,7 +5,12 @@ from src.services.api_service import ApiService
 from src.core.security.jwt import verify_api_key
 from src.schemas.payment import StandardResponse
 from src.schemas.master import ProgrameOut
+from src.schemas.api import OdlStudentResponse
 from src.db.session import get_db
+from src.utils.logger import setup_logger
+from sqlalchemy.exc import SQLAlchemyError
+
+logger = setup_logger()
 
 router = APIRouter()
 
@@ -25,6 +30,7 @@ def get_payments(
             next_page=next_page,
             previous_page=previous_page
         )
+        logger.info("Payments fetched successfully")
         return result
     
     except Exception as e:
@@ -41,3 +47,14 @@ def get_program_fees(db: Session = Depends(get_db)):
         return program_fees
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
+    
+@router.get("/get/student/list", response_model=List[dict])
+async def get_student_data(db: Session = Depends(get_db)):
+    """Retrieve program fees by program ID."""
+    try:
+        service = ApiService(db)
+        program_fees = await service.post_student_data()
+        return program_fees
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
+    

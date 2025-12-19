@@ -14,10 +14,10 @@ from src.schemas.payment import PaymentResponse
 class AddressBase(BaseModel):
     corr_addr1: str
     corr_addr2: Optional[str] = None
-    corr_city: str
+    corr_city: Optional[str] = None
     corr_state: Optional[str] = None
     corr_district: Optional[str] = None
-    corr_country: int
+    corr_country: str
     corr_pin: str
     corr_addr_same: bool = True
     perm_addr1: Optional[str] = None
@@ -25,7 +25,7 @@ class AddressBase(BaseModel):
     perm_city: Optional[str] = None
     perm_state: Optional[str] = None
     perm_district: Optional[str] = None
-    perm_country: int
+    perm_country: str
     perm_pin: Optional[str] = None
 
 class AddressUpdate(BaseModel):
@@ -34,7 +34,7 @@ class AddressUpdate(BaseModel):
     corr_city: Optional[str] = None
     corr_state: Optional[str] = None
     corr_district: Optional[str] = None
-    corr_country: Optional[int] = None
+    corr_country: Optional[str] = None
     corr_pin: Optional[str] = None
     corr_addr_same: Optional[bool] = None
     perm_addr1: Optional[str] = None
@@ -42,7 +42,7 @@ class AddressUpdate(BaseModel):
     perm_city: Optional[str] = None
     perm_state: Optional[str] = None
     perm_district: Optional[str] = None
-    perm_country: Optional[int] = None
+    perm_country: Optional[str] = None
     perm_pin: Optional[str] = None
 
 class AddressDetailsResponse(AddressBase):
@@ -218,7 +218,7 @@ class StudentBase(BaseModel):
     whatsapp_number: str
     marital_status: str
     religion: str
-    nationality: int
+    nationality: str
     category: str
     caste: Optional[str] = None
     aadhaar_number: str
@@ -282,7 +282,7 @@ class StudentUpdate(BaseModel):
     whatsapp_number: Optional[str] = None
     marital_status: Optional[str] = None
     religion: Optional[str] = None
-    nationality: Optional[int] = None
+    nationality: Optional[str] = None
     category: Optional[str] = None
     caste: Optional[str] = None
     aadhaar_number: Optional[str] = None
@@ -321,7 +321,7 @@ class StudentResponse(BaseModel):
     whatsapp_number: str
     marital_status: str
     religion: str
-    nationality: int
+    nationality: str
     category: str
     caste: Optional[str]
     aadhaar_number: Optional[str]
@@ -331,7 +331,7 @@ class StudentResponse(BaseModel):
     current_employment: Optional[str]
     annual_income: Optional[str]
     locality: Optional[str]
-    passport_issued_country: Optional[int]
+    passport_issued_country: Optional[str]
     passport_number: Optional[str]
     passport_expiry_date: Optional[date]
     is_deleted: bool

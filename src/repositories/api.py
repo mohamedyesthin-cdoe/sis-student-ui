@@ -56,3 +56,13 @@ class ApiRepository:
     def get_program_fees(self) -> List[Programe]:
         programs = self.db.query(Programe).options(joinedload(Programe.fee)).all()
         return programs
+    
+    def get_all_students(self) -> List[Student]:
+        students = self.db.query(Student).options(
+            joinedload(Student.programe),
+            joinedload(Student.address_details),
+            joinedload(Student.academic_details),
+            joinedload(Student.deb_details)
+        ).order_by(Student.id.asc()).filter(Student.is_pushed_digi == False).all()
+        print(students[0].programe.programe)
+        return students

@@ -104,6 +104,62 @@ class StudentService:
     #     except Exception as e:
     #         logger.error(f"Error syncing students: {str(e)}")
     #         raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")
+    
+    async def update_existing_sync_student(self):
+        try:
+            # Fetch from ERP
+            students_data = await fetch_students_list()
+            logger.info(f"Fetched {len(students_data)} students from external API.")
+
+            if not students_data:
+                return {"message": "No students found in external API.", "total_sync_count": 0}
+
+            # Extract ERP list safely
+            if isinstance(students_data, dict) and "data" in students_data and "list" in students_data["data"]:
+                value_list = students_data["data"]["list"]
+            else:
+                value_list = students_data
+
+            # FETCH all already-synced application numbers from DB
+            existing_rows = self.student_repo.get_all_application_nos()
+            
+            # Convert into a set of strings
+            existing_ids = {
+                row if isinstance(row, str) else row.get("application_no")
+                for row in existing_rows
+            }
+
+            logger.info(f"Existing students in DB: {len(existing_ids)}")
+
+            # IDENTIFY ONLY EXISTING STUDENTS TO UPDATE
+            students_to_update = []  
+            for student in value_list:
+                app_no = student.get("application_no")
+                if not app_no:
+                    logger.warning(f"Skipping student with missing application_no: {student}")
+                    continue
+
+                if app_no in existing_ids:
+                    students_to_update.append(student)
+
+            logger.info(f"Students to update: {len(students_to_update)}")
+
+            # UPDATE EXISTING STUDENTS
+            if students_to_update:
+                for student in students_to_update:
+                    print(student)
+                    self.student_repo.bulk_update_student(student)
+
+                return {
+                    "message": "Students updated successfully",
+                    "total_sync_count": len(students_to_update)
+                }
+
+            return {"message": "No existing students to update.", "total_sync_count": 0}
+        
+        except Exception as e:
+            logger.error(f"Error updating students: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to update students: {str(e)}")
 
     async def sync_students(self):
         try:
@@ -147,6 +203,7 @@ class StudentService:
             # SYNC NEW STUDENTS
             if new_students:
                 for student in new_students:
+                    print(student)
                     self.student_repo.bulk_create_student(student)
 
                 return {

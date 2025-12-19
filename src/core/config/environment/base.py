@@ -35,6 +35,9 @@ class BaseConfig(BaseSettings):
     AWS_REGION: str
     AWS_S3_BUCKET: str
     AWS_S3_FOLDER: str = "cdoedocument"
+    DIGICAMPUS_API_URL: str
+    DIGICAMPUS_USERNAME: str
+    DIGICAMPUS_PASSWORD: str
 
     class Config:
         env_file = ".env.dev"
