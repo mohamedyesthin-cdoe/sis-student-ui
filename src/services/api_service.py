@@ -12,7 +12,7 @@ import requests
 import time
 from src.core.config import settings
 from datetime import datetime, date
-from src.services.integrations.student_api import create_odl_student
+from src.services.integrations.student_api import create_odl_student, update_odl_student
 
 DIGICAMPUS_USERNAME = settings.DIGICAMPUS_USERNAME
 DIGICAMPUS_PASSWORD = settings.DIGICAMPUS_PASSWORD
@@ -281,14 +281,46 @@ class ApiService:
             try:
                 payload = self.to_digicampus_payload(s)
                 
-                # api_response = await create_odl_student(token, payload)
-                # #results.append(payload)
-                # results.append({
-                #     "application_no": s.application_no,
-                #     "status": "success",
-                #     "response": api_response
-                # })
+                api_response = await create_odl_student(token, payload)
+                results.append({
+                    "application_no": s.application_no,
+                    "status": "success",
+                    "response": api_response
+                })
+                
+                s.is_pushed_digi = True
+                self.repo.db.commit()
+                self.repo.db.refresh(s)
                 results.append(payload)
+
+            except Exception as e:
+                logger.exception("Digicampus sync failed")
+                results.append({
+                    "application_no": s.application_no,
+                    "status": "failed",
+                    "error": str(e)
+                })
+
+        return results
+    
+    async def put_student_data(self) -> list[dict]:
+        students = self.repo.get_updated_students()
+        results = []
+        token = self._get_auth_token()
+        
+        for s in students:
+            try:
+                payload = self.to_digicampus_payload(s)
+                
+                api_response = await update_odl_student(token, payload, s.application_no)
+                results.append(payload)
+                results.append({
+                    "application_no": s.application_no,
+                    "status": "success",
+                    "response": api_response
+                })
+                results.append(payload)
+                print("Payload prepared for PUT:", payload)
 
             except Exception as e:
                 logger.exception("Digicampus sync failed")

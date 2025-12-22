@@ -56,7 +56,7 @@ class Student(AuditableBase):
     locality = Column(String(10), nullable=True)
 
     # Passport Details
-    passport_issued_country = Column(String(30), nullable=False)
+    passport_issued_country = Column(String(30), nullable=True)
     passport_number = Column(String(20), nullable=True)
     passport_expiry_date = Column(Date, nullable=True)
     
@@ -65,6 +65,7 @@ class Student(AuditableBase):
     is_pushed = Column(Boolean, default=False)
     is_pushed_digi = Column(Boolean, default=False)
     is_synced = Column(Boolean, default=False)
+    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     #nationality_country = relationship("Country", back_populates="students_nationality")

@@ -57,4 +57,14 @@ async def get_student_data(db: Session = Depends(get_db)):
         return program_fees
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
-    
+
+@router.get("/put/student/list", response_model=List[dict])
+async def get_student_data(db: Session = Depends(get_db)):
+    """Retrieve program fees by program ID."""
+    try:
+        service = ApiService(db)
+        program_fees = await service.put_student_data()
+        return program_fees
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
+ 
