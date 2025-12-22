@@ -25,7 +25,7 @@ class AddressBase(BaseModel):
     perm_city: Optional[str] = None
     perm_state: Optional[str] = None
     perm_district: Optional[str] = None
-    perm_country: str
+    perm_country: Optional[str] = None
     perm_pin: Optional[str] = None
 
 class AddressUpdate(BaseModel):
