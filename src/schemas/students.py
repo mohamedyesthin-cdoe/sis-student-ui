@@ -331,7 +331,7 @@ class StudentResponse(BaseModel):
     current_employment: Optional[str]
     annual_income: Optional[str]
     locality: Optional[str]
-    passport_issued_country: Optional[str]
+    passport_issued_country: Optional[str] = None
     passport_number: Optional[str]
     passport_expiry_date: Optional[date]
     is_deleted: bool
