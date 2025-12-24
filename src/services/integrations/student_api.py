@@ -199,7 +199,7 @@ async def create_odl_student(token: str, student_data: Dict[str, Any]) -> Dict[s
 
 async def update_odl_student(token: str, student_data: Dict[str, Any], registration_no: str) -> Dict[str, Any]:
     url = f"https://digicampus.sriramachandra.edu.in/api/api-external/edit-ext-stu/{registration_no}"
-    print("Updating student with data:", url)
+
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "multipart/form-data",
