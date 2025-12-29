@@ -114,18 +114,30 @@ class StudentRepository(BaseRepository[Student]):
             student_data = map_patch_api_to_student_schema(api_response)
             print(student_data)
             # Fetch existing student by application_no or email
-            existing_student = self.db.query(Student).filter(
-                (Student.application_no == student_data["application_no"])
-            ).first()
+            existing_student = (
+                self.db.query(Student)
+                .filter(Student.application_no == student_data.get("application_no"))
+                .first()
+            )
+
             print(existing_student)
+
             if not existing_student:
                 raise ValueError("Student does not exist for update")
 
+            skip_fields = {"id", "created_at", "application_no"}
+
+            updated_fields = []
             # Update fields
             for key, value in student_data.items():
-                if hasattr(existing_student, key):
+                if (
+                    hasattr(existing_student, key)
+                    and key not in skip_fields
+                    and value not in (None, "", "null", "NULL")
+                ):
                     setattr(existing_student, key, value)
-
+                    updated_fields.append(key)
+            
             self.db.commit()
             self.db.refresh(existing_student)
             return existing_student.id
