@@ -115,11 +115,6 @@ class StudentRepository(BaseRepository[Student]):
             print(student_data)
             # Fetch existing student by application_no or email
 
-            for restricted in ["id", "application_no"]:
-                if restricted in student_data:
-                    print(f"⚠️ Not permitted to update: {restricted}")
-                    student_data.pop(restricted, None)
-
             existing_student = (
                 self.db.query(Student)
                 .filter(Student.application_no == student_data.get("application_no"))
