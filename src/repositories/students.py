@@ -114,6 +114,12 @@ class StudentRepository(BaseRepository[Student]):
             student_data = map_patch_api_to_student_schema(api_response)
             print(student_data)
             # Fetch existing student by application_no or email
+
+            for restricted in ["id", "application_no"]:
+                if restricted in student_data:
+                    print(f"⚠️ Not permitted to update: {restricted}")
+                    student_data.pop(restricted, None)
+
             existing_student = (
                 self.db.query(Student)
                 .filter(Student.application_no == student_data.get("application_no"))
@@ -127,19 +133,16 @@ class StudentRepository(BaseRepository[Student]):
 
             # List of valid columns in Student model
             student_columns = {column.name for column in Student.__table__.columns}
-
+            print(student_columns)
             for key, value in student_data.items():
                 if key in student_columns:                 
                     setattr(existing_student, key, value)
                 else:
-                    # 🚫 Ignore nested objects / relationships to avoid errors
-                    # Example: document_details, address_details
                     print(f"Skipping relation/nested field during update: {key}")
-
                 
-                self.db.commit()
-                self.db.refresh(existing_student)
-                return existing_student.id
+            self.db.commit()
+            self.db.refresh(existing_student)
+            return existing_student.id
 
         except IntegrityError as e:
             self.db.rollback()
