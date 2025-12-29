@@ -11,7 +11,8 @@ from src.schemas.students import StudentBase
 from sqlalchemy.exc import IntegrityError
 from src.utils.register_number import generate_registration_number
 from src.services.integrations.student_mapper import (
-    map_api_to_student_schema, timestamp_to_date, safe_float, parse_date, ensure_datetime
+    map_api_to_student_schema, timestamp_to_date, safe_float, parse_date, ensure_datetime,
+    map_patch_api_to_student_schema
 )
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -110,12 +111,13 @@ class StudentRepository(BaseRepository[Student]):
         
     def bulk_update_student(self, api_response: dict):
         try:
-            student_data = map_api_to_student_schema(api_response)
+            student_data = map_patch_api_to_student_schema(api_response)
+            print(student_data)
             # Fetch existing student by application_no or email
             existing_student = self.db.query(Student).filter(
-                (Student.application_no == student_data["application_no"]) |
-                (Student.email == student_data["email"])
+                (Student.application_no == student_data["application_no"])
             ).first()
+            print(existing_student)
             if not existing_student:
                 raise ValueError("Student does not exist for update")
 
@@ -124,8 +126,8 @@ class StudentRepository(BaseRepository[Student]):
                 if hasattr(existing_student, key):
                     setattr(existing_student, key, value)
 
-            # self.db.commit()
-            # self.db.refresh(existing_student)
+            self.db.commit()
+            self.db.refresh(existing_student)
             return existing_student.id
 
         except IntegrityError as e:

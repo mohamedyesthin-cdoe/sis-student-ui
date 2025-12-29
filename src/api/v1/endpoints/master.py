@@ -168,7 +168,7 @@ def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db)):
             detail=f"Unexpected error in endpoint: {str(e)}",
         )
     
-@router.post("/syllabus/list", response_model=List[SyllabusResponse])
+@router.get("/syllabus/list", response_model=List[SyllabusResponse])
 def list_syllabuses(db: Session = Depends(get_db)):
     try:
         service = MasterService(db)

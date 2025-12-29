@@ -198,3 +198,22 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
 
     mapped_data["semester_fees"] = [fee for fee in mapped_data["semester_fees"] if fee is not None]
     return mapped_data
+
+def map_patch_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
+    mapped_data = {
+        "application_no": api_response.get("application_no"),
+
+        "document_details": {
+            "class_10th_marksheet": get_first_item(api_response.get("upload_10_marksheet")),
+            "class_12th_marksheet": get_first_item(api_response.get("upload_12_marksheet")),
+            "graduation_marksheet": api_response.get("upload_ug_marksheet") or None,
+            "diploma_marksheet": api_response.get("upload_diplomamarkscard") or None,
+            "work_experience_certificates": api_response.get("field_73434") or None,
+            "passport": api_response.get("upload_passport") or None,
+            "aadhar": get_first_item(api_response.get("color_copy_of_aadhar_card")),
+            "signature": get_first_item(api_response.get("signature_image")),
+            "profile_image": get_first_item(api_response.get("profile_image"))
+        },
+    }
+
+    return mapped_data

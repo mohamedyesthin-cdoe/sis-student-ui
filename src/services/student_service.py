@@ -120,16 +120,16 @@ class StudentService:
             else:
                 value_list = students_data
 
-            # FETCH all already-synced application numbers from DB
-            existing_rows = self.student_repo.get_all_application_nos()
+            # # FETCH all already-synced application numbers from DB
+            # existing_rows = self.student_repo.get_all_application_nos()
             
-            # Convert into a set of strings
-            existing_ids = {
-                row if isinstance(row, str) else row.get("application_no")
-                for row in existing_rows
-            }
+            # # Convert into a set of strings
+            # existing_ids = {
+            #     row if isinstance(row, str) else row.get("application_no")
+            #     for row in existing_rows
+            # }
 
-            logger.info(f"Existing students in DB: {len(existing_ids)}")
+            #logger.info(f"Existing students in DB: {len(existing_ids)}")
 
             # IDENTIFY ONLY EXISTING STUDENTS TO UPDATE
             students_to_update = []  
@@ -139,7 +139,7 @@ class StudentService:
                     logger.warning(f"Skipping student with missing application_no: {student}")
                     continue
 
-                if app_no in existing_ids:
+                else:
                     students_to_update.append(student)
 
             logger.info(f"Students to update: {len(students_to_update)}")
@@ -147,7 +147,6 @@ class StudentService:
             # UPDATE EXISTING STUDENTS
             if students_to_update:
                 for student in students_to_update:
-                    print(student)
                     self.student_repo.bulk_update_student(student)
 
                 return {
