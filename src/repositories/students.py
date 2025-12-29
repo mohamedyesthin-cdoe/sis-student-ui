@@ -130,10 +130,21 @@ class StudentRepository(BaseRepository[Student]):
             updated_fields = []
             # Update fields
             for key, value in student_data.items():
+
+                # Handle JSON field
+                if key == "document_details" and isinstance(value, dict):
+                    current = existing_student.document_details or {}
+                    current.update({k:v for k,v in value.items() if v})
+                    existing_student.document_details = current
+                    updated_fields.append(key)
+                    continue
+
+                # Normal fields
                 if (
                     hasattr(existing_student, key)
                     and key not in skip_fields
                     and value not in (None, "", "null", "NULL")
+                    and not isinstance(value, dict)
                 ):
                     setattr(existing_student, key, value)
                     updated_fields.append(key)
