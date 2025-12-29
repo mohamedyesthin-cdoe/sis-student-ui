@@ -125,33 +125,21 @@ class StudentRepository(BaseRepository[Student]):
             if not existing_student:
                 raise ValueError("Student does not exist for update")
 
-            skip_fields = {"id", "created_at", "application_no"}
+            # List of valid columns in Student model
+            student_columns = {column.name for column in Student.__table__.columns}
 
-            updated_fields = []
-            # Update fields
             for key, value in student_data.items():
-
-                # Handle JSON field
-                if key == "document_details" and isinstance(value, dict):
-                    current = existing_student.document_details or {}
-                    current.update({k:v for k,v in value.items() if v})
-                    existing_student.document_details = current
-                    updated_fields.append(key)
-                    continue
-
-                # Normal fields
-                if (
-                    hasattr(existing_student, key)
-                    and key not in skip_fields
-                    and value not in (None, "", "null", "NULL")
-                    and not isinstance(value, dict)
-                ):
+                if key in student_columns:                 
                     setattr(existing_student, key, value)
-                    updated_fields.append(key)
-            
-            self.db.commit()
-            self.db.refresh(existing_student)
-            return existing_student.id
+                else:
+                    # 🚫 Ignore nested objects / relationships to avoid errors
+                    # Example: document_details, address_details
+                    print(f"Skipping relation/nested field during update: {key}")
+
+                
+                self.db.commit()
+                self.db.refresh(existing_student)
+                return existing_student.id
 
         except IntegrityError as e:
             self.db.rollback()
