@@ -77,18 +77,6 @@ export default function FeesDetail() {
       {
         loading ? (
           <TableSkeleton />
-        ) : filteredPayments.length === 0 ? (
-          <CardComponent
-            sx={{
-              width: "100%",
-              maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-              mx: "auto",
-              p: 3,
-              mt: 3,
-            }}
-          >
-            <NoDataFoundUI />
-          </CardComponent>
         )
           : (
             <CardComponent
@@ -122,54 +110,58 @@ export default function FeesDetail() {
                   },
                 ]}
               />
-
-              <ReusableTable
-                columns={[
-                  { key: "order_id", label: "Order ID" },
-                  { key: "payment_type", label: "Fees Type" },
-                  { key: "payment_amount", label: "Fees Amount" },
-                  { key: "formattedDate", label: "Fees Date" },
-                ]}
-                data={filteredPayments}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                isRowExpandable={(row) => row.payment_type === "semester_fee"}
-                renderExpanded={(row) =>
-                  row.semester_fee ? (
-                    <Table size="small">
-                      <TableHead>
-                        <TableRow>
-                          {["Semester", "Tuition Fee", "Exam Fee", "LMS Fee", "Lab Fee", "Total Fee"].map((h) => (
-                            <TableCell key={h} sx={{ fontWeight: 600 }}>
-                              {h}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>{row.semester_fee.semester}</TableCell>
-                          <TableCell>{row.semester_fee.tuition_fee}</TableCell>
-                          <TableCell>{row.semester_fee.exam_fee}</TableCell>
-                          <TableCell>{row.semester_fee.lms_fee}</TableCell>
-                          <TableCell>{row.semester_fee.lab_fee}</TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>{row.semester_fee.total_fee}</TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  ) : null
-                }
-                actions={[
-                  {
-                    label: "View",
-                    icon: <VisibilityIcon fontSize="small" />,
-                    onClick: (row) => {
-                      navigate(`/fees/receipt/${row.id}`);
+              {filteredPayments.length === 0 ? (
+                <NoDataFoundUI />
+              ) : (
+                <ReusableTable
+                  columns={[
+                    { key: "order_id", label: "Order ID" },
+                    { key: "payment_type", label: "Fees Type" },
+                    { key: "payment_amount", label: "Fees Amount" },
+                    { key: "formattedDate", label: "Fees Date" },
+                  ]}
+                  data={filteredPayments}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  isRowExpandable={(row) => row.payment_type === "semester_fee"}
+                  renderExpanded={(row) =>
+                    row.semester_fee ? (
+                      <Table size="small">
+                        <TableHead>
+                          <TableRow>
+                            {["Semester", "Tuition Fee", "Exam Fee", "LMS Fee", "Lab Fee", "Total Fee"].map((h) => (
+                              <TableCell key={h} sx={{ fontWeight: 600 }}>
+                                {h}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell>{row.semester_fee.semester}</TableCell>
+                            <TableCell>{row.semester_fee.tuition_fee}</TableCell>
+                            <TableCell>{row.semester_fee.exam_fee}</TableCell>
+                            <TableCell>{row.semester_fee.lms_fee}</TableCell>
+                            <TableCell>{row.semester_fee.lab_fee}</TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>{row.semester_fee.total_fee}</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    ) : null
+                  }
+                  actions={[
+                    {
+                      label: "View",
+                      icon: <VisibilityIcon fontSize="small" />,
+                      onClick: (row) => {
+                        navigate(`/fees/receipt/${row.id}`);
+                      },
+                      color: "secondary",
                     },
-                    color: "secondary",
-                  },
-                ]}
-              />
+                  ]}
+                />
+              )
+              }
               {/* Pagination */}
               <TablePagination
                 page={page}

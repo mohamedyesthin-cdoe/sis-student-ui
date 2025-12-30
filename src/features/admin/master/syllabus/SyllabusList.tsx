@@ -13,6 +13,7 @@ import TableSkeleton from "../../../../components/card/skeletonloader/Tableskele
 import TableToolbar from "../../../../components/tabletoolbar/tableToolbar";
 import TablePagination from "../../../../components/tablepagination/tablepagination";
 import { exportToExcel } from "../../../../constants/excelExport";
+import { NoDataFoundUI } from "../../../../components/card/errorUi/NoDataFoundUI";
 
 export default function SyllabusList() {
   const navigate = useNavigate();
@@ -29,7 +30,12 @@ export default function SyllabusList() {
   React.useEffect(() => {
     clearError();
     apiRequest({ url: ApiRoutes.GETSYLLABUSLIST, method: "get" })
-      .then((data) => setFaculties(Array.isArray(data) ? data : data.data))
+      .then((data) => {
+        setFaculties(Array.isArray(data) ? data[0].data : data[0].data)
+        console.log('dtaa-', data[0].data);
+
+      }
+      )
       .catch(() => setFaculties([]));
   }, []);
 
@@ -42,17 +48,17 @@ export default function SyllabusList() {
   }));
 
   // Search
-  const filteredFaculties = formattedData.filter((f) =>
+  const filteredSyllabuses = formattedData.filter((f) =>
     f.search_text.includes(searchText.toLowerCase())
   );
 
   // Excel Export
   const handleExportExcel = () => {
     exportToExcel(
-      filteredFaculties,
+      filteredSyllabuses,
       [
         { header: "S.No", key: "sno" },
-        { header: "Employee ID", key: "employee_id" },
+        { header: "Employee ID", key: "course_code_id" },
         { header: "Full Name", key: "full_name" },
         { header: "Email", key: "email" },
         { header: "Mobile", key: "phone" },
@@ -75,19 +81,6 @@ export default function SyllabusList() {
         loading ? (
           <TableSkeleton />
         )
-          // : filteredFaculties.length === 0 ? (
-          //   <CardComponent
-          //     sx={{
-          //       width: "100%",
-          //       maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-          //       mx: "auto",
-          //       p: 3,
-          //       mt: 3,
-          //     }}
-          //   >
-          //     <NoDataFoundUI />
-          //   </CardComponent>
-          // ) 
           : (
             <CardComponent
               sx={{
@@ -126,40 +119,44 @@ export default function SyllabusList() {
                 ]}
               />
 
-              {/* Table */}
-              <ReusableTable
-                columns={[
-                  { key: "employee_id", label: "Employee ID" },
-                  { key: "full_name", label: "Full Name" },
-                  { key: "email", label: "Email" },
-                  { key: "phone", label: "Mobile" },
-                  { key: "department", label: "Department" },
-                  { key: "designation", label: "Designation" },
-                ]}
-                data={filteredFaculties}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                actions={[
-                  {
-                    label: "Edit",
-                    icon: <EditIcon fontSize="small" />,
-                    onClick: (row) => handleEdit(row),
-                    color: "primary",
-                  },
-                  {
-                    label: "Delete",
-                    icon: <DeleteIcon fontSize="small" />,
-                    onClick: () => { },
-                    color: "error",
-                  },
-                ]}
-              />
+              {filteredSyllabuses.length === 0 ? (
+                <NoDataFoundUI />
+              ) : (
+                <ReusableTable
+                  columns={[
+                    { key: "course_category_id", label: "Employee ID" },
+                    { key: "full_name", label: "Full Name" },
+                    { key: "email", label: "Email" },
+                    { key: "phone", label: "Mobile" },
+                    { key: "department", label: "Department" },
+                    { key: "designation", label: "Designation" },
+                  ]}
+                  data={filteredSyllabuses}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  actions={[
+                    {
+                      label: "Edit",
+                      icon: <EditIcon fontSize="small" />,
+                      onClick: (row) => handleEdit(row),
+                      color: "primary",
+                    },
+                    {
+                      label: "Delete",
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => { },
+                      color: "error",
+                    },
+                  ]}
+                />
+              )
+              }
 
               {/* Pagination */}
               <TablePagination
                 page={page}
                 rowsPerPage={rowsPerPage}
-                totalCount={filteredFaculties.length}
+                totalCount={filteredSyllabuses.length}
                 onPageChange={(newPage) => setPage(newPage)}
               />
             </CardComponent>

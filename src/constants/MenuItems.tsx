@@ -52,22 +52,22 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     ],
     routePath: '',
   },
-  {
-    text: 'Faculty',
-    icon: 'Faculty',
-    subItems: [
-      { text: 'Faculty List', routePath: '/faculty' },
-    ],
-    routePath: '',
-  },
-  {
-    text: 'Master',
-    icon: 'Master',
-    subItems: [
-      { text: 'Syllabus List', routePath: '/syllabus' },
-    ],
-    routePath: '',
-  },
+  // {
+  //   text: 'Faculty',
+  //   icon: 'Faculty',
+  //   subItems: [
+  //     { text: 'Faculty List', routePath: '/faculty' },
+  //   ],
+  //   routePath: '',
+  // },
+  // {
+  //   text: 'Master',
+  //   icon: 'Master',
+  //   subItems: [
+  //     { text: 'Syllabus List', routePath: '/syllabus' },
+  //   ],
+  //   routePath: '',
+  // },
 ];
 export const STUDENT_MENU_ITEMS: MenuItem[] = [
   // {

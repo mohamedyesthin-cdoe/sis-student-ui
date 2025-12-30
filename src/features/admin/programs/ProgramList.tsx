@@ -85,18 +85,6 @@ export default function ProgramList() {
       {
         loading ? (
           <TableSkeleton />
-        ) : filteredPrograms.length == 0 ? (
-          <CardComponent
-            sx={{
-              width: "100%",
-              maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-              mx: "auto",
-              p: 3,
-              mt: 3,
-            }}
-          >
-            <NoDataFoundUI />
-          </CardComponent>
         )
           : (
             <CardComponent
@@ -134,76 +122,81 @@ export default function ProgramList() {
                   },
                 ]}
               />
-              <ReusableTable
-                columns={[
-                  { key: "programe_code", label: "Program ID" },
-                  { key: "programe", label: "Program Name" },
-                  { key: "duration", label: "Duration" },
-                ]}
-                data={filteredPrograms}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                isRowExpandable={(row) => Array.isArray(row.fee) && row.fee.length > 0}
-                renderExpanded={(program) => (
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        {[
-                          "Semester",
-                          "Application Fee",
-                          "Admission Fee",
-                          "Tuition Fee",
-                          "Exam Fee",
-                          "LMS Fee",
-                          "Lab Fee",
-                          "Total Fee",
-                        ].map((h) => (
-                          <TableCell
-                            key={h}
-                            sx={{
-                              fontWeight: 600,
-                              color: theme.palette.secondary.main,
-                            }}
-                          >
-                            {h}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                      {program.fee?.map((fee: any, idx: number) => (
-                        <TableRow key={idx}>
-                          <TableCell sx={{ py: 0.5 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
-                          <TableCell sx={{ py: 0.5 }}>{fee.application_fee || "-"}</TableCell>
-                          <TableCell sx={{ py: 0.5 }}>{fee.admission_fee || "-"}</TableCell>
-                          <TableCell sx={{ py: 0.5 }}>{fee.tuition_fee || "-"}</TableCell>
-                          <TableCell sx={{ py: 0.5 }}>{fee.exam_fee || "-"}</TableCell>
-                          <TableCell sx={{ py: 0.5 }}>{fee.lms_fee || "-"}</TableCell>
-                          <TableCell sx={{ py: 0.5 }}>{fee.lab_fee || "-"}</TableCell>
-                          <TableCell sx={{ py: 0.5, fontWeight: "bold" }}>
-                            {fee.total_fee || "-"}
-                          </TableCell>
+              {filteredPrograms.length == 0 ? (
+                <NoDataFoundUI />
+              ) : (
+                <ReusableTable
+                  columns={[
+                    { key: "programe_code", label: "Program ID" },
+                    { key: "programe", label: "Program Name" },
+                    { key: "duration", label: "Duration" },
+                  ]}
+                  data={filteredPrograms}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  isRowExpandable={(row) => Array.isArray(row.fee) && row.fee.length > 0}
+                  renderExpanded={(program) => (
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          {[
+                            "Semester",
+                            "Application Fee",
+                            "Admission Fee",
+                            "Tuition Fee",
+                            "Exam Fee",
+                            "LMS Fee",
+                            "Lab Fee",
+                            "Total Fee",
+                          ].map((h) => (
+                            <TableCell
+                              key={h}
+                              sx={{
+                                fontWeight: 600,
+                                color: theme.palette.secondary.main,
+                              }}
+                            >
+                              {h}
+                            </TableCell>
+                          ))}
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-                actions={[
-                  {
-                    label: "Edit",
-                    icon: <EditIcon fontSize="small" />,
-                    onClick: (row) => navigate(`/programs/add/${row.id}`),
-                    color: "primary",
-                  },
-                  {
-                    label: "Delete",
-                    icon: <DeleteIcon fontSize="small" />,
-                    onClick: () => { },
-                    color: "error",
-                  },
-                ]}
-              />
+                      </TableHead>
+
+                      <TableBody>
+                        {program.fee?.map((fee: any, idx: number) => (
+                          <TableRow key={idx}>
+                            <TableCell sx={{ py: 0.5 }}>{fee.semester || `Semester ${idx + 1}`}</TableCell>
+                            <TableCell sx={{ py: 0.5 }}>{fee.application_fee || "-"}</TableCell>
+                            <TableCell sx={{ py: 0.5 }}>{fee.admission_fee || "-"}</TableCell>
+                            <TableCell sx={{ py: 0.5 }}>{fee.tuition_fee || "-"}</TableCell>
+                            <TableCell sx={{ py: 0.5 }}>{fee.exam_fee || "-"}</TableCell>
+                            <TableCell sx={{ py: 0.5 }}>{fee.lms_fee || "-"}</TableCell>
+                            <TableCell sx={{ py: 0.5 }}>{fee.lab_fee || "-"}</TableCell>
+                            <TableCell sx={{ py: 0.5, fontWeight: "bold" }}>
+                              {fee.total_fee || "-"}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                  actions={[
+                    {
+                      label: "Edit",
+                      icon: <EditIcon fontSize="small" />,
+                      onClick: (row) => navigate(`/programs/add/${row.id}`),
+                      color: "primary",
+                    },
+                    {
+                      label: "Delete",
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => { },
+                      color: "error",
+                    },
+                  ]}
+                />
+              )
+              }
               <TablePagination
                 page={page}
                 rowsPerPage={rowsPerPage}

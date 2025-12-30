@@ -13,6 +13,7 @@ import { ApiRoutes } from "../../../constants/ApiConstants";
 import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton";
 import { useLoader } from "../../../context/LoaderContext";
 import { useGlobalError } from "../../../context/ErrorContext";
+import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
 
 export default function FacultyList() {
   const navigate = useNavigate();
@@ -76,19 +77,6 @@ export default function FacultyList() {
         loading ? (
           <TableSkeleton />
         )
-          // : filteredFaculties.length === 0 ? (
-          //   <CardComponent
-          //     sx={{
-          //       width: "100%",
-          //       maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-          //       mx: "auto",
-          //       p: 3,
-          //       mt: 3,
-          //     }}
-          //   >
-          //     <NoDataFoundUI />
-          //   </CardComponent>
-          // ) 
           : (
             <CardComponent
               sx={{
@@ -126,35 +114,38 @@ export default function FacultyList() {
                   },
                 ]}
               />
-
-              {/* Table */}
-              <ReusableTable
-                columns={[
-                  { key: "employee_id", label: "Employee ID" },
-                  { key: "full_name", label: "Full Name" },
-                  { key: "email", label: "Email" },
-                  { key: "phone", label: "Mobile" },
-                  { key: "department", label: "Department" },
-                  { key: "designation", label: "Designation" },
-                ]}
-                data={filteredFaculties}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                actions={[
-                  {
-                    label: "Edit",
-                    icon: <EditIcon fontSize="small" />,
-                    onClick: (row) => handleEdit(row),
-                    color: "primary",
-                  },
-                  {
-                    label: "Delete",
-                    icon: <DeleteIcon fontSize="small" />,
-                    onClick: () => { },
-                    color: "error",
-                  },
-                ]}
-              />
+              {filteredFaculties.length === 0 ? (
+                <NoDataFoundUI />
+              ) : (
+                < ReusableTable
+                  columns={[
+                    { key: "employee_id", label: "Employee ID" },
+                    { key: "full_name", label: "Full Name" },
+                    { key: "email", label: "Email" },
+                    { key: "phone", label: "Mobile" },
+                    { key: "department", label: "Department" },
+                    { key: "designation", label: "Designation" },
+                  ]}
+                  data={filteredFaculties}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  actions={[
+                    {
+                      label: "Edit",
+                      icon: <EditIcon fontSize="small" />,
+                      onClick: (row) => handleEdit(row),
+                      color: "primary",
+                    },
+                    {
+                      label: "Delete",
+                      icon: <DeleteIcon fontSize="small" />,
+                      onClick: () => { },
+                      color: "error",
+                    },
+                  ]}
+                />
+              )
+              }
 
               {/* Pagination */}
               <TablePagination

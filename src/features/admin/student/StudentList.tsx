@@ -282,18 +282,6 @@ export default function StudentTable() {
       {
         loading ? (
           <TableSkeleton />
-        ) : filteredStudents.length == 0 ? (
-          <CardComponent
-            sx={{
-              width: "100%",
-              maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-              mx: "auto",
-              p: 3,
-              mt: 3,
-            }}
-          >
-            <NoDataFoundUI />
-          </CardComponent>
         )
           : (
             <CardComponent
@@ -381,27 +369,31 @@ export default function StudentTable() {
                   },
                 ]}
               />
-              <ReusableTable
-                columns={[
-                  { key: "registration_no", label: "Registration No" },
-                  { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
-                  { key: "email", label: "Email" },
-                  { key: "mobile_number", label: "Mobile" },
-                  { key: "gender", label: "Gender" },
-                  { key: "date_of_birth", label: "DOB" },
-                ]}
-                data={filteredStudents}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                actions={[
-                  {
-                    label: "View",
-                    icon: <VisibilityIcon fontSize="small" />,
-                    onClick: (row) => handleView(row.id),
-                    color: 'secondary',
-                  },
-                ]}
-              />
+              {filteredStudents.length == 0 ? (
+                <NoDataFoundUI />
+              ) : (
+                <ReusableTable
+                  columns={[
+                    { key: "registration_no", label: "Registration No" },
+                    { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
+                    { key: "email", label: "Email" },
+                    { key: "mobile_number", label: "Mobile" },
+                    { key: "gender", label: "Gender" },
+                    { key: "date_of_birth", label: "DOB" },
+                  ]}
+                  data={filteredStudents}
+                  page={page}
+                  rowsPerPage={rowsPerPage}
+                  actions={[
+                    {
+                      label: "View",
+                      icon: <VisibilityIcon fontSize="small" />,
+                      onClick: (row) => handleView(row.id),
+                      color: 'secondary',
+                    },
+                  ]}
+                />
+              )}
               <TablePagination
                 page={page}
                 rowsPerPage={rowsPerPage}
