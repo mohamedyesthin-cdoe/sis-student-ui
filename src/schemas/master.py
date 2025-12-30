@@ -196,4 +196,4 @@ class SyllabusResponse(BaseModel):
     message: str
     code: int
     status: bool
-    data: Optional[SyllabusOut] = None
+    data: Optional[List[SyllabusOut]] = None

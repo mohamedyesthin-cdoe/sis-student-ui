@@ -251,13 +251,16 @@ class MasterService:
     def list_syllabuses(self) -> List[SyllabusResponse]:
         try:
             items = self.repo.get_all_syllabuses()
+
+            data_list = [SyllabusOut.from_orm(item) for item in items]
+
             return [
                 SyllabusResponse(
                     message="Syllabuses retrieved successfully",
                     code=status.HTTP_200_OK,
                     status=True,
-                    data=SyllabusOut.from_orm(item)
-                ) for item in items
+                    data=data_list
+                ) 
             ]
         except HTTPException:
             raise

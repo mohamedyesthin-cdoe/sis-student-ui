@@ -64,7 +64,7 @@ def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_u
         )
     
 @router.get("/Offering/{programe_id}", response_model=OfferingResponse, dependencies=[Depends(verify_api_key)])
-def get_program_by_id(programe_id: int, db: Session = Depends(get_db)):
+def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         program = service.get_program_by_id_with_fees(programe_id)
@@ -78,7 +78,7 @@ def get_program_by_id(programe_id: int, db: Session = Depends(get_db)):
         )
     
 @router.post("/coursecode/add", response_model=CourseCodeResponse)
-def create_course_code(course_code: CourseCodeBase, db: Session = Depends(get_db)):
+def create_course_code(course_code: CourseCodeBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.create_course_code(course_code)
@@ -91,7 +91,7 @@ def create_course_code(course_code: CourseCodeBase, db: Session = Depends(get_db
         )
     
 @router.get("/coursecode/list", response_model=List[CourseCodeList])
-def list_course_codes(db: Session = Depends(get_db)):
+def list_course_codes(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.list_course_codes()
@@ -104,7 +104,7 @@ def list_course_codes(db: Session = Depends(get_db)):
         )
     
 @router.post("/coursecategory/add", response_model=CourseCategoryResponse)
-def create_course_category(course_code: CourseCategoryBase, db: Session = Depends(get_db)):
+def create_course_category(course_code: CourseCategoryBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.create_course_category(course_code)
@@ -117,7 +117,7 @@ def create_course_category(course_code: CourseCategoryBase, db: Session = Depend
         )
     
 @router.get("/coursecategory/list", response_model=List[CourseCategoryList])
-def list_course_category(db: Session = Depends(get_db)):
+def list_course_category(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.list_course_category()
@@ -130,7 +130,7 @@ def list_course_category(db: Session = Depends(get_db)):
         )
     
 @router.post("/coursetitle/add", response_model=CourseTitleResponse)
-def create_course_title(course_code: CourseTitleBase, db: Session = Depends(get_db)):
+def create_course_title(course_code: CourseTitleBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.create_course_title(course_code)
@@ -143,7 +143,7 @@ def create_course_title(course_code: CourseTitleBase, db: Session = Depends(get_
         )
     
 @router.get("/coursetitle/list", response_model=List[CourseTitleList])
-def list_course_title(db: Session = Depends(get_db)):
+def list_course_title(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.list_course_Title()
@@ -156,7 +156,7 @@ def list_course_title(db: Session = Depends(get_db)):
         )
     
 @router.post("/syllabus/add", response_model=SyllabusResponse)
-def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db)):
+def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.create_syllabus(syllabus)
@@ -169,7 +169,7 @@ def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db)):
         )
     
 @router.get("/syllabus/list", response_model=List[SyllabusResponse])
-def list_syllabuses(db: Session = Depends(get_db)):
+def list_syllabuses(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
         return service.list_syllabuses()
