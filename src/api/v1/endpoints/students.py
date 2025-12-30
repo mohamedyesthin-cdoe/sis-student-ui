@@ -29,7 +29,7 @@ async def sync_students_endpoint(db: Session = Depends(get_db),  current_user: U
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
 @router.post("/patch/sync", response_model=SyncResponse)
-async def patch_sync_students(db: Session = Depends(get_db)):
+async def patch_sync_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = StudentService(db)
         return await service.update_existing_sync_student()

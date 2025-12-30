@@ -121,20 +121,25 @@ class StudentRepository(BaseRepository[Student]):
                 .first()
             )
 
-            print(existing_student)
-
             if not existing_student:
                 raise ValueError("Student does not exist for update")
 
             # List of valid columns in Student model
             student_columns = {column.name for column in Student.__table__.columns}
-            print(student_columns)
+
             for key, value in student_data.items():
-                if key in student_columns:                 
+                if key in student_columns:
                     setattr(existing_student, key, value)
-                else:
-                    print(f"Skipping relation/nested field during update: {key}")
-                
+
+            if "document_details" in student_data:
+                doc_data = student_data["document_details"]
+                if doc_data and existing_student.document_details:
+                    for key, value in doc_data.items():
+                        if hasattr(existing_student.document_details, key):
+                            setattr(existing_student.document_details, key, value)
+
+
+            #self.db.add(existing_student)
             self.db.commit()
             self.db.refresh(existing_student)
             return existing_student.id
