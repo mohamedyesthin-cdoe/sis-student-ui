@@ -16,7 +16,7 @@ import Examination from "../features/student/examination/examination";
 import FacultyList from "../features/admin/faculty/FacultyList";
 import FacultyAdd from "../features/admin/faculty/FacultyAdd";
 import SyllabusList from "../features/admin/master/syllabus/SyllabusList";
-import SyllabusAdd from "../features/admin/master/syllabus/syllabusadd";
+import SyllabusAdd from "../features/admin/master/syllabus/SyllabusAdd";
 
 export const routesConfig = [
   {
