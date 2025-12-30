@@ -11,7 +11,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { apiRequest } from "../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import dayjs from "dayjs";
-
 import Customtext from "../../../components/inputs/customtext/Customtext";
 import CustomInputText from "../../../components/inputs/customtext/CustomInputText";
 import CustomSelect from "../../../components/inputs/customtext/CustomSelect";
@@ -21,6 +20,36 @@ import CardComponent from "../../../components/card/Card";
 import { useLoader } from "../../../context/LoaderContext";
 import { useGlobalError } from "../../../context/ErrorContext";
 import FacultyFormSkeleton from "../../../components/card/skeletonloader/FacultyFormSkeleton";
+
+import { Dayjs } from "dayjs";
+
+export interface FacultyFormValues {
+  id: number;
+  employee_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  role: string;
+
+  department: string | null;
+  designation: string | null;
+  qualification: string | null;
+  specialization: string | null;
+
+  joining_date: Dayjs | null;
+  experience_years: number;
+  employment_type: string | null;
+
+  research_area: string | null;
+  publications_count: number;
+  gender: string | null;
+  dob: Dayjs | null;
+
+  linkedin_url: string | null;
+}
+
+
 
 // ==================================
 // CONSTANTS
@@ -41,51 +70,66 @@ const genderOptions = [
 // ==================================
 // DEFAULT VALUES
 // ==================================
-const defaultValues = {
-  employee_id: "",
-  department: "CDOE",
-  designation: "",
-  qualification: "",
-  specialization: "",
-  joining_date: dayjs(),
-  experience_years: 0,
-  employment_type: "Permanent",
-  research_area: "",
-  publications_count: 0,
-  gender: "Male",
-  dob: null,
-  linkedin_url: "",
+const defaultValues: FacultyFormValues = {
   id: 0,
+  employee_id: "",
   first_name: "",
   last_name: "",
   email: "",
   phone: "",
-  role: "", // role id
+  role: "",
+
+  department: "CDOE",
+  designation: null,
+  qualification: null,
+  specialization: null,
+
+  joining_date: null,
+  experience_years: 0,
+  employment_type: "Permanent",
+
+  research_area: null,
+  publications_count: 0,
+  gender: "Male",
+  dob: null,
+
+  linkedin_url: null,
 };
+
+
 
 // ==================================
 // VALIDATION SCHEMA
 // ==================================
-const schema = Yup.object().shape({
+
+export const schema: Yup.ObjectSchema<FacultyFormValues> = Yup.object({
+  id: Yup.number().defined(),
+
   employee_id: Yup.string().required("Employee ID is required"),
   first_name: Yup.string().required("First name required"),
   last_name: Yup.string().required("Last name required"),
   email: Yup.string().email("Invalid email").required("Email required"),
   phone: Yup.string().required("Phone required"),
   role: Yup.string().required("Role is required"),
-  department: Yup.string().nullable(),
-  designation: Yup.string().nullable(),
-  qualification: Yup.string().nullable(),
-  specialization: Yup.string().nullable(),
-  joining_date: Yup.date().nullable(),
-  experience_years: Yup.number().min(0),
-  employment_type: Yup.string().nullable(),
-  research_area: Yup.string().nullable(),
-  publications_count: Yup.number().min(0),
-  gender: Yup.string().nullable(),
-  dob: Yup.date().nullable(),
-  linkedin_url: Yup.string().url("Invalid URL").nullable(),
+
+  department: Yup.string().nullable().defined(),
+  designation: Yup.string().nullable().defined(),
+  qualification: Yup.string().nullable().defined(),
+  specialization: Yup.string().nullable().defined(),
+
+  joining_date: Yup.mixed<Dayjs>().nullable().defined(),
+  experience_years: Yup.number().min(0).defined(),
+  employment_type: Yup.string().nullable().defined(),
+
+  research_area: Yup.string().nullable().defined(),
+  publications_count: Yup.number().min(0).defined(),
+  gender: Yup.string().nullable().defined(),
+  dob: Yup.mixed<Dayjs>().nullable().defined(),
+
+  linkedin_url: Yup.string().nullable().defined(),
 });
+
+
 
 // ==================================
 // COMPONENT
@@ -119,15 +163,17 @@ export default function FacultyAdd() {
   // ==================================
   // FORM HOOK
   // ==================================
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm({
-    resolver: yupResolver(schema),
-    defaultValues,
-  });
+ const {
+  control,
+  handleSubmit,
+  reset,
+  formState: { errors, isDirty },
+} = useForm<FacultyFormValues>({
+  resolver: yupResolver(schema),
+  defaultValues,
+});
+
+
 
   // ==================================
   // FETCH FACULTY (EDIT MODE)

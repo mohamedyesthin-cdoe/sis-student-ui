@@ -23,6 +23,21 @@ import CardComponent from "../../../../components/card/Card";
 import SyllabusAddSkeleton from "../../../../components/card/skeletonloader/SyllabusAddSkeleton";
 import CustomAutoComplete from "../../../../components/inputs/customtext/CustomAutoComplete";
 import AddButtonWithDialog from "./AddButtonWithDialog";
+interface SyllabusFormValues {
+    course_code_id: string;
+    course_title_id: string;
+    course_category_id: string;
+    semester: string;
+    credits: number;
+    tutorial_hours: number;
+    lecture_hours: number;
+    practical_hours: number;
+    total_hours: number;
+    cia: number;
+    esa: number;
+    total_marks: number;
+}
+
 
 // Dropdown options
 const semesterOptions = ["Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"];
@@ -32,7 +47,7 @@ const defaultValues = {
     course_title_id: "",
     course_category_id: "",
     semester: "",
-    credits: "",
+    credits: 0,              // ✅ FIXED
     tutorial_hours: 0,
     lecture_hours: 0,
     practical_hours: 0,
@@ -76,10 +91,11 @@ export default function SyllabusAdd() {
         reset,
         setValue,
         formState: { errors, isDirty },
-    } = useForm({
+    } = useForm<SyllabusFormValues>({
         resolver: yupResolver(schema),
         defaultValues,
     });
+
 
     const credits = useWatch({ control, name: "credits" });
     const cia = useWatch({ control, name: "cia" });
@@ -124,13 +140,13 @@ export default function SyllabusAdd() {
             try {
                 // Fetch all three lists sequentially (or can use Promise.all)
                 const codeRes = await apiRequest({ url: ApiRoutes.COURSECODELIST, method: "get" });
-                setCourseCodeOptions((codeRes[0].data || []).map(item => ({
+                setCourseCodeOptions((codeRes[0].data || []).map((item: any) => ({
                     value: item.id || item.code,
                     label: item.code,
                 })));
 
                 const titleRes = await apiRequest({ url: ApiRoutes.COURSETITLELIST, method: "get" });
-                setCourseTitleOptions((titleRes[0].data || []).map(item => ({
+                setCourseTitleOptions((titleRes[0].data || []).map((item: any) => ({
                     value: item.id || item.title,
                     label: item.title,
                 })));
@@ -138,7 +154,7 @@ export default function SyllabusAdd() {
                 const catRes = await apiRequest({ url: ApiRoutes.COURSECATEGORYLIST, method: "get" });
                 console.log(catRes[0].data);
 
-                setCategoryOptions((catRes[0].data || []).map(item => ({
+                setCategoryOptions((catRes[0].data || []).map((item: any) => ({
                     value: item.id || item.name,
                     label: item.name,
                 })));
@@ -174,51 +190,51 @@ export default function SyllabusAdd() {
         }
     };
 
- const onSubmit = async (formData) => {
-    try {
-        const payload = {
-            ...formData,
-            course_code_id: Number(formData.course_code_id),
-            course_category_id: Number(formData.course_category_id),
-            course_title_id: Number(formData.course_title_id),
+    const onSubmit = async (formData: any) => {
+        try {
+            const payload = {
+                ...formData,
+                course_code_id: Number(formData.course_code_id),
+                course_category_id: Number(formData.course_category_id),
+                course_title_id: Number(formData.course_title_id),
 
-            semester: formData.semester,
+                semester: formData.semester,
 
-            credits: Number(formData.credits),
-            tutorial_hours: Number(formData.tutorial_hours),
-            lecture_hours: Number(formData.lecture_hours),
-            practical_hours: Number(formData.practical_hours),
-            total_hours: Number(formData.total_hours),
+                credits: Number(formData.credits),
+                tutorial_hours: Number(formData.tutorial_hours),
+                lecture_hours: Number(formData.lecture_hours),
+                practical_hours: Number(formData.practical_hours),
+                total_hours: Number(formData.total_hours),
 
-            cia: Number(formData.cia),
-            esa: Number(formData.esa),
-            total_marks: Number(formData.total_marks),
-        };
+                cia: Number(formData.cia),
+                esa: Number(formData.esa),
+                total_marks: Number(formData.total_marks),
+            };
 
-        if (id) {
-            await apiRequest({
-                url: `${ApiRoutes.SYLLABUSADD}/${id}`,
-                method: "put",
-                data: payload,
-            });
-            showAlert("Syllabus updated", "success");
-        } else {
-            await apiRequest({
-                url: ApiRoutes.SYLLABUSADD,
-                method: "post",
-                data: payload,
-            });
-            showAlert("Syllabus created", "success");
+            if (id) {
+                await apiRequest({
+                    url: `${ApiRoutes.SYLLABUSADD}/${id}`,
+                    method: "put",
+                    data: payload,
+                });
+                showAlert("Syllabus updated", "success");
+            } else {
+                await apiRequest({
+                    url: ApiRoutes.SYLLABUSADD,
+                    method: "post",
+                    data: payload,
+                });
+                showAlert("Syllabus created", "success");
+            }
+
+            clearError();
+            navigate('/syllabus'); // ✅ FIX HERE
+
+        } catch (err) {
+            console.error(err);
+            showAlert("Save failed", "error");
         }
-
-        clearError();
-        navigate('/syllabus'); // ✅ FIX HERE
-
-    } catch (err) {
-        console.error(err);
-        showAlert("Save failed", "error");
-    }
-};
+    };
 
 
 
@@ -261,7 +277,7 @@ export default function SyllabusAdd() {
 
                                             // Refresh list from API
                                             const list = await apiRequest({ url: ApiRoutes.COURSECODELIST, method: "get" });
-                                            setCourseCodeOptions((list[0].data || []).map(item => ({
+                                            setCourseCodeOptions((list[0].data || []).map((item: any) => ({
                                                 value: item.id,
                                                 label: item.code,
                                             })));
@@ -301,7 +317,7 @@ export default function SyllabusAdd() {
                                             const saved = res?.data || res;
 
                                             const list = await apiRequest({ url: ApiRoutes.COURSETITLELIST, method: "get" });
-                                            setCourseTitleOptions((list[0].data || []).map(item => ({
+                                            setCourseTitleOptions((list[0].data || []).map((item: any) => ({
                                                 value: item.id,
                                                 label: item.title,
                                             })));
@@ -342,7 +358,7 @@ export default function SyllabusAdd() {
                                             const saved = res?.data || res;
 
                                             const list = await apiRequest({ url: ApiRoutes.COURSECATEGORYLIST, method: "get" });
-                                            setCategoryOptions((list[0].data || []).map(item => ({
+                                            setCategoryOptions((list[0].data || []).map((item: any) => ({
                                                 value: item.id,
                                                 label: item.name,
                                             })));
@@ -378,13 +394,18 @@ export default function SyllabusAdd() {
                                         render={({ field }) => (
                                             <CustomInputText
                                                 label="Credits"
-                                                field={field}
+                                                field={{
+                                                    ...field,
+                                                    value: field.value ?? 0,
+                                                    onChange: (e:any) => field.onChange(Number(e.target.value)),
+                                                }}
                                                 type="number"
                                                 error={!!errors.credits}
                                                 helperText={errors.credits?.message}
                                             />
                                         )}
                                     />
+
                                 </Grid>
 
                                 {/* HOURS */}
