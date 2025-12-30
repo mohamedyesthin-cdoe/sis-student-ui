@@ -261,6 +261,7 @@ if (localLoading) {
     registration_no: student?.registration_no,
     parent_guardian_name: student?.parent_guardian_name,
     address: `${student?.address_details?.corr_addr1 || ""}, ${student?.address_details?.corr_city || ""} - ${student?.address_details?.corr_pin || ""}`,
+    userImage:student?.document_details?.profile_image
   };
 
   return (
@@ -322,7 +323,7 @@ if (localLoading) {
             {/* Photo */}
             <Box>
               <img
-                src={userimage}
+                src={personalInfo.userImage ? personalInfo.userImage : userimage}
                 alt="Student"
                 className="w-[130px] h-[140px] rounded-md border border-gray-300 object-cover"
               />

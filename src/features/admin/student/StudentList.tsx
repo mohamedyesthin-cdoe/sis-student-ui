@@ -18,21 +18,41 @@ import { setValue } from '../../../utils/localStorageUtil';
 import TableSkeleton from '../../../components/card/skeletonloader/Tableskeleton';
 import { useLoader } from '../../../context/LoaderContext';
 import { NoDataFoundUI } from '../../../components/card/errorUi/NoDataFoundUI';
+import { useGlobalError } from '../../../context/ErrorContext';
+import apiClient from '../../../services/ApiClient';
 
 export default function StudentTable() {
   const [students, setStudents] = React.useState<any[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchText, setSearchText] = React.useState('');
-  const [genderFilter, setGenderFilter] = React.useState('');
+  const [programFilter, setProgramFilter] = React.useState('');
   const navigate = useNavigate();
   const { showAlert } = useAlert();
   const [showSearch] = React.useState(true);
   const [openUploadDialog, setOpenUploadDialog] = React.useState(false);
   const { loading } = useLoader();
+  const { clearError } = useGlobalError();
+  const [programs, setPrograms] = React.useState<any[]>([]);
 
+  /* -------------------- Fetch Program List -------------------- */
+  React.useEffect(() => {
+    clearError();
+    apiClient
+      .get(ApiRoutes.GETPROGRAMLIST)
+      .then((res) => setPrograms(res.data || []))
+      .catch(() => setPrograms([]));
+  }, []);
 
-
+  /* -------------------- Convert Programs to Select Options -------------------- */
+  const programOptions = React.useMemo(
+    () =>
+      programs.map((p) => ({
+        label: p.programe,
+        value: p.id,
+      })),
+    [programs]
+  );
   // Fetch student list
   const fetchStudents = async () => {
     try {
@@ -53,14 +73,23 @@ export default function StudentTable() {
     navigate('/students/detail');
   };
 
-  // Filter by search and gender
+  /* -------------------- Filters -------------------- */
   const filteredStudents = students.filter((s) => {
     const fullName = `${s.title} ${s.first_name} ${s.last_name}`.toLowerCase();
-    const combinedText = `${s.registration_no} ${fullName} ${s.email} ${s.mobile_number} ${s.gender} ${s.date_of_birth}`.toLowerCase();
-    return combinedText.includes(searchText.toLowerCase()) &&
-      (genderFilter === '' || s.gender === genderFilter);
-  });
+    const combinedText = `
+      ${s.registration_no}
+      ${fullName}
+      ${s.email}
+      ${s.mobile_number}
+      ${s.gender}
+      ${s.date_of_birth}
+    `.toLowerCase();
 
+    return (
+      combinedText.includes(searchText.toLowerCase()) &&
+      (programFilter === '' || s.program_id === programFilter)
+    );
+  });
   // Export to Excel
   const handleExportExcel = () => {
     exportToExcel(
@@ -289,20 +318,31 @@ export default function StudentTable() {
                     visible: showSearch,
                   },
                   {
-                    key: "gender",
-                    label: "All Genders",
+                    key: "program",
+                    label: "Select Course",
                     type: "select",
-                    value: genderFilter,
+                    value: programFilter,
                     onChange: (val) => {
-                      setGenderFilter(val);
+                      setProgramFilter(val);
                       setPage(0);
                     },
-                    options: [
-                      { value: 'Male', label: 'Male' },
-                      { value: 'Female', label: 'Female' },
-                      { value: 'Other', label: 'Other' },
-                    ],
-                  },
+                    options: programOptions,
+
+                    // ✅ 250px width
+                    sx: {
+                      width: 250,
+                    },
+
+                    // ✅ scrollable dropdown
+                    menuProps: {
+                      PaperProps: {
+                        sx: {
+                          maxHeight: 250,
+                          overflowY: "auto",
+                        },
+                      },
+                    },
+                  }
                 ]}
                 actions={[
                   {

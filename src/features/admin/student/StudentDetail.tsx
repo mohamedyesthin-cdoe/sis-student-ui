@@ -59,6 +59,7 @@ export default function StudentDetailUI() {
     batch: student?.batch,
     year: student?.year,
     registration_no: student?.registration_no,
+    userImage: student?.document_details?.profile_image
   };
 
   const infoList = [
@@ -106,7 +107,7 @@ export default function StudentDetailUI() {
                       }}
                     >
                       <Avatar
-                        src={userimage}
+                        src={personalInfo.userImage ? personalInfo.userImage : userimage}
                         sx={{
                           width: 80,
                           height: 80,

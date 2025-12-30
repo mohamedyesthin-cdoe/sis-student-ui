@@ -174,52 +174,52 @@ export default function SyllabusAdd() {
         }
     };
 
-    const onSubmit = async (formData) => {
-        try {
-            const payload = {
-                ...formData,
-                course_code_id: Number(formData.course_code_id),
-                course_category_id: Number(formData.course_category_id),
-                course_title_id: Number(formData.course_title_id),
+ const onSubmit = async (formData) => {
+    try {
+        const payload = {
+            ...formData,
+            course_code_id: Number(formData.course_code_id),
+            course_category_id: Number(formData.course_category_id),
+            course_title_id: Number(formData.course_title_id),
 
-                semester: formData.semester, // string
+            semester: formData.semester,
 
-                credits: Number(formData.credits),
-                tutorial_hours: Number(formData.tutorial_hours),
-                lecture_hours: Number(formData.lecture_hours),
-                practical_hours: Number(formData.practical_hours),
-                total_hours: Number(formData.total_hours),
+            credits: Number(formData.credits),
+            tutorial_hours: Number(formData.tutorial_hours),
+            lecture_hours: Number(formData.lecture_hours),
+            practical_hours: Number(formData.practical_hours),
+            total_hours: Number(formData.total_hours),
 
-                cia: Number(formData.cia),
-                esa: Number(formData.esa),
-                total_marks: Number(formData.total_marks),
-            };
+            cia: Number(formData.cia),
+            esa: Number(formData.esa),
+            total_marks: Number(formData.total_marks),
+        };
 
-            if (id) {
-                await apiRequest({
-                    url: `${ApiRoutes.SYLLABUSADD}/${id}`,
-                    method: "put",
-                    data: payload,
-                });
-                showAlert("Syllabus updated", "success");
-                clearError();
-                navigate('syllabus')
-            } else {
-                await apiRequest({
-                    url: ApiRoutes.SYLLABUSADD,
-                    method: "post",
-                    data: payload,
-                });
-                showAlert("Syllabus created", "success");
-                clearError();
-                navigate('syllabus')
-            }
-
-        } catch (err) {
-            console.error(err);
-            showAlert("Save failed", "error");
+        if (id) {
+            await apiRequest({
+                url: `${ApiRoutes.SYLLABUSADD}/${id}`,
+                method: "put",
+                data: payload,
+            });
+            showAlert("Syllabus updated", "success");
+        } else {
+            await apiRequest({
+                url: ApiRoutes.SYLLABUSADD,
+                method: "post",
+                data: payload,
+            });
+            showAlert("Syllabus created", "success");
         }
-    };
+
+        clearError();
+        navigate('/syllabus'); // ✅ FIX HERE
+
+    } catch (err) {
+        console.error(err);
+        showAlert("Save failed", "error");
+    }
+};
+
 
 
     return (

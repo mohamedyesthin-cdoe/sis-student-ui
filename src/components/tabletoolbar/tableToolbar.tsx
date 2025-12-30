@@ -5,8 +5,10 @@ import {
   Button,
   Select,
   MenuItem,
-  FormControl,
+  FormControl
 } from "@mui/material";
+import type { SxProps, Theme } from '@mui/material'; 
+/* -------------------- Types -------------------- */
 
 interface FilterOption {
   key: string;
@@ -17,6 +19,12 @@ interface FilterOption {
   onChange: (value: string) => void;
   placeholder?: string;
   visible?: boolean;
+
+  // ✅ NEW (for width, spacing, etc.)
+  sx?: SxProps<Theme>;
+
+  // ✅ NEW (for dropdown scroll, maxHeight)
+  menuProps?: any;
 }
 
 interface ActionButton {
@@ -39,11 +47,12 @@ interface TableToolbarProps {
   actions?: ActionButton[];
 }
 
+/* -------------------- Component -------------------- */
+
 const TableToolbar: React.FC<TableToolbarProps> = ({
   filters = [],
   actions = [],
 }) => {
-  // Split filters and actions logically
   const visibleFilters = filters.filter((f) => f.visible !== false);
 
   return (
@@ -58,7 +67,7 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
         mb: 2,
       }}
     >
-      {/* Left section - filters grouped together */}
+      {/* -------------------- Filters -------------------- */}
       <Box
         sx={{
           display: "flex",
@@ -68,25 +77,38 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
         }}
       >
         {visibleFilters.map((filter) => (
-          <Box key={filter.key} sx={{ minWidth: 150 }}>
-            {filter.type === "text" ? (
+          <Box key={filter.key}>
+            {filter.type === "text" && (
               <TextField
                 size="small"
                 placeholder={filter.placeholder || filter.label}
                 value={filter.value}
                 onChange={(e) => filter.onChange(e.target.value)}
-                sx={{ width: { xs: "100%", sm: 280 } }}
+                sx={{
+                  width: { xs: "100%", sm: 280 },
+                  ...(filter.sx || {}),
+                }}
               />
-            ) : filter.type === "select" ? (
-              <FormControl size="small" sx={{ minWidth: 140 }}>
+            )}
+
+            {filter.type === "select" && (
+              <FormControl
+                size="small"
+                sx={{
+                  minWidth: 140,
+                  ...(filter.sx || {}),
+                }}
+              >
                 <Select
                   value={filter.value}
                   displayEmpty
                   onChange={(e) => filter.onChange(e.target.value)}
+                  MenuProps={filter.menuProps}
                 >
                   <MenuItem value="">
-                    {filter.placeholder || `${filter.label}`}
+                    {filter.placeholder || filter.label}
                   </MenuItem>
+
                   {filter.options?.map((opt) => (
                     <MenuItem key={opt.value} value={opt.value}>
                       {opt.label}
@@ -94,12 +116,12 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
                   ))}
                 </Select>
               </FormControl>
-            ) : null}
+            )}
           </Box>
         ))}
       </Box>
 
-      {/* Right section - action buttons */}
+      {/* -------------------- Actions -------------------- */}
       <Box
         sx={{
           display: "flex",
@@ -120,7 +142,7 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
             sx={{
               width:
                 action.label === "Sync"
-                  ? { xs: "auto", sm: 90 } // ✅ reduced width for Sync only
+                  ? { xs: "auto", sm: 90 }
                   : { xs: "100%", sm: "auto" },
               minWidth: action.label === "Sync" ? 90 : 70,
             }}
