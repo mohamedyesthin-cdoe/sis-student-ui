@@ -311,7 +311,6 @@ class ApiService:
         for s in students:
             try:
                 payload = self.to_digicampus_payload(s)
-                print("Updating student:", payload)
                 api_response = await update_odl_student(token, payload, s.registration_no)
                 results.append({
                     "application_no": s.application_no,
@@ -319,7 +318,6 @@ class ApiService:
                     "response": api_response
                 })
                 s.last_updated = datetime.utcnow()
-                print("Updated last_updated for:", s.last_updated)
                 self.repo.db.commit()
                 self.repo.db.refresh(s) 
                 results.append(payload)

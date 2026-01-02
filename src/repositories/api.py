@@ -64,7 +64,6 @@ class ApiRepository:
             joinedload(Student.academic_details),
             joinedload(Student.deb_details)
         ).order_by(Student.id.asc()).filter(Student.is_pushed_digi == False).all()
-        print(students[0].programe.programe)
         return students
     
     def get_updated_students(self) -> List[Student]:

@@ -26,7 +26,6 @@ def get_student_id_by_user_id(db: Session, user_id: int):
     user = db.query(User).filter(User.id == user_id).first()
     student = user.student_id
     result = db.query(Student).filter(Student.id == student).first()
-    #print("Student Info:", result.id)
     return result if result else None
 
 class UserRepository:

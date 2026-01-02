@@ -84,7 +84,6 @@ class DocumentRepository:
             uploaded_by=data.uploaded_by,
             file_url=file_url
         )
-        print("Creating document:", document)
         self.db.add(document)
         self.db.commit()
         self.db.refresh(document)

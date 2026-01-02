@@ -202,7 +202,6 @@ class StudentService:
             # SYNC NEW STUDENTS
             if new_students:
                 for student in new_students:
-                    print(student)
                     self.student_repo.bulk_create_student(student)
 
                 return {

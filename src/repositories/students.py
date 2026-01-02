@@ -112,7 +112,6 @@ class StudentRepository(BaseRepository[Student]):
     def bulk_update_student(self, api_response: dict):
         try:
             student_data = map_patch_api_to_student_schema(api_response)
-            print(student_data)
             # Fetch existing student by application_no or email
 
             existing_student = (
@@ -342,7 +341,6 @@ class StudentRepository(BaseRepository[Student]):
             }
             return summary
         except SQLAlchemyError as e:
-            print(f"Failed to delete student {student_id}: {e}")
             raise
 
     def delete_all_students(self) -> None:
