@@ -1,20 +1,20 @@
 import { Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Box } from "@mui/material";
-import CardComponent from "../Card";
+// import CardComponent from "../Card";
 
 export default function TableSkeleton() {
   const columns = 6;
   const rows = 8;
 
   return (
-    <CardComponent
-      sx={{
-        width: "100%",
-        maxWidth: { xs: "100%", sm: "900px", md: "1300px" },
-        mx: "auto",
-        p: { xs: 2, sm: 3 },
-        mt: 3,
-      }}
-    >
+    // <CardComponent
+    //   sx={{
+    //     width: "100%",
+    //     maxWidth: { xs: "100%", sm: "900px", md: "1300px" },
+    //     mx: "auto",
+    //     p: { xs: 2, sm: 3 },
+    //     mt: 3,
+    //   }}
+    // >
       <Box
         sx={{
           width: "100%",
@@ -50,6 +50,6 @@ export default function TableSkeleton() {
           </TableBody>
         </Table>
       </Box>
-    </CardComponent>
+    // </CardComponent>
   );
 }

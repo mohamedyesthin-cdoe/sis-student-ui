@@ -292,148 +292,151 @@ export default function StudentTable() {
 
   return (
     <>
-      {
-        loading ? (
-          <TableSkeleton />
-        )
-          : (
-            <CardComponent
-              sx={{
-                width: '100%',
-                maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
-                mx: 'auto',
-                p: 3,
-                mt: 3,
-              }}
-            >
+      <CardComponent
+        sx={{
+          width: '100%',
+          maxWidth: { xs: '350px', sm: '900px', md: '1300px' },
+          mx: 'auto',
+          p: 3,
+          mt: 3,
+        }}
+      >
+        <TableToolbar
+          filters={[
+            {
+              key: "search",
+              label: "Search",
+              type: "text",
+              value: searchText,
+              onChange: (val) => setSearchText(val),
+              placeholder: "Search all fields",
+              visible: showSearch,
+            },
+            {
+              key: "program",
+              label: "Select Course",
+              type: "select",
+              value: programFilter,
+              onChange: (val) => {
+                setProgramFilter(val);
+                setPage(0);
+              },
+              options: programOptions,
 
-              <TableToolbar
-                filters={[
-                  {
-                    key: "search",
-                    label: "Search",
-                    type: "text",
-                    value: searchText,
-                    onChange: (val) => setSearchText(val),
-                    placeholder: "Search all fields",
-                    visible: showSearch,
-                  },
-                  {
-                    key: "program",
-                    label: "Select Course",
-                    type: "select",
-                    value: programFilter,
-                    onChange: (val) => {
-                      setProgramFilter(val);
-                      setPage(0);
-                    },
-                    options: programOptions,
+              // ✅ 250px width
+              sx: {
+                width: 250,
+              },
 
-                    // ✅ 250px width
-                    sx: {
-                      width: 250,
-                    },
-
-                    // ✅ scrollable dropdown
-                    menuProps: {
-                      PaperProps: {
-                        sx: {
-                          maxHeight: 250,
-                          overflowY: "auto",
-                        },
-                      },
-                    },
-                  }
-                ]}
-                actions={[
-                  {
-                    label: 'Bulk Upload',
-                    color: 'secondary',
-                    variant: 'outlined',
-                    startIcon: <CloudUploadIcon />,
-                    onClick: () => setOpenUploadDialog(true),
+              // ✅ scrollable dropdown
+              menuProps: {
+                PaperProps: {
+                  sx: {
+                    maxHeight: 250,
+                    overflowY: "auto",
                   },
-                  {
-                    label: 'Sync',
-                    color: 'primary',
-                    variant: 'outlined',
-                    startIcon: <SyncIcon />,
-                    onClick: handleSync,
-                  },
-                  {
-                    label: 'Push to Deb',
-                    color: 'success',
-                    variant: 'outlined',
-                    startIcon: <CloudUploadIcon />,
-                    onClick: async () => {
-                      try {
-                        const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
-                        console.log(data);
-                      } catch (error: any) {
-                        showAlert(error?.detail || "Sync failed.", "error");
-                      }
-                    },
-                  },
-                  {
-                    label: 'Export Excel',
-                    color: 'secondary',
-                    startIcon: <FileDownloadIcon />,
-                    onClick: handleExportExcel,
-                  },
-                ]}
-              />
-              {filteredStudents.length == 0 ? (
-                <NoDataFoundUI />
-              ) : (
-                <ReusableTable
-                  columns={[
-                    { key: "registration_no", label: "Registration No" },
-                    {
-                      key: "full_name",
-                      label: "Full Name",
-                      render: (r) => `${r.title} ${r.first_name} ${r.last_name}`,
-                    },
-                    { key: "email", label: "Email" },
-                    { key: "mobile_number", label: "Mobile" },
-                    { key: "gender", label: "Gender" },
-                    {
-                      key: "date_of_birth",
-                      label: "DOB",
-                      render: (r) => formatDOB(r.date_of_birth),
-                    },
-                  ]}
-
-                  data={filteredStudents}
-                  page={page}
-                  rowsPerPage={rowsPerPage}
-                  actions={[
-                    {
-                      label: "View",
-                      icon: <VisibilityIcon fontSize="small" />,
-                      onClick: (row) => handleView(row.id),
-                      color: 'secondary',
-                    },
-                  ]}
-                />
-              )}
-              <TablePagination
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalCount={filteredStudents.length}
-                onPageChange={(newPage) => setPage(newPage)}
-                onRowsPerPageChange={(newRowsPerPage) => {
-                  setRowsPerPage(newRowsPerPage);
-                  setPage(0);
-                }}
-              />
-              <UploadExcelDialog
-                open={openUploadDialog}
-                onClose={() => setOpenUploadDialog(false)}
-                onUpload={handleExcelUpload}
-              />
-            </CardComponent>
+                },
+              },
+            }
+          ]}
+          actions={[
+            {
+              label: 'Bulk Upload',
+              color: 'secondary',
+              variant: 'outlined',
+              startIcon: <CloudUploadIcon />,
+              onClick: () => setOpenUploadDialog(true),
+            },
+            {
+              label: 'Sync',
+              color: 'primary',
+              variant: 'outlined',
+              startIcon: <SyncIcon />,
+              onClick: handleSync,
+            },
+            {
+              label: 'Push to Deb',
+              color: 'success',
+              variant: 'outlined',
+              startIcon: <CloudUploadIcon />,
+              onClick: async () => {
+                try {
+                  const data = await apiRequest({ url: ApiRoutes.PUSHTODEBL, method: 'post' });
+                  console.log(data);
+                } catch (error: any) {
+                  showAlert(error?.detail || "Sync failed.", "error");
+                }
+              },
+            },
+            {
+              label: 'Export Excel',
+              color: 'secondary',
+              startIcon: <FileDownloadIcon />,
+              onClick: handleExportExcel,
+            },
+          ]}
+        />
+        {
+          loading ? (
+            <TableSkeleton />
           )
-      }
+            : (
+              <>
+                {
+                  filteredStudents.length == 0 ? (
+                    <NoDataFoundUI />
+                  ) : (
+                    <ReusableTable
+                      columns={[
+                        { key: "registration_no", label: "Registration No" },
+                        {
+                          key: "full_name",
+                          label: "Full Name",
+                          render: (r) => `${r.title} ${r.first_name} ${r.last_name}`,
+                        },
+                        { key: "email", label: "Email" },
+                        { key: "mobile_number", label: "Mobile" },
+                        { key: "gender", label: "Gender" },
+                        {
+                          key: "date_of_birth",
+                          label: "DOB",
+                          render: (r) => formatDOB(r.date_of_birth),
+                        },
+                      ]}
+
+                      data={filteredStudents}
+                      page={page}
+                      rowsPerPage={rowsPerPage}
+                      actions={[
+                        {
+                          label: "View",
+                          icon: <VisibilityIcon fontSize="small" />,
+                          onClick: (row) => handleView(row.id),
+                          color: 'secondary',
+                        },
+                      ]}
+                    />
+                  )
+                }
+              </>
+            )
+        }
+        < TablePagination
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalCount={filteredStudents.length}
+          onPageChange={(newPage) => setPage(newPage)}
+          onRowsPerPageChange={(newRowsPerPage) => {
+            setRowsPerPage(newRowsPerPage);
+            setPage(0);
+          }}
+        />
+      </CardComponent>
+      <UploadExcelDialog
+        open={openUploadDialog}
+        onClose={() => setOpenUploadDialog(false)}
+        onUpload={handleExcelUpload}
+      />
     </>
   )
 

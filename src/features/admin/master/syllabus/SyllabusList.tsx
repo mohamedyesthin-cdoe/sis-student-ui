@@ -77,91 +77,90 @@ export default function SyllabusList() {
 
   return (
     <>
-      {
-        loading ? (
-          <TableSkeleton />
-        )
-          : (
-            <CardComponent
-              sx={{
-                width: "100%",
-                maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
-                mx: "auto",
-                p: 3,
-                mt: 3,
-              }}
-            >
-              {/* Toolbar */}
-              <TableToolbar
-                filters={[
-                  {
-                    key: "search",
-                    label: "Search",
-                    type: "text",
-                    value: searchText,
-                    onChange: (val) => setSearchText(val),
-                    placeholder: "Search by name, email, phone...",
-                    visible: showSearch,
-                  },
-                ]}
-                actions={[
-                  {
-                    label: "Export Excel",
-                    color: "secondary",
-                    startIcon: <FileDownloadIcon />,
-                    onClick: handleExportExcel,
-                  },
-                  {
-                    label: "Add Syllabus",
-                    color: "primary",
-                    onClick: handleAdd,
-                  },
-                ]}
-              />
-
-              {filteredSyllabuses.length === 0 ? (
-                <NoDataFoundUI />
-              ) : (
-                <ReusableTable
-                  columns={[
-                    { key: "course_category_id", label: "Employee ID" },
-                    { key: "full_name", label: "Full Name" },
-                    { key: "email", label: "Email" },
-                    { key: "phone", label: "Mobile" },
-                    { key: "department", label: "Department" },
-                    { key: "designation", label: "Designation" },
-                  ]}
-                  data={filteredSyllabuses}
-                  page={page}
-                  rowsPerPage={rowsPerPage}
-                  actions={[
-                    {
-                      label: "Edit",
-                      icon: <EditIcon fontSize="small" />,
-                      onClick: (row) => handleEdit(row),
-                      color: "primary",
-                    },
-                    {
-                      label: "Delete",
-                      icon: <DeleteIcon fontSize="small" />,
-                      onClick: () => { },
-                      color: "error",
-                    },
-                  ]}
-                />
-              )
-              }
-
-              {/* Pagination */}
-              <TablePagination
-                page={page}
-                rowsPerPage={rowsPerPage}
-                totalCount={filteredSyllabuses.length}
-                onPageChange={(newPage) => setPage(newPage)}
-              />
-            </CardComponent>
+      <CardComponent
+        sx={{
+          width: "100%",
+          maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+          mx: "auto",
+          p: 3,
+          mt: 3,
+        }}
+      >
+        {/* Toolbar */}
+        <TableToolbar
+          filters={[
+            {
+              key: "search",
+              label: "Search",
+              type: "text",
+              value: searchText,
+              onChange: (val) => setSearchText(val),
+              placeholder: "Search by name, email, phone...",
+              visible: showSearch,
+            },
+          ]}
+          actions={[
+            {
+              label: "Export Excel",
+              color: "secondary",
+              startIcon: <FileDownloadIcon />,
+              onClick: handleExportExcel,
+            },
+            {
+              label: "Add Syllabus",
+              color: "primary",
+              onClick: handleAdd,
+            },
+          ]}
+        />
+        {
+          loading ? (
+            <TableSkeleton />
           )
-      }
+            : (
+              <>
+                {filteredSyllabuses.length === 0 ? (
+                  <NoDataFoundUI />
+                ) : (
+                  <ReusableTable
+                    columns={[
+                      { key: "course_category_id", label: "Employee ID" },
+                      { key: "full_name", label: "Full Name" },
+                      { key: "email", label: "Email" },
+                      { key: "phone", label: "Mobile" },
+                      { key: "department", label: "Department" },
+                      { key: "designation", label: "Designation" },
+                    ]}
+                    data={filteredSyllabuses}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    actions={[
+                      {
+                        label: "Edit",
+                        icon: <EditIcon fontSize="small" />,
+                        onClick: (row) => handleEdit(row),
+                        color: "primary",
+                      },
+                      {
+                        label: "Delete",
+                        icon: <DeleteIcon fontSize="small" />,
+                        onClick: () => { },
+                        color: "error",
+                      },
+                    ]}
+                  />
+                )
+                }
+              </>
+            )
+        }
+        <TablePagination
+          page={page}
+          rowsPerPage={rowsPerPage}
+          totalCount={filteredSyllabuses.length}
+          onPageChange={(newPage) => setPage(newPage)}
+        />
+      </CardComponent>
     </>
   );
 }

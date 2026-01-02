@@ -140,7 +140,7 @@ export default function Onlinegrievances() {
               },
             ]}
           />
-          <CardComponent
+          {/* <CardComponent
             sx={{
               width: "100%",
               maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
@@ -148,9 +148,9 @@ export default function Onlinegrievances() {
               p: 3,
               mt: 3,
             }}
-          >
+          > */}
             <NoDataFoundUI />
-          </CardComponent>
+          {/* </CardComponent> */}
         </CardComponent>
       }
     </>
