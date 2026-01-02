@@ -42,22 +42,43 @@ export default function StudentDetailUI() {
     if (student_id) fetchStudent();
   }, [student_id, navigate]);
 
+  const getBatchYearFromRegNo = (regNo?: string) => {
+    if (!regNo) return null;
+
+    const prefix = regNo.substring(0, 3); // X02, X03
+
+    if (prefix === "X02" || prefix === "X03") {
+      return {
+        batch: "January",
+        year: "2026",
+      };
+    }
+
+    return null;
+  };
+  const regBatchYear = getBatchYearFromRegNo(student?.registration_no);
 
   const personalInfo = {
     fullName: `${student?.first_name} ${student?.last_name}`,
     email: student?.email,
     phoneNumber: student?.mobile_number,
     program:
-      student?.program_id == '1500038' ? (
+      student?.program_id == "1500038" ? (
+        <Box component="span">B.Sc (Hons) - (Data Science)</Box>
+      ) : student?.program_id == "1500132" ? (
         <Box component="span">
-          B.Sc (Hons) - (Data Science)
+          1-year online executive PG certificate in Industrial Hygiene
+        </Box>
+      ) : student?.program_id == "1500136" ? (
+        <Box component="span">
+          1-year online executive PG certificate in Wellness Coaching
         </Box>
       ) : (
-        '-'
+        "-"
       ),
     department: student?.department,
-    batch: student?.batch,
-    year: student?.year,
+    batch: regBatchYear?.batch || student?.batch || "July",
+    year: regBatchYear?.year || student?.year || "2025",
     registration_no: student?.registration_no,
     userImage: student?.document_details?.profile_image
   };
@@ -68,8 +89,8 @@ export default function StudentDetailUI() {
     ['Phone Number', personalInfo.phoneNumber],
     ['Program', personalInfo.program],
     ['Department', 'CDOE'],
-    ['Batch', 'July'],
-    ['Year', '2025'],
+    ['Batch', regBatchYear?.batch || student?.batch || "July"],
+    ['Year', regBatchYear?.year || student?.year || "2025"],
   ];
   const gender = getValue("gender");
   const userimage = gender == "Female" ? femaleimage : maleimage;
@@ -77,12 +98,31 @@ export default function StudentDetailUI() {
   return (
     <>
       {
-        <Box className="grid grid-cols-1 lg:grid-cols-12 gap-6 m-2 mt-4"
-          sx={{ maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: 'auto' }}>
+        <Box
+          className="grid grid-cols-1 lg:grid-cols-12 gap-6"
+          sx={{
+            maxWidth: {
+              xs: "100%",
+              sm: "900px",
+              md: "1200px",
+              lg: "1400px",
+              xl: "1600px",
+              xxl: "2000px",
+            },
+            mx: "auto",                 // center horizontally
+            mt: { xs: 1, sm: 1.5 },     // ⬇ reduced top margin
+            mb: { xs: 1, sm: 1.5 },     // ⬇ reduced bottom margin
+            px: { xs: 1, sm: 1.5 },     // ⬇ smaller side spacing
+          }}
+        >
+
           {/* Left Column */}
 
 
-          <Box className="col-span-12 lg:col-span-4 my-1">
+          <Box className="col-span-12
+    lg:col-span-4
+    xl:col-span-4
+    2xl:col-span-4 my-1">
             {loading ?
               <>
                 <ProfileSkeleton />
@@ -170,7 +210,7 @@ export default function StudentDetailUI() {
                             <Customtext
                               fieldName={label}
                               sx={{
-                                width: { xs: '100%', sm: '50%' },
+                                width: { xs: '100%', sm: '45%' },
                                 color: theme.palette.custom.accent,
                                 wordBreak: 'break-word', // wrap if label is long
                               }}
@@ -180,7 +220,7 @@ export default function StudentDetailUI() {
                             <Customtext
                               fieldName={value}
                               sx={{
-                                width: { xs: '100%', sm: '50%' },
+                                width: { xs: '100%', sm: '55%' },
                                 color: theme.palette.secondary.main,
                                 wordBreak: 'break-word', // wrap if label is long
                                 textAlign: 'left',
@@ -197,7 +237,10 @@ export default function StudentDetailUI() {
           </Box>
 
           {/* Right Column */}
-          <Box className="col-span-12 lg:col-span-8 my-1">
+          <Box className="col-span-12
+    lg:col-span-8
+    xl:col-span-8
+    2xl:col-span-8 my-1">
             <StudentDetailTab student={student} activeTab={activeTab} setActiveTab={setActiveTab} />
           </Box>
         </Box>

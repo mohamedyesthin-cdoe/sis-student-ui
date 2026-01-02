@@ -25,31 +25,31 @@ const StudentHorizontalIDCard = () => {
   const userimage = gender == "Female" ? femaleimage : maleimage;
   // const userimage = 'https://d1jgwwhd2xazx1.cloudfront.net/uploads/student/document/6719/21235/2025/09/16/68c93391d0bdf518716830_PHOTO.jpg?Expires=1762406006&Signature=oS64gV0VFWIhRgFVS2YrSkqpNorE9t8LGO8xsKS~5AcSdsjd971shggcnxuIK53R5wsYxrevrVGunfFHI9xoo0DaDAfxSAbGRkfLpY5cvUFLC~w5rtxdteRueuR1WRHkO5NYF-bpvwMRDZrBrPmIr964UygDXiu9dWAZXYYVlLCibtU4a-yFtL6knE73Q68xc5uwOxS41st4K9qL6uvOx-uGu4FWJA-5y-zCWsYDJJKSDMiADyixTXeuOtOjWp3X1LFwSVjlWPmygNZF~OXnxdET1hiFKkB1caEywM5o0vKXj-3kHhwdG6fuKB4k9x5Y-ddOYzyBFq1cs01djPGrYg__&Key-Pair-Id=K3KU6FKMGSED79'
 
-const [student, setStudent] = useState<any>(null);
-const [localLoading, setLocalLoading] = useState(true);
+  const [student, setStudent] = useState<any>(null);
+  const [localLoading, setLocalLoading] = useState(true);
 
-useEffect(() => {
-  const fetchStudent = async () => {
-    try {
-      setLocalLoading(true);
-      const response = await apiRequest({
-        url: `${ApiRoutes.GETSTUDENTBYID}/${student_id}`,
-        method: "get",
-      });
-      setStudent(response);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLocalLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchStudent = async () => {
+      try {
+        setLocalLoading(true);
+        const response = await apiRequest({
+          url: `${ApiRoutes.GETSTUDENTBYID}/${student_id}`,
+          method: "get",
+        });
+        setStudent(response);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLocalLoading(false);
+      }
+    };
 
-  if (student_id) fetchStudent();
-}, [student_id]);
+    if (student_id) fetchStudent();
+  }, [student_id]);
 
-if (localLoading) {
-  return <IDCardSkeleton />;
-}
+  if (localLoading) {
+    return <IDCardSkeleton />;
+  }
 
 
   const formatDate = (dateString: any) => {
@@ -78,7 +78,7 @@ if (localLoading) {
     }
 
     const cardWidth = 324;
-    const cardHeight = 204;
+    const cardHeight = 216;
     const pageWidth = 595;
     const pageHeight = 842;
     const scaleFactor = (pageWidth * 0.85) / cardWidth;
@@ -247,22 +247,57 @@ if (localLoading) {
 
 
 
+  const getBatchYearFromRegNo = (regNo?: string) => {
+    if (!regNo) return null;
+
+    const prefix = regNo.substring(0, 3); // X02, X03
+
+    if (prefix === "X02" || prefix === "X03") {
+      return {
+        batch: "January",
+        year: "2026",
+      };
+    }
+
+    return null;
+  };
 
 
+
+  const regBatchYear = getBatchYearFromRegNo(student?.registration_no);
 
   const personalInfo = {
     fullName: `${student?.first_name || ""} ${student?.last_name || ""}`,
     email: student?.email,
     phoneNumber: student?.mobile_number,
-    program: "B.Sc (Hons) - (Data Science)",
+
+    program:
+      student?.program_id == "1500038" ? (
+        <Box component="span">B.Sc (Hons) - (Data Science)</Box>
+      ) : student?.program_id == "1500132" ? (
+        <Box component="span">
+          1-year online executive PG certificate in Industrial Hygiene
+        </Box>
+      ) : student?.program_id == "1500136" ? (
+        <Box component="span">
+          1-year online executive PG certificate in Wellness Coaching
+        </Box>
+      ) : (
+        "-"
+      ),
+
     department: student?.department || "CDOE",
-    batch: student?.batch || "July",
-    year: student?.year || "2025",
+
+    // ✅ HERE IS THE KEY PART
+    batch: regBatchYear?.batch || student?.batch || "July",
+    year: regBatchYear?.year || student?.year || "2025",
+
     registration_no: student?.registration_no,
     parent_guardian_name: student?.parent_guardian_name,
     address: `${student?.address_details?.corr_addr1 || ""}, ${student?.address_details?.corr_city || ""} - ${student?.address_details?.corr_pin || ""}`,
-    userImage:student?.document_details?.profile_image
+    userImage: student?.document_details?.profile_image,
   };
+
 
   return (
     <Box
@@ -287,7 +322,7 @@ if (localLoading) {
         >
           {/* Header */}
           <Box
-            className="h-[110px] bg-[#08446B] flex flex-col items-center justify-center border-b border-gray-300"
+            className="h-[100px] bg-[#08446B] flex flex-col items-center justify-center border-b border-gray-300"
           >
 
             <img

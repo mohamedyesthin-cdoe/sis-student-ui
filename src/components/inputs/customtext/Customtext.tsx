@@ -1,34 +1,40 @@
-import { Typography } from '@mui/material'
-import type { SxProps, Theme, TypographyVariant } from '@mui/material'; // 👈 type-only import
-import theme from '../../../styles/theme';
+import { Typography } from "@mui/material";
+import type { SxProps, Theme, TypographyVariant } from "@mui/material";
 
 interface CustomtextProps {
-  fieldName: any,
+  fieldName: any;
   sx?: SxProps<Theme>;
-  variantName?: TypographyVariant // ✅ custom sx support
+  variantName?: TypographyVariant;
 }
 
-const Customtext: React.FC<CustomtextProps> = ({ fieldName, sx = {}, variantName }) => {
+const Customtext: React.FC<CustomtextProps> = ({
+  fieldName,
+  sx = {},
+  variantName = "body2",
+}) => {
   return (
     <Typography
       variant={variantName}
-      gutterBottom
       sx={{
-        color: theme.palette.secondary.main,
-        fontWeight: 'bold',
+        /* ✅ RESPONSIVE FONT SCALE */
         fontSize: {
-          xs: '0.875rem', // 14px
-          sm: '1rem',     // 16px
-          md: '1.125rem', // 18px
-          lg: '0.8rem',  // 20px
-          xl: '1.5rem',   // 24px
+          xs: "0.85rem",     // mobile
+          sm: "0.9rem",      // tablets
+          md: "1rem",        // laptops
+          lg: "1.05rem",     // 1470
+          xl: "1.15rem",     // 1854
+          xxl: "1.25rem",    // 2560
         },
-        ...sx
+
+        /* optional for readability */
+        lineHeight: 1.5,
+        fontWeight: 'bold',
+        ...sx,
       }}
     >
-      {fieldName}
+      {fieldName || "-"}
     </Typography>
-  )
-}
+  );
+};
 
-export default Customtext
+export default Customtext;

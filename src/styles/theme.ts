@@ -54,7 +54,17 @@ const theme = createTheme({
         },
       },
     },
-  }
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 900,
+      lg: 1200,
+      xl: 1536,   // 1470–1854
+      // xxl: 1920,  // 2560 screens
+    },
+  },
 
 
 });

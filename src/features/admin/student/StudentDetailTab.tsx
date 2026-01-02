@@ -156,9 +156,9 @@ export default function StudentDetailTab({
   };
 
   // Tabs
-  const admintabs = ['Basic Info', 'Academic', 'DEB', 'Documents', 'ID Card'];
-  const studenttabs = ['Basic Info', 'DEB', 'ID Card'];
-  const tabs = rollid === 2 ? studenttabs : admintabs;
+  // const admintabs = ['Basic Info', 'Academic', 'DEB', 'Documents', 'ID Card'];
+  // const studenttabs = ['Basic Info', 'DEB', 'ID Card'];
+  // const tabs = rollid === 2 ? studenttabs : admintabs;
   const formattedDate = new Date(student?.date_of_birth).toLocaleDateString("en-GB") // dd/mm/yyyy
   // Tab Contents
   const basicInfoTab: TabContent = {
@@ -172,7 +172,7 @@ export default function StudentDetailTab({
       ['Religion', student?.religion],
       ['Aadhar Number', student?.aadhaar_number],
       ['Personal EmailId', student?.email],
-      ['Nationality', student?.nationality == '101' ? 'Indian' : 'Others'],
+      ['Nationality', student?.nationality],
     ],
     customRender: () => (
       <>
@@ -197,7 +197,7 @@ export default function StudentDetailTab({
                   ['Religion', student?.religion],
                   ['Aadhar Number', student?.aadhaar_number],
                   ['Personal EmailId', student?.email],
-                  ['Nationality', student?.nationality == '101' ? 'Indian' : 'Others'],
+                  ['Nationality', student?.nationality],
                 ].map(([label, value]) => (
                   <Box key={label}>{field(label, value)}</Box>
                 ))}
@@ -405,15 +405,39 @@ export default function StudentDetailTab({
     ),
   };
 
+const regPrefix = student?.registration_no?.substring(0, 3);
+const hideDebTab = regPrefix === "X02" || regPrefix === "X03";
 
+  const admintabs = [
+  'Basic Info',
+  'Academic',
+  ...(hideDebTab ? [] : ['DEB']),
+  'Documents',
+  'ID Card',
+];
 
+const studenttabs = [
+  'Basic Info',
+  ...(hideDebTab ? [] : ['DEB']),
+  'ID Card',
+];
 
+const tabs = rollid === 2 ? studenttabs : admintabs;
+const tabContents =
+  rollid === 2
+    ? [
+        basicInfoTab,
+        ...(hideDebTab ? [] : [debTab]),
+        IDCardTab,
+      ]
+    : [
+        basicInfoTab,
+        academicTab,
+        ...(hideDebTab ? [] : [debTab]),
+        documentsTab,
+        IDCardTab,
+      ];
 
-  // ✅ Corrected tab content mapping for both roles
-  const tabContents =
-    rollid === 2
-      ? [basicInfoTab, debTab, IDCardTab]
-      : [basicInfoTab, academicTab, debTab, documentsTab, IDCardTab];
 
   return (
     <>
