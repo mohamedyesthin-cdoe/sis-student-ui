@@ -35,6 +35,19 @@ export default function StudentTable() {
   const { clearError } = useGlobalError();
   const [programs, setPrograms] = React.useState<any[]>([]);
 
+  const formatDOB = (dob?: string) => {
+    if (!dob) return "-";
+    const date = new Date(dob);
+    if (isNaN(date.getTime())) return dob;
+
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+
+    return `${dd}-${mm}-${yyyy}`;
+  };
+
+
   /* -------------------- Fetch Program List -------------------- */
   React.useEffect(() => {
     clearError();
@@ -375,12 +388,21 @@ export default function StudentTable() {
                 <ReusableTable
                   columns={[
                     { key: "registration_no", label: "Registration No" },
-                    { key: "full_name", label: "Full Name", render: (r) => `${r.title} ${r.first_name} ${r.last_name}` },
+                    {
+                      key: "full_name",
+                      label: "Full Name",
+                      render: (r) => `${r.title} ${r.first_name} ${r.last_name}`,
+                    },
                     { key: "email", label: "Email" },
                     { key: "mobile_number", label: "Mobile" },
                     { key: "gender", label: "Gender" },
-                    { key: "date_of_birth", label: "DOB" },
+                    {
+                      key: "date_of_birth",
+                      label: "DOB",
+                      render: (r) => formatDOB(r.date_of_birth),
+                    },
                   ]}
+
                   data={filteredStudents}
                   page={page}
                   rowsPerPage={rowsPerPage}
