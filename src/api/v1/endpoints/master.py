@@ -64,7 +64,7 @@ def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_u
         )
     
 @router.get("/Offering/{programe_id}", response_model=OfferingResponse, dependencies=[Depends(verify_api_key)])
-def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+def get_program_by_id(programe_id: int, db: Session = Depends(get_db)):
     try:
         service = MasterService(db)
         program = service.get_program_by_id_with_fees(programe_id)
