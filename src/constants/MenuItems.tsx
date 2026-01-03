@@ -118,12 +118,12 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     subItems: [],
     routePath: '/counselling',
   },
-  {
-    text: 'Documents',
-    icon: 'Documents',
-    subItems: [],
-    routePath: '/documents'
-  },
+  // {
+  //   text: 'Documents',
+  //   icon: 'Documents',
+  //   subItems: [],
+  //   routePath: '/documents'
+  // },
   // {
   //   text: 'Library',
   //   icon: 'Library',

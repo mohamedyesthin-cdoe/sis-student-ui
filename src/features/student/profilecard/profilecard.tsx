@@ -296,6 +296,7 @@ const StudentHorizontalIDCard = () => {
     parent_guardian_name: student?.parent_guardian_name,
     address: `${student?.address_details?.corr_addr1 || ""}, ${student?.address_details?.corr_city || ""} - ${student?.address_details?.corr_pin || ""}`,
     userImage: student?.document_details?.profile_image,
+    relationship_with_student: student?.relationship_with_student,
   };
 
 
@@ -428,9 +429,10 @@ const StudentHorizontalIDCard = () => {
             backfaceVisibility: "hidden",
           }}
         >
-          <Typography sx={{ fontWeight: 600, fontSize: '14px' }} mt={1}>
-            Father's Name : {personalInfo.parent_guardian_name || "—"}
-          </Typography>
+          {/* <Typography sx={{ fontWeight: 600, fontSize: '14px' }} mt={1}>
+            {personalInfo.relationship_with_student}'s Name 
+            : {personalInfo.parent_guardian_name || "—"}
+          </Typography> */}
           <Typography sx={{ fontWeight: 600, fontSize: '14px' }} className="mt-1">
             Res. Address :
             <br />
