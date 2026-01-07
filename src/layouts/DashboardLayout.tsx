@@ -14,6 +14,8 @@ export default function DashboardLayout() {
   const [isMobile, setIsMobile] = useState(false);
 
   const { error, clearError } = useGlobalError();
+  console.log('error.type', error.type);
+
 
   // ✅ Clear stale error when layout loads
   useEffect(() => {
@@ -51,9 +53,8 @@ export default function DashboardLayout() {
         />
       ) : (
         <Box
-          className={`transition-width duration-300 bg-white overflow-hidden ${
-            sidebarVisible ? "w-64" : "w-15"
-          }`}
+          className={`transition-width duration-300 bg-white overflow-hidden ${sidebarVisible ? "w-64" : "w-15"
+            }`}
         >
           <Sidebar
             isSidebarVisible={sidebarVisible}
@@ -82,9 +83,12 @@ export default function DashboardLayout() {
             >
               <ConnectionLostUI />
             </CardComponent>
+          ) : error.type === "SERVER_ERROR" ? (
+            <Outlet />
           ) : (
             <Outlet />
           )}
+
         </main>
       </Box>
     </Box>

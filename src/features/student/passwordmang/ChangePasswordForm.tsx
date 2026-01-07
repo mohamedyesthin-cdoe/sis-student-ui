@@ -81,13 +81,6 @@ const ChangePasswordForm = () => {
                 <Box sx={{ maxWidth: 500, mx: "auto", mt: 5 }}>
                     <CardComponent sx={{ p: 4, borderRadius: 3, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
                         <Customtext fieldName={'Change Password'} sx={{
-                            fontSize: {
-                                xs: '0.875rem', // 14px
-                                sm: '1rem',     // 16px
-                                md: '1.125rem', // 18px
-                                lg: '1.1rem',  // 20px
-                                xl: '1.5rem',   // 24px
-                            },
                             textAlign: 'center',
                             mb: 3
                         }} />

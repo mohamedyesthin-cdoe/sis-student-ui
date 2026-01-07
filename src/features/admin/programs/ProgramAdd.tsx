@@ -301,13 +301,7 @@ const ProgramForm = () => {
               {/* Program Details */}
               <CardComponent sx={{ p: 3 }}>
                 <Customtext fieldName="Program Details" sx={{
-                  mb: 2, fontSize: {
-                    xs: '0.875rem', // 14px
-                    sm: '1rem',     // 16px
-                    md: '1.125rem', // 18px
-                    lg: '1rem',  // 20px
-                    xl: '1.5rem',   // 24px
-                  },
+                  mb: 2
                 }} />
                 <Grid container spacing={2}>
                   {/* Program ID */}
@@ -407,16 +401,7 @@ const ProgramForm = () => {
 
               {/* Semester Fees */}
               <CardComponent sx={{ p: 3, mt: 4 }}>
-                <Customtext fieldName="Semester Fee Details"
-                  sx={{
-                    fontSize: {
-                      xs: '0.875rem', // 14px
-                      sm: '1rem',     // 16px
-                      md: '1.125rem', // 18px
-                      lg: '1rem',  // 20px
-                      xl: '1.5rem',   // 24px
-                    },
-                  }} />
+                <Customtext fieldName="Semester Fee Details" />
                 {Array.from({ length: 6 }).map((_, index) => (
                   <Box key={index} sx={{ mt: 3, mb: 3 }}>
                     <Customtext

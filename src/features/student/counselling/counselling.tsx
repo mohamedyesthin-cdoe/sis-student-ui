@@ -32,7 +32,7 @@ export default function StudentCounselling() {
                 >
                     <Box mb={2}>
                         {/* ===== Title ===== */}
-                        <Customtext variantName='h6' fieldName={'Student Counselling Service'} sx={{ fontSize: '1.5rem', color: theme.palette.text.primary }} />
+                        <Customtext fieldName={'Student Counselling Service'} sx={{ fontSize: '1.5rem', color: theme.palette.text.primary }} />
 
                         <Divider sx={{ mb: 3 }} />
 
@@ -41,7 +41,7 @@ export default function StudentCounselling() {
                             sx={{ fontSize: '1rem', color: theme.palette.text.primary, fontWeight: '400' }} />
 
                         {/* ===== Support Areas ===== */}
-                        <Customtext variantName='h6' fieldName={'Feel free to reach out to us for:'}
+                        <Customtext fieldName={'Feel free to reach out to us for:'}
                             sx={{ fontSize: '1rem', color: theme.palette.text.primary, mb: 1, fontWeight: '400' }} />
 
                         <List sx={{ listStyleType: "disc", pl: 4 }}>
