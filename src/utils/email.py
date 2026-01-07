@@ -63,6 +63,8 @@ async def send_credentials_email(email_to: str, username: str, password: str, fu
                         <p><strong>Password:</strong>{password}</p>
                     </div>
 
+                    <p>Please use <a href="https://sis.sriramachandradigilearn.edu.in/">https://sis.sriramachandradigilearn.edu.in/</a> to sign in and view your details.</p>
+
                     <p>Please keep your login credentials safe and secure. If you have any issues accessing the portal, feel free to reach out to us.</p>
 
                     <div class="support">

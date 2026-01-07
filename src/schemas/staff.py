@@ -91,7 +91,7 @@ class StaffUpdate(BaseModel):
     profile_photo: Optional[str] = None
     role: Optional[str] = None
 
-class StaffResponse(StaffBase):
+class StaffResponse(BaseModel):
     id: int
     user_id: int
 

@@ -202,6 +202,7 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
 def map_patch_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
     mapped_data = {
         "application_no": api_response.get("application_no"),
+        "date_of_birth": timestamp_to_date(api_response.get("date_of_birth")),
 
         "document_details": {
             "class_10th_marksheet": get_first_item(api_response.get("upload_10_marksheet")),

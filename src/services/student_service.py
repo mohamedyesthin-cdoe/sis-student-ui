@@ -177,7 +177,7 @@ class StudentService:
 
             # FETCH all already-synced application numbers from DB
             existing_rows = self.student_repo.get_all_application_nos()
-            
+            #print(existing_rows)
             # Convert into a set of strings
             existing_ids = {
                 row if isinstance(row, str) else row.get("application_no")
@@ -190,6 +190,7 @@ class StudentService:
             new_students = []  
             for student in value_list:
                 app_no = student.get("application_no")
+                print(app_no)
                 if not app_no:
                     logger.warning(f"Skipping student with missing application_no: {student}")
                     continue

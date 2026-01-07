@@ -178,7 +178,7 @@
         "first_name"
     ],
     "sorting": {
-   "sort_order": "asc",
+   "sort_order": "desc",
     "sort_by": "form_start_date"
     }
 }

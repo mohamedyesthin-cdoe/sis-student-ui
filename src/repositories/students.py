@@ -113,7 +113,7 @@ class StudentRepository(BaseRepository[Student]):
         try:
             student_data = map_patch_api_to_student_schema(api_response)
             # Fetch existing student by application_no or email
-
+            print("Updating student:", student_data.get("application_no"),student_data.get("date_of_birth"))
             existing_student = (
                 self.db.query(Student)
                 .filter(Student.application_no == student_data.get("application_no"))

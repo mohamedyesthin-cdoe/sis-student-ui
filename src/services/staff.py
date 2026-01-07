@@ -25,13 +25,22 @@ class StaffService:
         self.repo = StaffRepository(db)
         self.user_repo = UserRepository()
     
-    def create_staff(self, data: StaffBase) -> Staff :
+    def create_staff(self, data: StaffBase) -> dict:
         try:
-            existing_user = self.user_repo.get_user_by_username(self.db, data.employee_id)
+            # Check if user already exists
+            existing_user = self.user_repo.get_user_by_username(
+                self.db, data.employee_id
+            )
             if existing_user:
-                logger.warning(f"Attempt to create staff with existing employee ID: {data.employee_id}")
-                raise HTTPException(status_code=400, detail="User with this employee ID already exists.")
-        
+                logger.warning(
+                    f"Attempt to create staff with existing employee ID: {data.employee_id}"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="User with this employee ID already exists."
+                )
+
+            # Create user
             password = generate_password()
             user_data = UserCreate(
                 username=data.employee_id,
@@ -40,27 +49,43 @@ class StaffService:
                 last_name=data.last_name,
                 phone=data.phone,
                 password=password,
-                group_id=data.role
+                group_id=data.role,
             )
 
             user = self.user_repo.create_user(self.db, user_data)
 
+            # Create staff
             staff_data = data.model_dump(exclude_none=True)
             staff_data["user_id"] = user.id
-            staff = self.repo.create_staff(staff_data)
-            #await send_credentials_email(data.email, data.employee_id, password)
-            logger.info(f"Staff created successfully with ID: {staff.id} and linked User ID: {user.id}")
+
+            staff = self.repo.create_staff(self.db, staff_data)
+
+            # Optional: send credentials email
+            # await send_credentials_email(data.email, data.employee_id, password)
+
+            logger.info(
+                f"Staff created successfully with ID: {staff.id} "
+                f"and linked User ID: {user.id}"
+            )
+
             return {
                 "id": staff.id,
                 "user_id": user.id,
             }
-        
+
+        except HTTPException:
+            self.db.rollback()
+            raise
+
         except IntegrityError:
             self.db.rollback()
-            logger.error(f"Integrity error while creating staff with email: {data.email} or employee ID: {data.employee_id}")
+            logger.error(
+                f"Integrity error while creating staff with email: {data.email} "
+                f"or employee ID: {data.employee_id}"
+            )
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Staff with this email or employee ID already exists."
+                detail="Staff with this email or employee ID already exists.",
             )
 
         except SQLAlchemyError as e:
@@ -68,14 +93,15 @@ class StaffService:
             logger.error(f"Database error while creating staff: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error creating staff: {str(e)}"
+                detail="Database error occurred while creating staff.",
             )
-        
+
         except Exception as e:
-            logger.error(f"Unexpected error while creating staff: {str(e)}")
+            self.db.rollback()
+            logger.exception("Unexpected error while creating staff")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An unexpected error occurred while creating staff."
+                detail="An unexpected error occurred while creating staff.",
             )
 
     
