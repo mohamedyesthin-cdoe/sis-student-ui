@@ -57,3 +57,18 @@ class OdlStudentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class LeadCreate(BaseModel):
+    campus: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    #college_id: Optional[str] = None
+    country_dial_code: Optional[str] = None
+    email: str
+    mobile: str
+    name: str
+
+class LeadResponse(BaseModel):
+    code : int
+    message : str
+    status : bool

@@ -36,7 +36,7 @@ class StaffService:
                     f"Attempt to create staff with existing employee ID: {data.employee_id}"
                 )
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
+                    status_code=status.HTTP_409_CONFLICT,
                     detail="User with this employee ID already exists."
                 )
 

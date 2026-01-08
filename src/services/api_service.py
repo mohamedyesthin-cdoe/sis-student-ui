@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.orm import Session
 from src.schemas.payment import DataResponse, PaginationResponse, StandardResponse
-from src.schemas.api import OdlStudentResponse
+from src.schemas.api import OdlStudentResponse, LeadCreate
 from src.repositories.api import ApiRepository
 from datetime import datetime
 from src.schemas.master import ProgrameOut, DataOut
@@ -12,7 +12,7 @@ import requests
 import time
 from src.core.config import settings
 from datetime import datetime, date
-from src.services.integrations.student_api import create_odl_student, update_odl_student
+from src.services.integrations.student_api import create_odl_student, update_odl_student, add_lead
 
 DIGICAMPUS_USERNAME = settings.DIGICAMPUS_USERNAME
 DIGICAMPUS_PASSWORD = settings.DIGICAMPUS_PASSWORD
@@ -393,3 +393,18 @@ class ApiService:
             )
             for s in students
         ]
+
+    async def add_lead(self, data: LeadCreate) -> dict:
+        try:
+            payload = data.model_dump(exclude_none=True)
+            api_response = await add_lead(payload)
+            #lead = await add_lead(data)
+            return {
+                "code": 201,
+                "status": True,
+                "message": "Lead added successfully",
+            }
+        except Exception as e:
+            logger.error(f"Error adding lead: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Failed to add lead")
+

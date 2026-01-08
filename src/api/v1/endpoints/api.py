@@ -5,7 +5,7 @@ from src.services.api_service import ApiService
 from src.core.security.jwt import verify_api_key
 from src.schemas.payment import StandardResponse
 from src.schemas.master import ProgrameOut
-from src.schemas.api import OdlStudentResponse
+from src.schemas.api import OdlStudentResponse, LeadResponse, LeadCreate
 from src.db.session import get_db
 from src.utils.logger import setup_logger
 from sqlalchemy.exc import SQLAlchemyError
@@ -67,4 +67,13 @@ async def get_student_data(db: Session = Depends(get_db)):
         return program_fees
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
- 
+
+@router.post("/lead/add/", response_model=LeadResponse)
+async def add_lead(lead: LeadCreate, db: Session = Depends(get_db)):
+    try:
+        service = ApiService(db)
+        print("hi")
+        lead_response = await service.add_lead(lead)
+        return lead_response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to add lead: {str(e)}")
