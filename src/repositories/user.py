@@ -9,7 +9,7 @@ from src.utils.email import send_credentials_email
 import asyncio
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
-
+from sqlalchemy import or_
 
 def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
@@ -145,3 +145,26 @@ class UserRepository:
     def get_user_by_username(self, db: Session, username: str) -> User:
         result = db.query(User).filter(User.username == username).first()
         return result
+    
+    def get_user_by_email(self, db: Session, email: str) -> User:
+        result = db.query(User).filter(User.email == email).first()
+        return result
+    
+    def get_user_by_mobile(self, db: Session, phone: str) -> User:
+        result = db.query(User).filter(User.phone == phone).first()
+        return result
+    
+    def get_user_by_identifier(
+        self, db: Session, username: str, email: str, phone: str
+    ):
+        return (
+            db.query(User)
+            .filter(
+                or_(
+                    User.username == username,
+                    User.email == email,
+                    User.phone == phone
+                )
+            )
+            .first()
+        )

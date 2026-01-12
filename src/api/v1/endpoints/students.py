@@ -19,7 +19,7 @@ def create_student(student_data: StudentCreate, db: Session = Depends(get_db), c
     return student_service.create_student(student_data)
 
 @router.post("/sync", response_model=SyncResponse)
-async def sync_students_endpoint(db: Session = Depends(get_db)):
+async def sync_students_endpoint(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = StudentService(db)
         return await service.sync_students()
@@ -29,7 +29,7 @@ async def sync_students_endpoint(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
 @router.post("/patch/sync", response_model=SyncResponse)
-async def patch_sync_students(db: Session = Depends(get_db)):
+async def patch_sync_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = StudentService(db)
         return await service.update_existing_sync_student()
@@ -72,7 +72,7 @@ def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depend
         raise HTTPException(status_code=500, detail=f"Failed to retrieve payments: {str(e)}")
     
 @router.delete("/delete/all", status_code=204, response_model=None)
-def delete_all_students(db: Session = Depends(get_db), ):
+def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         StudentService(db).delete_all_students()
     except SQLAlchemyError as e:

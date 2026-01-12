@@ -24,50 +24,53 @@ class StaffService:
         self.db = db
         self.repo = StaffRepository(db)
         self.user_repo = UserRepository()
-    
+
     def create_staff(self, data: StaffBase) -> dict:
         try:
-            # Check if user already exists
-            existing_user = self.user_repo.get_user_by_username(
-                self.db, data.employee_id
-            )
-            if existing_user:
-                logger.warning(
-                    f"Attempt to create staff with existing employee ID: {data.employee_id}"
-                )
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail="User with this employee ID already exists."
-                )
-
-            # Create user
-            password = generate_password()
-            user_data = UserCreate(
+            existing_user = self.user_repo.get_user_by_identifier(
+                self.db,
                 username=data.employee_id,
                 email=data.email,
-                first_name=data.first_name,
-                last_name=data.last_name,
-                phone=data.phone,
-                password=password,
-                group_id=data.role,
+                phone=data.phone
             )
 
-            user = self.user_repo.create_user(self.db, user_data)
+            if existing_user:
+                if existing_user.username == data.employee_id:
+                    detail = "User with this employee ID already exists."
+                elif existing_user.phone == data.phone:
+                    detail = "User with this phone already exists."
+                else:
+                    detail = "User with this email already exists."
 
-            # Create staff
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=detail
+                )
+            
+            plain_password = generate_password()
+            hashed_password = hash_password(plain_password)
+            fullname = f"{data.first_name} {data.last_name}"
+
+            user = self.user_repo.create_user(
+                self.db,
+                UserCreate(
+                    username=data.employee_id,
+                    email=data.email,
+                    first_name=data.first_name,
+                    last_name=data.last_name,
+                    phone=data.phone,
+                    password=hashed_password,
+                    group_id=data.role,
+                )
+            )
+
             staff_data = data.model_dump(exclude_none=True)
             staff_data["user_id"] = user.id
 
-            staff = self.repo.create_staff(self.db, staff_data)
-
-            # Optional: send credentials email
-            # await send_credentials_email(data.email, data.employee_id, password)
-
-            logger.info(
-                f"Staff created successfully with ID: {staff.id} "
-                f"and linked User ID: {user.id}"
-            )
-
+            staff = self.repo.create_staff(staff_data)
+            
+            send_credentials_email(data.email, data.employee_id, plain_password, fullname)
+            
             return {
                 "id": staff.id,
                 "user_id": user.id,
@@ -79,32 +82,19 @@ class StaffService:
 
         except IntegrityError:
             self.db.rollback()
-            logger.error(
-                f"Integrity error while creating staff with email: {data.email} "
-                f"or employee ID: {data.employee_id}"
-            )
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Staff with this email or employee ID already exists.",
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Staff with this employee ID, email, or phone already exists."
             )
 
         except SQLAlchemyError as e:
             self.db.rollback()
-            logger.error(f"Database error while creating staff: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Database error occurred while creating staff.",
             )
 
-        except Exception as e:
-            self.db.rollback()
-            logger.exception("Unexpected error while creating staff")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="An unexpected error occurred while creating staff.",
-            )
 
-    
     def get_staff(self) -> List[Staff] :
         """Retrieve a list of staff
 
