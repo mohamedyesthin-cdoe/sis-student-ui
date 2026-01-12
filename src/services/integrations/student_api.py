@@ -216,9 +216,7 @@ async def update_odl_student(token: str, student_data: Dict[str, Any], registrat
         return response.json()
     
 async def add_lead(lead_data: Dict) -> Dict:
-    print("lead_data", lead_data)
     url = "https://api.in6.nopaperforms.com/dataporting/6719/widget"
-    print("url", url)
 
     # headers = {
     #     "Authorization": f"Bearer {token}",
@@ -229,7 +227,6 @@ async def add_lead(lead_data: Dict) -> Dict:
         "secret-key": "549d101c45e64ba280481d7477919769",
         "Content-Type": "application/json",
     }
-    print("headers", headers)
     async with httpx.AsyncClient(timeout=30) as client:
         response = await client.post(
             url,

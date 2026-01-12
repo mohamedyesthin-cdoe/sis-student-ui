@@ -72,7 +72,6 @@ async def get_student_data(db: Session = Depends(get_db)):
 async def add_lead(lead: LeadCreate, db: Session = Depends(get_db)):
     try:
         service = ApiService(db)
-        print("hi")
         lead_response = await service.add_lead(lead)
         return lead_response
     except Exception as e:
