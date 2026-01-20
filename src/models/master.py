@@ -17,6 +17,7 @@ class Programe(AuditableBase):
     application_code = Column(String(30), nullable=True)
     
     fee = relationship("FeeDetails", back_populates="programe")
+    syllabuses = relationship("SemesterSyllabus", back_populates="programe")
     #student = relationship("Student", back_populates="program")
 
 class FeeDetails(AuditableBase):
@@ -49,14 +50,12 @@ class SscBoard(AuditableBase):
     name = Column(String(100), nullable=False, unique=True, index=True)
     academic_details_10th = relationship("AcademicDetails", back_populates="ssc_board")
 
-
 class HscBoard(AuditableBase):
     __tablename__ = "hsc_board"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False, unique=True, index=True)
     academic_details_12th = relationship("AcademicDetails", back_populates="hsc_board")
-
 
 class LookupMaster(AuditableBase):
     __tablename__ = "lookup_master"
@@ -76,7 +75,6 @@ class CourseCode(AuditableBase):
 
     syllabuses = relationship("SemesterSyllabus", back_populates="course_code")
 
-
 class CourseCategory(AuditableBase):
     __tablename__ = "course_category"
     
@@ -84,7 +82,6 @@ class CourseCategory(AuditableBase):
     name = Column(String(100), nullable=False, unique=True, index=True)
 
     syllabuses = relationship("SemesterSyllabus", back_populates="course_category")
-
 
 class CourseTitle(AuditableBase):
     __tablename__ = "course_title"
@@ -94,12 +91,12 @@ class CourseTitle(AuditableBase):
 
     syllabuses = relationship("SemesterSyllabus", back_populates="course_title")
 
-
 class SemesterSyllabus(AuditableBase):     # ✔ name fixed
     __tablename__ = "semester_syllabus"    # ✔ table name fixed
     
     id = Column(Integer, primary_key=True, autoincrement=True)
 
+    programe_id = Column(Integer, ForeignKey("programs.id"), nullable=True, index=True)
     course_code_id = Column(Integer, ForeignKey("course_code.id"), nullable=False, index=True)
     course_category_id = Column(Integer, ForeignKey("course_category.id"), nullable=False, index=True)
     course_title_id = Column(Integer, ForeignKey("course_title.id"), nullable=False, index=True)
@@ -119,3 +116,4 @@ class SemesterSyllabus(AuditableBase):     # ✔ name fixed
     course_code = relationship("CourseCode", back_populates="syllabuses")
     course_category = relationship("CourseCategory", back_populates="syllabuses")
     course_title = relationship("CourseTitle", back_populates="syllabuses")
+    programe = relationship("Programe", back_populates='syllabuses')

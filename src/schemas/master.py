@@ -151,12 +151,8 @@ class CourseTitleResponse(BaseModel):
     data: CourseTitleOut
 
 class SyllabusBase(BaseModel):
-    course_code_id: int = Field(..., description="FK → course_code.id")
-    course_category_id: int = Field(..., description="FK → course_category.id")
-    course_title_id: int = Field(..., description="FK → course_title.id")
-
+    programe_id: Optional[int]
     semester: str = Field(..., max_length=50)
-
     credits: int
     tutorial_hours: Optional[int] = 0
     lecture_hours: Optional[int] = 0
@@ -168,7 +164,9 @@ class SyllabusBase(BaseModel):
     total_marks: Optional[int] = 0
 
 class SyllabusCreate(SyllabusBase):
-    pass
+    course_code_id: int = Field(..., description="FK → course_code.id")
+    course_category_id: int = Field(..., description="FK → course_category.id")
+    course_title_id: int = Field(..., description="FK → course_title.id")
 
 class SyllabusUpdate(BaseModel):
     course_code_id: Optional[int] = None
@@ -186,6 +184,11 @@ class SyllabusUpdate(BaseModel):
 
 class SyllabusOut(SyllabusBase):
     id: int
+
+    course_code: Optional[CourseCodeOut] = None
+    course_category: Optional[CourseCategoryOut] = None
+    course_title: Optional[CourseTitleOut] = None
+
     created_at: datetime
     updated_at: datetime
 

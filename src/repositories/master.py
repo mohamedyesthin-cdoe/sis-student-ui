@@ -198,7 +198,16 @@ class MasterRepository:
         
     def get_all_syllabuses(self) -> List[SemesterSyllabus]:
         try:
-            return self.db.query(SemesterSyllabus).all()
+            return (
+                self.db.query(SemesterSyllabus)
+                .options(
+                    joinedload(SemesterSyllabus.course_code),
+                    joinedload(SemesterSyllabus.course_category),
+                    joinedload(SemesterSyllabus.course_title),
+                    joinedload(SemesterSyllabus.programe),
+                )
+                .all()
+            )
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
