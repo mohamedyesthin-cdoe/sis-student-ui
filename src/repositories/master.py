@@ -5,7 +5,7 @@ from fastapi import HTTPException, status
 from src.repositories.base import BaseRepository
 from src.models.master import (
     Programe, FeeDetails, CourseCode, 
-    CourseCategory, CourseTitle, SemesterSyllabus
+    CourseCategory, CourseTitle, Subjects, Department
 )
 from src.schemas.master import (
     ProgrameCreate, ProgrameUpdate, ProgrameResponse, CourseCodeResponse,
@@ -165,11 +165,11 @@ class MasterRepository:
     
     def get_syllabus(self, course_code_id: int, course_category_id: int,course_title_id: int) -> Optional[CourseTitle]:
         return (
-            self.db.query(SemesterSyllabus)
+            self.db.query(Subjects)
             .filter(
-                SemesterSyllabus.course_code_id == course_code_id,
-                SemesterSyllabus.course_category_id == course_category_id,
-                SemesterSyllabus.course_title_id == course_title_id
+                Subjects.course_code_id == course_code_id,
+                Subjects.course_category_id == course_category_id,
+                Subjects.course_title_id == course_title_id
             )
             .first()
         )
@@ -196,15 +196,15 @@ class MasterRepository:
                 detail=f"Database error while creating course code: {str(e)}",
             )
         
-    def get_all_syllabuses(self) -> List[SemesterSyllabus]:
+    def get_all_syllabuses(self) -> List[Subjects]:
         try:
             return (
-                self.db.query(SemesterSyllabus)
+                self.db.query(Subjects)
                 .options(
-                    joinedload(SemesterSyllabus.course_code),
-                    joinedload(SemesterSyllabus.course_category),
-                    joinedload(SemesterSyllabus.course_title),
-                    joinedload(SemesterSyllabus.programe),
+                    joinedload(Subjects.course_code),
+                    joinedload(Subjects.course_category),
+                    joinedload(Subjects.course_title),
+                    joinedload(Subjects.programe),
                 )
                 .all()
             )
@@ -214,3 +214,49 @@ class MasterRepository:
                 detail=f"Database error while fetching syllabuses: {str(e)}",
             )
         
+    def get_department_by_name(self, name: str):
+        try:
+            return self.db.query(Department).filter(Department.name == name).first()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching department by name: {str(e)}",
+            )
+        
+    def get_all_departments(self) -> List[Department]:
+        try:
+            return self.db.query(Department).all()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching departments: {str(e)}",
+            )
+        
+    def get_department_by_id(self, department_id: int) -> Optional[Department]:
+        try:
+            return self.db.query(Department).filter(Department.id == department_id).first()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching department by id: {str(e)}",
+            )
+        
+    def update_department(self, department_id: int, data: dict) -> Department:
+        department = self.get_department_by_id(department_id)
+        if not department:
+            raise HTTPException(status_code=404, detail="Department not found")
+
+        try:
+            for key, value in data.items():
+                setattr(department, key, value)
+
+            self.db.commit()
+            self.db.refresh(department)
+            return department
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while updating department: {str(e)}",
+            )
+  

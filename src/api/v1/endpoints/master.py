@@ -180,3 +180,55 @@ def list_syllabuses(db: Session = Depends(get_db), current_user: User = Depends(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error in endpoint: {str(e)}",
         )
+    
+@router.post("/department/add", response_model = DepartmentResponse, status_code=status.HTTP_201_CREATED)
+async def create_roles(department: DepartmentBase, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.create_department(department)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+@router.get("/department/list", response_model=DepartmentList, status_code=status.HTTP_200_OK)
+async def list_departments(db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_departments()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error while listing departments: {str(e)}",
+        )
+
+@router.get("/department/{department_id}", response_model=DepartmentOut, status_code=status.HTTP_200_OK)
+async def get_department(department_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.get_department_by_id(department_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error while fetching department: {str(e)}",
+        )
+
+@router.put("/department/update/{department_id}", response_model=DepartmentUpdateResponse, status_code=status.HTTP_200_OK)
+async def update_department(department_id: int, department_update: DepartmentUpdate, db: Session = Depends(get_db)):
+    try:
+        service = MasterService(db)
+        return service.update_department(department_id, department_update)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error while updating department: {str(e)}",
+        )

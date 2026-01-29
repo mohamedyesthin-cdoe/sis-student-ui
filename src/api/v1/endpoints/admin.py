@@ -29,6 +29,24 @@ async def create_roles(role: GroupCreate, db:Session = Depends(get_db), current_
     created_role = await service.create_role(role)
     return created_role
 
+@router.get("/roles/{role_id}", response_model=GroupOut, status_code=status.HTTP_200_OK)
+async def get_role(role_id:int, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    """Retrieve a role by its ID.
+
+    Args:
+        role_id (int): ID of the role to retrieve.
+        db (Session): Database session.
+
+    Returns:
+        GroupOut: Retrieved role details.
+
+    Raises:
+        HTTPException: If the role is not found or a database error occurs.
+    """
+    service = AdminService(db)
+    role = await service.get_role(role_id)
+    return role
+
 @router.put("/update/{role_id}", response_model=GroupOut, status_code=status.HTTP_200_OK)
 async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Update an existing role.

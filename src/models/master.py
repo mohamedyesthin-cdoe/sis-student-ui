@@ -15,9 +15,11 @@ class Programe(AuditableBase):
     category = Column(String(50), nullable=True)
     faculty = Column(String(100), nullable=True)
     application_code = Column(String(30), nullable=True)
+    batch = Column(String(10))
+    admission_year = Column(String(10))
     
     fee = relationship("FeeDetails", back_populates="programe")
-    syllabuses = relationship("SemesterSyllabus", back_populates="programe")
+    syllabuses = relationship("Subjects", back_populates="programe")
     #student = relationship("Student", back_populates="program")
 
 class FeeDetails(AuditableBase):
@@ -73,7 +75,7 @@ class CourseCode(AuditableBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String(50), nullable=False, unique=True, index=True)
 
-    syllabuses = relationship("SemesterSyllabus", back_populates="course_code")
+    syllabuses = relationship("Subjects", back_populates="course_code")
 
 class CourseCategory(AuditableBase):
     __tablename__ = "course_category"
@@ -81,7 +83,7 @@ class CourseCategory(AuditableBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False, unique=True, index=True)
 
-    syllabuses = relationship("SemesterSyllabus", back_populates="course_category")
+    syllabuses = relationship("Subjects", back_populates="course_category")
 
 class CourseTitle(AuditableBase):
     __tablename__ = "course_title"
@@ -89,10 +91,10 @@ class CourseTitle(AuditableBase):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(255), nullable=False, unique=True, index=True)
 
-    syllabuses = relationship("SemesterSyllabus", back_populates="course_title")
+    syllabuses = relationship("Subjects", back_populates="course_title")
 
-class SemesterSyllabus(AuditableBase):     # ✔ name fixed
-    __tablename__ = "semester_syllabus"    # ✔ table name fixed
+class Subjects(AuditableBase):     
+    __tablename__ = "subjects"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -117,3 +119,11 @@ class SemesterSyllabus(AuditableBase):     # ✔ name fixed
     course_category = relationship("CourseCategory", back_populates="syllabuses")
     course_title = relationship("CourseTitle", back_populates="syllabuses")
     programe = relationship("Programe", back_populates='syllabuses')
+    marksheets = relationship("Marksheet", back_populates="subject")
+
+class Department(Base):
+    __tablename__ = "departments"
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    name = Column(String, unique=True, nullable=True)
+
+    staff = relationship("Staff", back_populates="department")

@@ -28,6 +28,8 @@ class ProgrameBase(BaseModel):
     duration: Optional[str] = None
     category: Optional[str] = None
     faculty: Optional[str] = None
+    batch: Optional[str] = None
+    admission_year: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -41,6 +43,8 @@ class ProgrameUpdate(BaseModel):
     duration: Optional[str] = None
     category: Optional[str] = None
     faculty: Optional[str] = None
+    batch: Optional[str] = None
+    admission_year: Optional[str] = None
     fees: Optional[List[FeeUpdate]] = None
 
 
@@ -200,3 +204,36 @@ class SyllabusResponse(BaseModel):
     code: int
     status: bool
     data: Optional[List[SyllabusOut]] = None
+
+class DepartmentBase(BaseModel):
+    name: str
+
+    class Config:
+        from_attributes = True
+
+class DepartmentOut(DepartmentBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+class DepartmentList(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[DepartmentOut]
+
+class DepartmentResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: DepartmentOut
+
+class DepartmentUpdate(BaseModel):
+    name: Optional[str] = None
+
+class DepartmentUpdateResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: DepartmentBase

@@ -49,6 +49,23 @@ class AdminService:
 
         return db_role  
     
+    async def get_role(self, role_id: int) -> Group:
+        """Retrieve a Role by its ID.
+
+        Args:
+            role_id (int): ID of the role to retrieve.
+
+        Returns:
+            Group: Retrieved role object.
+
+        Raises:
+            HTTPException: If the role is not found.
+        """
+        db_role = self.admin_repo.get_role_by_id(role_id)
+        if not db_role:
+            raise HTTPException(status_code=404, detail=f"Role with ID {role_id} not found")
+        return db_role 
+
     async def update_role(self, role_id: int, role_update: GroupCreate) -> Group:
         """Update an existing Role.
 

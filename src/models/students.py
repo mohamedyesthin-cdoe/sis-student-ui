@@ -59,6 +59,9 @@ class Student(AuditableBase):
     passport_issued_country = Column(String(30), nullable=True)
     passport_number = Column(String(20), nullable=True)
     passport_expiry_date = Column(Date, nullable=True)
+
+    batch = Column(String(10), nullable=True)
+    admission_year = Column(String(10), nullable=True)
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)
@@ -77,7 +80,8 @@ class Student(AuditableBase):
     declaration_details = relationship("DeclarationDetails", back_populates="student", uselist=False)
     deb_details = relationship("DebDetails", back_populates="student", uselist=False)
     payments = relationship("Payment", back_populates="student", cascade="all, delete-orphan")
-
+    marksheets = relationship("Marksheet", back_populates="student")
+    
     __table_args__ = (
         CheckConstraint("date_of_birth <= current_date - interval '18 years'", name="age_check"),
         Index("ix_students_phone", "mobile_number"),
