@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from src.repositories.master import MasterRepository
-from src.models.master import Programe, CourseCode, CourseCategory, CourseTitle, SemesterSyllabus
+from src.models.master import *
 from src.schemas.master import *
 from fastapi import HTTPException, status
 from typing import List
@@ -232,7 +232,7 @@ class MasterService:
                     detail="Syllabus with the given course code, category, and title already exists.",
                 )
             
-            syllabus = self.repo.create_fields(data=data, model=SemesterSyllabus, response_model=SyllabusResponse)
+            syllabus = self.repo.create_fields(data=data, model=Subjects, response_model=SyllabusResponse)
 
             return SyllabusResponse(
                 message="Syllabus created successfully",
@@ -268,4 +268,86 @@ class MasterService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while listing syllabuses: {str(e)}",
+            )
+        
+    def create_department(self, data: DepartmentBase) -> DepartmentResponse:
+        try:
+            existing = self.repo.get_department_by_name(data.name)
+            if existing:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"Department '{data.name}' already exists.",
+                )
+            
+            department = self.repo.create_fields(data=data, model=Department, response_model=DepartmentOut)
+
+            response = DepartmentResponse(
+                message="Department created successfully",
+                code=201,
+                status=True,
+                data=department
+            )
+
+            return response
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while creating department: {str(e)}",
+            )
+        
+    def list_departments(self) -> List[DepartmentList]:
+        try:
+            items = self.repo.get_all_departments()
+            data = [DepartmentOut.from_orm(item) for item in items]
+            lis = DepartmentList(
+                message="Departments retrieved successfully",
+                code=status.HTTP_200_OK,
+                status=True,
+                data=data
+            )
+            return lis
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing departments: {str(e)}",
+            )
+        
+    def get_department_by_id(self, department_id: int) -> DepartmentOut:
+        try:
+            department = self.repo.get_department_by_id(department_id)
+            if not department:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Department not found",
+                )
+            return DepartmentOut.from_orm(department)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching department: {str(e)}",
+            )
+        
+    def update_department(self, department_id: int, data: DepartmentUpdate) -> DepartmentUpdateResponse:
+        try:
+            updated_department = self.repo.update_department(department_id, data.dict(exclude_unset=True))
+            print(updated_department.name)
+            return DepartmentUpdateResponse(
+                message="Department updated successfully",
+                code=status.HTTP_200_OK,
+                status=True,
+                data=updated_department
+            )
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while updating department: {str(e)}",
             )

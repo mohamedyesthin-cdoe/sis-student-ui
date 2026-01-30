@@ -16,9 +16,11 @@ def generate_series_number(last_reg_no: str, program_code: str, year: str) -> st
         next_number = int(last_reg_no[len(program_code) + len(year):]) + 1
         return f"{next_number:03d}"  # keep 3 digits
 
-def generate_registration_number(program_code: str, last_reg_no: str) -> str:
+def generate_registration_number(program_code: str, last_reg_no: str, admission_year: str) -> str:
     """Generate registration number as program_code + year + series(3 digits)."""
-    year = str(datetime.now().year)[-2:]  # last two digits of year
+    #year = str(datetime.now().year)[-2:]  # last two digits of year
+    year = admission_year[-2:]  # use admission year last two digits
+    
     try:
         series_number = generate_series_number(last_reg_no, program_code, year)
     except Exception as e:

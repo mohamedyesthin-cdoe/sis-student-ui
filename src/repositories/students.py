@@ -153,9 +153,7 @@ class StudentRepository(BaseRepository[Student]):
         try:
             # --- 1. Fetch program and validate ---
             student_data = map_api_to_student_schema(api_response)
-            print(student_data.get("program_id"))
             program = self.db.query(Programe).filter(Programe.id == student_data.get("program_id")).first()
-            print(program)
             if not program:
                 raise ValueError("Invalid program_id provided")
 
@@ -168,7 +166,7 @@ class StudentRepository(BaseRepository[Student]):
             last_reg_no = last_student.registration_no if last_student else None
 
             # Generate new registration number
-            registration_number = generate_registration_number(program_code, last_reg_no)
+            registration_number = generate_registration_number(program_code, last_reg_no, admission_year)
             # --- 3. Validate input data with Pydantic ---
             # This ensures correct data types before proceeding
             student_data['registration_no'] = registration_number  # Add generated reg no
