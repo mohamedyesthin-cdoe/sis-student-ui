@@ -12,7 +12,7 @@ from src.core.security.dependencies import require_superuser
 router = APIRouter()
 
 @router.post("/add", response_model=StaffResponse, status_code=status.HTTP_201_CREATED, tags=["Staff"])
-def create_staff(staff: StaffBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+async def create_staff(staff: StaffBase, db: Session = Depends(get_db)):
     """Create a new staff with associated address.
 
     Args:
@@ -23,7 +23,7 @@ def create_staff(staff: StaffBase, db: Session = Depends(get_db), current_user: 
         staffResponse: Created staff details.
     """
     service = StaffService(db)
-    return service.create_staff(staff)
+    return await service.create_staff(staff)
 
 @router.get("/list", response_model=List[StaffResponse], tags=["Staff"])
 async def get_staff(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):

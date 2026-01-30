@@ -41,18 +41,15 @@ class StaffBase(BaseModel):
         description="Phone number must be between 7 and 15 digits")
     dob: Optional[date] = None
     gender: Optional[str] = None
-    department: Optional[str] = None
+    faculty: Optional[str] = None
+    department_id: Optional[int] = None
     designation: Optional[str] = None
     qualification: Optional[str] = None
     specialization: Optional[str] = None
     joining_date: Optional[date] = None
     experience_years: Optional[float] = Field(default=0.0, ge=0.0)
-    employment_type: EmploymentTypeEnum = EmploymentTypeEnum.permanent
-    research_area: Optional[str] = None
-    publications_count: Optional[int] = Field(default=0, ge=0)
+    employment_type: EmploymentTypeEnum = EmploymentTypeEnum.internal
     status: FacultyStatusEnum = FacultyStatusEnum.active
-    linkedin_url: Optional[str] = None
-    profile_photo: Optional[str] = None
     role: Optional[int] = None
 
     @validator('phone')
@@ -77,18 +74,15 @@ class StaffUpdate(BaseModel):
     phone: Optional[str] = None
     dob: Optional[date] = None
     gender: Optional[str] = None
-    department: Optional[str] = None
+    faculty: Optional[str] = None
+    department: Optional[int] = None
     designation: Optional[str] = None
     qualification: Optional[str] = None
     specialization: Optional[str] = None
     joining_date: Optional[date] = None
     experience_years: Optional[float] = None
     employment_type: Optional[EmploymentTypeEnum] = None
-    research_area: Optional[str] = None
-    publications_count: Optional[int] = None
     status: Optional[FacultyStatusEnum] = None
-    linkedin_url: Optional[HttpUrl] = None
-    profile_photo: Optional[str] = None
     role: Optional[str] = None
 
 class StaffResponse(StaffBase):

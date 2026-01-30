@@ -63,7 +63,6 @@ class CategoryEnum(str, Enum):
 class EmploymentTypeEnum(str, Enum):
     internal = "Internal"
     external = "External"
-    permanent = "Permanent"
 
 class FacultyStatusEnum(str, Enum):
     active = "Active"

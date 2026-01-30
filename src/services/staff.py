@@ -1,3 +1,4 @@
+from enum import Enum
 from src.schemas.staff import StaffCreate, StaffBase
 from src.schemas.user import UserCreate
 from src.repositories.staff import StaffRepository
@@ -25,7 +26,7 @@ class StaffService:
         self.repo = StaffRepository(db)
         self.user_repo = UserRepository()
 
-    def create_staff(self, data: StaffBase) -> dict:
+    async def create_staff(self, data: StaffBase) -> dict:
         try:
             existing_user = self.user_repo.get_user_by_identifier(
                 self.db,
@@ -66,14 +67,25 @@ class StaffService:
 
             staff_data = data.model_dump(exclude_none=True)
             staff_data["user_id"] = user.id
+            # Convert enums to values
+            for k, v in staff_data.items():
+                if isinstance(v, Enum):
+                    staff_data[k] = v.value
+
+            staff_data["employment_type"] = data.employment_type
 
             staff = self.repo.create_staff(staff_data)
             
-            send_credentials_email(data.email, data.employee_id, plain_password, fullname)
+            await send_credentials_email(data.email, data.employee_id, plain_password, fullname)
             
             return {
                 "id": staff.id,
                 "user_id": user.id,
+                "employee_id": staff.employee_id,
+                "first_name": staff.first_name,
+                "last_name": staff.last_name,
+                "email": staff.email,
+                "phone": staff.phone
             }
 
         except HTTPException:

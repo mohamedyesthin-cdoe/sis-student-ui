@@ -238,7 +238,7 @@ class MasterService:
                 message="Syllabus created successfully",
                 code=status.HTTP_201_CREATED,
                 status=True,
-                data=syllabus
+                data=[syllabus]
             )
         except HTTPException:
             raise
