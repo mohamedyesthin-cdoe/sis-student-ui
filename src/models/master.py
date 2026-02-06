@@ -20,6 +20,7 @@ class Programe(AuditableBase):
     
     fee = relationship("FeeDetails", back_populates="programe")
     syllabuses = relationship("Subjects", back_populates="programe")
+    schemes = relationship("Scheme", back_populates="programe")
     #student = relationship("Student", back_populates="program")
 
 class FeeDetails(AuditableBase):

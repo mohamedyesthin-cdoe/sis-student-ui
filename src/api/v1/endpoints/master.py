@@ -77,109 +77,109 @@ def get_program_by_id(programe_id: int, db: Session = Depends(get_db)):
             detail=f"Unexpected error in endpoint: {str(e)}",
         )
     
-@router.post("/coursecode/add", response_model=CourseCodeResponse)
-def create_course_code(course_code: CourseCodeBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.create_course_code(course_code)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.post("/coursecode/add", response_model=CourseCodeResponse)
+# def create_course_code(course_code: CourseCodeBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.create_course_code(course_code)
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.get("/coursecode/list", response_model=List[CourseCodeList])
-def list_course_codes(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.list_course_codes()
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.get("/coursecode/list", response_model=List[CourseCodeList])
+# def list_course_codes(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.list_course_codes()
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.post("/coursecategory/add", response_model=CourseCategoryResponse)
-def create_course_category(course_code: CourseCategoryBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.create_course_category(course_code)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.post("/coursecategory/add", response_model=CourseCategoryResponse)
+# def create_course_category(course_code: CourseCategoryBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.create_course_category(course_code)
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.get("/coursecategory/list", response_model=List[CourseCategoryList])
-def list_course_category(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.list_course_category()
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.get("/coursecategory/list", response_model=List[CourseCategoryList])
+# def list_course_category(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.list_course_category()
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.post("/coursetitle/add", response_model=CourseTitleResponse)
-def create_course_title(course_code: CourseTitleBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.create_course_title(course_code)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.post("/coursetitle/add", response_model=CourseTitleResponse)
+# def create_course_title(course_code: CourseTitleBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.create_course_title(course_code)
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.get("/coursetitle/list", response_model=List[CourseTitleList])
-def list_course_title(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.list_course_Title()
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.get("/coursetitle/list", response_model=List[CourseTitleList])
+# def list_course_title(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.list_course_Title()
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.post("/syllabus/add", response_model=SyllabusResponse)
-def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.create_syllabus(syllabus)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.post("/syllabus/add", response_model=SyllabusResponse)
+# def create_syllabus(syllabus: SyllabusCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.create_syllabus(syllabus)
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
-@router.get("/syllabus/list", response_model=List[SyllabusResponse])
-def list_syllabuses(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.list_syllabuses()
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
+# @router.get("/syllabus/list", response_model=List[SyllabusResponse])
+# def list_syllabuses(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         service = MasterService(db)
+#         return service.list_syllabuses()
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#             detail=f"Unexpected error in endpoint: {str(e)}",
+#         )
     
 @router.post("/department/add", response_model = DepartmentResponse, status_code=status.HTTP_201_CREATED)
 async def create_roles(department: DepartmentBase, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):

@@ -12,7 +12,7 @@ from src.core.security.dependencies import require_superuser
 router = APIRouter()
 
 @router.post("/add", response_model=StaffResponse, status_code=status.HTTP_201_CREATED, tags=["Staff"])
-async def create_staff(staff: StaffBase, db: Session = Depends(get_db)):
+async def create_staff(staff: StaffBase, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Create a new staff with associated address.
 
     Args:
