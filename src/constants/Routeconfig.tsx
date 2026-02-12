@@ -15,8 +15,21 @@ import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordF
 import Examination from "../features/student/examination/examination";
 import FacultyList from "../features/admin/faculty/FacultyList";
 import FacultyAdd from "../features/admin/faculty/FacultyAdd";
-import SyllabusList from "../features/admin/master/syllabus/SyllabusList";
 import SyllabusAdd from "../features/admin/master/syllabus/SyllabusAdd";
+import SyllabusList from "../features/admin/master/syllabus/SyllabusList";
+import SyllabusTabView from "../features/admin/master/syllabus/SyllabusTabView";
+import MarksEntryScreen from "../features/admin/master/syllabus/MarksEntry";
+import RoleList from "../features/admin/master/role/RoleList";
+import DepartmentList from "../features/admin/master/department/Department";
+import FeesList from "../features/admin/student/FeesList";
+import SchemesList from "../features/admin/master/schemes/SchemesList";
+import SchemesAdd from "../features/admin/master/schemes/SchemesAdd";
+import SemestersList from "../features/admin/master/semester/SemesterList";
+import SemestersAdd from "../features/admin/master/semester/SemestersAdd";
+import CourseList from "../features/admin/master/course/CourseList";
+import CourseAdd from "../features/admin/master/course/CourseAdd";
+import CourseComponentsList from "../features/admin/master/coursecomponent/CourseComponentList";
+import CourseComponentAdd from "../features/admin/master/coursecomponent/CourseComponentAdd";
 
 export const routesConfig = [
   {
@@ -45,6 +58,11 @@ export const routesConfig = [
         path: 'detail',
         element: <StudentDetail />,
         breadcrumb: 'Student Detail',
+      },
+      {
+        path: 'feeslist',
+        element: <FeesList />,
+        breadcrumb: 'Fees List',
       },
     ],
   },
@@ -82,7 +100,17 @@ export const routesConfig = [
         path: 'add',
         element: <SyllabusAdd />,
         breadcrumb: 'Syllabus Add',
-      }
+      },
+      {
+        path: 'add/:id',   // ✅ edit program route
+        element: <SyllabusAdd />,
+        breadcrumb: 'Syllabus Add',
+      },
+      {
+        path: 'view/:id',   // ✅ edit program route
+        element: <SyllabusTabView />,
+        breadcrumb: 'Syllabus Edit',
+      },
     ],
   },
   {
@@ -158,4 +186,100 @@ export const routesConfig = [
     element: <ChangePasswordForm />,
     breadcrumb: 'Password Managment',
   },
+  {
+    path: '/marks-entry',
+    element: <MarksEntryScreen />,
+    breadcrumb: 'Marks Entry',
+  },
+  {
+    path: '/role-list',
+    element: <RoleList />,
+    breadcrumb: 'Role List',
+  },
+  {
+    path: '/department-list',
+    element: <DepartmentList />,
+    breadcrumb: 'Department List',
+  },
+  {
+    path: '/schemes',
+    // breadcrumb: 'Fees',
+    children: [
+       {
+        path: 'list',
+        element: <SchemesList />,
+        breadcrumb: 'Schemes List',
+      },
+      {
+        path: 'add',
+        element: <SchemesAdd />,
+        breadcrumb: 'Scheme Add',
+      },
+      {
+        path: 'edit/:id',   // ✅ edit program route
+        element: <SchemesAdd/>,
+        breadcrumb: 'Scheme Edit',
+      },
+    ]
+  },
+  {
+    path: '/semesters',
+    children: [
+      {
+        path: 'list',
+        element: <SemestersList />,
+        breadcrumb: 'Semesters List',
+      },
+      {
+        path: 'add',
+        element: <SemestersAdd />,
+        breadcrumb: 'Semester Add',
+      },
+      {
+        path: 'edit/:id',   // ✅ edit program route
+        element: <SemestersAdd />,
+        breadcrumb: 'Semester Edit',
+      },
+    ]
+  },
+  {
+    path:'/courses',
+    children: [
+      {
+        path: 'list',
+        element: <CourseList />,
+        breadcrumb: 'Courses List',
+      },
+      {
+        path: 'add',
+        element: <CourseAdd />,
+        breadcrumb: 'Courses Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <CourseAdd />,
+        breadcrumb: 'Courses Edit',
+      },
+    ]
+  },
+  {
+    path:'/course-components',
+    children: [
+      {
+        path: 'list',
+        element: <CourseComponentsList />,
+        breadcrumb: 'Course Components List',
+      },
+      {
+        path: 'add',
+        element: <CourseComponentAdd />,
+        breadcrumb: 'Course Components Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <CourseComponentAdd />,
+        breadcrumb: 'Course Components Edit',
+      },
+    ]
+  }
 ];

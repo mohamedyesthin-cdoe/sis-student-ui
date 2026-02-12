@@ -32,6 +32,7 @@ export interface FacultyFormValues {
   phone: string;
   role: string;
 
+  faculty: string | null;
   department: string | null;
   designation: string | null;
   qualification: string | null;
@@ -41,12 +42,8 @@ export interface FacultyFormValues {
   experience_years: number;
   employment_type: string | null;
 
-  research_area: string | null;
-  publications_count: number;
   gender: string | null;
   dob: Dayjs | null;
-
-  linkedin_url: string | null;
 }
 
 
@@ -55,9 +52,8 @@ export interface FacultyFormValues {
 // CONSTANTS
 // ==================================
 const employmentOptions = [
-  { name: "Permanent", id: "Permanent" },
-  { name: "Contract", id: "Contract" },
-  { name: "Temporary", id: "Temporary" },
+  { name: "Internal", id: "Internal" },
+  { name: "External", id: "External" }
 ];
 
 const genderOptions = [
@@ -79,21 +75,17 @@ const defaultValues: FacultyFormValues = {
   phone: "",
   role: "",
 
-  department: "CDOE",
+  faculty: "CDOE",
+  department: null,
   designation: null,
   qualification: null,
   specialization: null,
 
   joining_date: null,
   experience_years: 0,
-  employment_type: "Permanent",
-
-  research_area: null,
-  publications_count: 0,
+  employment_type: "Internal",
   gender: "Male",
   dob: null,
-
-  linkedin_url: null,
 };
 
 
@@ -113,6 +105,7 @@ export const schema: Yup.ObjectSchema<FacultyFormValues> = Yup.object({
   role: Yup.string().required("Role is required"),
 
   department: Yup.string().nullable().defined(),
+  faculty: Yup.string().nullable().defined(),
   designation: Yup.string().nullable().defined(),
   qualification: Yup.string().nullable().defined(),
   specialization: Yup.string().nullable().defined(),
@@ -121,12 +114,9 @@ export const schema: Yup.ObjectSchema<FacultyFormValues> = Yup.object({
   experience_years: Yup.number().min(0).defined(),
   employment_type: Yup.string().nullable().defined(),
 
-  research_area: Yup.string().nullable().defined(),
-  publications_count: Yup.number().min(0).defined(),
   gender: Yup.string().nullable().defined(),
   dob: Yup.mixed<Dayjs>().nullable().defined(),
 
-  linkedin_url: Yup.string().nullable().defined(),
 });
 
 
@@ -145,6 +135,7 @@ export default function FacultyAdd() {
 
   const [initialData, setInitialData] = useState<any>(null);
   const [roleOptions, setRoleOptions] = useState<any[]>([]);
+  const [departmentOptions, setDepartmentOptions] = useState<any[]>([]);
 
   // ==================================
   // FETCH ROLES
@@ -153,26 +144,53 @@ export default function FacultyAdd() {
     (async () => {
       try {
         const res = await apiRequest({ url: ApiRoutes.GETROLES, method: "get" });
-        setRoleOptions(res); // res = [{id,name}, ...]
+        setRoleOptions(res);
       } catch (err) {
         console.error("Failed to load roles", err);
       }
     })();
   }, []);
 
+   useEffect(() => {
+    (async () => {
+      try {
+        const res = await apiRequest({ url: ApiRoutes.GETDEPARTMENTS, method: "get" });
+        setDepartmentOptions(res.data); // res = [{id,name}, ...]
+      } catch (err) {
+        console.error("Failed to load departments", err);
+      }
+    })();
+  }, []);
+
+
   // ==================================
   // FORM HOOK
   // ==================================
- const {
-  control,
-  handleSubmit,
-  reset,
-  formState: { errors, isDirty },
-} = useForm<FacultyFormValues>({
-  resolver: yupResolver(schema),
-  defaultValues,
-});
-
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    formState: { errors, isDirty },
+  } = useForm<FacultyFormValues>({
+    resolver: yupResolver(schema),
+    defaultValues,
+  });
+  const generateExternalEmployeeId = () => {
+    const randomFourDigits = Math.floor(1000 + Math.random() * 9000);
+    return `EX${randomFourDigits}`;
+  };
+  const employmentType = watch("employment_type");
+  useEffect(() => {
+    if (employmentType === "External") {
+      const generatedId = generateExternalEmployeeId();
+      setValue("employee_id", generatedId, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [employmentType, setValue]);
 
 
   // ==================================
@@ -197,18 +215,16 @@ export default function FacultyAdd() {
 
         const mapped: any = {
           employee_id: d.employee_id ?? "",
-          department: d.department ?? "CDOE",
+          faculty: d.faculty ?? "CDOE",
+          department: d.department ?? "",
           designation: d.designation ?? "",
           qualification: d.qualification ?? "",
           specialization: d.specialization ?? "",
           joining_date: d.joining_date ? dayjs(d.joining_date) : dayjs(),
           experience_years: Number(d.experience_years ?? 0),
-          employment_type: d.employment_type ?? "Permanent",
-          research_area: d.research_area ?? "",
-          publications_count: Number(d.publications_count ?? 0),
+          employment_type: d.employment_type ?? "Internal",
           gender: d.gender ?? "Male",
           dob: d.dob ? dayjs(d.dob) : null,
-          linkedin_url: d.linkedin_url ?? "",
           id: d.id ?? id,
           first_name: d.first_name ?? "",
           last_name: d.last_name ?? "",
@@ -263,7 +279,7 @@ export default function FacultyAdd() {
       navigate("/faculty"); // <-- replace with your actual faculty page route
 
     } catch (err: any) {
-      showAlert(err?.response?.data?.message || "Save failed", "error");
+      showAlert(err?.detail || "Save failed", "error");
     }
   };
 
@@ -284,11 +300,37 @@ export default function FacultyAdd() {
                   <Customtext fieldName="Profile & Account" sx={{ mb: 2 }} />
 
                   <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                      <Controller
+                        name="employment_type"
+                        control={control}
+                        render={({ field }) => (
+                          <CustomSelect
+                            label="Employment Type"
+                            field={field}
+                            options={employmentOptions}
+                            error={errors.employment_type}
+                            helperText={errors.employment_type?.message}
+                          />
+                        )}
+                      />
+                    </Grid>
                     {/* EMPLOYEE ID */}
                     <Grid size={{ xs: 12, md: 4 }}>
-                      <Controller name="employee_id" control={control} render={({ field }) => (
-                        <CustomInputText label="Employee ID" field={field} error={!!errors.employee_id} helperText={errors.employee_id?.message} />
-                      )} />
+                      <Controller
+                        name="employee_id"
+                        control={control}
+                        render={({ field }) => (
+                          <CustomInputText
+                            label="Employee ID"
+                            field={field}
+                            error={!!errors.employee_id}
+                            helperText={errors.employee_id?.message}
+                            disabled={employmentType === "External"} // 👈 key line
+                          />
+                        )}
+                      />
+
                     </Grid>
 
                     {/* FIRST NAME */}
@@ -356,18 +398,33 @@ export default function FacultyAdd() {
 
                     <Grid size={{ xs: 12, md: 4 }}>
                       <Controller
-                        name="department"
+                        name="faculty"
                         control={control}
                         render={({ field }) => (
                           <CustomInputText
-                            label="Department"
+                            label="Faculty"
                             field={field}
-                            error={!!errors.department}
-                            helperText={errors.department?.message}
+                            error={!!errors.faculty}
+                            helperText={errors.faculty?.message}
                             disabled
                             // ensure the field shows the value from the controller
-                            value={field.value ?? "CDOE"}
-                            onChange={field.onChange}
+                            // value={field.value ?? "CDOE"}
+                            // onChange={field.onChange}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 4 }}>
+                       <Controller
+                        name="department"
+                        control={control}
+                        render={({ field }) => (
+                          <CustomSelect
+                            label="Department"
+                            field={field}
+                            options={departmentOptions}
+                            error={!!errors.department}
+                            helperText={errors.department?.message}
                           />
                         )}
                       />
@@ -455,39 +512,6 @@ export default function FacultyAdd() {
                       />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <Controller
-                        name="employment_type"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomSelect
-                            label="Employment Type"
-                            field={field}
-                            options={employmentOptions}
-                            error={errors.employment_type}
-                            helperText={errors.employment_type?.message}
-                          />
-                        )}
-                      />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <Controller
-                        name="publications_count"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomInputText
-                            label="Publications Count"
-                            field={field}
-                            type="number"
-                            error={!!errors.publications_count}
-                            helperText={errors.publications_count?.message}
-                            defaultValue={0}
-                          />
-                        )}
-                      />
-                    </Grid>
-
                     <Grid size={{ xs: 12, md: 4 }} display={"flex"} alignItems="center">
                       <FormControl component="fieldset">
                         <Controller
@@ -524,37 +548,6 @@ export default function FacultyAdd() {
                         )}
                       />
                     </Grid>
-
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <Controller
-                        name="research_area"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomInputText
-                            label="Research Area"
-                            field={field}
-                            error={!!errors.research_area}
-                            helperText={errors.research_area?.message}
-                            multiline
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                      <Controller
-                        name="linkedin_url"
-                        control={control}
-                        render={({ field }) => (
-                          <CustomInputText
-                            label="LinkedIn URL"
-                            field={field}
-                            error={!!errors.linkedin_url}
-                            helperText={errors.linkedin_url?.message}
-                          />
-                        )}
-                      />
-                    </Grid>
-
                   </Grid>
 
                   {/* Buttons */}

@@ -35,17 +35,17 @@ export default function StudentTable() {
   const { clearError } = useGlobalError();
   const [programs, setPrograms] = React.useState<any[]>([]);
 
-  const formatDOB = (dob?: string) => {
-    if (!dob) return "-";
-    const date = new Date(dob);
-    if (isNaN(date.getTime())) return dob;
+  // const formatDOB = (dob?: string) => {
+  //   if (!dob) return "-";
+  //   const date = new Date(dob);
+  //   if (isNaN(date.getTime())) return dob;
 
-    const dd = String(date.getDate()).padStart(2, "0");
-    const mm = String(date.getMonth() + 1).padStart(2, "0");
-    const yyyy = date.getFullYear();
+  //   const dd = String(date.getDate()).padStart(2, "0");
+  //   const mm = String(date.getMonth() + 1).padStart(2, "0");
+  //   const yyyy = date.getFullYear();
 
-    return `${dd}-${mm}-${yyyy}`;
-  };
+  //   return `${dd}-${mm}-${yyyy}`;
+  // };
 
 
   /* -------------------- Fetch Program List -------------------- */
@@ -85,6 +85,26 @@ export default function StudentTable() {
     setValue('student_id', id);
     navigate('/students/detail');
   };
+  const formatDate = (dateStr: any) => {
+    const date = new Date(dateStr);
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  };
+  const getSemesterPaymentDate = (payments?: any[]) => {
+    if (!Array.isArray(payments)) return "-";
+
+    const semesterPayment = payments.find(
+      (p) => p.payment_type === "semester_fee"
+    );
+
+    return semesterPayment?.payment_date
+      ? formatDate(semesterPayment.payment_date)
+      : "-";
+  };
+
+
 
   /* -------------------- Filters -------------------- */
   const filteredStudents = students.filter((s) => {
@@ -95,7 +115,7 @@ export default function StudentTable() {
       ${s.email}
       ${s.mobile_number}
       ${s.gender}
-      ${s.date_of_birth}
+      ${s.payments[0]?.payment_date}
     `.toLowerCase();
 
     return (
@@ -111,16 +131,28 @@ export default function StudentTable() {
         { header: 'S.No', key: 'sno' },
         { header: 'Student ID', key: 'id' },
         { header: 'Registration No', key: 'registration_no' },
-        { header: 'Full Name', key: 'full_name', render: (s) => `${s.title} ${s.first_name} ${s.last_name}` },
+        {
+          header: 'Full Name',
+          key: 'full_name',
+          render: (s) => `${s.title} ${s.first_name} ${s.last_name}`,
+        },
         { header: 'Email', key: 'email' },
         { header: 'Mobile', key: 'mobile_number' },
         { header: 'Gender', key: 'gender' },
-        { header: 'DOB', key: 'date_of_birth' },
+
+        // ✅ semester_fee only
+        {
+          header: 'Admission Date',
+          key: 'admission_date',
+          render: (s) => getSemesterPaymentDate(s.payments),
+        },
       ],
       'Students',
       'Students'
     );
   };
+
+
   //    const handleExportExcel = () => {
   //   // Flatten all fields including nested ones
   //   const formattedData = filteredStudents.map((s, index) => ({
@@ -398,10 +430,11 @@ export default function StudentTable() {
                         { key: "mobile_number", label: "Mobile" },
                         { key: "gender", label: "Gender" },
                         {
-                          key: "date_of_birth",
-                          label: "DOB",
-                          render: (r) => formatDOB(r.date_of_birth),
-                        },
+                          key: "admission_date",
+                          label: "Admission Date",
+                          render: (r) => getSemesterPaymentDate(r.payments),
+                        }
+
                       ]}
 
                       data={filteredStudents}

@@ -12,8 +12,6 @@ interface CustomInputTextProps {
   defaultValue?: any;
   multiline?: boolean;
   rows?: number;
-  value?: string | number;
-  onChange?: (...event: any[]) => void;
 }
 
 export default function CustomInputText({
@@ -28,10 +26,6 @@ export default function CustomInputText({
   multiline = false,
   rows = 1,
 }: CustomInputTextProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = type === "number" ? Number(e.target.value) : e.target.value;
-    field.onChange(value);
-  };
 
   return (
     <TextField
@@ -46,20 +40,16 @@ export default function CustomInputText({
       multiline={multiline}
       rows={rows}
       value={field.value ?? defaultValue}
-      onChange={handleChange}
+      onChange={(e) => field.onChange(e.target.value)} // ✅ STRING ONLY
       sx={{
-        // APPLY DEFAULT HEIGHT
         "& .MuiOutlinedInput-root": {
-          height: !multiline ? "45px" : "auto", // ⬅️ only single-line inputs
+          height: !multiline ? "45px" : "auto",
           display: "flex",
           alignItems: "center",
         },
-
         "& .MuiInputBase-input": {
-          padding: "0 14px !important", // fixes vertical alignment
+          padding: "0 14px !important",
         },
-
-        // merge custom sx (user override)
         ...sx,
       }}
     />

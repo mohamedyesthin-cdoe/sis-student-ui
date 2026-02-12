@@ -24,6 +24,7 @@ import SyllabusAddSkeleton from "../../../../components/card/skeletonloader/Syll
 import CustomAutoComplete from "../../../../components/inputs/customtext/CustomAutoComplete";
 import AddButtonWithDialog from "./AddButtonWithDialog";
 interface SyllabusFormValues {
+    programe_id: string;
     course_code_id: string;
     course_title_id: string;
     course_category_id: string;
@@ -43,6 +44,7 @@ interface SyllabusFormValues {
 const semesterOptions = ["Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"];
 
 const defaultValues = {
+    programe_id: "",
     course_code_id: "",
     course_title_id: "",
     course_category_id: "",
@@ -58,6 +60,7 @@ const defaultValues = {
 };
 
 const schema = Yup.object().shape({
+    programe_id: Yup.string().required("Program ID required"),
     course_code_id: Yup.string().required("Course code required"),
     course_title_id: Yup.string().required("Course title required"),
     course_category_id: Yup.string().required("Category required"),
@@ -84,6 +87,7 @@ export default function SyllabusAdd() {
     const [courseCodeOptions, setCourseCodeOptions] = useState([]);
     const [courseTitleOptions, setCourseTitleOptions] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
+    const [programIdOptions, setProgramIdOptions] = useState([]);
 
     const {
         control,
@@ -152,11 +156,15 @@ export default function SyllabusAdd() {
                 })));
 
                 const catRes = await apiRequest({ url: ApiRoutes.COURSECATEGORYLIST, method: "get" });
-                console.log(catRes[0].data);
-
                 setCategoryOptions((catRes[0].data || []).map((item: any) => ({
                     value: item.id || item.name,
                     label: item.name,
+                })));
+
+                const progRes = await apiRequest({ url: ApiRoutes.GETPROGRAMLIST, method: "get" });
+                setProgramIdOptions((progRes || []).map((item: any) => ({
+                    value: item.id,
+                    label: item.programe,
                 })));
             } catch (err) {
                 console.error(err);
@@ -194,6 +202,7 @@ export default function SyllabusAdd() {
         try {
             const payload = {
                 ...formData,
+                programe_id: Number(formData.programe_id),
                 course_code_id: Number(formData.course_code_id),
                 course_category_id: Number(formData.course_category_id),
                 course_title_id: Number(formData.course_title_id),
@@ -226,13 +235,12 @@ export default function SyllabusAdd() {
                 });
                 showAlert("Syllabus created", "success");
             }
-
             clearError();
             navigate('/syllabus'); // ✅ FIX HERE
 
-        } catch (err) {
+        } catch (err:any) {
             console.error(err);
-            showAlert("Save failed", "error");
+            showAlert(err.detail, "error");
         }
     };
 
@@ -247,6 +255,24 @@ export default function SyllabusAdd() {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <CardComponent sx={{ p: 4 }}>
                             <Grid container spacing={3}>
+                                {/* COURSE CODE */}
+                                <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Controller
+                                            name="programe_id"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <CustomAutoComplete
+                                                    label="Program"
+                                                    field={field}
+                                                    options={programIdOptions}
+                                                    error={errors.programe_id}
+                                                    helperText={errors.programe_id?.message}
+                                                />
+                                            )}
+                                        />
+                                    </Box>
+                                </Grid>
                                 {/* COURSE CODE */}
                                 <Grid size={{ xs: 12, md: 6 }} sx={{ display: "flex", alignItems: "center" }}>
                                     <Box sx={{ flexGrow: 1 }}>
@@ -391,70 +417,139 @@ export default function SyllabusAdd() {
                                     <Controller
                                         name="credits"
                                         control={control}
-                                        render={({ field }) => (
-                                            <CustomInputText
-                                                label="Credits"
-                                                field={{
-                                                    ...field,
-                                                    value: field.value ?? 0,
-                                                    onChange: (e:any) => field.onChange(Number(e.target.value)),
-                                                }}
-                                                type="number"
-                                                error={!!errors.credits}
-                                                helperText={errors.credits?.message}
-                                            />
-                                        )}
+                                        defaultValue={0}
+                                        render={({ field }) => {
+                                            const value = field.value as number | string; // cast to union type
+
+                                            return (
+                                                <CustomInputText
+                                                    label="Credits"
+                                                    type="number"
+                                                    field={{
+                                                        ...field,
+                                                        value: value === 0 ? "0" : String(value ?? ""), // display as string
+                                                        onFocus: () => {
+                                                            if (value === 0) field.onChange(""); // allow deleting 0
+                                                        },
+                                                        onBlur: () => {
+                                                            if (value === "") field.onChange(0); // restore 0 if empty
+                                                        },
+                                                        onChange: (val: string | number) => {
+                                                            field.onChange(val === "" ? "" : Number(val)); // store number
+                                                        },
+                                                    }}
+                                                    error={!!errors.credits}
+                                                    helperText={errors.credits?.message}
+                                                />
+                                            );
+                                        }}
                                     />
 
                                 </Grid>
+
 
                                 {/* HOURS */}
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Controller
                                         name="tutorial_hours"
                                         control={control}
-                                        render={({ field }) => (
-                                            <CustomInputText
-                                                label="Tutorial Hours"
-                                                field={field}
-                                                type="number"
-                                                error={!!errors.tutorial_hours}
-                                                helperText={errors.tutorial_hours?.message}
-                                            />
-                                        )}
+                                        defaultValue={0}
+                                        render={({ field }) => {
+                                            const value = field.value as number | string;
+
+                                            return (
+                                                <CustomInputText
+                                                    label="Tutorial Hours"
+                                                    type="number"
+                                                    field={{
+                                                        ...field,
+                                                        value: value === 0 ? "0" : String(value ?? ""),
+                                                        onFocus: () => {
+                                                            if (value === 0) field.onChange(""); // allow clearing 0
+                                                        },
+                                                        onBlur: () => {
+                                                            if (value === "") field.onChange(0); // restore 0 if left empty
+                                                        },
+                                                        onChange: (val: string | number) => {
+                                                            field.onChange(val === "" ? "" : Number(val));
+                                                        },
+                                                    }}
+                                                    error={!!errors.tutorial_hours}
+                                                    helperText={errors.tutorial_hours?.message}
+                                                />
+                                            );
+                                        }}
                                     />
+
+
                                 </Grid>
 
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Controller
                                         name="lecture_hours"
                                         control={control}
-                                        render={({ field }) => (
-                                            <CustomInputText
-                                                label="Lecture Hours"
-                                                field={field}
-                                                type="number"
-                                                error={!!errors.lecture_hours}
-                                                helperText={errors.lecture_hours?.message}
-                                            />
-                                        )}
+                                        defaultValue={0}
+                                        render={({ field }) => {
+                                            const value = field.value as number | string;
+
+                                            return (
+                                                <CustomInputText
+                                                    label="Lecture Hours"
+                                                    type="number"
+                                                    field={{
+                                                        ...field,
+                                                        value: value === 0 ? "0" : String(value ?? ""),
+                                                        onFocus: () => {
+                                                            if (value === 0) field.onChange(""); // allow clearing 0
+                                                        },
+                                                        onBlur: () => {
+                                                            if (value === "") field.onChange(0); // restore 0 if left empty
+                                                        },
+                                                        onChange: (val: string | number) => {
+                                                            field.onChange(val === "" ? "" : Number(val));
+                                                        },
+                                                    }}
+                                                    error={!!errors.lecture_hours}
+                                                    helperText={errors.lecture_hours?.message}
+                                                />
+                                            );
+                                        }}
                                     />
+
                                 </Grid>
 
                                 <Grid size={{ xs: 12, md: 6 }}>
                                     <Controller
                                         name="practical_hours"
                                         control={control}
-                                        render={({ field }) => (
-                                            <CustomInputText
-                                                label="Practical Hours"
-                                                field={field}
-                                                type="number"
-                                                error={!!errors.practical_hours}
-                                                helperText={errors.practical_hours?.message}
-                                            />
-                                        )}
+                                        defaultValue={0}
+                                        render={({ field }) => {
+                                            const value = field.value as number | string;
+
+                                            return (
+                                                <CustomInputText
+                                                    label="Practical Hours"
+                                                    type="number"
+                                                    field={{
+                                                        ...field,
+                                                        value: value === 0 ? "0" : String(value ?? ""),
+                                                        onFocus: () => {
+                                                            if (value === 0) field.onChange(""); // allow user to delete 0
+                                                        },
+                                                        onBlur: () => {
+                                                            if (value === "") field.onChange(0); // restore 0 if left empty
+                                                        },
+                                                        onChange: (val: string | number) => {
+                                                            field.onChange(val === "" ? "" : Number(val));
+                                                        },
+                                                    }}
+                                                    error={!!errors.practical_hours}
+                                                    helperText={errors.practical_hours?.message}
+                                                />
+                                            );
+                                        }}
                                     />
+
                                 </Grid>
 
                                 {/* TOTAL HOURS */}
@@ -480,15 +575,32 @@ export default function SyllabusAdd() {
                                     <Controller
                                         name="cia"
                                         control={control}
-                                        render={({ field }) => (
-                                            <CustomInputText
-                                                label="CIA"
-                                                field={field}
-                                                type="number"
-                                                error={!!errors.cia}
-                                                helperText={errors.cia?.message}
-                                            />
-                                        )}
+                                        defaultValue={0}
+                                        render={({ field }) => {
+                                            const value = field.value as number | string;
+
+                                            return (
+                                                <CustomInputText
+                                                    label="CIA"
+                                                    type="number"
+                                                    field={{
+                                                        ...field,
+                                                        value: value === 0 ? "0" : String(value ?? ""),
+                                                        onFocus: () => {
+                                                            if (value === 0) field.onChange("");
+                                                        },
+                                                        onBlur: () => {
+                                                            if (value === "") field.onChange(0);
+                                                        },
+                                                        onChange: (val: string | number) => {
+                                                            field.onChange(val === "" ? "" : Number(val));
+                                                        },
+                                                    }}
+                                                    error={!!errors.cia}
+                                                    helperText={errors.cia?.message}
+                                                />
+                                            );
+                                        }}
                                     />
                                 </Grid>
 
@@ -497,15 +609,32 @@ export default function SyllabusAdd() {
                                     <Controller
                                         name="esa"
                                         control={control}
-                                        render={({ field }) => (
-                                            <CustomInputText
-                                                label="ESA"
-                                                field={field}
-                                                type="number"
-                                                error={!!errors.esa}
-                                                helperText={errors.esa?.message}
-                                            />
-                                        )}
+                                        defaultValue={0}
+                                        render={({ field }) => {
+                                            const value = field.value as number | string;
+
+                                            return (
+                                                <CustomInputText
+                                                    label="ESA"
+                                                    type="number"
+                                                    field={{
+                                                        ...field,
+                                                        value: value === 0 ? "0" : String(value ?? ""),
+                                                        onFocus: () => {
+                                                            if (value === 0) field.onChange("");
+                                                        },
+                                                        onBlur: () => {
+                                                            if (value === "") field.onChange(0);
+                                                        },
+                                                        onChange: (val: string | number) => {
+                                                            field.onChange(val === "" ? "" : Number(val));
+                                                        },
+                                                    }}
+                                                    error={!!errors.esa}
+                                                    helperText={errors.esa?.message}
+                                                />
+                                            );
+                                        }}
                                     />
                                 </Grid>
 

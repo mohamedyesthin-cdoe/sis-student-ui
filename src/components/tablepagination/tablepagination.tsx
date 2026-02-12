@@ -5,6 +5,7 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import theme from '../../styles/theme';
+import type { SxProps, Theme } from "@mui/material";
 
 // interface TablePaginationProps {
 //   page: number;
@@ -17,7 +18,9 @@ interface TablePaginationProps {
   rowsPerPage: number;
   totalCount: number;
   onPageChange: (newPage: number) => void;
-  onRowsPerPageChange?: (newRowsPerPage: number) => void; // <--- add this
+  onRowsPerPageChange?: (newRowsPerPage: number) => void; // <--- add this,
+  sx?: SxProps<Theme>;
+
 }
 
 const TablePagination: React.FC<TablePaginationProps> = ({
@@ -25,6 +28,8 @@ const TablePagination: React.FC<TablePaginationProps> = ({
   rowsPerPage,
   totalCount,
   onPageChange,
+  sx = {},
+
 }) => {
   const totalPages = Math.ceil(totalCount / rowsPerPage);
 
@@ -36,6 +41,8 @@ const TablePagination: React.FC<TablePaginationProps> = ({
         alignItems: 'center',
         mt: 3,
         flexWrap: 'wrap',
+        ...sx
+
       }}
     >
       {/* Showing Info */}

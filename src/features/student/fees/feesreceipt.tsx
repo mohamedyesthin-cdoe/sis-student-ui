@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -24,7 +24,11 @@ import Customtext from "../../../components/inputs/customtext/Customtext";
 export default function FeesReceipt() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const studentId = getValue("student_id");
+  const location = useLocation();
+  const passedStudentId = location.state?.studentId;
+
+  const studentId = passedStudentId || getValue("student_id");
+
   const username = getValue("username");
 
   const [payments, setPayments] = useState<any[]>([]);
@@ -35,7 +39,6 @@ export default function FeesReceipt() {
 
   const printRef = useRef<HTMLDivElement>(null);
   const { loading } = useLoader();
-
 
   useEffect(() => {
     const fetchFees = async () => {

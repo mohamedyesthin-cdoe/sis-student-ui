@@ -19,7 +19,7 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
     if (rollid === 2 && student_id) {
       return <Navigate to={`/students/detail`} />;
     }
-    return <Navigate to="/unauthorized" />;
+    // return <Navigate to="/unauthorized" />;
   }
 
   // If no token, render children (public routes like login)

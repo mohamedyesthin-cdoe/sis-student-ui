@@ -14,8 +14,11 @@ import {
   Settings as SettingsIcon,
   BarChart as BarChartIcon,
   ReportProblem as ReportProblemIcon,
-  Category as MasterIcon
+  Widgets as MasterIcon,
+  Assessment as MarksIcon,
+  AdminPanelSettings as RoleIcon
 } from '@mui/icons-material';
+
 
 import type { JSX } from 'react';
 
@@ -41,14 +44,7 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     icon: 'Students',
     subItems: [
       { text: 'Students List', routePath: '/students/list' },
-    ],
-    routePath: '',
-  },
-  {
-    text: 'Programs',
-    icon: 'Programs',
-    subItems: [
-      { text: 'Programs List', routePath: '/programs' },
+      { text: 'Fees List', routePath: '/students/feeslist' },
     ],
     routePath: '',
   },
@@ -64,10 +60,25 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     text: 'Master',
     icon: 'Master',
     subItems: [
-      { text: 'Syllabus List', routePath: '/syllabus' },
+      // { text: 'Syllabus List', routePath: '/syllabus' },
+      { text: 'Programs', routePath: '/programs' },
+      { text: 'Roles', routePath: '/role-list' },
+      { text: 'Departments', routePath: '/department-list' },
+      { text: 'Schemes', routePath: '/schemes/list' },
+      { text: 'Semesters', routePath: '/semesters/list' },
+      { text: 'Courses', routePath: '/courses/list' },
+      { text: 'Course Components', routePath: '/course-components/list' },
     ],
     routePath: '',
   },
+  {
+    text: 'Marks',
+    icon: 'Marks',
+    subItems: [
+      { text: 'Mark Entry', routePath: '/marks-entry' },
+    ],
+    routePath: '',
+  }
 ];
 export const STUDENT_MENU_ITEMS: MenuItem[] = [
   // {
@@ -159,4 +170,6 @@ export const ICON_MAP: Record<string, JSX.Element> = {
   Library: <LibraryBooksIcon />,
   Password: <LockIcon />,
   Master: <MasterIcon />,
+  Marks: <MarksIcon />,
+  Role: <RoleIcon />
 };

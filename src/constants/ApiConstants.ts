@@ -27,5 +27,17 @@ export const ApiRoutes = {
   COURSECODEADD:'coursecode/add',
   COURSECATEGORYADD:'coursecategory/add',
   COURSETITLEADD:'coursetitle/add',
-  GETROLES:'admin/roles'
+  GETROLES:'admin/roles',
+  ROLESADD:'admin/roles/add',
+  DELETEROLE:'admin/delete',
+  ROLESUPDATE:'admin/update',
+  GETDEPARTMENTS:'department/list',
+  DEPARTMENTADD:'department/add',
+  DEPARTMENTUPDATE:'department/update',
+  DEPARTMENTDELETE:'department/delete',
+  GETDEPARTMENTBYID:'department',
+  SCHEMES:'schemes',
+  SEMESTERS:'semesters',
+  COURSES:'courses',
+  COURSE_COMPONENTS:'course-components',
 };

@@ -8,8 +8,8 @@ import {
   FormControl
 } from "@mui/material";
 import type { SxProps, Theme } from '@mui/material'; 
-/* -------------------- Types -------------------- */
 
+/* -------------------- Types -------------------- */
 interface FilterOption {
   key: string;
   label: string;
@@ -19,11 +19,7 @@ interface FilterOption {
   onChange: (value: string) => void;
   placeholder?: string;
   visible?: boolean;
-
-  // ✅ NEW (for width, spacing, etc.)
   sx?: SxProps<Theme>;
-
-  // ✅ NEW (for dropdown scroll, maxHeight)
   menuProps?: any;
 }
 
@@ -40,6 +36,7 @@ interface ActionButton {
   variant?: "text" | "outlined" | "contained";
   startIcon?: React.ReactNode;
   onClick: () => void;
+  disabled?: boolean; // ✅ Added disabled support
 }
 
 interface TableToolbarProps {
@@ -48,7 +45,6 @@ interface TableToolbarProps {
 }
 
 /* -------------------- Component -------------------- */
-
 const TableToolbar: React.FC<TableToolbarProps> = ({
   filters = [],
   actions = [],
@@ -139,6 +135,7 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
             size="small"
             startIcon={action.startIcon}
             onClick={action.onClick}
+            disabled={action.disabled} // ✅ Works now
             sx={{
               width:
                 action.label === "Sync"

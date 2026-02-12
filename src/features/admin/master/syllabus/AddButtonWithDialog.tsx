@@ -88,7 +88,7 @@ export default function AddButtonWithDialog({
         </DialogContent>
 
         <DialogActions sx={{ p: "10px" }}>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button color="error" onClick={() => setOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSubmit}>Submit</Button>
         </DialogActions>
       </Dialog>
