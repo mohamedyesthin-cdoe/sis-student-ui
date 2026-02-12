@@ -17,9 +17,8 @@ import TableSkeleton from "../../../../components/card/skeletonloader/Tableskele
 import { NoDataFoundUI } from "../../../../components/card/errorUi/NoDataFoundUI";
 import ReusableTable from "../../../../components/table/table";
 import TablePagination from "../../../../components/tablepagination/tablepagination";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import Customtext from "../../../../components/inputs/customtext/Customtext";
 import { apiRequest } from "../../../../utils/ApiRequest";
+import CustomDialog from "../../../../context/ConfirmDialog";
 
 export default function CourseList() {
   const navigate = useNavigate();
@@ -214,28 +213,23 @@ export default function CourseList() {
           onPageChange={(newPage) => setPage(newPage)}
         />
       </CardComponent>
-      <Dialog open={openDelete} onClose={handleCloseDelete} maxWidth="xs" fullWidth>
-        <DialogTitle>Delete Course</DialogTitle>
-        <DialogContent dividers>
-          <Customtext
-            fieldName={
-              <>
-                Are you sure you want to delete this{" "}
-                <strong>{selectedCourses?.course_title}?</strong>
-              </>
-            }
-            sx={{ fontWeight: "normal" }}
-          />
-        </DialogContent>
-
-
-        <DialogActions>
-          <Button onClick={handleCloseDelete}>Cancel</Button>
-          <Button variant="contained" color="error" onClick={handleConfirmDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CustomDialog
+        open={openDelete}
+        title="Delete Course"
+        description={
+          <>
+            Are you sure you want to delete{" "}
+            <strong>
+              {selectedCourses?.course_title}
+            </strong>
+            ?
+          </>
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 }

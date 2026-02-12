@@ -17,15 +17,8 @@ import TableSkeleton from "../../../../components/card/skeletonloader/Tableskele
 import { NoDataFoundUI } from "../../../../components/card/errorUi/NoDataFoundUI";
 import ReusableTable from "../../../../components/table/table";
 import TablePagination from "../../../../components/tablepagination/tablepagination";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from "@mui/material";
-import Customtext from "../../../../components/inputs/customtext/Customtext";
 import { apiRequest } from "../../../../utils/ApiRequest";
+import CustomDialog from "../../../../context/ConfirmDialog";
 
 export default function CourseComponentsList() {
   const navigate = useNavigate();
@@ -102,7 +95,6 @@ export default function CourseComponentsList() {
     ${c.core_or_elective}
     ${c.component_no}
   `.toLowerCase();
-
     return combined.includes(searchText.toLowerCase());
   });
 
@@ -225,40 +217,23 @@ export default function CourseComponentsList() {
       </CardComponent>
 
       {/* ---------------- DELETE DIALOG ---------------- */}
-
-      <Dialog
+      <CustomDialog
         open={openDelete}
+        title="Delete Course Component"
+        description={
+          <>
+            Are you sure you want to delete{" "}
+            <strong>
+              {selectedComponent?.component_description}
+            </strong>
+            ?
+          </>
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
         onClose={handleCloseDelete}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Delete Course Component</DialogTitle>
-
-        <DialogContent dividers>
-          <Customtext
-            fieldName={
-              <>
-                Are you sure you want to delete{" "}
-                <strong>
-                  {selectedComponent?.component_description}
-                </strong>
-                ?
-              </>
-            }
-          />
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={handleCloseDelete}>Cancel</Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleConfirmDelete}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 }

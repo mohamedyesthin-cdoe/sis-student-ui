@@ -9,7 +9,6 @@ import {
     DialogActions,
     Button,
     TextField,
-    Typography,
 } from "@mui/material";
 
 import { useGlobalError } from "../../../../context/ErrorContext";
@@ -24,6 +23,7 @@ import ReusableTable from "../../../../components/table/table";
 import TablePagination from "../../../../components/tablepagination/tablepagination";
 import { exportToExcel } from "../../../../constants/excelExport";
 import { useAlert } from "../../../../context/AlertContext";
+import CustomDialog from "../../../../context/ConfirmDialog";
 
 export default function DepartmentList() {
     const { clearError } = useGlobalError();
@@ -258,22 +258,23 @@ export default function DepartmentList() {
                     </Button>
                 </DialogActions>
             </Dialog>
-
-            <Dialog open={openDelete} onClose={handleCloseDelete} maxWidth="xs" fullWidth>
-               <DialogTitle>Delete Department</DialogTitle>
-                <DialogContent dividers>
-                    <Typography>
+            <CustomDialog
+                open={openDelete}
+                title="Delete Department"
+                description={
+                    <>
                         Are you sure you want to delete{" "}
-                        <strong>{selectedDepartment?.name}</strong>?
-                    </Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDelete}>Cancel</Button>
-                    <Button variant="contained" color="error" onClick={handleConfirmDelete}>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
+                        <strong>
+                            {selectedDepartment?.name}
+                        </strong>
+                        ?
+                    </>
+                }
+                confirmText="Delete"
+                cancelText="Cancel"
+                onClose={handleCloseDelete}
+                onConfirm={handleConfirmDelete}
+            />
         </>
     );
 }
