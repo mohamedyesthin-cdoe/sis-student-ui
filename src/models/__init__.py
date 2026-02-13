@@ -6,4 +6,5 @@ from src.models.address import *
 from src.models.user import User, Group, Permission
 from src.models.students import *
 from src.models.payment import *
-from src.models.marksheet import MarkEntry, Marksheet
+from src.models.exam import *
+from src.models.academic import *
