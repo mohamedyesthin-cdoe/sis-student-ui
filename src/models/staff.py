@@ -33,3 +33,4 @@ class Staff(Base):
 
     user = relationship("User", back_populates="staff", uselist=False)
     department = relationship("Department", back_populates="staff")
+    entered_marks = relationship("MarksEntry", back_populates="staff")

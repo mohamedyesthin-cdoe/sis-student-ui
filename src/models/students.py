@@ -62,6 +62,7 @@ class Student(AuditableBase):
 
     batch = Column(String(10), nullable=True)
     admission_year = Column(String(10), nullable=True)
+    semester_id = Column(Integer, ForeignKey("semesters.id"), nullable=True)  # Optional semester association
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)
@@ -81,6 +82,11 @@ class Student(AuditableBase):
     deb_details = relationship("DebDetails", back_populates="student", uselist=False)
     payments = relationship("Payment", back_populates="student", cascade="all, delete-orphan")
     marksheets = relationship("Marksheet", back_populates="student")
+    exam_registrations = relationship("StudentExamRegistration", back_populates="student")
+    marksheets = relationship("MarksEntry", back_populates="student")
+    course_results = relationship("CourseResult", back_populates="student")
+    semester_results = relationship("SemesterResult", back_populates="student")
+    semester = relationship("Semester", back_populates="students")
     
     __table_args__ = (
         CheckConstraint("date_of_birth <= current_date - interval '18 years'", name="age_check"),

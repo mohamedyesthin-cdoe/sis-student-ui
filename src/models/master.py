@@ -21,6 +21,7 @@ class Programe(AuditableBase):
     fee = relationship("FeeDetails", back_populates="programe")
     syllabuses = relationship("Subjects", back_populates="programe")
     schemes = relationship("Scheme", back_populates="programe")
+    #batches = relationship("Batch", back_populates="programe")
     #student = relationship("Student", back_populates="program")
 
 class FeeDetails(AuditableBase):
@@ -120,7 +121,7 @@ class Subjects(AuditableBase):
     course_category = relationship("CourseCategory", back_populates="syllabuses")
     course_title = relationship("CourseTitle", back_populates="syllabuses")
     programe = relationship("Programe", back_populates='syllabuses')
-    marksheets = relationship("Marksheet", back_populates="subject")
+    #marksheets = relationship("Marksheet", back_populates="subject")
 
 class Department(Base):
     __tablename__ = "departments"

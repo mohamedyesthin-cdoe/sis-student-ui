@@ -172,6 +172,7 @@ class StudentRepository(BaseRepository[Student]):
             student_data['registration_no'] = registration_number  # Add generated reg no
             student_data['batch'] = batch
             student_data['admission_year'] = admission_year
+            student_data['semester_id'] = 1
             
             student_schema = StudentBase(**student_data)
             # --- 4. Check for existing student (application_no or email) ---

@@ -68,3 +68,13 @@ class FacultyStatusEnum(str, Enum):
     active = "Active"
     inactive = "Inactive"
     retired = "Retired"
+
+class ExamType(str, Enum):
+    REGULAR = "REGULAR"
+    ARREAR = "ARREAR"
+
+class ExamStatus(str, Enum):
+    DRAFT = "DRAFT"
+    MARK_ENTRY = "MARK_ENTRY"
+    LOCKED = "LOCKED"
+    PUBLISHED = "PUBLISHED"
