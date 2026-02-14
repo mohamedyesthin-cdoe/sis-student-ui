@@ -1,6 +1,6 @@
 from typing import Optional, List
-from fastapi import HTTPException
-from src.schemas.admin import GroupCreate
+from fastapi import HTTPException, status
+from src.schemas.admin import *
 from src.repositories.admin import AdminRepositery
 from src.models.user import Group
 from sqlalchemy.exc import IntegrityError
@@ -29,7 +29,14 @@ class AdminService:
         #check if role name already exist
         existing_role = self.admin_repo.get_role_by_name(role.name)
         if existing_role:
-                raise HTTPException(status_code=400, detail=f"Role '{role.name}' already exists")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail={
+                        "message": f"Role '{role.name}' already exists",
+                        "code": status.HTTP_400_BAD_REQUEST,
+                        "status": False
+                    }
+                )
         
         # Prepare the new role object
         db_role =  self.admin_repo.create_role(role.dict())
@@ -41,13 +48,39 @@ class AdminService:
         except IntegrityError as e:
             self.admin_repo.rollback()
             if "duplicate key value violates unique constraint" in str(e):
-                raise HTTPException(status_code=400, detail=f"Role '{role.name}' already exists")
-            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail={
+                        "message": f"Role '{role.name}' already exists",
+                        "code": status.HTTP_400_BAD_REQUEST,
+                        "status": False
+                    }
+                )
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Database error: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )
+        
         except Exception as e:
             self.admin_repo.rollback()
-            raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-
-        return db_role  
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Unexpected error: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )
+        return GroupResponse(
+            message="Roles Created Successfully",
+            code=status.HTTP_200_OK,
+            status=True,
+            data=db_role
+        )
     
     async def get_role(self, role_id: int) -> Group:
         """Retrieve a Role by its ID.
@@ -63,8 +96,20 @@ class AdminService:
         """
         db_role = self.admin_repo.get_role_by_id(role_id)
         if not db_role:
-            raise HTTPException(status_code=404, detail=f"Role with ID {role_id} not found")
-        return db_role 
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, 
+                    detail={
+                        "message": f"Unexpected error: {str(e)}",
+                        "code": status.HTTP_404_NOT_FOUND,
+                        "status": False
+                    }
+                )
+        return GroupResponse(
+            message="Role Fetched Successfully",
+            code=status.HTTP_200_OK,
+            status=True,
+            data=db_role
+        )
 
     async def update_role(self, role_id: int, role_update: GroupCreate) -> Group:
         """Update an existing Role.
@@ -84,8 +129,15 @@ class AdminService:
         db_role = self.admin_repo.get_role_by_id(role_id)
 
         if not db_role:
-            raise HTTPException(status_code=400, detail=f"Role with ID {role_id} not found")
-        
+            raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail={
+                        "message": f"Role with ID {role_id} not found",
+                        "code": status.HTTP_400_BAD_REQUEST,
+                        "status": False
+                    }
+                )
+                
         # Prepare update data, excluding unset fields
         update_data = role_update.dict(exclude_unset=True)
 
@@ -93,8 +145,14 @@ class AdminService:
         if 'name' in update_data:
             existing_role = self.admin_repo.get_role_by_name(update_data['name'])
             if existing_role and existing_role.id != role_id :
-                raise HTTPException(status_code=400, detail=f"Role '{update_data['name']}' already exists")
-
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail={
+                        "message": f"Role '{update_data['name']}' already exists",
+                        "code": status.HTTP_400_BAD_REQUEST,
+                        "status": False
+                    }
+                )
         # Update the role
         updated_data = self.admin_repo.update_role(db_role, update_data)
 
@@ -104,13 +162,38 @@ class AdminService:
         except IntegrityError as e:
             self.admin_repo.rollback()
             if "duplicate key value violates unique constraint" in str(e):
-                raise HTTPException(status_code=400, detail=f"Role name conflict: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail={
+                        "message": f"Role name conflict: {str(e)}",
+                        "code": status.HTTP_400_BAD_REQUEST,
+                        "status": False
+                    }
+                )
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Database error: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )
         except Exception as e:
             self.admin_repo.rollback()
-            raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-
-        return updated_data
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Unexpected error: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )
+        return GroupResponse(
+            message="Roles Updated Successfully",
+            code=status.HTTP_200_OK,
+            status=True,
+            data=updated_data
+        )
     
     async def get_roles(self, name: Optional[str] = None) -> List[Group]:
         """Retrieve a list of group, optionally filtered by name.
@@ -118,8 +201,23 @@ class AdminService:
         Returns:
             List[Group]: List of Group objects.
         """
-        return self.admin_repo.get_roles()
-    
+        try:
+            roles = self.admin_repo.get_roles()
+            return GroupListResponse(
+                message="Roles fetched Successfully",
+                code=status.HTTP_200_OK,
+                status=True,
+                data=roles
+            )
+        except Exception as e:
+            raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, 
+                    detail={
+                        "message": f"Unexpected error: {str(e)}",
+                        "code": status.HTTP_400_BAD_REQUEST,
+                        "status": False
+                    }
+                )    
     async def delete_role(self, role_id: int) -> dict:
         """Delete an existing Role.
 
@@ -136,16 +234,35 @@ class AdminService:
         # Retrieve the existing role
         db_role = self.admin_repo.get_role_by_id(role_id)
         if not db_role:
-            raise HTTPException(status_code=404, detail=f"Role with ID {role_id} not found")
-        
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, 
+                    detail={
+                        "message": f"Role with ID {role_id} not found",
+                        "code": status.HTTP_404_NOT_FOUND,
+                        "status": False
+                    }
+                )        
         try:
             self.admin_repo.delete_role(db_role)
             self.admin_repo.commit()
         except IntegrityError as e:
             self.admin_repo.rollback()
-            raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Database error: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )    
         except Exception as e:
             self.admin_repo.rollback()
-            raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
-
+            raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Unexpected error: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )  
         return {"message": f"Role with ID {role_id} deleted successfully"}

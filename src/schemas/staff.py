@@ -67,15 +67,32 @@ class StaffCreate(StaffBase):
     class Config:
         from_attributes = True
 
+class StaffResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: StaffCreate = None
+
+class StaffDeleteResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+
+class StaffListResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[StaffCreate] = []
+
 class StaffUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = None
+    #email: Optional[EmailStr] = None
+    #phone: Optional[str] = None
     dob: Optional[date] = None
     gender: Optional[str] = None
     faculty: Optional[str] = None
-    department: Optional[int] = None
+    department_id: Optional[int] = None
     designation: Optional[str] = None
     qualification: Optional[str] = None
     specialization: Optional[str] = None
@@ -85,9 +102,8 @@ class StaffUpdate(BaseModel):
     status: Optional[FacultyStatusEnum] = None
     role: Optional[str] = None
 
-class StaffResponse(StaffBase):
-    id: int
-    user_id: int
-
-    class Config:
-        from_attributes = True 
+class StaffUpdateResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: Optional[StaffUpdate] = None

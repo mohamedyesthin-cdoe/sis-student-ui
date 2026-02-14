@@ -3,9 +3,7 @@ from typing import List
 from pytest import Session
 from src.db.session import get_db
 from src.services.staff import StaffService
-from src.schemas.staff import (
-    StaffResponse, StaffCreate, StaffBase
-)
+from src.schemas.staff import *
 from src.models.user import User
 from src.core.security.dependencies import require_superuser
 
@@ -25,7 +23,7 @@ async def create_staff(staff: StaffBase, db: Session = Depends(get_db), current_
     service = StaffService(db)
     return await service.create_staff(staff)
 
-@router.get("/list", response_model=List[StaffResponse], tags=["Staff"])
+@router.get("/list", response_model=StaffListResponse, tags=["Staff"])
 async def get_staff(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Retrive all staff with associated address.
 
@@ -45,3 +43,48 @@ async def get_by_staff_id(staff_id: int, db: Session = Depends(get_db), current_
     """
     service = StaffService(db)
     return service.get_by_staff_id(staff_id)
+
+@router.put("/update/{staff_id}", response_model=StaffResponse, tags=["Staff"])
+def update_staff(staff_id: int, staff: StaffUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    """Update an existing staff's details.
+
+    Args:
+        staff_id (int): ID of the staff to update.
+        staff (StaffUpdate): Staff update data.
+        db (Session): Database session.
+
+    Returns:
+        StaffResponse: Updated staff details.
+    """
+    service = StaffService(db)
+    return service.update_staff(staff_id, staff)  
+
+@router.delete("/delete/{staff_id}", response_model=StaffResponse, tags=["Staff"])
+def delete_staff(staff_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    """Delete a staff by ID.
+
+    Args:
+        staff_id (int): ID of the staff to delete.
+        db (Session): Database session.
+
+    Returns:
+        StaffResponse: Deletion result.
+    """
+    service = StaffService(db)
+    return service.delete_staff(staff_id)
+
+@router.patch("/patch/{staff_id}", response_model=StaffResponse, tags=["Staff"])
+def patch_staff(staff_id: int, staff: StaffUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    """Partially update a staff's details.
+
+    Args:
+        staff_id (int): ID of the staff to update.
+        staff (StaffUpdate): Staff update data.
+        db (Session): Database session.
+
+    Returns:
+        StaffResponse: Updated staff details.
+    """
+    service = StaffService(db)
+    return service.update_staff(staff_id, staff)
+

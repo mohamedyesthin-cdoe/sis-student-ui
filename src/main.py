@@ -28,6 +28,7 @@ from src.api.v1.endpoints.master import router as master_router
 from src.api.v1.endpoints.document import router as s3_router
 from src.api.v1.endpoints.academic import router as academic_router
 from src.api.v1.endpoints.exam import router as exam_router
+from src.api.v1.endpoints.result import router as result_router
 from src.utils.hash import decode_token, encode_token
 from src.core.security.dependencies import require_superuser
 from src.models.user import User
@@ -92,6 +93,7 @@ app.include_router(api_router, prefix="/api", tags=["API"])
 app.include_router(master_router, prefix="", tags=["master"])
 app.include_router(academic_router, prefix="",)
 app.include_router(exam_router, prefix="",)
+app.include_router(result_router, prefix="")
 app.include_router(s3_router, prefix="/s3", tags=["S3"])
 
 # Create database tables on startup

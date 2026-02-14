@@ -15,10 +15,12 @@ from src.services.integrations.student_mapper import (
     map_patch_api_to_student_schema
 )
 from sqlalchemy.exc import SQLAlchemyError
+from src.utils.s3_service import DocumentService
 
 class StudentRepository(BaseRepository[Student]):
     def __init__(self, db: Session):
         super().__init__(db, Student)
+        self.document_service = DocumentService()
 
     def get_by_id(self, student_id: int) -> Student:
         result = self.db.execute(select(self.model).where(self.model.id == student_id))
@@ -118,6 +120,14 @@ class StudentRepository(BaseRepository[Student]):
                 .filter(Student.application_no == student_data.get("application_no"))
                 .first()
             )
+            print("Existing student found for update:", existing_student)
+
+            if not existing_student:
+                print(
+                    f"Student not found for application_no: "
+                    f"{student_data.get('application_no')} — Skipping"
+                )
+                return None   # 🔥 just skip, no error
 
             if not existing_student:
                 raise ValueError("Student does not exist for update")
@@ -129,13 +139,29 @@ class StudentRepository(BaseRepository[Student]):
                 if key in student_columns:
                     setattr(existing_student, key, value)
 
+            # if "document_details" in student_data:
+            #     doc_data = student_data["document_details"]
+            #     if doc_data and existing_student.document_details:
+            #         for key, value in doc_data.items():
+            #             if hasattr(existing_student.document_details, key):
+            #                 setattr(existing_student.document_details, key, value)
+            # 🔹 Handle document upload to S3
             if "document_details" in student_data:
                 doc_data = student_data["document_details"]
+
                 if doc_data and existing_student.document_details:
                     for key, value in doc_data.items():
-                        if hasattr(existing_student.document_details, key):
-                            setattr(existing_student.document_details, key, value)
+                        if value:   # only if file URL exists
 
+                            s3_url = self.document_service.upload_external_file(
+                                file_url=value,
+                                program_id=existing_student.program_id,
+                                register_number=existing_student.registration_no,
+                                document_type=key
+                            )
+
+                            if s3_url and hasattr(existing_student.document_details, key):
+                                setattr(existing_student.document_details, key, s3_url)
 
             #self.db.add(existing_student)
             self.db.commit()

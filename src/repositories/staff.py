@@ -25,9 +25,13 @@ class StaffRepository(BaseRepository[Staff]):
         except SQLAlchemyError as e:
             self.db.rollback()
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Error creating Faculty: {str(e)}",
-            )
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                    detail={
+                        "message": f"Error creating Faculty: {str(e)}",
+                        "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                        "status": False
+                    }
+                )
 
     def get_staff_by_email(self, email: str) -> Optional[Staff]:
         """Retrieve a staff by email.
@@ -38,8 +42,18 @@ class StaffRepository(BaseRepository[Staff]):
         Returns:
             Optional[Staff]: Staff object if found, else None.
         """
-        return self.db.query(Staff).filter(Staff.email == email).first()
-    
+        try:
+            return self.db.query(Staff).filter(Staff.email == email).first()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Error retrieving staff by email: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False
+                }
+            )
+            
     def commit(self):
         """Commit the current transaction."""
         self.db.commit()
@@ -58,7 +72,17 @@ class StaffRepository(BaseRepository[Staff]):
         Returns:
             List[staff]: List of staff objects.
         """
-        return self.db.query(Staff).all()
+        try:
+            return self.db.query(Staff).all()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Error retrieving staff: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False
+                }
+            )
     
     def get_by_staff_id(self, staff_id: int) -> Staff:
         """Retrieve a list of staff
@@ -66,7 +90,82 @@ class StaffRepository(BaseRepository[Staff]):
         Returns:
             List[staff]: List of staff objects.
         """
-        staff = self.db.query(Staff).filter(staff.id == staff_id).first()
-        if not staff:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="staff not found")
-        return self.db.query(staff).filter(staff.id == staff_id).first()
+        try:
+            staff = self.db.query(Staff).filter(Staff.id == staff_id).first()
+            if not staff:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail={
+                        "message": "staff not found",
+                        "code": status.HTTP_404_NOT_FOUND,
+                        "status": False
+                    }
+                )
+            return staff
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Error retrieving staff by ID: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False
+                }
+            )
+        
+    def update_staff(self, staff: Staff, update_data: dict) -> Staff:
+        """Update an existing staff's details.
+
+        Args:
+            staff (Staff): Existing staff object.
+            update_data (dict): Data to update.
+
+        Returns:
+            Staff: Updated staff object.
+        """
+        try:
+            for key, value in update_data.items():
+                setattr(staff, key, value)
+            self.db.add(staff)
+            self.commit()
+            self.refresh(staff)
+            return staff
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Error updating staff: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False
+                }
+            )
+        
+    def get_by_email(self, email: str):
+        return self.db.query(Staff).filter(Staff.email == email).first()
+    
+    def get_by_phone(self, phone: str):
+        return self.db.query(Staff).filter(Staff.phone == phone).first()
+    
+    def delete_staff(self, staff: Staff) -> Staff:
+        """Delete a staff by ID.
+
+        Args:
+            staff (Staff): Staff object to delete.
+
+        Returns:
+            Staff: Deleted staff object.
+        """
+        try:
+            self.db.delete(staff)
+            self.commit()
+            return staff
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Error deleting staff: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False
+                }
+            )   

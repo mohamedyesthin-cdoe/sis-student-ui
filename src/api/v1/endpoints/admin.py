@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.schemas.admin import GroupOut, GroupCreate, GroupUpdate
+from src.schemas.admin import *
 from src.db.session import get_db
 from src.services.admin_service import AdminService
 from fastapi import APIRouter, Depends, HTTPException,status
@@ -11,7 +11,7 @@ from src.models.admin import Document
 
 router = APIRouter()
 
-@router.post("/roles/add", response_model = GroupOut, status_code=status.HTTP_201_CREATED)
+@router.post("/roles/add", response_model = GroupResponse, status_code=status.HTTP_201_CREATED)
 async def create_roles(role: GroupCreate, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Create a new role.
 
@@ -20,7 +20,7 @@ async def create_roles(role: GroupCreate, db:Session = Depends(get_db), current_
         db (Session): Database session.
 
     Returns:
-        GroupOut: Created role details.
+        GroupResponse: Created role details.
 
     Raises:
         HTTPException: If the role name is already registered or if a database error occurs.
@@ -29,7 +29,7 @@ async def create_roles(role: GroupCreate, db:Session = Depends(get_db), current_
     created_role = await service.create_role(role)
     return created_role
 
-@router.get("/roles/{role_id}", response_model=GroupOut, status_code=status.HTTP_200_OK)
+@router.get("/roles/{role_id}", response_model=GroupResponse, status_code=status.HTTP_200_OK)
 async def get_role(role_id:int, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Retrieve a role by its ID.
 
@@ -38,7 +38,7 @@ async def get_role(role_id:int, db:Session = Depends(get_db), current_user: User
         db (Session): Database session.
 
     Returns:
-        GroupOut: Retrieved role details.
+        GroupResponse: Retrieved role details.
 
     Raises:
         HTTPException: If the role is not found or a database error occurs.
@@ -47,7 +47,7 @@ async def get_role(role_id:int, db:Session = Depends(get_db), current_user: User
     role = await service.get_role(role_id)
     return role
 
-@router.put("/update/{role_id}", response_model=GroupOut, status_code=status.HTTP_200_OK)
+@router.put("/update/{role_id}", response_model=GroupResponse, status_code=status.HTTP_200_OK)
 async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     """Update an existing role.
 
@@ -57,7 +57,7 @@ async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends
         db (Session): Database session.
 
     Returns:
-        GroupOut: Updated role details.
+        GroupResponse: Updated role details.
 
     Raises:
         HTTPException: If the role is not found, name is already registered, or a database error occurs.
@@ -66,7 +66,7 @@ async def update_role(role_id:int, role_update:GroupUpdate, db:Session = Depends
     updated_role = await service.update_role(role_id, role_update)
     return updated_role
 
-@router.get("/roles", response_model = List[GroupOut])
+@router.get("/roles", response_model = GroupListResponse)
 async def get_roles(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
 
     """Retrieve a list of roles"""

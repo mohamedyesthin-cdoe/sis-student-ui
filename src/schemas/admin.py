@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, Annotated
+from typing import Optional, Annotated, List
 from datetime import datetime
 
 class GroupCreate(BaseModel):
@@ -15,6 +15,18 @@ class GroupOut(BaseModel):
     model_config = {
         "from_attributes": True
     }
+
+class GroupResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: GroupOut
+
+class GroupListResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[GroupOut]
 
 class DocumentCreate(BaseModel):
     filename: str

@@ -166,6 +166,7 @@ class CourseResult(AuditableBase):
             "student_id",
             "exam_id",
             "course_id",
+            "component_id",
             "result_version",
             name="uq_course_result_version"
         ),

@@ -119,19 +119,7 @@ class StudentService:
                 value_list = students_data["data"]["list"]
             else:
                 value_list = students_data
-
-            # # FETCH all already-synced application numbers from DB
-            # existing_rows = self.student_repo.get_all_application_nos()
-            
-            # # Convert into a set of strings
-            # existing_ids = {
-            #     row if isinstance(row, str) else row.get("application_no")
-            #     for row in existing_rows
-            # }
-
-            #logger.info(f"Existing students in DB: {len(existing_ids)}")
-
-            # IDENTIFY ONLY EXISTING STUDENTS TO UPDATE
+                
             students_to_update = []  
             for student in value_list:
                 app_no = student.get("application_no")
