@@ -30,6 +30,11 @@ import CourseList from "../features/admin/master/course/CourseList";
 import CourseAdd from "../features/admin/master/course/CourseAdd";
 import CourseComponentsList from "../features/admin/master/coursecomponent/CourseComponentList";
 import CourseComponentAdd from "../features/admin/master/coursecomponent/CourseComponentAdd";
+import ExamList from "../features/admin/master/exam/ExamList";
+import HallTicket from "../features/admin/master/syllabus/HallTicket";
+import ExamAdd from "../features/admin/master/exam/ExamAdd";
+import ExamTimeTableList from "../features/admin/master/examtimetable/ExamTimeTableList";
+import ExamTimetableAdd from "../features/admin/master/examtimetable/ExamTimeTableAdd";
 
 export const routesConfig = [
   {
@@ -192,6 +197,11 @@ export const routesConfig = [
     breadcrumb: 'Marks Entry',
   },
   {
+    path: '/hall-ticket',
+    element: <HallTicket />,
+    breadcrumb: 'Hall Ticket',
+  },
+  {
     path: '/role-list',
     element: <RoleList />,
     breadcrumb: 'Role List',
@@ -279,6 +289,46 @@ export const routesConfig = [
         path: 'edit/:id',
         element: <CourseComponentAdd />,
         breadcrumb: 'Course Components Edit',
+      },
+    ]
+  },
+  {
+    path: '/exam',
+    children: [
+      {
+        path: 'list',
+        element: <ExamList />,
+        breadcrumb: 'Exams List',
+      },
+      {
+        path: 'add',
+        element: <ExamAdd />,
+        breadcrumb: 'Exam Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <ExamAdd />,
+        breadcrumb: 'Exams Edit',
+      },
+    ]
+  },
+  {
+    path: '/exam-timetables',
+    children: [
+      {
+        path: 'list',
+        element: <ExamTimeTableList />,
+        breadcrumb: 'Exam Timetables List',
+      },
+      {
+        path: 'add',
+        element: <ExamTimetableAdd />,
+        breadcrumb: 'Exam Timetable Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <ExamTimetableAdd />,
+        breadcrumb: 'Exam Timetable Edit',
       },
     ]
   }

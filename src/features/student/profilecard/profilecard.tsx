@@ -245,7 +245,14 @@ const StudentHorizontalIDCard = () => {
     }
   };
 
+  const cleanDocumentUrl = (value: string | null) => {
+    if (!value) return null;
 
+    return value
+      .replace(/[{}"]/g, "")   // remove { } and "
+      .split(",")[0]           // take first if array
+      .trim();
+  };
 
   const getBatchYearFromRegNo = (regNo?: string) => {
     if (!regNo) return null;
@@ -295,7 +302,7 @@ const StudentHorizontalIDCard = () => {
     registration_no: student?.registration_no,
     parent_guardian_name: student?.parent_guardian_name,
     address: `${student?.address_details?.corr_addr1 || ""}, ${student?.address_details?.corr_city || ""} - ${student?.address_details?.corr_pin || ""}`,
-    userImage: student?.document_details?.profile_image,
+    userImage: cleanDocumentUrl(student?.document_details?.profile_image),
     relationship_with_student: student?.relationship_with_student,
   };
 

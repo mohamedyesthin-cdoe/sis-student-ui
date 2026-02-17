@@ -56,6 +56,14 @@ export default function StudentDetailUI() {
 
     return null;
   };
+  const cleanDocumentUrl = (value: string | null) => {
+    if (!value) return null;
+
+    return value
+      .replace(/[{}"]/g, "")   // remove { } and "
+      .split(",")[0]           // take first if array
+      .trim();
+  };
   const regBatchYear = getBatchYearFromRegNo(student?.registration_no);
 
   const personalInfo = {
@@ -80,7 +88,7 @@ export default function StudentDetailUI() {
     batch: regBatchYear?.batch || student?.batch || "July",
     year: regBatchYear?.year || student?.year || "2025",
     registration_no: student?.registration_no,
-    userImage: student?.document_details?.profile_image
+    userImage: cleanDocumentUrl(student?.document_details?.profile_image),
   };
 
   const infoList = [
@@ -127,7 +135,13 @@ export default function StudentDetailUI() {
               <>
                 <ProfileSkeleton />
               </> : (
-                <CardComponent mb={2} p={0} className="h-full">
+                <CardComponent
+                  mb={2}
+                  p={0}
+                  className="h-full"
+                  sx={{ maxHeight: 700, overflow: "auto" }}
+                >
+
                   <img src={coverImage} alt="coverImage" className="w-full object-fit-cover" />
                   <Box
                     sx={{

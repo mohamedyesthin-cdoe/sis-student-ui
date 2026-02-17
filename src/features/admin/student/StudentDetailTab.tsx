@@ -11,6 +11,7 @@ import BasicDetailsSkeleton from '../../../components/card/skeletonloader/BasicD
 import { useLoader } from '../../../context/LoaderContext';
 import AddressSkeleton from '../../../components/card/skeletonloader/AddressSkeleton';
 import Customtext from '../../../components/inputs/customtext/Customtext';
+import HallTicket from '../master/syllabus/HallTicket';
 
 type TabContent = {
   title: string;
@@ -308,6 +309,15 @@ export default function StudentDetailTab({
       // ['Status', student?.deb_details?.deb_status],
     ],
   };
+  const cleanDocumentUrl = (value: string | null) => {
+    if (!value) return null;
+
+    return value
+      .replace(/[{}"]/g, "")   // remove { } and "
+      .split(",")[0]           // take first if array
+      .trim();
+  };
+
 
   const documentsTab: TabContent = {
     title: 'Documents',
@@ -318,15 +328,16 @@ export default function StudentDetailTab({
       }
       const theme = useTheme();
       const docs = [
-        { label: 'Aadhar', value: student?.document_details?.aadhar },
-        { label: 'Class 10th Marksheet', value: student?.document_details?.class_10th_marksheet },
-        { label: 'Class 12th Marksheet', value: student?.document_details?.class_12th_marksheet },
-        { label: 'Diploma Marksheet', value: student?.document_details?.diploma_marksheet },
-        { label: 'Graduation Marksheet', value: student?.document_details?.graduation_marksheet },
-        { label: 'Passport', value: student?.document_details?.passport },
-        { label: 'Signature', value: student?.document_details?.signature },
-        { label: 'Work Experience Certificates', value: student?.document_details?.work_experience_certificates },
+        { label: 'Aadhar', value: cleanDocumentUrl(student?.document_details?.aadhar) },
+        { label: 'Class 10th Marksheet', value: cleanDocumentUrl(student?.document_details?.class_10th_marksheet) },
+        { label: 'Class 12th Marksheet', value: cleanDocumentUrl(student?.document_details?.class_12th_marksheet) },
+        { label: 'Diploma Marksheet', value: cleanDocumentUrl(student?.document_details?.diploma_marksheet) },
+        { label: 'Graduation Marksheet', value: cleanDocumentUrl(student?.document_details?.graduation_marksheet) },
+        { label: 'Passport', value: cleanDocumentUrl(student?.document_details?.passport) },
+        { label: 'Signature', value: cleanDocumentUrl(student?.document_details?.signature) },
+        { label: 'Work Experience Certificates', value: cleanDocumentUrl(student?.document_details?.work_experience_certificates) },
       ];
+
 
       const availableDocs = docs.filter(doc => doc.value);
 
@@ -369,7 +380,11 @@ export default function StudentDetailTab({
                     />
                   </Box>
                   <IconButton
-                    onClick={() => window.open(doc.value, '_blank')}
+                    onClick={() => {
+                      if (doc.value) {
+                        window.open(doc.value, '_blank');
+                      }
+                    }}
                     sx={{
                       backgroundColor: 'black',
                       color: theme.palette.grey[300],
@@ -405,38 +420,62 @@ export default function StudentDetailTab({
     ),
   };
 
-const regPrefix = student?.registration_no?.substring(0, 3);
-const hideDebTab = regPrefix === "X02" || regPrefix === "X03";
+  const HallTicketTab: TabContent = {
+    title: "Hall Ticket",
+    items: [],
+    customRender: () => (
+      <CardComponent>
+        <Box className="py-2 px-3">
+          <Customtext fieldName="Hall Ticket" sx={{ mb: 0 }} />
+        </Box>
+        <Divider sx={{ borderColor: "#899000" }} />
+
+        <Box>
+          <HallTicket student={student} />
+        </Box>
+      </CardComponent>
+    ),
+  };
+
+
+
+  const regPrefix = student?.registration_no?.substring(0, 3);
+  const hideDebTab = regPrefix === "X02" || regPrefix === "X03";
 
   const admintabs = [
-  'Basic Info',
-  'Academic',
-  ...(hideDebTab ? [] : ['DEB']),
-  'Documents',
-  'ID Card',
-];
+    'Basic Info',
+    'Academic',
+    ...(hideDebTab ? [] : ['DEB']),
+    'Documents',
+    'ID Card',
+    'Hall Ticket'
+  ];
 
-const studenttabs = [
-  'Basic Info',
-  ...(hideDebTab ? [] : ['DEB']),
-  'ID Card',
-];
+  const studenttabs = [
+    'Basic Info',
+    ...(hideDebTab ? [] : ['DEB']),
+    'ID Card',
+    'Hall Ticket'
+  ];
 
-const tabs = rollid === 2 ? studenttabs : admintabs;
-const tabContents =
-  rollid === 2
-    ? [
+  const tabs = rollid === 2 ? studenttabs : admintabs;
+  const tabContents =
+    rollid === 2
+      ? [
         basicInfoTab,
         ...(hideDebTab ? [] : [debTab]),
         IDCardTab,
+        HallTicketTab,   // ✅ ADD HERE
       ]
-    : [
+      : [
         basicInfoTab,
         academicTab,
         ...(hideDebTab ? [] : [debTab]),
         documentsTab,
         IDCardTab,
+        HallTicketTab,   // ✅ ADD HERE
       ];
+
 
 
   return (

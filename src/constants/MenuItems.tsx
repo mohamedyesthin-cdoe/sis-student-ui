@@ -68,17 +68,19 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
       { text: 'Semesters', routePath: '/semesters/list' },
       { text: 'Courses', routePath: '/courses/list' },
       { text: 'Course Components', routePath: '/course-components/list' },
+      { text: 'Exams', routePath: '/exam/list' },
+      { text: 'Exam Timetable', routePath: '/exam-timetables/list' },
     ],
     routePath: '',
   },
-  {
-    text: 'Marks',
-    icon: 'Marks',
-    subItems: [
-      { text: 'Mark Entry', routePath: '/marks-entry' },
-    ],
-    routePath: '',
-  }
+  // {
+  //   text: 'Marks',
+  //   icon: 'Marks',
+  //   subItems: [
+  //     { text: 'Mark Entry', routePath: '/marks-entry' },
+  //   ],
+  //   routePath: '',
+  // },
 ];
 export const STUDENT_MENU_ITEMS: MenuItem[] = [
   // {

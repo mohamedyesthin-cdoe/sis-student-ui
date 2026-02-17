@@ -40,4 +40,6 @@ export const ApiRoutes = {
   SEMESTERS:'semesters',
   COURSES:'courses',
   COURSE_COMPONENTS:'course-components',
+  EXAMS:'exams',
+  EXAMTIMETABLES:'exam-timetables'
 };
