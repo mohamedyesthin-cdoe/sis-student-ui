@@ -112,7 +112,7 @@ export default function StudentTable() {
     const combinedText = `
       ${s.registration_no}
       ${fullName}
-      ${s.email}
+      ${s.program_id}
       ${s.mobile_number}
       ${s.gender}
       ${s.payments[0]?.payment_date}
@@ -136,7 +136,7 @@ export default function StudentTable() {
           key: 'full_name',
           render: (s) => `${s.title} ${s.first_name} ${s.last_name}`,
         },
-        { header: 'Email', key: 'email' },
+        { header: 'Program ID', key: 'program_id' },
         { header: 'Mobile', key: 'mobile_number' },
         { header: 'Gender', key: 'gender' },
 
@@ -303,7 +303,7 @@ export default function StudentTable() {
         username: row.username,
         first_name: row.first_name,
         last_name: row.last_name,
-        email: row.email,
+        program_id: row.program_id,
         phone: row.phone,
         student_id: row.student_id
       }));
@@ -426,7 +426,7 @@ export default function StudentTable() {
                           label: "Full Name",
                           render: (r) => `${r.title} ${r.first_name} ${r.last_name}`,
                         },
-                        { key: "email", label: "Email" },
+                        { key: "program_id", label: "Program ID" },
                         { key: "mobile_number", label: "Mobile" },
                         { key: "gender", label: "Gender" },
                         {

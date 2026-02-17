@@ -57,7 +57,7 @@ export default function ProgramList() {
   // FILTER
   // ----------------------------------------------------------
   const filteredPrograms = programs.filter((c) => {
-    const combined = `${c.programe_code} ${c.programe} ${c.duration}`.toLowerCase();
+    const combined = `${c.id} ${c.programe} ${c.duration}`.toLowerCase();
     return combined.includes(searchText.toLowerCase());
   });
 
@@ -69,7 +69,7 @@ export default function ProgramList() {
       filteredPrograms,
       [
         { header: "S.No", key: "sno" },
-        { header: "Program ID", key: "programe_code" },
+        { header: "Program ID", key: "id" },
         { header: "Program Name", key: "programe" },
         { header: "Duration", key: "duration" },
       ],
@@ -129,7 +129,7 @@ export default function ProgramList() {
                 ) : (
                   <ReusableTable
                     columns={[
-                      { key: "programe_code", label: "Program ID" },
+                      { key: "id", label: "Program ID" },
                       { key: "programe", label: "Program Name" },
                       { key: "duration", label: "Duration" },
                     ]}
