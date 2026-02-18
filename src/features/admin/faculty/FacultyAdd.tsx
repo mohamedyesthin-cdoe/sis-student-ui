@@ -22,6 +22,7 @@ import { useGlobalError } from "../../../context/ErrorContext";
 import FacultyFormSkeleton from "../../../components/card/skeletonloader/FacultyFormSkeleton";
 
 import { Dayjs } from "dayjs";
+import CustomNumberInput from "../../../components/inputs/customtext/CustomNumberInput";
 
 export interface FacultyFormValues {
   id: number;
@@ -98,10 +99,20 @@ export const schema: Yup.ObjectSchema<FacultyFormValues> = Yup.object({
   id: Yup.number().defined(),
 
   employee_id: Yup.string().required("Employee ID is required"),
+
   first_name: Yup.string().required("First name required"),
+
   last_name: Yup.string().required("Last name required"),
-  email: Yup.string().email("Invalid email").required("Email required"),
-  phone: Yup.string().required("Phone required"),
+
+  email: Yup.string()
+    .email("Invalid email")
+    .required("Email required"),
+
+  // ✅ 10 digit phone validation
+  phone: Yup.string()
+    .required("Phone required")
+    .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+
   role: Yup.string().required("Role is required"),
 
   department: Yup.string().nullable().defined(),
@@ -110,14 +121,42 @@ export const schema: Yup.ObjectSchema<FacultyFormValues> = Yup.object({
   qualification: Yup.string().nullable().defined(),
   specialization: Yup.string().nullable().defined(),
 
-  joining_date: Yup.mixed<Dayjs>().nullable().defined(),
-  experience_years: Yup.number().min(0).defined(),
+  // ✅ Prevent future joining date (NO PLUGIN REQUIRED)
+  joining_date: Yup.mixed<Dayjs>()
+    .nullable()
+    .test(
+      "not-in-future",
+      "Joining date cannot be in the future",
+      (value) => {
+        if (!value) return true;
+        return !dayjs(value).isAfter(dayjs(), "day");
+      }
+    )
+    .defined(),
+
+  experience_years: Yup.number()
+    .min(0, "Experience cannot be negative")
+    .defined(),
+
   employment_type: Yup.string().nullable().defined(),
 
   gender: Yup.string().nullable().defined(),
-  dob: Yup.mixed<Dayjs>().nullable().defined(),
 
+  // ✅ Prevent future DOB (NO PLUGIN REQUIRED)
+  dob: Yup.mixed<Dayjs>()
+    .nullable()
+    .test(
+      "not-in-future",
+      "Date of birth cannot be in the future",
+      (value) => {
+        if (!value) return true;
+        return !dayjs(value).isAfter(dayjs(), "day");
+      }
+    )
+    .defined(),
 });
+
+
 
 
 
@@ -144,14 +183,14 @@ export default function FacultyAdd() {
     (async () => {
       try {
         const res = await apiRequest({ url: ApiRoutes.GETROLES, method: "get" });
-        setRoleOptions(res);
+        setRoleOptions(res.data);
       } catch (err) {
         console.error("Failed to load roles", err);
       }
     })();
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     (async () => {
       try {
         const res = await apiRequest({ url: ApiRoutes.GETDEPARTMENTS, method: "get" });
@@ -369,15 +408,23 @@ export default function FacultyAdd() {
                         name="phone"
                         control={control}
                         render={({ field }) => (
-                          <CustomInputText
+                          <CustomNumberInput
                             label="Phone"
-                            field={field}
+                            value={field.value}
+                            maxLength={10}
+                            inputProps={{
+                              inputMode: "numeric",
+                              pattern: "[0-9]*",
+                            }}
                             error={!!errors.phone}
                             helperText={errors.phone?.message}
+                            onChange={(val) => field.onChange(val)}
                           />
+
                         )}
                       />
                     </Grid>
+
 
                     {/* ROLE - NEW DROPDOWN */}
                     <Grid size={{ xs: 12, md: 4 }}>
@@ -407,15 +454,15 @@ export default function FacultyAdd() {
                             error={!!errors.faculty}
                             helperText={errors.faculty?.message}
                             disabled
-                            // ensure the field shows the value from the controller
-                            // value={field.value ?? "CDOE"}
-                            // onChange={field.onChange}
+                          // ensure the field shows the value from the controller
+                          // value={field.value ?? "CDOE"}
+                          // onChange={field.onChange}
                           />
                         )}
                       />
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
-                       <Controller
+                      <Controller
                         name="department"
                         control={control}
                         render={({ field }) => (
@@ -480,14 +527,10 @@ export default function FacultyAdd() {
                         name="joining_date"
                         control={control}
                         render={({ field }) => (
-                          // pass dayjs value explicitly to avoid label overlap issues
                           <CustomDateInput
                             label="Joining Date"
-                            field={{
-                              ...field,
-                              value: field.value ? dayjs(field.value) : null,
-                              onChange: (v: any) => field.onChange(v),
-                            }}
+                            field={field}
+                            disableFuture   // ✅ prevents future selection
                             error={!!errors.joining_date}
                             helperText={errors.joining_date?.message}
                           />
@@ -495,19 +538,21 @@ export default function FacultyAdd() {
                       />
                     </Grid>
 
+
                     <Grid size={{ xs: 12, md: 4 }}>
                       <Controller
                         name="experience_years"
                         control={control}
                         render={({ field }) => (
-                          <CustomInputText
-                            label="Experience (Years)"
-                            field={field}
-                            type="number"
+                          <CustomNumberInput
+                            label="Experience"
+                            value={field.value}
+                            min={0}
                             error={!!errors.experience_years}
                             helperText={errors.experience_years?.message}
-                            defaultValue={0}
+                            onChange={(val) => field.onChange(val)}
                           />
+
                         )}
                       />
                     </Grid>
@@ -537,17 +582,15 @@ export default function FacultyAdd() {
                         render={({ field }) => (
                           <CustomDateInput
                             label="Date of Birth"
-                            field={{
-                              ...field,
-                              value: field.value ? dayjs(field.value) : null,
-                              onChange: (v: any) => field.onChange(v),
-                            }}
+                            field={field}
+                            disableFuture   // ✅ prevents future selection
                             error={!!errors.dob}
                             helperText={errors.dob?.message}
                           />
                         )}
                       />
                     </Grid>
+
                   </Grid>
 
                   {/* Buttons */}

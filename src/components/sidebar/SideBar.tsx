@@ -105,39 +105,52 @@ export default function Sidebar({
 
   }, [location.pathname]);
 
-  const handleSelect = (itemText: any, routePath: any, hasChildren: any, parentText = '') => {
+  const handleSelect = (
+    itemText: any,
+    routePath: any,
+    hasChildren: any,
+    parentText = ''
+  ) => {
     if (routePath) {
       navigate(routePath);
       setSelectedItem(itemText);
       setSelectedParent(parentText);
 
       if (parentText) {
-        setOpenItems((prev) => ({ ...prev, [parentText]: true }));
+        setOpenItems({ [parentText]: true }); // ✅ keep only parent open
       }
 
       if (isDrawer && onClose) {
         onClose();
       }
     } else if (hasChildren) {
-      // If in compact mode, expand the sidebar when clicking parent item
       if (!isSidebarVisible) {
         setSidebarVisible?.(true);
       }
 
-      setOpenItems((prev) => ({
-        ...prev,
-        [itemText]: !prev[itemText],
-      }));
+      setOpenItems((prev) => {
+        const isCurrentlyOpen = prev[itemText];
+
+        return isCurrentlyOpen ? {} : { [itemText]: true };
+      });
     }
   };
 
 
 
+
   const drawerContent = (
     <Box
-      className={`h-full bg-white flex flex-col border-r p-1 border-gray-200 transition-all duration-300 ${isSidebarVisible ? 'w-64' : 'w-16'
+      sx={{
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+      className={`bg-white border-r p-1 border-gray-200 transition-all duration-300 ${isSidebarVisible ? "w-64" : "w-16"
         }`}
     >
+
       <Box className={`text-center border-b border-gray-200 ${isSidebarVisible ? 'p-3 pb-2' : 'p-1 pb-3'}`}>
         {isSidebarVisible ? (
           <img src={logo2} alt="Logo" className="mx-auto object-contain h-12" />
@@ -146,7 +159,16 @@ export default function Sidebar({
         )}
       </Box>
 
-      <List component="nav" className="flex-1 px-2 py-3">
+      <List
+        component="nav"
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          px: 2,
+          py: 3,
+        }}
+      >
+
         {(rollId == '1' ? ADMIN_MENU_ITEMS : STUDENT_MENU_ITEMS).map((item) => {
           const hasChildren = item.subItems.length > 0;
           const isOpen = openItems[item.text] || false;

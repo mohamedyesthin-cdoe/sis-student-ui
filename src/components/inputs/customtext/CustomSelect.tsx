@@ -13,7 +13,7 @@ type OptionType =
 interface CustomSelectProps {
   label: string;
   field: any;
-  options: OptionType[];
+  options?: OptionType[]; // ✅ make optional
   error?: any;
   helperText?: string;
 }
@@ -21,27 +21,27 @@ interface CustomSelectProps {
 export default function CustomSelect({
   label,
   field,
-  options,
+  options = [], // ✅ default empty array
   error,
   helperText,
 }: CustomSelectProps) {
-  const normalizedOptions = options.map((opt) => {
-    // string[] → value/label
+
+  // ✅ Ensure options is always array
+  const safeOptions = Array.isArray(options) ? options : [];
+
+  const normalizedOptions = safeOptions.map((opt) => {
     if (typeof opt === "string") {
       return { value: opt, label: opt };
     }
 
-    // { value, label }
     if (opt.value !== undefined && opt.label) {
       return { value: opt.value, label: opt.label };
     }
 
-    // { id, name }
     if (opt.id !== undefined && opt.name) {
       return { value: opt.id, label: opt.name };
     }
 
-    // { id, programe } (YOUR PROGRAM LIST)
     if (opt.id !== undefined && opt.programe) {
       return { value: opt.id, label: opt.programe };
     }
@@ -58,6 +58,7 @@ export default function CustomSelect({
       label={label}
       error={!!error}
       helperText={helperText}
+      value={field.value ?? ""} // ✅ prevent undefined crash
       InputLabelProps={{
         shrink: Boolean(field.value),
       }}
@@ -69,6 +70,10 @@ export default function CustomSelect({
         },
       }}
     >
+      <MenuItem value="">
+        <em>Select</em>
+      </MenuItem>
+
       {normalizedOptions.map((opt) => (
         <MenuItem key={opt.value} value={opt.value}>
           {opt.label}

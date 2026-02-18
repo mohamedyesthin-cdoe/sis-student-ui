@@ -6,7 +6,13 @@ type GlobalNumberInputProps = {
   readOnly?: boolean;
   error?: boolean;
   helperText?: string;
-  onChange?: (value: number) => void;
+  onChange?: (value: number | string) => void;
+
+  // ✅ OPTIONAL PROPS
+  maxLength?: number;
+  min?: number;
+  max?: number;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 };
 
 export default function CustomNumberInput({
@@ -15,7 +21,11 @@ export default function CustomNumberInput({
   readOnly = false,
   error = false,
   helperText = "",
-  onChange
+  onChange,
+  maxLength,
+  min,
+  max,
+  inputProps = {},
 }: GlobalNumberInputProps) {
   return (
     <TextField
@@ -23,39 +33,41 @@ export default function CustomNumberInput({
       value={value}
       fullWidth
       size="small"
-      type="number"
-      InputProps={readOnly ? { readOnly: true } : {}}
+      type="text" // 🔥 changed to text for better control
       error={error}
       helperText={helperText}
+      InputProps={{
+        readOnly: readOnly,
+      }}
+      inputProps={{
+        maxLength,
+        min,
+        max,
+        ...inputProps, // ✅ allow extra custom props
+      }}
       onChange={(e) => {
         if (!readOnly && onChange) {
-          const val = Number(e.target.value) || 0;
-          onChange(val);
+          const numericValue = e.target.value.replace(/\D/g, ""); // allow digits only
+          onChange(numericValue);
         }
       }}
       sx={{
-        // FIXED HEIGHT
         "& .MuiOutlinedInput-root": {
           height: "45px",
           display: "flex",
           alignItems: "center",
         },
-
-        // CENTER TEXT VERTICALLY
         "& .MuiInputBase-input": {
           padding: "0 14px !important",
         },
-
-        // FLOATING LABEL FIX
         "& .MuiInputLabel-root": {
           lineHeight: "45px",
           top: "-2px",
         },
-
         "& .MuiInputLabel-shrink": {
           top: "0px",
           lineHeight: "normal",
-        }
+        },
       }}
     />
   );
