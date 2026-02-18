@@ -23,8 +23,8 @@ import CustomSelect from "../../../../components/inputs/customtext/CustomSelect"
 import CustomRadioInput from "../../../../components/inputs/customtext/CustomRadioInput";
 
 interface FormValues {
-    scheme_id: number;
-    semester_id: number;
+    scheme_id: number | "";
+    semester_id: number | "";
     exam_name: string;
     exam_type: string;
     month_year: string;
@@ -37,8 +37,8 @@ interface OptionType {
 }
 
 const defaultValues: FormValues = {
-    scheme_id: 0,
-    semester_id: 0,
+    scheme_id: "",
+    semester_id: "",
     exam_name: "",
     exam_type: "",
     month_year: "",
@@ -47,12 +47,12 @@ const defaultValues: FormValues = {
 
 const schema: Yup.ObjectSchema<FormValues> = Yup.object({
     scheme_id: Yup.number()
-        .min(1, "Scheme is required")
-        .required(),
+        .typeError("Scheme is required")
+        .required("Scheme is required"),
 
     semester_id: Yup.number()
-        .min(1, "Semester is required")
-        .required(),
+        .typeError("Semester is required")
+        .required("Semester is required"),
 
     exam_name: Yup.string().required("Exam Name is required"),
     exam_type: Yup.string().required("Exam Type is required"),
@@ -81,12 +81,14 @@ export default function ExamAdd() {
         defaultValues,
     });
 
-    useEffect(() => {
-        clearError();
-    }, [clearError]);
+  useEffect(() => {
+    clearError();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 
     // ===============================
-    // Load Scheme & Semester Lists
+    // Load Dropdown Data
     // ===============================
     useEffect(() => {
         const loadDropdowns = async () => {
@@ -135,8 +137,18 @@ export default function ExamAdd() {
                 });
 
                 const data = res?.data || res;
-                setInitialData(data);
-                reset(data);
+
+                const formattedData: FormValues = {
+                    scheme_id: data.scheme_id ?? "",
+                    semester_id: data.semester_id ?? "",
+                    exam_name: data.exam_name ?? "",
+                    exam_type: data.exam_type ?? "",
+                    month_year: data.month_year ?? "",
+                    is_published: data.is_published ?? true,
+                };
+
+                setInitialData(formattedData);
+                reset(formattedData);
             } catch (err) {
                 showAlert("Failed to load exam data", "error");
             }
@@ -169,6 +181,8 @@ export default function ExamAdd() {
         try {
             const payload = {
                 ...formData,
+                scheme_id: Number(formData.scheme_id),
+                semester_id: Number(formData.semester_id),
             };
 
             if (id) {
@@ -186,11 +200,12 @@ export default function ExamAdd() {
                 });
                 showAlert("Exam created", "success");
             }
+
             clearError();
             navigate("/exam/list");
         } catch (err: any) {
             console.error(err);
-            showAlert(err.detail || "Failed to save", "error");
+            showAlert(err?.detail || "Failed to save", "error");
         }
     };
 
@@ -200,7 +215,7 @@ export default function ExamAdd() {
                 <CardComponent sx={{ p: 4 }}>
                     <Grid container spacing={3}>
 
-                        {/* Scheme Dropdown */}
+                        {/* Scheme */}
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Controller
                                 name="scheme_id"
@@ -210,14 +225,14 @@ export default function ExamAdd() {
                                         label="Scheme"
                                         field={field}
                                         options={schemeList}
-                                        error={errors.scheme_id}
+                                        error={!!errors.scheme_id}
                                         helperText={errors.scheme_id?.message}
                                     />
                                 )}
                             />
                         </Grid>
 
-                        {/* Semester Dropdown */}
+                        {/* Semester */}
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Controller
                                 name="semester_id"
@@ -227,7 +242,7 @@ export default function ExamAdd() {
                                         label="Semester"
                                         field={field}
                                         options={semesterList}
-                                        error={errors.semester_id}
+                                        error={!!errors.semester_id}
                                         helperText={errors.semester_id?.message}
                                     />
                                 )}
@@ -265,6 +280,7 @@ export default function ExamAdd() {
                                 )}
                             />
                         </Grid>
+
                         {/* Month Year */}
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Controller
@@ -280,6 +296,7 @@ export default function ExamAdd() {
                                 )}
                             />
                         </Grid>
+
                         {/* Is Published */}
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Controller
@@ -304,8 +321,6 @@ export default function ExamAdd() {
                                 )}
                             />
                         </Grid>
-
-
 
                     </Grid>
 

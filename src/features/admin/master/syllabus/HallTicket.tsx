@@ -374,7 +374,7 @@ const HallTicket = ({ student }: HallTicketProps) => {
       </Box>
 
       {/* BUTTONS */}
-      <Box display="flex" gap={3} mb={2} mt={3}>
+      <Box display="flex" gap={3} mb={2} mt={10}>
         <Button onClick={toggleFlip} variant="contained" color="secondary">
           <FlipCameraAndroidIcon />
         </Button>
