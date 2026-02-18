@@ -305,7 +305,8 @@ export default function StudentTable() {
         last_name: row.last_name,
         program_id: row.program_id,
         phone: row.phone,
-        student_id: row.student_id
+        student_id: row.student_id,
+        email: row.email
       }));
 
       const payload = { group_id, users };
