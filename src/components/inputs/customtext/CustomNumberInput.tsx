@@ -33,7 +33,7 @@ export default function CustomNumberInput({
       value={value}
       fullWidth
       size="small"
-      type="text" // 🔥 changed to text for better control
+      type="text"
       error={error}
       helperText={helperText}
       InputProps={{
@@ -43,32 +43,27 @@ export default function CustomNumberInput({
         maxLength,
         min,
         max,
-        ...inputProps, // ✅ allow extra custom props
+        ...inputProps,
       }}
       onChange={(e) => {
         if (!readOnly && onChange) {
-          const numericValue = e.target.value.replace(/\D/g, ""); // allow digits only
+          const numericValue = e.target.value.replace(/\D/g, "");
           onChange(numericValue);
         }
       }}
       sx={{
         "& .MuiOutlinedInput-root": {
-          height: "45px",
+          height: 45,
+        },
+        "& .MuiOutlinedInput-input": {
+          height: 45,
+          padding: "0 14px",
+          boxSizing: "border-box",
           display: "flex",
           alignItems: "center",
         },
-        "& .MuiInputBase-input": {
-          padding: "0 14px !important",
-        },
-        "& .MuiInputLabel-root": {
-          lineHeight: "45px",
-          top: "-2px",
-        },
-        "& .MuiInputLabel-shrink": {
-          top: "0px",
-          lineHeight: "normal",
-        },
       }}
     />
+
   );
 }

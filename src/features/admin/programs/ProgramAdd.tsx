@@ -25,29 +25,33 @@ import CustomNumberInput from "../../../components/inputs/customtext/CustomNumbe
 
 
 // ✅ Validation schema
-const ProgramSchema: Yup.ObjectSchema<ProgramFormValues> = Yup.object().shape({
-  programId: Yup.string().required("Program ID is required"),
-  programName: Yup.string().required("Program Name is required"),
-  duration: Yup.string().required("Duration is required"),
-  faculty: Yup.string().required("Faculty is required"),
-  category: Yup.string().required("Category is required"),
-  semesters: Yup.array()
-    .of(
-      Yup.object().shape({
-        applicationFee: Yup.number().required(),
-        admissionFee: Yup.number().required(),
-        tuitionFee: Yup.number().required(),
-        examFee: Yup.number().required(),
-        lmsFee: Yup.number().required(),
-        labFee: Yup.number().required(),
-        totalFee: Yup.number().required(),
-      })
-    )
-    .required(),
+const SemesterSchema: Yup.ObjectSchema<Semester> = Yup.object({
+  applicationFee: Yup.number().default(0),
+  admissionFee: Yup.number().default(0),
+  tuitionFee: Yup.number().default(0),
+  examFee: Yup.number().default(0),
+  lmsFee: Yup.number().default(0),
+  labFee: Yup.number().default(0),
+  totalFee: Yup.number().default(0),
 });
 
 
-type Semester = {
+export const ProgramSchema: Yup.ObjectSchema<ProgramFormValues> =
+  Yup.object({
+    programId: Yup.string().required("Program ID is required"),
+    programName: Yup.string().required("Program Name is required"),
+    duration: Yup.string().required("Duration is required"),
+    faculty: Yup.string().required("Faculty is required"),
+    category: Yup.string().required("Category is required"),
+
+    semesters: Yup.array()
+      .of(SemesterSchema)
+      .default([])   // never undefined
+      .required(),   // array must exist (not the fields)
+  });
+
+
+export interface Semester {
   applicationFee: number;
   admissionFee: number;
   tuitionFee: number;
@@ -55,16 +59,17 @@ type Semester = {
   lmsFee: number;
   labFee: number;
   totalFee: number;
-};
+}
 
-type ProgramFormValues = {
+export interface ProgramFormValues {
   programId: string;
   programName: string;
   duration: string;
   faculty: string;
   category: string;
   semesters: Semester[];
-};
+}
+
 
 
 // ✅ Semester Form Group Component
