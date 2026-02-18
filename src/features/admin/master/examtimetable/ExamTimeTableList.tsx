@@ -3,6 +3,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 
 import { useGlobalError } from "../../../../context/ErrorContext";
 import { useAlert } from "../../../../context/AlertContext";
@@ -29,103 +30,104 @@ export default function ExamTimeTableList() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage] = React.useState(10);
     const [searchText, setSearchText] = React.useState("");
-    const [exams, setExams] = React.useState<any[]>([]);
+    const [timetables, setTimetables] = React.useState<any[]>([]);
     const [openDelete, setOpenDelete] = React.useState(false);
-    const [selectedExams, setSelectedExams] = React.useState<any>(null);
-
-    const handleCloseDelete = () => {
-        setSelectedExams(null);
-        setOpenDelete(false);
-    };
-    const handleOpenDelete = (row: any) => {
-        setSelectedExams(row);
-        setOpenDelete(true);
-    };
+    const [selectedRow, setSelectedRow] = React.useState<any>(null);
 
     // ----------------------------------------------------------
-    // API CALL
+    // FETCH TIMETABLES
     // ----------------------------------------------------------
     React.useEffect(() => {
         clearError();
 
         apiClient
-            .get(ApiRoutes.EXAMS)
-            .then((res) => setExams(res.data))
+            .get(ApiRoutes.EXAMTIMETABLES) // ✅ update route
+            .then((res) => setTimetables(res.data))
             .catch(() => {
-                showAlert("Failed to load exams", "error");
+                showAlert("Failed to load exam timetables", "error");
             });
     }, []);
 
     // ----------------------------------------------------------
-    // DELETE WITH CONFIRM (useAlert)
+    // DELETE
     // ----------------------------------------------------------
     const handleConfirmDelete = async () => {
-        if (!selectedExams?.id) return;
+        if (!selectedRow?.id) return;
 
         try {
             await apiRequest({
-                url: `${ApiRoutes.EXAMS}/${selectedExams.id}`,
-                method: "delete" as const,
+                url: `${ApiRoutes.EXAMTIMETABLES}/${selectedRow.id}`,
+                method: "delete",
             });
 
-            // ✅ remove deleted item from UI immediately
-            setExams((prev) =>
-                prev.filter((item) => item.id !== selectedExams.id)
+            setTimetables((prev) =>
+                prev.filter((item) => item.id !== selectedRow.id)
             );
 
-            showAlert("Exam deleted successfully!", "success");
-
+            showAlert("Exam timetable deleted successfully!", "success");
             handleCloseDelete();
         } catch (err: any) {
             showAlert(
                 err.response?.data?.message ||
-                "Failed to delete scheme.",
+                "Failed to delete exam timetable.",
                 "error"
             );
         }
     };
 
+    const handleOpenDelete = (row: any) => {
+        setSelectedRow(row);
+        setOpenDelete(true);
+    };
+
+    const handleCloseDelete = () => {
+        setSelectedRow(null);
+        setOpenDelete(false);
+    };
 
     // ----------------------------------------------------------
     // FILTER
     // ----------------------------------------------------------
-    const filteredExams = exams.filter((p) => {
+    const filteredData = timetables.filter((p) => {
         const combined = `
-    ${p.exam_name}
-    ${p.exam_type}
-    ${p.month_year}
-    ${p.scheme_id}
-    ${p.semester_id}
-  `.toLowerCase();
+            ${p.exam_id}
+            ${p.course_id}
+            ${p.component_id}
+            ${p.exam_date}
+            ${p.start_time}
+            ${p.end_time}
+        `.toLowerCase();
 
         return combined.includes(searchText.toLowerCase());
     });
-
 
     // ----------------------------------------------------------
     // EXPORT
     // ----------------------------------------------------------
     const handleExportExcel = () => {
         exportToExcel(
-            filteredExams.map((item, index) => ({
+            filteredData.map((item, index) => ({
                 sno: index + 1,
-                ...item,
-                is_published: item.is_published ? "Yes" : "No",
+                exam_id: item.exam_id,
+                course_id: item.course_id,
+                component_id: item.component_id,
+                exam_date: dayjs(item.exam_date).format("DD-MM-YYYY"),
+                start_time: item.start_time,
+                end_time: item.end_time,
             })),
             [
                 { header: "S.No", key: "sno" },
-                { header: "Exam Name", key: "exam_name" },
-                { header: "Exam Type", key: "exam_type" },
-                { header: "Month & Year", key: "month_year" },
-                { header: "Scheme ID", key: "scheme_id" },
-                { header: "Semester ID", key: "semester_id" },
-                { header: "Published", key: "is_published" },
+                { header: "Exam ID", key: "exam_id" },
+                { header: "Course ID", key: "course_id" },
+                { header: "Component ID", key: "component_id" },
+                { header: "Exam Date", key: "exam_date" },
+                { header: "Start Time", key: "start_time" },
+                { header: "End Time", key: "end_time" },
             ],
-            "Exam_List",
-            "Exam_List"
+            "Exam_Timetable_List",
+            "Exam_Timetable_List"
         );
     };
-
 
     // ----------------------------------------------------------
     // UI
@@ -163,31 +165,32 @@ export default function ExamTimeTableList() {
                         {
                             label: "Add Exam Timetable",
                             color: "primary",
-                            onClick: () => navigate("/exam-timetables/add"),
+                            onClick: () =>
+                                navigate("/exam-timetables/add"),
                         },
                     ]}
                 />
 
                 {loading ? (
                     <TableSkeleton />
-                ) : filteredExams.length === 0 ? (
+                ) : filteredData.length === 0 ? (
                     <NoDataFoundUI />
                 ) : (
                     <ReusableTable
                         columns={[
-                            { key: "exam_name", label: "Exam Name" },
-                            { key: "exam_type", label: "Exam Type" },
-                            { key: "month_year", label: "Month & Year" },
-                            { key: "scheme_id", label: "Scheme ID" },
-                            { key: "semester_id", label: "Semester ID" },
+                            { key: "exam_id", label: "Exam ID" },
+                            { key: "course_id", label: "Course ID" },
+                            { key: "component_id", label: "Component ID" },
                             {
-                                key: "is_published",
-                                label: "Published",
+                                key: "exam_date",
+                                label: "Exam Date",
                                 render: (row: any) =>
-                                    row.is_published ? "Yes" : "No",
+                                    dayjs(row.exam_date).format("DD-MM-YYYY"),
                             },
+                            { key: "start_time", label: "Start Time" },
+                            { key: "end_time", label: "End Time" },
                         ]}
-                        data={filteredExams}
+                        data={filteredData}
                         page={page}
                         rowsPerPage={rowsPerPage}
                         actions={[
@@ -195,7 +198,10 @@ export default function ExamTimeTableList() {
                                 label: "Edit",
                                 icon: <EditIcon fontSize="small" />,
                                 color: "primary",
-                                onClick: (row) => navigate(`/exam/edit/${row.id}`),
+                                onClick: (row) =>
+                                    navigate(
+                                        `/exam-timetables/edit/${row.id}`
+                                    ),
                             },
                             {
                                 label: "Delete",
@@ -205,23 +211,23 @@ export default function ExamTimeTableList() {
                             },
                         ]}
                     />
-
                 )}
 
                 <TablePagination
                     page={page}
                     rowsPerPage={rowsPerPage}
-                    totalCount={filteredExams.length}
+                    totalCount={filteredData.length}
                     onPageChange={(newPage) => setPage(newPage)}
                 />
             </CardComponent>
+
             <CustomDialog
                 open={openDelete}
-                title="Delete Exam"
+                title="Delete Exam Timetable"
                 description={
                     <>
-                        Are you sure you want to delete{" "}
-                        <strong>{selectedExams?.exam_name}</strong>?
+                        Are you sure you want to delete timetable ID{" "}
+                        <strong>{selectedRow?.id}</strong>?
                     </>
                 }
                 confirmText="Delete"
@@ -229,7 +235,6 @@ export default function ExamTimeTableList() {
                 onClose={handleCloseDelete}
                 onConfirm={handleConfirmDelete}
             />
-
         </>
     );
 }

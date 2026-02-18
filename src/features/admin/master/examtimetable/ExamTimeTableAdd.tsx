@@ -6,8 +6,7 @@ import {
   CircularProgress
 } from "@mui/material";
 
-import { useForm, Controller } from "react-hook-form";
-import type { SubmitHandler } from "react-hook-form";
+import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import dayjs from "dayjs";
@@ -28,9 +27,9 @@ import CustomTimeInput from "../../../../components/inputs/customtext/CustomTime
 // ================= TYPES =================
 
 interface FormValues {
-  exam_id: number | undefined;
-  course_id: number | undefined;
-  component_id: number | undefined;
+  exam_id: number | "";
+  course_id: number | "";
+  component_id: number | "";
   exam_date: Date | null;
   start_time: Date | null;
   end_time: Date | null;
@@ -45,9 +44,9 @@ interface OptionType {
 // ================= DEFAULT VALUES =================
 
 const defaultValues: FormValues = {
-  exam_id: undefined,
-  course_id: undefined,
-  component_id: undefined,
+  exam_id: "",
+  course_id: "",
+  component_id: "",
   exam_date: null,
   start_time: null,
   end_time: null,
@@ -98,23 +97,23 @@ export default function ExamTimetableAdd() {
   const [courseList, setCourseList] = useState<OptionType[]>([]);
   const [componentList, setComponentList] = useState<OptionType[]>([]);
 
-const {
-  control,
-  handleSubmit,
-  reset,
-  formState: { errors, isDirty },
-} = useForm<FormValues>({
-  resolver: yupResolver(schema) as any,
-  defaultValues,
-});
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<FormValues>({
+    resolver: yupResolver(schema) as any,
+    defaultValues,
+  });
 
 
-
-  // ================= CLEAR ERROR =================
+  // ================= CLEAR ERROR (RUN ONCE) =================
 
   useEffect(() => {
     clearError();
-  }, [clearError]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   // ================= LOAD DROPDOWNS =================
@@ -126,20 +125,26 @@ const {
         const courseRes = await apiRequest({ url: ApiRoutes.COURSES, method: "get" });
         const componentRes = await apiRequest({ url: ApiRoutes.COURSE_COMPONENTS, method: "get" });
 
-        setExamList((examRes?.data || examRes).map((item: any) => ({
-          label: item.exam_name,
-          value: item.id,
-        })));
+        setExamList(
+          (examRes?.data || examRes).map((item: any) => ({
+            label: item.exam_name,
+            value: item.id,
+          }))
+        );
 
-        setCourseList((courseRes?.data || courseRes).map((item: any) => ({
-          label: item.course_name,
-          value: item.id,
-        })));
+        setCourseList(
+          (courseRes?.data || courseRes).map((item: any) => ({
+            label: item.course_title,
+            value: item.id,
+          }))
+        );
 
-        setComponentList((componentRes?.data || componentRes).map((item: any) => ({
-          label: item.component_name,
-          value: item.id,
-        })));
+        setComponentList(
+          (componentRes?.data || componentRes).map((item: any) => ({
+            label: item.component_code,
+            value: item.id,
+          }))
+        );
 
       } catch {
         showAlert("Failed to load dropdown data", "error");
@@ -147,7 +152,8 @@ const {
     };
 
     loadDropdowns();
-  }, [showAlert]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   // ================= LOAD EDIT DATA =================
@@ -155,7 +161,7 @@ const {
   useEffect(() => {
     if (!id) return;
 
-    (async () => {
+    const loadData = async () => {
       try {
         const res = await apiRequest({
           url: `${ApiRoutes.EXAMTIMETABLES}/${id}`,
@@ -165,9 +171,9 @@ const {
         const data = res?.data || res;
 
         const formattedData: FormValues = {
-          exam_id: data.exam_id,
-          course_id: data.course_id,
-          component_id: data.component_id,
+          exam_id: data.exam_id ?? "",
+          course_id: data.course_id ?? "",
+          component_id: data.component_id ?? "",
           exam_date: data.exam_date ? new Date(data.exam_date) : null,
           start_time: data.start_time
             ? new Date(`1970-01-01T${data.start_time}`)
@@ -183,9 +189,11 @@ const {
       } catch {
         showAlert("Failed to load data", "error");
       }
-    })();
+    };
 
-  }, [id, reset, showAlert]);
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
 
   // ================= HANDLERS =================
@@ -218,9 +226,9 @@ const {
   const onSubmit: SubmitHandler<FormValues> = async (formData) => {
     try {
       const payload = {
-        exam_id: formData.exam_id,
-        course_id: formData.course_id,
-        component_id: formData.component_id,
+        exam_id: Number(formData.exam_id),
+        course_id: Number(formData.course_id),
+        component_id: Number(formData.component_id),
         exam_date: dayjs(formData.exam_date).format("YYYY-MM-DD"),
         start_time: dayjs(formData.start_time).format("HH:mm") + ":00.000Z",
         end_time: dayjs(formData.end_time).format("HH:mm") + ":00.000Z",
@@ -243,7 +251,7 @@ const {
       }
 
       clearError();
-      navigate("/exam-timetable/list", { replace: true });
+      navigate("/exam-timetables/list", { replace: true });
 
     } catch (err: any) {
       showAlert(err?.detail || "Failed to save", "error");
@@ -268,7 +276,7 @@ const {
                     label="Exam"
                     field={field}
                     options={examList}
-                    error={errors.exam_id}
+                    error={!!errors.exam_id}
                     helperText={errors.exam_id?.message}
                   />
                 )}
@@ -284,7 +292,7 @@ const {
                     label="Course"
                     field={field}
                     options={courseList}
-                    error={errors.course_id}
+                    error={!!errors.course_id}
                     helperText={errors.course_id?.message}
                   />
                 )}
@@ -297,10 +305,10 @@ const {
                 control={control}
                 render={({ field }) => (
                   <CustomSelect
-                    label="Component"
+                    label="Course Component"
                     field={field}
                     options={componentList}
-                    error={errors.component_id}
+                    error={!!errors.component_id}
                     helperText={errors.component_id?.message}
                   />
                 )}

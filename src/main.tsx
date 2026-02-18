@@ -8,7 +8,8 @@ import { AlertProvider } from './context/AlertContext.tsx';
 import { ErrorProvider, registerErrorContext, useGlobalError } from './context/ErrorContext.tsx';
 import { useEffect } from 'react';
 import { LoaderProvider } from './context/LoaderContext.tsx';
-
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 function ErrorContextBridge() {
   const { setConnectionLost, clearError, ...rest } = useGlobalError();
 
@@ -46,7 +47,9 @@ createRoot(document.getElementById('root')!).render(
       <LoaderProvider>
         <ErrorProvider>
           <ErrorContextBridge />
-          <App />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <App />
+          </LocalizationProvider>
         </ErrorProvider>
       </LoaderProvider>
     </AlertProvider>
