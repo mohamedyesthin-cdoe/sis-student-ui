@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from src.models import Group
-from src.models.admin import Document
+#from src.models.admin import Document
 from src.schemas.admin import DocumentCreate
 
 class AdminRepositery:
@@ -74,27 +74,27 @@ class AdminRepositery:
         query = self.db.query(Group)
         return query.all()
 
-class DocumentRepository:
-    def __init__(self, db: Session):
-        self.db = db
+# class DocumentRepository:
+#     def __init__(self, db: Session):
+#         self.db = db
 
-    def create(self, data: DocumentCreate, file_url: str) -> Document:
-        document = Document(
-            filename=data.filename,
-            uploaded_by=data.uploaded_by,
-            file_url=file_url
-        )
-        self.db.add(document)
-        self.db.commit()
-        self.db.refresh(document)
-        return document
+#     def create(self, data: DocumentCreate, file_url: str) -> Document:
+#         document = Document(
+#             filename=data.filename,
+#             uploaded_by=data.uploaded_by,
+#             file_url=file_url
+#         )
+#         self.db.add(document)
+#         self.db.commit()
+#         self.db.refresh(document)
+#         return document
 
-    def get_all(self):
-        return self.db.query(Document).order_by(Document.created_at.desc()).all()
+#     def get_all(self):
+#         return self.db.query(Document).order_by(Document.created_at.desc()).all()
 
-    def get_by_id(self, document_id: int):
-        return self.db.query(Document).filter(Document.id == document_id).first()
+#     def get_by_id(self, document_id: int):
+#         return self.db.query(Document).filter(Document.id == document_id).first()
 
-    def delete(self, document: Document):
-        self.db.delete(document)
-        self.db.commit()
+#     def delete(self, document: Document):
+#         self.db.delete(document)
+#         self.db.commit()

@@ -7,7 +7,7 @@ from typing import List
 from src.models.user import User
 from src.core.security.dependencies import require_superuser
 from src.schemas.admin import DocumentCreate
-from src.models.admin import Document
+#from src.models.admin import Document
 
 router = APIRouter()
 
@@ -93,28 +93,28 @@ async def delete_role(role_id: int, db: Session = Depends(get_db), current_user:
     response = await service.delete_role(role_id)
     return response
 
-class DocumentRepository:
-    @staticmethod
-    def create(db: Session, document: DocumentCreate, file_url: str):
-        db_doc = Document(
-            title=document.title,
-            description=document.description,
-            uploaded_by=document.uploaded_by,
-            file_url=file_url
-        )
-        db.add(db_doc)
-        db.commit()
-        db.refresh(db_doc)
-        return db_doc
+# class DocumentRepository:
+#     @staticmethod
+#     def create(db: Session, document: DocumentCreate, file_url: str):
+#         db_doc = Document(
+#             title=document.title,
+#             description=document.description,
+#             uploaded_by=document.uploaded_by,
+#             file_url=file_url
+#         )
+#         db.add(db_doc)
+#         db.commit()
+#         db.refresh(db_doc)
+#         return db_doc
 
-    @staticmethod
-    def get_all(db: Session):
-        return db.query(Document).order_by(Document.created_at.desc()).all()
+#     @staticmethod
+#     def get_all(db: Session):
+#         return db.query(Document).order_by(Document.created_at.desc()).all()
 
-    @staticmethod
-    def delete(db: Session, document_id: int):
-        doc = db.query(Document).filter(Document.id == document_id).first()
-        if doc:
-            db.delete(doc)
-            db.commit()
-        return doc
+#     @staticmethod
+#     def delete(db: Session, document_id: int):
+#         doc = db.query(Document).filter(Document.id == document_id).first()
+#         if doc:
+#             db.delete(doc)
+#             db.commit()
+#         return doc
