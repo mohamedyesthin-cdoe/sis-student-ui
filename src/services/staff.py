@@ -79,7 +79,6 @@ class StaffService:
             staff_data["employment_type"] = data.employment_type
 
             staff = self.repo.create_staff(staff_data)
-            print(staff)
             await send_credentials_email(data.email, data.employee_id, plain_password, fullname)
             
             return StaffResponse(
@@ -130,7 +129,6 @@ class StaffService:
         """
         try:
             staff = self.repo.get_staff()
-            print(staff)
             return StaffListResponse(
                 message="Staff retrieved successfully.",
                 code=status.HTTP_200_OK,

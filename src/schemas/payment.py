@@ -1,7 +1,8 @@
 # Add these imports if not present
 from typing import List, Optional
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, field_serializer
 from datetime import datetime, date
+from src.schemas.master import FeeSchema
 
 # New schema for ApplicationFee
 class SemesterFeeResponse(BaseModel):
@@ -76,25 +77,31 @@ class SemesterFee(BaseModel):
 class StudentSchema(BaseModel):
     id: int
     cat: str
-    admission_no: Optional[str] = None
+    admno: Optional[str] = None
     sgrp: Optional[str] = None
     name: str
     gender: Optional[str] = None
-    date_of_birth: Optional[date] = None
-    admission_year: Optional[str] = None
-    admission_date: Optional[date] = None
-    programe_name: str
-    registration_no: Optional[str] = None
+    dob: Optional[date] = None
+    admyr: Optional[str] = None
+    admdt: Optional[date] = None
+    cshort: Optional[str] = None
+    #programe_name: str
+    #registration_no: Optional[str] = None
     sregno: Optional[str] = None
+    barcode: Optional[str] = None
     mobile_number: Optional[str] = None
     email: Optional[str] = None
     addrs1: Optional[str] = None
     addrs2: Optional[str] = None
     addrs3: Optional[str] = None
     addrs4: Optional[str] = None
-    application_fee: Optional[ApplicationFee] = None
-    semester_fee: Optional[SemesterFee] = None
-
+    #application_fee: Optional[ApplicationFee] = None
+    #semester_fee: Optional[SemesterFee] = None
+    
+    @field_serializer("dob")
+    def format_dob(self, value: date):
+        return value.strftime("%d-%m-%Y")  # This formats it when returning JSON
+    
     class Config:
         from_attributes = True
         
@@ -111,3 +118,92 @@ class StandardResponse(BaseModel):
     status: bool
     message: str
     data: DataResponse
+
+class ProgramResponse(BaseModel):
+    short_name: str
+    admission_year: Optional[str] = None
+    programe: str
+    programe_code: str
+    fee: Optional[List[FeeSchema]] = None
+
+    class Config:
+        from_attributes = True
+
+class ProgramMasterResponse(BaseModel):
+    cshort: str
+    admyr: Optional[str] = None
+    fees1: Optional[str] = None
+    fees2: Optional[str] = None
+    fees3: Optional[str] = None 
+    fees4: Optional[str] = None
+    fees5: Optional[str] = None
+    fees6: Optional[str] = None
+    ano: Optional[int] = None
+    duration: Optional[str] = None
+    feestype: Optional[str] = None
+    cat: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class FeesMasterResponse(BaseModel):
+    code: int
+    status: bool
+    message: str
+    data: Optional[List[ProgramMasterResponse]] = None
+
+class StudentFeeItem(BaseModel):
+    feeshead: int
+    fees_name: str
+    fees: float
+    orderby: int
+
+class StudentWiseFeesResponse(BaseModel):
+    barcode: str
+    student_unique_id: str
+    acyear: str
+    fees: List[StudentFeeItem]
+
+class AllStudentsFeesResponse(BaseModel):
+    data: List[StudentWiseFeesResponse]
+
+class StudentFeeFlat(BaseModel):
+    barcode: str
+    feeshead: int
+    acayear: str
+    fees: float
+    orderby: int
+    studentuniqueid: str
+
+class StudentFeeFlatData(BaseModel):
+    list: List[StudentFeeFlat]
+    pagination: PaginationResponse
+
+class StudentFeeFlatResponse(BaseModel):
+    code: int
+    status: bool
+    message: str
+    data: Optional[StudentFeeFlatData] = None
+
+class AccountMaster(BaseModel):
+    ano: int
+    ahead: Optional[str] = None
+    camt: float
+    damt: float
+    grpcode: Optional[int] = None
+    maincode: Optional[int] = None
+    subcode: Optional[int] = None
+    dsid: Optional[str] = None
+    rpcode: Optional[str] = None
+    rpname: Optional[str] = None
+    fyr: Optional[str] = None
+
+class AccountMasterResponse(BaseModel):
+    code: int
+    status: bool
+    message: str
+    data: Optional[List[AccountMaster]] = None
+
+
+
+

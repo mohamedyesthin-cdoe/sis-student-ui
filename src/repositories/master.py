@@ -64,6 +64,15 @@ class MasterRepository:
                 detail=f"Database error while fetching program by id: {str(e)}",
             )
         
+    def get_program(self):
+        try:
+            return self.db.query(self.model).all()
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching programs: {str(e)}",
+            )
+        
     def get_by_id_with_fees(self, programe_id: int) -> Optional[Programe]:
         try:
             return (

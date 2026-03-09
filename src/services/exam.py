@@ -86,7 +86,6 @@ class RegistrationExamService:
                     continue
                 
                 scheme_id = self.exam_repo.get_semester_by_id(semester_id)
-                print(scheme_id.scheme_id)
 
                 # 2️⃣ Create Exam Registration
                 exam_registration = self.exam_repo.create_registration({

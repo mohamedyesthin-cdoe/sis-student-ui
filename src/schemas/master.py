@@ -34,6 +34,22 @@ class ProgrameBase(BaseModel):
     class Config:
         from_attributes = True
 
+class ProgrameOut(BaseModel):
+    cat: str
+    splty: Optional[str] = None
+    div: Optional[str] = None
+    code: Optional[str] = None
+    des: Optional[str] = None
+    cshort: Optional[str] = None
+    duration: Optional[str] = None
+    faculty: Optional[str] = None
+
+class ProgramListResponse(BaseModel):
+    code: int
+    status: bool
+    message: str
+    data: List[ProgrameOut]
+
 class ProgrameCreate(ProgrameBase):
     fees: Optional[List[FeeSchema]] = None
 
@@ -50,7 +66,16 @@ class ProgrameUpdate(BaseModel):
 
 class ProgrameResponse(ProgrameBase):
     id: int
-    fees: Optional[List[FeeSchema]] = Field(default_factory=list, alias="fee")
+    fees: Optional[List[FeeSchema]]
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+
+class Programeout(ProgrameBase):
+    id: int
     created_at: datetime
     updated_at: Optional[datetime]
 

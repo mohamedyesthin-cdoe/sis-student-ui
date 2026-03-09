@@ -12,11 +12,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
 
-@router.post("/add", response_model=StudentResponse, status_code=status.HTTP_201_CREATED)
-def create_student(student_data: StudentCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    """Create a new student."""
-    student_service = StudentService(db)
-    return student_service.create_student(student_data)
+# @router.post("/add", response_model=StudentResponse, status_code=status.HTTP_201_CREATED)
+# def create_student(student_data: StudentCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     """Create a new student."""
+#     student_service = StudentService(db)
+#     return student_service.create_student(student_data)
 
 @router.post("/sync", response_model=SyncResponse)
 async def sync_students_endpoint(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
@@ -28,11 +28,11 @@ async def sync_students_endpoint(db: Session = Depends(get_db), current_user: Us
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
-@router.post("/patch/sync", response_model=SyncResponse)
-async def patch_sync_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+@router.post("/patch/document", response_model=SyncResponse)
+async def update_document_existing_sync_student(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = StudentService(db)
-        return await service.update_existing_sync_student()
+        return await service.update_document_existing_sync_student()
     except HTTPException as e:
         raise e
     except Exception as e:
@@ -71,21 +71,21 @@ def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve payments: {str(e)}")
     
-@router.delete("/delete/all", status_code=204, response_model=None)
-def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        StudentService(db).delete_all_students()
-    except SQLAlchemyError as e:
-        raise HTTPException(status_code=500, detail="Failed to delete all students")
+# @router.delete("/delete/all", status_code=204, response_model=None)
+# def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     try:
+#         StudentService(db).delete_all_students()
+#     except SQLAlchemyError as e:
+#         raise HTTPException(status_code=500, detail="Failed to delete all students")
     
-@router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_student_by_id(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
-    """Delete a payment by ID."""
-    try:
-        service = StudentService(db)
-        success = service.delete_student_by_id(student_id)
-        if not success:
-            raise HTTPException(status_code=404, detail="Payment not found")
-        return
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to delete payment: {str(e)}")
+# @router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+# def delete_student_by_id(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+#     """Delete a payment by ID."""
+#     try:
+#         service = StudentService(db)
+#         success = service.delete_student_by_id(student_id)
+#         if not success:
+#             raise HTTPException(status_code=404, detail="Payment not found")
+#         return
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Failed to delete payment: {str(e)}")

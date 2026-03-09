@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 from src.schemas.payment import DataResponse, PaginationResponse, StandardResponse
 from src.schemas.api import OdlStudentResponse, LeadCreate
 from src.repositories.api import ApiRepository
+from src.repositories.master import MasterRepository
 from datetime import datetime
-from src.schemas.master import ProgrameOut, DataOut
+from src.schemas.master import ProgrameOut, DataOut, ProgramListResponse
+from src.schemas.payment import *
 from fastapi import HTTPException, status
 from src.utils.logger import setup_logger
 from sqlalchemy.exc import SQLAlchemyError
@@ -13,6 +15,8 @@ import time
 from src.core.config import settings
 from datetime import datetime, date
 from src.services.integrations.student_api import create_odl_student, update_odl_student, add_lead
+from collections import defaultdict
+from src.models.students import Programe
 
 DIGICAMPUS_USERNAME = settings.DIGICAMPUS_USERNAME
 DIGICAMPUS_PASSWORD = settings.DIGICAMPUS_PASSWORD
@@ -27,6 +31,7 @@ class ApiService:
 
     def __init__(self, db: Session):
         self.repo = ApiRepository(db)
+        self.master_repo = MasterRepository(db)
 
     def _get_auth_token(self) -> str:
         """
@@ -53,13 +58,109 @@ class ApiService:
         self._token_cache["exp"] = data["exp"]
 
         return data["token"]
+    
+    def fees_master(self) -> FeesMasterResponse:
+        try:
+            fee_details = self.repo.get_program_fees()
+            fee_data = []
+
+            for fee in fee_details:
+                data = fee.dict() if hasattr(fee, "dict") else vars(fee)
+
+                # Prepare 3 fee type containers
+                fee_type_map = {
+                    30101: {"ano": 30101, "label": "application_fee"},
+                    30102: {"ano": 30102, "label": "admission_fee"},
+                    30100: {"ano": 30100, "label": "tuition_fee"},
+                    30103: {"ano": 30103, "label": "exam_fee"},
+                    30104: {"ano": 30104, "label": "lms_fee"},
+                    30105: {"ano": 30105, "label": "lab_fee"},
+                }
+
+                # Initialize structure for each fee type
+                result_rows = {}
+
+                for ano, config in fee_type_map.items():
+                    result_rows[ano] = {
+                        "cshort": data["short_name"],
+                        "admyr": data["admission_year"],
+                        "fees1": None,
+                        "fees2": None,
+                        "fees3": None,
+                        "fees4": None,
+                        "fees5": None,
+                        "fees6": None,
+                        "ano": ano,
+                        "duration": data["duration"],
+                        "feestype": "Indian",
+                        "cat": data["category"]
+                    }
+
+                # Loop semester fees
+                for fee_item in data.get("fee", []):
+                    semester_name = fee_item.semester  # "Semester 1"
+                    if semester_name:
+                        sem_no = semester_name.split()[-1]
+                        key = f"fees{sem_no}"
+
+                        for ano, config in fee_type_map.items():
+                            field_name = config["label"]
+                            result_rows[ano][key] = getattr(fee_item, field_name)
+
+                # Append all 3 rows
+                fee_data.extend(result_rows.values())
+
+            return {
+                "code": 200,
+                "status": True,
+                "message": "Fees master fetched successfully",
+                "data": fee_data
+            }
+
+        except SQLAlchemyError as db_err:
+            logger.error(f"Database error while fetching payments: {db_err}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Database query failed")
+
+        except Exception as e:
+            logger.error(f"Unexpected error in fetching payment list: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Internal server error")
         
-    def get_payment_all_students(
+    def course_master(self) -> ProgramListResponse:
+        try:
+            course = self.master_repo.get_program()
+            course_data = []
+            for value in course:
+                data = value.dict() if hasattr(value, "dict") else vars(value)
+                dic = {
+                    "cat": data['category'],
+                    "splty": 'NA',
+                    "div": "NA",
+                    "code": data['programe_code'],
+                    "des": data["programe"],
+                    "cshort": data["short_name"],
+                    "duration": data["duration"],
+                    "faculty": data["faculty"]
+                }
+                course_data.append(dic)
+            return {
+                "code": 200,
+                "status": True,
+                "message": "Fees master fetched successfully",
+                "data": course_data
+            }
+        except SQLAlchemyError as db_err:
+            logger.error(f"Database error while fetching payments: {db_err}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Database query failed")
+        except Exception as e:
+            logger.error(f"Unexpected error in fetching payment list: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Internal server error")
+
+    def all_student_account_list(
             self,limit: int,next_page: Optional[str],
             previous_page: Optional[str]) -> StandardResponse:
         """Retrieve paginated students with payments."""
         try:
-            students, new_next_token, prev_token = self.repo.get_payment_all_students(
+            students, new_next_token, prev_token = self.repo.all_student_account_list(
                 limit=limit,
                 next_page=next_page,
                 previous_page=previous_page
@@ -79,25 +180,31 @@ class ApiService:
         )   
         
         students_data = []
-        admission_year = datetime.now().year
 
         for student in students:
             data = student.dict() if hasattr(student, "dict") else vars(student)
 
             try:
-                sgrp = f'{admission_year}/ID-{data.get("registration_no", "")}'.strip()
-                sregno = f'00{data.get("registration_no", "")}'.strip()
+                reg_no = data.get("registration_no", "")
+                admission_year = data.get('admission_year', '')
+                sgrp = f'{admission_year}/ID-{reg_no}'.strip()
+                sregno = f'00{reg_no}'.strip()
                 fullname = f"{data.get('first_name', '')} {data.get('last_name', '')}".strip()
                 programe_id = data.get('program_id')
-                programe_name = self.repo.get_programe_by_id(programe_id) if programe_id else None            
+                programe_name = self.repo.get_programe_by_id(programe_id) if programe_id else None   
                 payments = data.get('payments', [])
                 payment_data = [
                     payment.dict() if hasattr(payment, "dict") else vars(payment)
                     for payment in payments
                 ]
-                
+                admyr = admission_year
                 application_fee = None
                 semester_fee = None
+                dob_value = data.get("date_of_birth")
+
+                # Convert only if it's string in DD-MM-YYYY format
+                if isinstance(dob_value, str):
+                    dob_value = datetime.strptime(dob_value, "%Y-%m-%d").date()
 
                 if len(payment_data) > 0:
                     if payment_data[0].get("payment_type") == "application_fee":
@@ -127,20 +234,24 @@ class ApiService:
                 admission_year_range = f"{admission_date.year}-{admission_date.year + 1}" if admission_date else None
                 data.update({
                     "cat": "UG",
-                    "admission_no": data.get("application_no"),
+                    "admyr": admyr,
+                    "admdt": admission_date,
+                    "admno": data.get("application_no"),
                     'sgrp': sgrp,
                     "name": fullname,
                     #"gender": gender_map.get(data.get('gender', ''), 'Unknown'),
+                    "dob": dob_value,
                     "admission_year": admission_year_range,
                     "admission_date": admission_date,
-                    "programe_name": programe_name,
+                    "cshort": programe_name.short_name,
                     'sregno': sregno,
+                    'barcode': reg_no,
                     "addrs1": addrs1 if address else None,
                     "addrs2": addrs2 if address else None,
                     "addrs3": addrs3 if address else None,
                     "addrs4": addrs4 if address else None,
-                    "application_fee": application_fee,
-                    "semester_fee": semester_fee
+                    #"application_fee": application_fee,
+                    #"semester_fee": semester_fee
                 })
 
                 students_data.append(data)
@@ -219,7 +330,7 @@ class ApiService:
             "dob": s.date_of_birth.isoformat() if s.date_of_birth else None,
             "blood_group": s.blood_group,
             "email": s.email,
-            "mobile_number": s.mobile_number,
+            "mobile_no": s.mobile_number,
             "alternative_phone": s.alternative_phone,
             "marital_status": s.marital_status,
             "religion": s.religion,
@@ -407,4 +518,203 @@ class ApiService:
         except Exception as e:
             logger.error(f"Error adding lead: {e}", exc_info=True)
             raise HTTPException(status_code=500, detail="Failed to add lead")
+        
+    # def get_all_students_fees(self):
 
+    #     app_fees = self.repo.get_application_fees()
+    #     sem_fees = self.repo.get_semester_fees()
+    #     account_heads_list = self.repo.get_all_account_heads()
+
+    #     # Convert account heads into dictionary
+    #     account_heads = {ah.anodes: ah for ah in account_heads_list}
+
+    #     grouped = defaultdict(list)
+
+    #     # ✅ Application Fees
+    #     for r in app_fees:
+    #         grouped[r.barcode].append({
+    #             "feeshead": r.feeshead,
+    #             "fees_name": r.fees_name,
+    #             "fees": r.fees,
+    #             "orderby": r.orderby
+    #         })
+
+    #     # ✅ Semester Fee Breakdown
+    #     for r in sem_fees:
+
+    #         breakdown = {
+    #             "Tuition fees": r.tuition_fee,
+    #             "Lab fees": r.lab_fee,
+    #             "LMS fees": r.lms_fee,
+    #             "Exam fees": r.exam_fee,
+    #             "Admission fees": r.admission_fee
+    #         }
+
+    #         for name, amount in breakdown.items():
+    #             if amount and amount > 0:
+    #                 ah = account_heads.get(name)
+    #                 if ah:
+    #                     grouped[r.barcode].append({
+    #                         "feeshead": ah.ano,
+    #                         "fees_name": ah.anodes,
+    #                         "fees": amount,
+    #                         "orderby": ah.id
+    #                     })
+
+    #     # Final response
+    #     response = []
+
+    #     for barcode, fees in grouped.items():
+    #         response.append({
+    #             "barcode": barcode,
+    #             "fees": sorted(fees, key=lambda x: x["orderby"])
+    #         })
+
+    #     return response
+
+    # def get_all_students_fees(self) -> StudentFeeFlatResponse:
+    #     students = self.repo.get_fees()
+    #     program = self.repo.db.query(Programe).first()
+    #     admyr = program.admission_year if program else None
+
+    #     result: list[StudentFeeFlat] = []
+
+    #     for student in students:
+    #         barcode = student.registration_no
+
+    #         application_amount = 0.0
+    #         lab_fee = 0.0
+    #         exam_fee = 0.0
+    #         admission_fee = 0.0
+    #         lms_fee = 0.0
+    #         tuition_fee = 0.0
+
+    #         for payment in student.payments:
+
+    #             if payment.payment_type == "application_fee":
+    #                 application_amount += payment.payment_amount or 0
+
+    #             elif payment.payment_type == "semester_fee" and payment.semester_fee:
+    #                 lab_fee += payment.semester_fee.lab_fee or 0
+    #                 exam_fee += payment.semester_fee.exam_fee or 0
+    #                 admission_fee += payment.semester_fee.admission_fee or 0
+    #                 lms_fee += payment.semester_fee.lms_fee or 0
+    #                 tuition_fee += payment.semester_fee.tuition_fee or 0
+
+    #         fees_map = [
+    #             (30101, application_amount, 1),
+    #             (30102, admission_fee, 2),
+    #             (30100, tuition_fee, 3),
+    #             (30103, lms_fee, 4),
+    #             (30104, exam_fee, 5),
+    #             (30105, lab_fee, 6),
+    #         ]
+
+    #         for head, amount, orderby in fees_map:
+    #             if amount > 0:
+    #                 result.append(
+    #                     StudentFeeFlat(
+    #                         barcode=str(barcode),
+    #                         acayear=admyr,
+    #                         feeshead=int(head),
+    #                         fees=float(amount),
+    #                         orderby=int(orderby),
+    #                         studentuniqueid=str(barcode)
+    #                     )
+    #                 )
+
+    #     return StudentFeeFlatResponse(
+    #         code=200,
+    #         status=True,
+    #         message="Student fees fetched successfully",
+    #         data=result if result else []
+    #     )
+
+    def get_all_students_fees(
+        self,
+        limit: int,
+        next_page: Optional[str],
+        previous_page: Optional[str]
+    ) -> StudentFeeFlatResponse:
+
+        students, new_next_token, prev_token = self.repo.get_fees(
+            limit=limit,
+            next_page=next_page,
+            previous_page=previous_page
+        )
+
+        program = self.repo.db.query(Programe).first()
+        admyr = program.admission_year if program else None
+
+        result: list[StudentFeeFlat] = []
+
+        for student in students:
+            barcode = student.registration_no
+
+            application_amount = 0.0
+            lab_fee = 0.0
+            exam_fee = 0.0
+            admission_fee = 0.0
+            lms_fee = 0.0
+            tuition_fee = 0.0
+
+            for payment in student.payments:
+
+                if payment.payment_type == "application_fee":
+                    application_amount += payment.payment_amount or 0
+
+                elif payment.payment_type == "semester_fee" and payment.semester_fee:
+                    lab_fee += payment.semester_fee.lab_fee or 0
+                    exam_fee += payment.semester_fee.exam_fee or 0
+                    admission_fee += payment.semester_fee.admission_fee or 0
+                    lms_fee += payment.semester_fee.lms_fee or 0
+                    tuition_fee += payment.semester_fee.tuition_fee or 0
+
+            fees_map = [
+                (30101, application_amount, 1),
+                (30102, admission_fee, 2),
+                (30100, tuition_fee, 3),
+                (30103, lms_fee, 4),
+                (30104, exam_fee, 5),
+                (30105, lab_fee, 6),
+            ]
+
+            for head, amount, orderby in fees_map:
+                if amount > 0:
+                    result.append(
+                        StudentFeeFlat(
+                            barcode=str(barcode),
+                            acayear=admyr,
+                            feeshead=int(head),
+                            fees=float(amount),
+                            orderby=int(orderby),
+                            studentuniqueid=str(barcode)
+                        )
+                    )
+
+        pagination = PaginationResponse(
+            previous_page=prev_token,
+            next_page=new_next_token
+        )
+
+        return StudentFeeFlatResponse(
+            code=200,
+            status=True,
+            message="Student fees fetched successfully",
+            data={
+                "list": result,
+                "pagination": pagination
+            }
+        )
+    
+    def get_account_master(self):
+        data = self.repo.get_account_master()
+        return [
+            AccountMasterResponse(
+                code=200,
+                status=True,
+                message="Account master fetched successfully",
+                data=data
+            )
+        ]
+                        

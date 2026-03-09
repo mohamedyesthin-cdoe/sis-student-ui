@@ -7,6 +7,7 @@ from src.models.user import User
 import os
 from datetime import datetime, timedelta
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from src.models.admin import APIKey
 
 oauth2_scheme = HTTPBearer()
 
@@ -50,10 +51,12 @@ def verify_token(token: str):
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
     
-def verify_api_key(secret_key: str = Header(...), access_key: str = Header(...)):    
-    if secret_key != SECRET_KEY or access_key != ACCESS_KEY:
+def verify_api_key(x_api_key: str = Header(...), db: Session = Depends(get_db)):
+    key = db.query(APIKey).filter(APIKey.api_key == x_api_key).first()
+    if not key or key.status != "active":
         raise HTTPException(status_code=403, detail="Invalid API Key")
-    return True
+
+    return key
 
 def create_reset_token(email: str):
     expire = datetime.utcnow() + timedelta(minutes=RESET_TOKEN_EXPIRE_MINUTES)

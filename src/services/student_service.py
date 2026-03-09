@@ -105,48 +105,154 @@ class StudentService:
     #         logger.error(f"Error syncing students: {str(e)}")
     #         raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")
     
-    async def update_existing_sync_student(self):
+    async def _get_students_from_erp(self):
+        students_data = await fetch_students_list()
+        logger.info(f"Fetched {len(students_data)} students from external API.")
+
+        if not students_data:
+            return []
+
+        if isinstance(students_data, dict) and "data" in students_data and "list" in students_data["data"]:
+            value_list = students_data["data"]["list"]
+        else:
+            value_list = students_data
+
+        students = []
+
+        for student in value_list:
+            app_no = student.get("application_no")
+            if not app_no:
+                logger.warning(f"Skipping student with missing application_no: {student}")
+                continue
+
+            students.append(student)
+
+        return students
+    
+    async def update_document_existing_sync_student(self):
         try:
-            # Fetch from ERP
-            students_data = await fetch_students_list()
-            logger.info(f"Fetched {len(students_data)} students from external API.")
+            students = await self._get_students_from_erp()
 
-            if not students_data:
-                return {"message": "No students found in external API.", "total_sync_count": 0}
+            if not students:
+                return {"message": "No students found", "total_sync_count": 0}
 
-            # Extract ERP list safely
-            if isinstance(students_data, dict) and "data" in students_data and "list" in students_data["data"]:
-                value_list = students_data["data"]["list"]
-            else:
-                value_list = students_data
-                
-            students_to_update = []  
-            for student in value_list:
-                app_no = student.get("application_no")
-                if not app_no:
-                    logger.warning(f"Skipping student with missing application_no: {student}")
-                    continue
+            for student in students:
+                self.student_repo.bulk_document_update_student(student)
 
-                else:
-                    students_to_update.append(student)
+            return {
+                "message": "Students updated successfully",
+                "total_sync_count": len(students)
+            }
 
-            logger.info(f"Students to update: {len(students_to_update)}")
-
-            # UPDATE EXISTING STUDENTS
-            if students_to_update:
-                for student in students_to_update:
-                    self.student_repo.bulk_update_student(student)
-
-                return {
-                    "message": "Students updated successfully",
-                    "total_sync_count": len(students_to_update)
-                }
-
-            return {"message": "No existing students to update.", "total_sync_count": 0}
-        
         except Exception as e:
             logger.error(f"Error updating students: {str(e)}")
-            raise HTTPException(status_code=500, detail=f"Failed to update students: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+        
+    async def update_semester_fees(self):
+        try:
+            students = await self._get_students_from_erp()
+
+            if not students:
+                return {"message": "No students found", "total_sync_count": 0}
+
+            for student in students:
+                self.student_repo.pay_next_semester_fee(student)
+
+            return {
+                "message": "Students updated successfully",
+                "total_sync_count": len(students)
+            }
+
+        except Exception as e:
+            logger.error(f"Error updating semester fee: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+    # async def update_document_existing_sync_student(self):
+    #     try:
+    #         # Fetch from ERP
+    #         students_data = await fetch_students_list()
+    #         logger.info(f"Fetched {len(students_data)} students from external API.")
+
+    #         if not students_data:
+    #             return {"message": "No students found in external API.", "total_sync_count": 0}
+
+    #         # Extract ERP list safely
+    #         if isinstance(students_data, dict) and "data" in students_data and "list" in students_data["data"]:
+    #             value_list = students_data["data"]["list"]
+    #         else:
+    #             value_list = students_data
+                
+    #         students_to_update = []  
+    #         for student in value_list:
+    #             app_no = student.get("application_no")
+    #             if not app_no:
+    #                 logger.warning(f"Skipping student with missing application_no: {student}")
+    #                 continue
+
+    #             else:
+    #                 students_to_update.append(student)
+
+    #         logger.info(f"Students to update: {len(students_to_update)}")
+
+    #         # UPDATE EXISTING STUDENTS
+    #         if students_to_update:
+    #             for student in students_to_update:
+    #                 self.student_repo.bulk_document_update_student(student)
+
+    #             return {
+    #                 "message": "Students updated successfully",
+    #                 "total_sync_count": len(students_to_update)
+    #             }
+
+    #         return {"message": "No existing students to update.", "total_sync_count": 0}
+        
+    #     except Exception as e:
+    #         logger.error(f"Error updating students: {str(e)}")
+    #         raise HTTPException(status_code=500, detail=f"Failed to update students: {str(e)}")
+    
+    # async def update_semester_fees(self):
+    #     try:
+    #         # Fetch from ERP
+    #         students_data = await fetch_students_list()
+    #         logger.info(f"Fetched {len(students_data)} students from external API.")
+
+    #         if not students_data:
+    #             return {"message": "No students found in external API.", "total_sync_count": 0}
+
+    #         # Extract ERP list safely
+    #         if isinstance(students_data, dict) and "data" in students_data and "list" in students_data["data"]:
+    #             value_list = students_data["data"]["list"]
+    #         else:
+    #             value_list = students_data
+                
+    #         students_to_update = []  
+    #         for student in value_list:
+    #             app_no = student.get("application_no")
+    #             if not app_no:
+    #                 logger.warning(f"Skipping student with missing application_no: {student}")
+    #                 continue
+
+    #             else:
+    #                 students_to_update.append(student)
+
+    #         logger.info(f"Students to update: {len(students_to_update)}")
+
+    #         # UPDATE EXISTING STUDENTS
+    #         if students_to_update:
+    #             for student in students_to_update:
+    #                 self.student_repo.pay_next_semester_fee(student)
+
+    #             return {
+    #                 "message": "Students updated successfully",
+    #                 "total_sync_count": len(students_to_update)
+    #             }
+
+    #         return {"message": "No existing students to update.", "total_sync_count": 0}
+        
+    #     except Exception as e:
+    #         logger.error(f"Error updating students: {str(e)}")
+    #         raise HTTPException(status_code=500, detail=f"Failed to update students: {str(e)}")
+    
 
     async def sync_students(self):
         try:

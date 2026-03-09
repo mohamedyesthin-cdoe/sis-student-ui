@@ -111,7 +111,7 @@ class StudentRepository(BaseRepository[Student]):
         result = self.db.query(Payment).filter(Payment.student_id == student_id).order_by(Payment.payment_date.desc()).first()
         return result.payment_date if result else None
         
-    def bulk_update_student(self, api_response: dict):
+    def bulk_document_update_student(self, api_response: dict):
         try:
             student_data = map_patch_api_to_student_schema(api_response)
             # Fetch existing student by application_no or email
@@ -120,14 +120,9 @@ class StudentRepository(BaseRepository[Student]):
                 .filter(Student.application_no == student_data.get("application_no"))
                 .first()
             )
-            print("Existing student found for update:", existing_student)
 
             if not existing_student:
-                print(
-                    f"Student not found for application_no: "
-                    f"{student_data.get('application_no')} — Skipping"
-                )
-                return None   # 🔥 just skip, no error
+                return None
 
             if not existing_student:
                 raise ValueError("Student does not exist for update")
@@ -139,13 +134,6 @@ class StudentRepository(BaseRepository[Student]):
                 if key in student_columns:
                     setattr(existing_student, key, value)
 
-            # if "document_details" in student_data:
-            #     doc_data = student_data["document_details"]
-            #     if doc_data and existing_student.document_details:
-            #         for key, value in doc_data.items():
-            #             if hasattr(existing_student.document_details, key):
-            #                 setattr(existing_student.document_details, key, value)
-            # 🔹 Handle document upload to S3
             if "document_details" in student_data:
                 doc_data = student_data["document_details"]
 
@@ -175,6 +163,73 @@ class StudentRepository(BaseRepository[Student]):
             self.db.rollback()
             raise ValueError(f"Error updating student: {str(e)}")
         
+    def pay_next_semester_fee(self, api_response: dict):
+        try:
+            application_no = api_response.get("application_no")
+
+            student = self.db.query(Student).filter(
+                Student.application_no == application_no
+            ).first()
+
+            if not student:
+                raise ValueError("Student not found")
+
+            # Get next semester
+            next_semester = student.semester_id + 1
+
+            # Get fee structure
+            fee_details = self.db.query(FeeDetails).filter(
+                FeeDetails.programe_id == student.program_id,
+                FeeDetails.semester == next_semester
+            ).first()
+
+            if not fee_details:
+                raise ValueError("Fee structure not found for next semester")
+
+            fee_data = api_response.get("semester_fee")
+
+            # Create Payment
+            payment = Payment(
+                student_id=student.id,
+                payment_type="semester_fee",
+                order_id=fee_data.get("order_id"),
+                transaction_id=fee_data.get("transaction_id"),
+                payment_date=ensure_datetime(fee_data.get("payment_date")),
+                payment_amount=fee_data.get("payment_amount"),
+                is_offline=fee_data.get("is_offline", False),
+            )
+
+            self.db.add(payment)
+            self.db.flush()
+
+            # Create Semester Fee Record
+            semester_fee = SemesterFee(
+                payment_id=payment.id,
+                semester=next_semester,
+                admission_fee=float(fee_details.admission_fee),
+                lab_fee=float(fee_details.lab_fee),
+                lms_fee=float(fee_details.lms_fee),
+                exam_fee=float(fee_details.exam_fee),
+                tuition_fee=float(fee_details.tuition_fee),
+                total_fee=float(fee_details.total_fee),
+            )
+
+            self.db.add(semester_fee)
+
+            # Update student semester
+            student.semester_id = next_semester
+
+            self.db.commit()
+
+            return {
+                "student_id": student.id,
+                "semester_paid": next_semester
+            }
+
+        except Exception as e:
+            self.db.rollback()
+            raise ValueError(f"Error updating semester fee: {str(e)}")
+        
     def bulk_create_student(self, api_response: dict):
         try:
             # --- 1. Fetch program and validate ---
@@ -186,13 +241,13 @@ class StudentRepository(BaseRepository[Student]):
             program_code = program.programe_code
             batch = program.batch
             admission_year = program.admission_year
-
+            admyr = admission_year.split("-")[0]
             # --- 2. Get last registration number (only 1 DB call) ---
             last_student = self.get_last_sync_student(program_code)
             last_reg_no = last_student.registration_no if last_student else None
 
             # Generate new registration number
-            registration_number = generate_registration_number(program_code, last_reg_no, admission_year)
+            registration_number = generate_registration_number(program_code, last_reg_no, admyr)
             # --- 3. Validate input data with Pydantic ---
             # This ensures correct data types before proceeding
             student_data['registration_no'] = registration_number  # Add generated reg no
@@ -223,7 +278,6 @@ class StudentRepository(BaseRepository[Student]):
             related_models = {
                 "address_details": AddressDetails,
                 "academic_details": AcademicDetails,
-                "document_details": DocumentDetails,
                 "declaration_details": DeclarationDetails,
                 "deb_details": DebDetails
             }
@@ -234,6 +288,32 @@ class StudentRepository(BaseRepository[Student]):
                 if details_data:
                     self.db.add(model(student_id=student.id, **details_data))
             
+            # --- 7. Document Upload + Save ---
+            if "document_details" in student_data and student_data["document_details"]:
+
+                doc_data = student_data["document_details"]
+                uploaded_docs = {}
+
+                for key, value in doc_data.items():
+                    if value:
+
+                        s3_url = self.document_service.upload_external_file(
+                            file_url=value,
+                            program_id=student.program_id,
+                            register_number=registration_number,
+                            document_type=key
+                        )
+
+                        if s3_url:
+                            uploaded_docs[key] = s3_url
+
+                if uploaded_docs:
+                    document = DocumentDetails(
+                        student_id=student.id,
+                        **uploaded_docs
+                    )
+                    self.db.add(document)
+
             # Application Fee
             if "application_fee" in student_data and student_data["application_fee"]:
                 app_fee_data = student_data["application_fee"]

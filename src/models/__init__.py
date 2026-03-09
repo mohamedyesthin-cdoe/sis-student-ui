@@ -8,3 +8,4 @@ from src.models.students import *
 from src.models.payment import *
 from src.models.exam import *
 from src.models.academic import *
+from src.models.finance import *

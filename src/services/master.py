@@ -337,7 +337,6 @@ class MasterService:
     def update_department(self, department_id: int, data: DepartmentUpdate) -> DepartmentUpdateResponse:
         try:
             updated_department = self.repo.update_department(department_id, data.dict(exclude_unset=True))
-            print(updated_department.name)
             return DepartmentUpdateResponse(
                 message="Department updated successfully",
                 code=status.HTTP_200_OK,
