@@ -33,7 +33,7 @@ class Semester(AuditableBase):
     exams = relationship("Exam", back_populates="semester")
     exam_registrations = relationship("StudentExamRegistration", back_populates="semester")
     semester_results = relationship("SemesterResult", back_populates="semester")
-    students = relationship("Student", back_populates="semester")
+    #students = relationship("Student", back_populates="semester")
 
 class Course(AuditableBase):
     __tablename__ = "courses"
