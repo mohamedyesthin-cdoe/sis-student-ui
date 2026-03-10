@@ -51,7 +51,7 @@ class ProgramListResponse(BaseModel):
     data: List[ProgrameOut]
 
 class ProgrameCreate(ProgrameBase):
-    fees: Optional[List[FeeSchema]] = None
+    fee: Optional[List[FeeSchema]] = None
 
 class ProgrameUpdate(BaseModel):
     programe: Optional[str] = None
@@ -61,12 +61,12 @@ class ProgrameUpdate(BaseModel):
     faculty: Optional[str] = None
     batch: Optional[str] = None
     admission_year: Optional[str] = None
-    fees: Optional[List[FeeUpdate]] = None
+    fee: Optional[List[FeeUpdate]] = None
 
 
 class ProgrameResponse(ProgrameBase):
     id: int
-    fees: Optional[List[FeeSchema]]
+    fee: Optional[List[FeeSchema]]
     created_at: datetime
     updated_at: Optional[datetime]
 

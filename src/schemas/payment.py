@@ -114,7 +114,7 @@ class DataResponse(BaseModel):
     pagination: Optional[PaginationResponse] = None
 
 class StandardResponse(BaseModel):
-    code: int
+    status_code: int
     status: bool
     message: str
     data: DataResponse

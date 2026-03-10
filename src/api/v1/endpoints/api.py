@@ -10,6 +10,7 @@ from src.schemas.api import OdlStudentResponse, LeadResponse, LeadCreate
 from src.db.session import get_db
 from src.utils.logger import setup_logger
 from sqlalchemy.exc import SQLAlchemyError
+from src.utils.exceptions import ApiException   
 
 logger = setup_logger()
 
@@ -17,48 +18,50 @@ router = APIRouter()
 
 #student master
 @router.get("/students", response_model=StandardResponse, dependencies=[Depends(verify_api_key)], tags=["Finance"])
-def student_master(db: Session = Depends(get_db),next_page: Optional[str] = None,previous_page: Optional[str] = None):
-    
-    """Retrieve students master data"""
-    try:
-        service = ApiService(db)
-        limit = 100
-        result = service.all_student_account_list(
-            limit=limit,
-            next_page=next_page,
-            previous_page=previous_page
-        )
-        logger.info("student master data fetched successfully")
-        return result
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch student master data: {str(e)}")
+def student_master(
+    db: Session = Depends(get_db),
+    next_page: Optional[str] = None,
+    previous_page: Optional[str] = None
+):
+    service = ApiService(db)
+
+    return service.all_student_account_list(
+        limit=100,
+        next_page=next_page,
+        previous_page=previous_page
+    )
 
 #fees master
-@router.get("/fees", response_model=FeesMasterResponse, dependencies=[Depends(verify_api_key)], tags=["Finance"])
+@router.get(
+    "/fees",
+    response_model=FeesMasterResponse,
+    dependencies=[Depends(verify_api_key)],
+    tags=["Finance"]
+)
 def fees_master(db: Session = Depends(get_db)):
     """Retrieve Fees master data."""
-    try:
-        service = ApiService(db)
-        program_fees = service.fees_master()
-        if not program_fees:
-            raise HTTPException(status_code=404, detail="Program not found")
-        return program_fees
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
+
+    service = ApiService(db)
+    program_fees = service.fees_master()
+    if not program_fees:
+        raise ApiException(404, "Program not found")
+    return program_fees
 
 #course master
-@router.get("/courses", response_model=ProgramListResponse, dependencies=[Depends(verify_api_key)], tags=["Finance"])
+@router.get(
+    "/courses",
+    response_model=ProgramListResponse,
+    dependencies=[Depends(verify_api_key)],
+    tags=["Finance"]
+)
 def course_master(db: Session = Depends(get_db)):
     """Retrieve course master data."""
-    try:
-        service = ApiService(db)
-        program_fees = service.course_master()
-        if not program_fees:
-            raise HTTPException(status_code=404, detail="Program not found")
-        return program_fees
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
+
+    service = ApiService(db)
+    programs = service.course_master()
+    if not programs:
+        raise ApiException(404, "Program not found")
+    return programs
 
 #student wise fees master
 # @router.get("/student-wise-fees",response_model=StudentFeeFlatResponse,tags=["Finance"])
@@ -66,38 +69,35 @@ def course_master(db: Session = Depends(get_db)):
 #     service = ApiService(db)
 #     return service.get_all_students_fees()
 
-@router.get("/students/fees", response_model=StudentFeeFlatResponse, dependencies=[Depends(verify_api_key)], tags=["Finance"])
+@router.get(
+    "/students/fees",
+    response_model=StudentFeeFlatResponse,
+    dependencies=[Depends(verify_api_key)],
+    tags=["Finance"]
+)
 def get_all_students_fees(
     db: Session = Depends(get_db),
     next_page: Optional[str] = None,
     previous_page: Optional[str] = None
 ):
-    try:
-        service = ApiService(db)
-        return service.get_all_students_fees(
-            limit=100,
-            next_page=next_page,
-            previous_page=previous_page
-        )
-    except SQLAlchemyError as e:
-        logger.error(f"Database error while fetching student fees: {str(e)}")
-        raise HTTPException(status_code=500, detail="Database error while fetching student fees")
-    except Exception as e:
-        logger.error(f"Unexpected error while fetching student fees: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Unexpected error while fetching student fees: {str(e)}")
+    service = ApiService(db)
+
+    return service.get_all_students_fees(
+        limit=1,
+        next_page=next_page,
+        previous_page=previous_page
+    )
 
 #account master
-@router.get("/accounts",response_model=List[AccountMasterResponse], dependencies=[Depends(verify_api_key)], tags=["Finance"])
+@router.get(
+    "/accounts",
+    response_model=AccountMasterResponse,
+    dependencies=[Depends(verify_api_key)],
+    tags=["Finance"]
+)
 def account_master(db: Session = Depends(get_db)):
-    try:
-        service = ApiService(db)
-        return service.get_account_master()
-    except SQLAlchemyError as e:
-        logger.error(f"Database error while fetching account master: {str(e)}")
-        raise HTTPException(status_code=500, detail="Database error while fetching account master")
-    except Exception as e:
-        logger.error(f"Unexpected error while fetching account master: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Unexpected error while fetching account master: {str(e)}")
+    service = ApiService(db)
+    return service.get_account_master()
 
 # @router.get("/program/fees/list", response_model=ProgrameOut)
 # def get_program_fees(db: Session = Depends(get_db)):

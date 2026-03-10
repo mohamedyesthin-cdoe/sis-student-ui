@@ -263,7 +263,7 @@ class ApiService:
         logger.info(f"Successfully processed {len(students_data)} students")
 
         return StandardResponse(
-            code=200,
+            status_code=200,
             status=True,
             message="data fetched successfully",
             data=DataResponse(list=students_data, pagination=pagination)

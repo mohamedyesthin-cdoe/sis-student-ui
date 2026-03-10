@@ -32,6 +32,7 @@ from src.api.v1.endpoints.result import router as result_router
 from src.utils.hash import decode_token, encode_token
 from src.core.security.dependencies import require_superuser
 from src.models.user import User
+from src.utils.exception_handler import register_exception_handlers
 
 logger = setup_logger()
 
@@ -41,6 +42,9 @@ app = FastAPI(
     docs_url=f"{settings.API_V1_STR}/docs",
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
+
+register_exception_handlers(app)
+
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
