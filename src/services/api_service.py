@@ -709,12 +709,11 @@ class ApiService:
     
     def get_account_master(self):
         data = self.repo.get_account_master()
-        return [
-            AccountMasterResponse(
+        return AccountMasterResponse(
                 code=200,
                 status=True,
                 message="Account master fetched successfully",
                 data=data
             )
-        ]
+        
                         
