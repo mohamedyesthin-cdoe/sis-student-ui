@@ -362,7 +362,13 @@ class StudentRepository(BaseRepository[Student]):
                     lms_fee=float(fee_details.lms_fee),
                     exam_fee=float(fee_details.exam_fee),
                     tuition_fee=float(fee_details.tuition_fee),
-                    total_fee=float(fee_details.admission_fee + fee_details.lab_fee + fee_details.lms_fee + fee_details.exam_fee + fee_details.tuition_fee),
+                    total_fee = sum([
+                        float(fee_details.admission_fee or 0),
+                        float(fee_details.lab_fee or 0),
+                        float(fee_details.lms_fee or 0),
+                        float(fee_details.exam_fee or 0),
+                        float(fee_details.tuition_fee or 0),
+                    ])
                 )
                 self.db.add(semester_fee)
 
