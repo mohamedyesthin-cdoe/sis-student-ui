@@ -83,7 +83,7 @@ def get_all_students_fees(
     service = ApiService(db)
 
     return service.get_all_students_fees(
-        limit=1,
+        limit=100,
         next_page=next_page,
         previous_page=previous_page
     )
