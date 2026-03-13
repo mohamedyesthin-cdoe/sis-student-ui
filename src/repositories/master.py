@@ -20,13 +20,13 @@ class MasterRepository:
     def create_program(self, programe: ProgrameCreate) -> ProgrameResponse:
         try:
             # exclude fees when creating the main program
-            program_data = programe.dict(exclude={"fees"})
+            program_data = programe.dict(exclude={"fee"})
             obj = self.model(**program_data)
             self.db.add(obj)
             self.db.flush()  # ensures obj.id is available
 
             # insert fee records
-            for fee in programe.fees:
+            for fee in programe.fee:
                 fee_data = fee.dict()
                 fee_data["programe_id"] = obj.id
                 self.db.add(FeeDetails(**fee_data))

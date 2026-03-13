@@ -22,6 +22,7 @@ class FeeUpdate(FeeSchema):
 # Programe Schemas
 # ----------------------------
 class ProgrameBase(BaseModel):
+    id: Optional[int] = None
     programe: str
     short_name: Optional[str] = None
     programe_code: str

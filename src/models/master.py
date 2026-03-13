@@ -27,7 +27,7 @@ class Programe(AuditableBase):
 class FeeDetails(AuditableBase):
     __tablename__ = "fee_details"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     programe_id = Column(Integer, ForeignKey("programs.id"))
     semester = Column(String)
     application_fee = Column(String, nullable=True)
