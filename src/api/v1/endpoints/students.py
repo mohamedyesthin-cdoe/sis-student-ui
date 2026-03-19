@@ -1,10 +1,10 @@
 from typing import List
-from src.services.student_service import StudentService
+from src.services.student_service import StudentMarkService, StudentService
 from src.services.integrations.student_api import get_deb_student_details, push_deb_student_details
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from src.db.session import get_db
-from src.schemas.students import StudentCreate, StudentResponse, SyncResponse, DebResponse
+from src.schemas.students import MarkResponse, StudentCreate, StudentListResponse, StudentMarkCreate, StudentResponse, SyncResponse, DebResponse
 from src.schemas.payment import PaymentResponse
 from src.core.security.dependencies import require_superuser, require_staff
 from src.models.user import User
@@ -71,21 +71,37 @@ def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve payments: {str(e)}")
     
-# @router.delete("/delete/all", status_code=204, response_model=None)
-# def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-#     try:
-#         StudentService(db).delete_all_students()
-#     except SQLAlchemyError as e:
-#         raise HTTPException(status_code=500, detail="Failed to delete all students")
+@router.delete("/delete/all", status_code=204, response_model=None)
+def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        StudentService(db).delete_all_students()
+    except SQLAlchemyError as e:
+        raise HTTPException(status_code=500, detail="Failed to delete all students")
     
-# @router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
-# def delete_student_by_id(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
-#     """Delete a payment by ID."""
-#     try:
-#         service = StudentService(db)
-#         success = service.delete_student_by_id(student_id)
-#         if not success:
-#             raise HTTPException(status_code=404, detail="Payment not found")
-#         return
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Failed to delete payment: {str(e)}")
+@router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_student_by_id(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+    """Delete a payment by ID."""
+    try:
+        service = StudentService(db)
+        success = service.delete_student_by_id(student_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Payment not found")
+        return
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete payment: {str(e)}")
+    
+@router.post("/student-marks/", response_model=List[MarkResponse])
+def create_student_marks(
+    request: StudentMarkCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
+):
+    return StudentMarkService.create_student_marks(db, request)
+
+@router.get("/students/marks", response_model=List[StudentListResponse])
+def get_students_marks(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    return StudentMarkService.list_students_with_marks(db)
+
+@router.get("/students/{student_id}/marks", response_model=StudentListResponse)
+def get_student_marks(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    return StudentMarkService.get_student_with_marks(db, student_id)

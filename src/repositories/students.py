@@ -362,13 +362,7 @@ class StudentRepository(BaseRepository[Student]):
                     lms_fee=float(fee_details.lms_fee),
                     exam_fee=float(fee_details.exam_fee),
                     tuition_fee=float(fee_details.tuition_fee),
-                    total_fee = sum([
-                        float(fee_details.admission_fee or 0),
-                        float(fee_details.lab_fee or 0),
-                        float(fee_details.lms_fee or 0),
-                        float(fee_details.exam_fee or 0),
-                        float(fee_details.tuition_fee or 0),
-                    ])
+                    total_fee=float(fee_details.admission_fee + fee_details.lab_fee + fee_details.lms_fee + fee_details.exam_fee + fee_details.tuition_fee),
                 )
                 self.db.add(semester_fee)
 
@@ -497,3 +491,37 @@ class StudentRepository(BaseRepository[Student]):
             "deleted_mappings": mapping_counts,
             "deleted_students": res_students.rowcount or 0,
         }
+    
+class StudentMarkRepository:
+
+    @staticmethod
+    def create_marks(db: Session, student_id: int, marks: list):
+        db_objects = []
+
+        for mark in marks:
+            obj = StudentMarkTemp(
+                student_id=student_id,
+                course_name=mark.course_name,
+                final_marks=mark.final_mark
+            )
+            db.add(obj)
+            db_objects.append(obj)
+
+        db.commit()
+
+        for obj in db_objects:
+            db.refresh(obj)
+
+        return db_objects
+    
+    @staticmethod
+    def get_all_students_with_marks(db: Session):
+        return db.query(Student).options(
+            joinedload(Student.student_mark_temp)
+        ).all()
+    
+    @staticmethod
+    def get_student_with_marks(db: Session, student_id: int):
+        return db.query(Student).options(
+            joinedload(Student.student_mark_temp)
+        ).filter(Student.id == student_id).first()

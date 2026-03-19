@@ -1,9 +1,9 @@
 from grpc import Status
-from src.repositories.students import StudentRepository
+from src.repositories.students import StudentMarkRepository, StudentRepository
 from src.models.students import Student
 from sqlalchemy.orm import Session
 from typing import List, Dict
-from src.schemas.students import StudentCreate, StudentResponse
+from src.schemas.students import StudentCreate, StudentMarkCreate, StudentResponse
 import httpx
 from src.services.integrations.student_api import fetch_students_list
 import logging
@@ -349,3 +349,47 @@ class StudentService:
                 detail=f"DB error: {str(e)}"
             )
             
+class StudentMarkService:
+
+    @staticmethod
+    def create_student_marks(db: Session, data: StudentMarkCreate):
+        # You can add validation here (like student exists)
+
+        marks = StudentMarkRepository.create_marks(
+            db=db,
+            student_id=data.student_id,
+            marks=data.mark_list
+        )
+
+        return marks
+    
+    @staticmethod
+    def list_students_with_marks(db):
+        students = StudentMarkRepository.get_all_students_with_marks(db)
+
+        result = []
+        for student in students:
+            result.append({
+                "id": student.id,
+                "name": f"{student.first_name} {student.last_name}",
+                "reg_no": student.registration_no,
+                "program": student.program_id,
+                "marks": student.student_mark_temp or []   # ✅ important
+            })
+
+        return result
+    
+    @staticmethod
+    def get_student_with_marks(db, student_id: int):
+        student = StudentMarkRepository.get_student_with_marks(db, student_id)
+
+        if not student:
+            raise HTTPException(status_code=404, detail="Student not found")
+
+        return {
+            "id": student.id,
+            "name": f"{student.first_name} {student.last_name}",
+            "reg_no": student.registration_no,
+            "program": student.program_id,
+            "marks": student.student_mark_temp or []
+        }

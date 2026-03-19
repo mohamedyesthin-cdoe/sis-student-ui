@@ -86,6 +86,7 @@ class Student(AuditableBase):
     marksheets = relationship("MarksEntry", back_populates="student")
     course_results = relationship("CourseResult", back_populates="student")
     semester_results = relationship("SemesterResult", back_populates="student")
+    student_mark_temp = relationship("StudentMarkTemp", back_populates="student")
     #semester = relationship("Semester", back_populates="students")
     
     __table_args__ = (
@@ -210,3 +211,15 @@ class DebDetails(Base):
     deb_status = Column(String)
 
     student = relationship("Student", back_populates="deb_details")
+
+class StudentMarkTemp(Base): 
+    __tablename__ = "student_mark_temp" 
+
+    id = Column(Integer, primary_key=True, index=True)
+    #student_name = Column(String, nullable=False)
+    course_name = Column(String, nullable=False)
+    final_marks = Column(Integer, nullable=False)
+
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, index=True)
+
+    student = relationship("Student", back_populates="student_mark_temp")

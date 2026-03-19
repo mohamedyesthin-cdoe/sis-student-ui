@@ -400,3 +400,42 @@ class DebResponse(BaseModel):
 class DebPushResponse(BaseModel):
     Message: str
     Status: str
+
+class MarkCreate(BaseModel):
+    course_name: str
+    final_mark: int
+
+# Request schema (incoming API)
+class StudentMarkCreate(BaseModel):
+    student_id: int
+    mark_list: List[MarkCreate]
+
+
+# Response schema
+class MarkResponse(BaseModel):
+    id: int
+    course_name: str
+    final_marks: int
+    student_id: int
+
+    class Config:
+        from_attributes = True
+
+class MarkListResponse(BaseModel):
+    id: int
+    course_name: str
+    final_marks: int
+
+    class Config:
+        from_attributes = True
+
+class StudentListResponse(BaseModel):
+    id: int
+    name: str
+    reg_no: Optional[str] = None
+    program: Optional[int] = None
+    marks: List[MarkListResponse]
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
