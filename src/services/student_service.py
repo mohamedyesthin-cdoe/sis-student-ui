@@ -374,7 +374,7 @@ class StudentMarkService:
                 "name": f"{student.first_name} {student.last_name}",
                 "reg_no": student.registration_no,
                 "program": student.program_id,
-                "marks": student.student_mark_temp or []   # ✅ important
+                "marks": student.student_mark_temp or []   # ✅ importan
             })
 
         return result
