@@ -499,29 +499,44 @@ class StudentMarkRepository:
         db_objects = []
 
         for mark in marks:
-            obj = StudentMarkTemp(
-                student_id=student_id,
-                course_name=mark.course_name,
-                final_marks=mark.final_mark
-            )
-            db.add(obj)
-            db_objects.append(obj)
+            existing = db.query(StudentMarkTemp).filter(
+                StudentMarkTemp.student_id == student_id,
+                StudentMarkTemp.course_name == mark.course_name
+            ).first()
 
+            if existing:
+                # Update existing record
+                existing.final_marks = mark.final_mark
+                db_objects.append(existing)
+            else:
+                # Insert new record
+                obj = StudentMarkTemp(
+                    student_id=student_id,
+                    course_name=mark.course_name,
+                    final_marks=mark.final_mark
+                )
+                db.add(obj)
+                db_objects.append(obj)
+
+        # Commit once after loop
         db.commit()
 
+        # Refresh all objects
         for obj in db_objects:
             db.refresh(obj)
 
         return db_objects
-    
+
     @staticmethod
     def get_all_students_with_marks(db: Session):
         return db.query(Student).options(
             joinedload(Student.student_mark_temp)
         ).all()
-    
+
     @staticmethod
     def get_student_with_marks(db: Session, student_id: int):
         return db.query(Student).options(
             joinedload(Student.student_mark_temp)
-        ).filter(Student.id == student_id).first()
+        ).filter(
+            Student.id == student_id
+        ).first()

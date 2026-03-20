@@ -212,14 +212,18 @@ class DebDetails(Base):
 
     student = relationship("Student", back_populates="deb_details")
 
-class StudentMarkTemp(Base): 
-    __tablename__ = "student_mark_temp" 
+from sqlalchemy import UniqueConstraint
+
+class StudentMarkTemp(Base):
+    __tablename__ = "student_mark_temp"
 
     id = Column(Integer, primary_key=True, index=True)
-    #student_name = Column(String, nullable=False)
     course_name = Column(String, nullable=False)
     final_marks = Column(Integer, nullable=False)
-
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False, index=True)
+
+    __table_args__ = (
+        UniqueConstraint('student_id', 'course_name', name='unique_student_course'),
+    )
 
     student = relationship("Student", back_populates="student_mark_temp")

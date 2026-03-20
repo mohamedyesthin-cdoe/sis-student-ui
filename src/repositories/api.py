@@ -115,6 +115,7 @@ class ApiRepository:
             ).filter(Student.admission_year == admission_year)
             .order_by(Student.id.asc())
         )
+        print(query)
 
         students = []
 

@@ -72,7 +72,6 @@ def course_master(db: Session = Depends(get_db)):
 @router.get(
     "/students/fees",
     response_model=StudentFeeFlatResponse,
-    dependencies=[Depends(verify_api_key)],
     tags=["Finance"]
 )
 def get_all_students_fees(
@@ -83,7 +82,7 @@ def get_all_students_fees(
     service = ApiService(db)
 
     return service.get_all_students_fees(
-        limit=100,
+        limit=2,
         next_page=next_page,
         previous_page=previous_page
     )
