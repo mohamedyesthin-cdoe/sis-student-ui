@@ -505,7 +505,7 @@ class StudentMarkRepository:
             ).first()
 
             if existing:
-                # Update existing record
+                # Update existing recor
                 existing.final_marks = mark.final_mark
                 db_objects.append(existing)
             else:
