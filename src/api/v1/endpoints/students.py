@@ -93,15 +93,14 @@ def delete_student_by_id(student_id: int, db: Session = Depends(get_db), current
 @router.post("/student-marks/", response_model=List[MarkResponse])
 def create_student_marks(
     request: StudentMarkCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(require_superuser)
+    db: Session = Depends(get_db)
 ):
     return StudentMarkService.create_student_marks(db, request)
 
 @router.get("/students/marks", response_model=List[StudentListResponse])
-def get_students_marks(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+def get_students_marks(db: Session = Depends(get_db)):
     return StudentMarkService.list_students_with_marks(db)
 
 @router.get("/students/{student_id}/marks", response_model=StudentListResponse)
-def get_student_marks(student_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+def get_student_marks(student_id: int, db: Session = Depends(get_db)):
     return StudentMarkService.get_student_with_marks(db, student_id)
