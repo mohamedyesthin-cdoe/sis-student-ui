@@ -202,6 +202,21 @@ export default function CourseComponentAdd() {
     }
   };
 
+  const handleNumberChange = (
+    value: string,
+    onChange: (value: number | "") => void
+  ) => {
+    if (value == "") {
+      onChange(""); // allow empty while typing
+      return;
+    }
+
+    // Remove leading zeros but keep single zero
+    const cleaned = value.replace(/^0+(?=\d)/, "");
+
+    onChange(Number(cleaned));
+  };
+
   /* ----------------------------- SUBMIT ----------------------------- */
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -266,21 +281,91 @@ export default function CourseComponentAdd() {
 
             {/* ROW 3: Marks */}
             <Grid size={{ xs: 12, md: 3 }}>
-              <Controller name="max_marks" control={control} render={({ field }) => <CustomInputText label="Max Marks" type="number" field={field} />} />
+              <Controller
+                name="max_marks"
+                control={control}
+                render={({ field }) => (
+                  <CustomInputText
+                    label="Max Marks"
+                    type="number"
+                    field={{
+                      ...field,
+                      onChange: (value: string) =>
+                        handleNumberChange(value, field.onChange),
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 3 }}>
-              <Controller name="min_marks" control={control} render={({ field }) => <CustomInputText label="Min Marks" type="number" field={field} />} />
+              <Controller
+                name="min_marks"
+                control={control}
+                render={({ field }) => (
+                  <CustomInputText
+                    label="Min Marks"
+                    type="number"
+                    field={{
+                      ...field,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleNumberChange(e.target.value, field.onChange),
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 3 }}>
-              <Controller name="min_percentage" control={control} render={({ field }) => <CustomInputText label="Min Percentage" type="number" field={field} />} />
+              <Controller
+                name="min_percentage"
+                control={control}
+                render={({ field }) => (
+                  <CustomInputText
+                    label="Min Percentage"
+                    type="number"
+                    field={{
+                      ...field,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleNumberChange(e.target.value, field.onChange),
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 3 }}>
-              <Controller name="exam_mark" control={control} render={({ field }) => <CustomInputText label="Exam Mark" type="number" field={field} />} />
+              <Controller
+                name="exam_mark"
+                control={control}
+                render={({ field }) => (
+                  <CustomInputText
+                    label="Exam Mark"
+                    type="number"
+                    field={{
+                      ...field,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleNumberChange(e.target.value, field.onChange),
+                    }}
+                  />
+                )}
+              />
             </Grid>
 
             {/* ROW 4: Attendance + Core/Elective + Elective Type + Elective Programme Type */}
             <Grid size={{ xs: 12, md: 3 }}>
-              <Controller name="attendence_percentage" control={control} render={({ field }) => <CustomInputText label="Attendance Percentage" type="number" field={field} />} />
+              <Controller
+                name="attendence_percentage"
+                control={control}
+                render={({ field }) => (
+                  <CustomInputText
+                    label="Attendance Percentage"
+                    type="number"
+                    field={{
+                      ...field,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleNumberChange(e.target.value, field.onChange),
+                    }}
+                  />
+                )}
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 3 }}>
               <Controller name="core_or_elective" control={control} render={({ field }) => <CustomSelect label="Core / Elective" field={field} options={coreElectiveOptions} />} />
@@ -303,7 +388,21 @@ export default function CourseComponentAdd() {
               <Controller name="is_tpi" control={control} render={({ field }) => <CustomInputText label="TPI" field={field} />} />
             </Grid>
             <Grid size={{ xs: 12, md: 3 }}>
-              <Controller name="techorder" control={control} render={({ field }) => <CustomInputText label="Tech Order" type="number" field={field} />} />
+              <Controller
+                name="techorder"
+                control={control}
+                render={({ field }) => (
+                  <CustomInputText
+                    label="Tech Order"
+                    type="number"
+                    field={{
+                      ...field,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleNumberChange(e.target.value, field.onChange),
+                    }}
+                  />
+                )}
+              />
             </Grid>
 
             {/* CHECKBOX ROW 1 */}

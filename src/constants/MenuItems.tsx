@@ -44,7 +44,7 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     icon: 'Students',
     subItems: [
       { text: 'Students List', routePath: '/students/list' },
-      { text: 'Fees List', routePath: '/students/feeslist' },
+      // { text: 'Fees List', routePath: '/students/feeslist' },
     ],
     routePath: '',
   },
@@ -70,6 +70,7 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
       { text: 'Course Components', routePath: '/course-components/list' },
       { text: 'Exams', routePath: '/exam/list' },
       { text: 'Exam Timetable', routePath: '/exam-timetables/list' },
+      { text: 'Mark Entry', routePath: '/students-marks-entry' },
     ],
     routePath: '',
   },
@@ -114,10 +115,10 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     routePath: '/grievances',
   },
   {
-    text: 'Examinations',
+    text: 'Exam Results',
     icon: 'Examinations',
     subItems: [],
-    routePath: '/examinations',
+    routePath: '/exam-results',
   },
   // {
   //   text: 'Feedback & Survey',

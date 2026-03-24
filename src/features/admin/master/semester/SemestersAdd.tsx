@@ -203,7 +203,7 @@ export default function SemestersAdd() {
                                         label="Scheme"
                                         field={field}
                                         options={schemes}
-                                        error={errors.scheme_id}
+                                        // error={errors.scheme_id}
                                         helperText={errors.scheme_id?.message}
                                     />
                                 )}

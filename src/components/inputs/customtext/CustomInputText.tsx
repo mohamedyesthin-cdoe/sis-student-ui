@@ -29,7 +29,7 @@ export default function CustomInputText({
 
   return (
     <TextField
-      {...field}
+      {...(field ?? {})} // ✅ safe spread
       label={label}
       fullWidth
       size="small"
@@ -39,8 +39,8 @@ export default function CustomInputText({
       helperText={helperText}
       multiline={multiline}
       rows={rows}
-      value={field.value ?? defaultValue}
-      onChange={(e) => field.onChange(e.target.value)} // ✅ STRING ONLY
+      value={field?.value ?? defaultValue} // ✅ optional chaining
+      onChange={(e) => field?.onChange?.(e.target.value)} // ✅ safe
       sx={{
         "& .MuiOutlinedInput-root": {
           height: !multiline ? "45px" : "auto",

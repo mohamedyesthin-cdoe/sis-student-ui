@@ -12,7 +12,6 @@ import Grievanceadd from "../features/student/grievances/grievanceadd";
 import DocumemtsCard from "../features/student/documents/documents"
 import StudentCounselling from "../features/student/counselling/counselling";
 import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordForm";
-import Examination from "../features/student/examination/examination";
 import FacultyList from "../features/admin/faculty/FacultyList";
 import FacultyAdd from "../features/admin/faculty/FacultyAdd";
 import SyllabusAdd from "../features/admin/master/syllabus/SyllabusAdd";
@@ -35,6 +34,8 @@ import HallTicket from "../features/admin/master/syllabus/HallTicket";
 import ExamAdd from "../features/admin/master/exam/ExamAdd";
 import ExamTimeTableList from "../features/admin/master/examtimetable/ExamTimeTableList";
 import ExamTimetableAdd from "../features/admin/master/examtimetable/ExamTimeTableAdd";
+import StudentMarksEntry from "../features/admin/student/StudentsMarkScreen";
+import ExamResults from "../features/admin/student/ExamResults";
 
 export const routesConfig = [
   {
@@ -172,9 +173,9 @@ export const routesConfig = [
     ]
   },
   {
-    path: '/examinations',
-    element: <Examination />,
-    breadcrumb: 'Examinations',
+    path: '/exam-results',
+    element: <ExamResults />,
+    breadcrumb: 'Exam Results',
   },
   {
     path: '/documents',
@@ -331,5 +332,10 @@ export const routesConfig = [
         breadcrumb: 'Exam Timetable Edit',
       },
     ]
-  }
+  },
+   {
+    path: '/students-marks-entry',
+    element: <StudentMarksEntry />,
+    breadcrumb: 'Marks Entry',
+  },
 ];

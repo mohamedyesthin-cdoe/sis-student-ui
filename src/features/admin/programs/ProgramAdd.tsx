@@ -44,10 +44,16 @@ export const ProgramSchema: Yup.ObjectSchema<ProgramFormValues> =
     faculty: Yup.string().required("Faculty is required"),
     category: Yup.string().required("Category is required"),
 
+    batch: Yup.string().required("Batch is required"),
+
+    year: Yup.string()
+      .matches(/^\d{4}-\d{4}$/, "Year format must be like 2025-2026")
+      .required("Year is required"),
+
     semesters: Yup.array()
       .of(SemesterSchema)
-      .default([])   // never undefined
-      .required(),   // array must exist (not the fields)
+      .default([])
+      .required(),
   });
 
 
@@ -67,6 +73,8 @@ export interface ProgramFormValues {
   duration: string;
   faculty: string;
   category: string;
+  batch: string;
+  year: string;
   semesters: Semester[];
 }
 
@@ -160,7 +168,9 @@ const ProgramForm = () => {
       duration: "3",
       faculty: "",
       category: "UG",
-      semesters: initialSemesterData, // all numbers
+      batch: "",
+      year: "",
+      semesters: initialSemesterData,
     },
   });
 
@@ -265,6 +275,8 @@ const ProgramForm = () => {
       duration: String(data.duration),
       faculty: data.faculty,
       category: data.category,
+      batch: data.batch,
+      admission_year: data.year,
       fees,
     };
 
@@ -358,7 +370,7 @@ const ProgramForm = () => {
                             { name: "3 Years", id: "3" },
                             { name: "4 Years", id: "4" },
                           ]}
-                          error={errors.duration}
+                          // error={errors.duration}
                           helperText={errors.duration?.message}
                         />
                       )}
@@ -394,8 +406,41 @@ const ProgramForm = () => {
                             { name: "UG", id: "UG" },
                             { name: "PG", id: "PG" },
                           ]}
-                          error={errors.category}
+                          // error={errors.category}
                           helperText={errors.category?.message}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  {/* Batch */}
+                  <Grid size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="batch"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomInputText
+                          label="Batch"
+                          field={field}
+                          error={!!errors.batch}
+                          helperText={errors.batch?.message as string}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  {/* Year */}
+                  <Grid size={{ xs: 12, md: 3 }} my={1}>
+                    <Controller
+                      name="year"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomInputText
+                          label="Year"
+                          field={field}
+                          error={!!errors.year}
+                          helperText={
+                            errors.year?.message || "Example: 2025-2026"
+                          }
                         />
                       )}
                     />

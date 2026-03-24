@@ -178,7 +178,7 @@ export default function SchemesAdd() {
                                         label="Program"
                                         field={field}
                                         options={programs}
-                                        error={errors.programe_id}
+                                        // error={errors.programe_id}
                                         helperText={errors.programe_id?.message}
                                     />
                                 )}

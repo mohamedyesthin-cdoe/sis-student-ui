@@ -3,7 +3,7 @@ import CardComponent from '../../../components/card/Card';
 import { getValue } from '../../../utils/localStorageUtil';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import DownloadIcon from '@mui/icons-material/Download';
-import type { JSX } from 'react';
+import { type JSX } from 'react';
 import StudentIdCard from '../../student/profilecard/profilecard';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -12,7 +12,6 @@ import { useLoader } from '../../../context/LoaderContext';
 import AddressSkeleton from '../../../components/card/skeletonloader/AddressSkeleton';
 import Customtext from '../../../components/inputs/customtext/Customtext';
 import HallTicket from '../master/syllabus/HallTicket';
-
 type TabContent = {
   title: string;
   items: [string, any][];
@@ -33,6 +32,7 @@ export default function StudentDetailTab({
   const theme = useTheme();
   const rollid = Number(getValue('rollid'));
   const { loading } = useLoader();
+  // const [marksData, setMarksData] = useState<any>(null);
 
 
   const field = (label: string, value: any) => (
@@ -437,10 +437,207 @@ export default function StudentDetailTab({
     ),
   };
 
+  const registrationNo = student?.registration_no;
+
+  const getResultPdfPath = (registrationNo?: string) => {
+    if (!registrationNo) return null;
+
+    return `/assets/results/MS-${registrationNo}-1-MS-FEBRUARY-2026.jpg`;
+  };
+
+  const resultImage = getResultPdfPath(registrationNo);
+  console.log(resultImage, "resultImage");
+
+  const examResultsTab: TabContent = {
+    title: "Exam Results",
+    items: [],
+    customRender: () => {
+      if (loading) return <BasicDetailsSkeleton />;
+
+
+
+
+      return (
+        <CardComponent>
+          {/* Header */}
+          <Box className="py-2 px-3">
+            <Customtext fieldName="Exam Results" sx={{ mb: 0 }} />
+          </Box>
+
+          <Divider sx={{ borderColor: "#899000" }} />
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              p: 3, // 👈 increase padding a bit
+              backgroundColor: "#f5f5f5",
+            }}
+          >
+            {resultImage ? (
+              <Box
+                sx={{
+                  width: "100%",
+                  maxWidth: "650px", // ID card style width
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.1)",
+                  backgroundColor: "#fff",
+                }}
+              >
+                <img
+                  src={resultImage}
+                  alt="Exam Result"
+                  style={{
+                    width: "100%",
+                    height: "auto",
+                    display: "block",
+                    objectFit: "contain", // 👈 ensures proper scaling
+                  }}
+                />
+
+                {/* Download Button */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    p: 1,
+                  }}
+                >
+                  <IconButton
+                    onClick={() => handleDownload(resultImage)}
+                    sx={{
+                      backgroundColor: "black",
+                      color: "#fff",
+                      p: 0.6,
+                      "&:hover": { backgroundColor: "#333" },
+                    }}
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                </Box>
+              </Box>
+            ) : (
+              <Customtext fieldName="No Result Available" />
+            )}
+          </Box>
+        </CardComponent>
+      );
+    },
+  };
+
+  // const examResultsTab: TabContent = {
+  //   title: "Exam Results",
+  //   items: [],
+  //   customRender: () => {
+  //     if (loading) return <BasicDetailsSkeleton />;
+
+  //     const marks = marksData?.marks || [];
+
+  //     // const total = marks.reduce(
+  //     //   (sum: number, m: any) => sum + (m.final_marks || 0),
+  //     //   0
+  //     // );
+  //     // const avg = marks.length ? (total / marks.length).toFixed(2) : 0;
+
+  //     return (
+  //       <CardComponent>
+  //         {/* Header */}
+  //         <Box className="py-2 px-3 flex justify-between items-center">
+  //           <Customtext fieldName="Exam Results" sx={{ mb: 0 }} />
+  //           {/* <Box className="text-sm text-gray-500">
+  //           Total: <b>{total}</b> | Avg: <b>{avg}</b>
+  //         </Box> */}
+  //         </Box>
+
+  //         <Divider sx={{ borderColor: "#899000" }} />
+
+  //         <CardComponent p={2} sx={{ boxShadow: "none", border: "none", mx: 10, mt: 2 }}>
+
+  //           {/* Table */}
+  //           <TableContainer
+  //             component={Paper}
+  //             sx={{
+  //               borderRadius: 3,
+  //               overflow: "hidden",
+  //               boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+  //             }}
+  //           >
+  //             <Table>
+  //               <TableHead>
+  //                 <TableRow sx={{ backgroundColor: "#105c8e" }}>
+  //                   <TableCell sx={{ color: "white", fontWeight: 600 }}>
+  //                     S.No
+  //                   </TableCell>
+  //                   <TableCell sx={{ color: "white", fontWeight: 600 }}>
+  //                     Course
+  //                   </TableCell>
+  //                   <TableCell sx={{ color: "white", fontWeight: 600 }}>
+  //                     Marks
+  //                   </TableCell>
+  //                 </TableRow>
+  //               </TableHead>
+
+  //               <TableBody>
+  //                 {marks.length > 0 ? (
+  //                   marks.map((m: any, index: number) => (
+  //                     <TableRow
+  //                       key={m.id}
+  //                       sx={{
+  //                         "&:hover": {
+  //                           backgroundColor: "#f5f5f5",
+  //                         },
+  //                       }}
+  //                     >
+  //                       <TableCell>{index + 1}</TableCell>
+  //                       <TableCell>{m.course_name}</TableCell>
+  //                       <TableCell>{m.final_marks}</TableCell>
+  //                     </TableRow>
+  //                   ))
+  //                 ) : (
+  //                   <TableRow>
+  //                     <TableCell colSpan={3} align="center">
+  //                       No Results Available
+  //                     </TableCell>
+  //                   </TableRow>
+  //                 )}
+  //               </TableBody>
+  //             </Table>
+  //           </TableContainer>
+
+  //         </CardComponent>
+  //       </CardComponent>
+  //     );
+  //   },
+  // };
+
 
 
   const regPrefix = student?.registration_no?.substring(0, 3);
   const hideDebTab = regPrefix === "X02" || regPrefix === "X03";
+
+  // ✅ PROGRAM + PAYMENT CONDITION
+
+  const cutoffDate = new Date("2025-10-16");
+
+  // Find semester fee payment
+  const semesterPayment = student?.payments?.find(
+    (p: any) => p.payment_type === "semester_fee"
+  );
+
+  // Normalize payment date safely
+  const paymentDate = semesterPayment?.payment_date
+    ? new Date(semesterPayment.payment_date)
+    : null;
+
+  const isBlockedStudent = student?.registration_no === "O0525003";
+
+  const isEligibleForResults =
+    student?.program_id === 1500038 &&
+    paymentDate !== null &&
+    paymentDate <= cutoffDate &&
+    !isBlockedStudent;
 
   const admintabs = [
     'Basic Info',
@@ -448,14 +645,17 @@ export default function StudentDetailTab({
     ...(hideDebTab ? [] : ['DEB']),
     'Documents',
     'ID Card',
-    'Hall Ticket'
+    'Hall Ticket',
+    ...(isEligibleForResults ? ['Exam Results'] : [])
   ];
 
   const studenttabs = [
     'Basic Info',
     ...(hideDebTab ? [] : ['DEB']),
     'ID Card',
-    'Hall Ticket'
+    'Hall Ticket',
+    // ❌ REMOVE THIS LINE
+    // ...(isEligibleForResults ? ['Exam Results'] : [])
   ];
 
   const tabs = rollid === 2 ? studenttabs : admintabs;
@@ -465,7 +665,9 @@ export default function StudentDetailTab({
         basicInfoTab,
         ...(hideDebTab ? [] : [debTab]),
         IDCardTab,
-        HallTicketTab,   // ✅ ADD HERE
+        HallTicketTab,
+        // ❌ REMOVE THIS
+        // ...(isEligibleForResults ? [examResultsTab] : [])
       ]
       : [
         basicInfoTab,
@@ -473,10 +675,35 @@ export default function StudentDetailTab({
         ...(hideDebTab ? [] : [debTab]),
         documentsTab,
         IDCardTab,
-        HallTicketTab,   // ✅ ADD HERE
+        HallTicketTab,
+        ...(isEligibleForResults ? [examResultsTab] : [])
       ];
 
 
+  // useEffect(() => {
+  //   if (!isEligibleForResults) return;
+
+  //   if (activeTab !== tabs.indexOf("Exam Results")) return;
+
+  //   if (!student?.id) return;
+
+  //   const fetchMarks = async () => {
+  //     try {
+  //       const res = await apiRequest({
+  //         url: `${ApiRoutes.GETMARKSBYID}/${student.id}/marks`,
+  //         method: "get",
+  //       });
+
+  //       setMarksData(res);
+
+  //     } catch (err) {
+  //       console.error("Error fetching marks", err);
+  //     }
+  //   };
+
+  //   fetchMarks();
+
+  // }, [activeTab, student, isEligibleForResults]);
 
   return (
     <>

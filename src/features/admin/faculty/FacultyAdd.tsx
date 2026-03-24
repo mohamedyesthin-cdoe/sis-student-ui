@@ -348,7 +348,7 @@ export default function FacultyAdd() {
                             label="Employment Type"
                             field={field}
                             options={employmentOptions}
-                            error={errors.employment_type}
+                            // error={errors.employment_type}
                             helperText={errors.employment_type?.message}
                           />
                         )}

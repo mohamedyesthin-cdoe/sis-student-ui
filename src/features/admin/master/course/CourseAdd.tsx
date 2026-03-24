@@ -235,7 +235,7 @@ export default function CourseAdd() {
                     label="Semester"
                     field={field}
                     options={semesters}
-                    error={errors.semester_id}
+                    // error={errors.semester_id}
                     helperText={errors.semester_id?.message}
                   />
                 )}

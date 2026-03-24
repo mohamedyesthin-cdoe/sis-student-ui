@@ -41,5 +41,7 @@ export const ApiRoutes = {
   COURSES:'courses',
   COURSE_COMPONENTS:'course-components',
   EXAMS:'exams',
-  EXAMTIMETABLES:'exam-timetables'
+  EXAMTIMETABLES:'exam-timetables',
+  MARKSADD:'student/student-marks/',
+  GETMARKSBYID:'student/students/'
 };

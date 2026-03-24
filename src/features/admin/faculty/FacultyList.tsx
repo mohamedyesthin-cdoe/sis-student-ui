@@ -69,7 +69,7 @@ export default function FacultyList() {
 
   // Navigate to Add/Edit
   const handleAdd = () => navigate("/faculty/add");
-  const handleEdit = (row: any) => navigate(`/faculty/add?id=${row.employee_id}`);
+  const handleEdit = (row: any) => navigate(`/faculty/add?id=${row.id}`);
 
   return (
     <>
