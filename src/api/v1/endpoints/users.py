@@ -15,6 +15,10 @@ from src.core.security.jwt import create_reset_token
 from src.utils.email import send_reset_email
 from src.utils.hash import verify_password, hash_password
 import asyncio
+from src.schemas.user import (
+    ForgotPasswordRequest,
+    ResetPasswordRequest
+)
 
 router = APIRouter()
 
@@ -61,16 +65,16 @@ def bulk_create_users(
             detail=f"Failed to bulk create users: {str(e)}"
         )
     
-@router.post("/forgot-password")
-def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    user = db.query(User).filter(User.email == request.email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+# @router.post("/forgot-password")
+# def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     user = db.query(User).filter(User.email == request.email).first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail="User not found")
 
-    token = create_reset_token(user.email)
-    reset_link = f"https://sis.sriramachandradigilearn.edu.in/reset-password?token={token}"
-    asyncio.run(send_reset_email(user.email, reset_link))
-    return {"message": "Password reset link sent to your email"}
+#     token = create_reset_token(user.email)
+#     reset_link = f"https://sis.sriramachandradigilearn.edu.in/reset-password?token={token}"
+#     asyncio.run(send_reset_email(user.email, reset_link))
+#     return {"message": "Password reset link sent to your email"}
 
 @router.post('/change-password')
 def change_password(
@@ -91,3 +95,46 @@ def change_password(
     return message
     
 
+# PUBLIC endpoint — no login required
+@router.post("/forgot-password")
+def forgot_password(
+    request: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        service = UserService(db)
+
+        return service.forgot_password(
+            request.email
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to process forgot password: {str(e)}"
+        )
+    
+@router.post("/reset-password")
+def reset_password(
+    request: ResetPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        service = UserService(db)
+
+        return service.reset_password(
+            request.token,
+            request.new_password
+        )
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to reset password: {str(e)}"
+        )

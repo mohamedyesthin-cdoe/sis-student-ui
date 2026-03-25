@@ -168,3 +168,22 @@ class UserRepository:
             )
             .first()
         )
+    def update_password_by_email(self, db: Session, email: str, new_password: str):
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+        )
+        try:
+            user.hashed_password = hash_password(new_password)
+            db.commit()
+            db.refresh(user)
+            return user
+        except SQLAlchemyError as e:
+            db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error while updating password: {str(e)}",
+        )
