@@ -223,6 +223,10 @@ class MasterRepository:
                 detail=f"Database error while fetching syllabuses: {str(e)}",
             )
         
+        # =========================
+    # Department Methods
+    # =========================
+
     def get_department_by_name(self, name: str):
         try:
             return self.db.query(Department).filter(Department.name == name).first()
@@ -231,7 +235,8 @@ class MasterRepository:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching department by name: {str(e)}",
             )
-        
+
+
     def get_all_departments(self) -> List[Department]:
         try:
             return self.db.query(Department).all()
@@ -240,20 +245,30 @@ class MasterRepository:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching departments: {str(e)}",
             )
-        
+
+
     def get_department_by_id(self, department_id: int) -> Optional[Department]:
         try:
-            return self.db.query(Department).filter(Department.id == department_id).first()
+            return (
+                self.db.query(Department)
+                .filter(Department.id == department_id)
+                .first()
+            )
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching department by id: {str(e)}",
             )
-        
+
+
     def update_department(self, department_id: int, data: dict) -> Department:
         department = self.get_department_by_id(department_id)
+
         if not department:
-            raise HTTPException(status_code=404, detail="Department not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found"
+            )
 
         try:
             for key, value in data.items():
@@ -261,11 +276,43 @@ class MasterRepository:
 
             self.db.commit()
             self.db.refresh(department)
+
             return department
+
         except SQLAlchemyError as e:
             self.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while updating department: {str(e)}",
             )
-  
+
+
+    def delete_department(self, department_id: int) -> None:
+        department = self.get_department_by_id(department_id)
+
+        if not department:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Department not found"
+            )
+
+        try:
+            # Prevent delete if staff exists
+            if department.staff:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Cannot delete department. Staff are assigned to this department."
+                )
+
+            self.db.delete(department)
+            self.db.commit()
+
+        except HTTPException:
+            raise
+
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while deleting department: {str(e)}",
+            )

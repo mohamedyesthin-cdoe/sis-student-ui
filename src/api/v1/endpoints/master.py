@@ -232,3 +232,25 @@ async def update_department(department_id: int, department_update: DepartmentUpd
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error while updating department: {str(e)}",
         )
+@router.delete(
+    "/department/delete/{department_id}",
+    response_model=DepartmentDeleteResponse,
+    status_code=status.HTTP_200_OK
+)
+async def delete_department(
+    department_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
+):
+    try:
+        service = MasterService(db)
+        return service.delete_department(department_id)
+
+    except HTTPException:
+        raise
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )

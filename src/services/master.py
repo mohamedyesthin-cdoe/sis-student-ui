@@ -350,3 +350,19 @@ class MasterService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while updating department: {str(e)}",
             )
+        
+    def delete_department(self, department_id: int) -> DepartmentDeleteResponse:
+        try:
+            self.repo.delete_department(department_id)
+            return DepartmentDeleteResponse(
+                message="Department deleted successfully",
+                code=status.HTTP_200_OK,
+                status=True
+            )
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while deleting department: {str(e)}",
+            )

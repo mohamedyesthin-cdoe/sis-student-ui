@@ -263,3 +263,8 @@ class DepartmentUpdateResponse(BaseModel):
     code: int
     status: bool
     data: DepartmentBase
+    
+class DepartmentDeleteResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
