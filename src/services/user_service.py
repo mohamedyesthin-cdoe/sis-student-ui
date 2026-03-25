@@ -35,7 +35,7 @@ class UserService:
         token = create_reset_token(user.email)
 
         reset_link = (
-            f"https://sis.sriramachandradigilearn.edu.in/reset-password"
+            f"https://uat.sriramachandradigilearn.edu.in/reset-password"
             f"?token={token}"
         )
 
