@@ -70,7 +70,7 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
       { text: 'Course Components', routePath: '/course-components/list' },
       { text: 'Exams', routePath: '/exam/list' },
       { text: 'Exam Timetable', routePath: '/exam-timetables/list' },
-      { text: 'Mark Entry', routePath: '/students-marks-entry' },
+      // { text: 'Mark Entry', routePath: '/students-marks-entry' },
     ],
     routePath: '',
   },
