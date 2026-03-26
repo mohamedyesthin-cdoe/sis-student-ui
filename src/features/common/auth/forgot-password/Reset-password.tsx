@@ -74,7 +74,7 @@ export default function ResetPassword() {
     try {
       setLoading(true);
 
-      await apiRequest({
+      const response = await apiRequest({
         url: ApiRoutes.RESETPASSWORD,
         method: "post",
         data: {
@@ -83,8 +83,7 @@ export default function ResetPassword() {
         },
       });
 
-      showAlert("Password reset successfully!", "success");
-
+      showAlert(String(response.message), "success");
       setNewPassword("");
       setConfirmPassword("");
 
@@ -95,7 +94,7 @@ export default function ResetPassword() {
       console.error(error);
 
       showAlert(
-        error?.response?.data?.message || "Failed to reset password",
+        error?.message,
         "error"
       );
     } finally {

@@ -34,7 +34,7 @@ function ForgotPassword() {
     try {
       setLoading(true);
 
-      await apiRequest({
+      const response = await apiRequest({
         url: ApiRoutes.FORGOTPASSWORD,
         method: "post",
         data: {
@@ -43,14 +43,12 @@ function ForgotPassword() {
       });
 
       showAlert(
-        "Password reset link has been sent to your email",
+        String(response.message),
         "success"
       );
-    } catch (error) {
-      console.error(error);
-
+    } catch (error: any) {
       showAlert(
-        "Unable to process request. Please try again.",
+        String(error.message),
         "error"
       );
     } finally {
