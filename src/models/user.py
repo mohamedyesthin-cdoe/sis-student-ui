@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table, DateTime
 from sqlalchemy.orm import relationship
 from src.db import Base
 
@@ -31,6 +31,9 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
+    reset_token = Column(String(255), nullable=True)
+    reset_token_expiry = Column(DateTime, nullable=True)
+    reset_token_used = Column(Boolean, default=False, nullable=False)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=True, unique=True)
     #faculty_id = Column(Integer, nullable=True)
 
