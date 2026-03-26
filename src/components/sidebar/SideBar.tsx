@@ -20,6 +20,8 @@ import { getValue } from '../../utils/localStorageUtil';
 import Customtext from '../inputs/customtext/Customtext';
 
 
+
+
 interface SidebarProps {
   isDrawer?: boolean;
   open?: boolean;
@@ -137,6 +139,35 @@ export default function Sidebar({
   };
 
 
+const registrationNo = getValue("username");
+
+const shouldShowExamResults = () => {
+  if (!registrationNo) return false;
+
+  // Extract numeric part after O0
+  // Example: O0525001 -> 525001
+  const numericPart = parseInt(registrationNo.replace("O0", ""), 10);
+
+  const start = 525001; // O0525001
+  const end = 525024;   // O0525024
+
+  const isInRange = numericPart >= start && numericPart <= end;
+
+  const isExcluded = registrationNo === "O0525003";
+
+  return isInRange && !isExcluded;
+};
+
+  const filteredMenuItems =
+  rollId == "1"
+    ? ADMIN_MENU_ITEMS
+    : STUDENT_MENU_ITEMS.filter((item) => {
+        if (item.text === "Exam Results") {
+          return shouldShowExamResults();
+        }
+        return true;
+      });
+
 
 
   const drawerContent = (
@@ -169,7 +200,7 @@ export default function Sidebar({
         }}
       >
 
-        {(rollId == '1' ? ADMIN_MENU_ITEMS : STUDENT_MENU_ITEMS).map((item) => {
+        {(filteredMenuItems).map((item) => {
           const hasChildren = item.subItems.length > 0;
           const isOpen = openItems[item.text] || false;
           const isActive = selectedItem === item.text || selectedParent === item.text;

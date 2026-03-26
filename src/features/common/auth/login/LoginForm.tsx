@@ -1,147 +1,136 @@
 import { useState } from "react";
-import { Mail } from 'lucide-react';
-import { Button, TextField, Typography, Paper, Box, useTheme } from '@mui/material'
+import { Mail } from "lucide-react";
+import {
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Box,
+  useTheme,
+  Link
+} from "@mui/material";
+
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useAlert } from "../../../../context/AlertContext";
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from "jwt-decode";
 import { setValue } from "../../../../utils/localStorageUtil";
-import bgimage from '/assets/images/bgimage.png'
+import bgimage from "/assets/images/bgimage.png";
 import { encryptPassword } from "../../../../utils/encryption";
 import { apiRequest } from "../../../../utils/ApiRequest";
 import { ApiRoutes } from "../../../../constants/ApiConstants";
-import logo2 from '/assets/logo2.png';
+import logo2 from "/assets/logo2.png";
 import Customtext from "../../../../components/inputs/customtext/Customtext";
+import { useNavigate } from "react-router-dom";
 
+interface FormValues {
+  username: string;
+  password: string;
+}
+
+interface JwtPayload {
+  username: string;
+  exp?: number;
+  iat?: number;
+  [key: string]: any;
+}
 
 function LoginPage() {
-
-  // const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const theme = useTheme()
-  interface JwtPayload {
-    username: string;
-    exp?: number;
-    iat?: number;
-    [key: string]: any;
-  }
-  // const handleData = async (data: any) => {
-  //   try {
-  //     const userName = data.username;
-  //     const password = data.password;
+  const theme = useTheme();
+  const navigate = useNavigate();
 
-  //     // 🔒 Comment out the real API call for now
-  //     // const encryptedPassword = encryptPassword(password);
-  //     // const result = await apiRequest({
-  //     //   url: ApiRoutes.LOGIN,
-  //     //   method: 'post',
-  //     //   data: {
-  //     //     username: userName,
-  //     //     password: encryptedPassword,
-  //     //     is_encrypted: true,
-  //     //   },
-  //     // });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  //     // setValue('ACCESS_TOKEN_KEY', result.access_token);
-  //     // const user = jwtDecode<JwtPayload>(result.access_token);
+  const togglePassword = () =>
+    setShowPassword(!showPassword);
 
-  //     // 🧠 Temporary local login simulation
-  //     if (userName === "admin" && password === "admin@123") {
-  //       // Admin role
-  //       const adminToken =
-  //         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiaGFyaUtyaXNobmFubXNkQGdtYWlsLmNvbSIsInN0dWRlbnRfaWQiOm51bGwsImdyb3VwX2lkIjoxLCJleHAiOjE3NjA0MzUyNTF9.E50MpzXDWnviiZ6OYwhrnV-jwgYQpzWgi2J23GrZzSc'
-  //       const admin = jwtDecode<JwtPayload>(adminToken);
-  //       setValue('ACCESS_TOKEN_KEY', adminToken);
-  //       setValue('username', admin.username);
-  //       setValue('email', admin.email);
-  //       setValue('rollid', admin.group_id);
-  //       navigate("/dashboard");
-  //       // showAlert('Admin login successful!', 'success');
+  const schema = Yup.object().shape({
+    username: Yup.string()
+      .required("Username is required")
+      .matches(
+        /^[a-zA-Z0-9._-]{3,}$/,
+        "Enter a valid username"
+      ),
+    password: Yup.string().required(
+      "Password is required"
+    ),
+  });
 
-  //     } else if (userName === "O0525003" && password === "EQvqp@R#") {
-  //       // Student role
-  //       const studentToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsInVzZXJuYW1lIjoiTzA1MjUwMDMiLCJlbWFpbCI6Im1vaGFtZWQueWVzdGhpbkBzcmlyYW1hY2hhbmRyYS5lZHUuaW4iLCJzdHVkZW50X2lkIjozMSwiZ3JvdXBfaWQiOjIsImV4cCI6MTc2MDQzNTUwNn0.RqTiD8OIyRfqj9gArIVfT-f4Qp7g0zLd5VzGq7PBoPc'
-  //       const user = jwtDecode<JwtPayload>(studentToken);
-  //       setValue('ACCESS_TOKEN_KEY', studentToken);
-  //       setValue('username', user.username);
-  //       setValue('email', user.email);
-  //       setValue('rollid', user.group_id);
-  //       setValue('student_id', user.student_id)
-  //       navigate("/dashboard/student");
-  //       // showAlert('Student login successful!', 'success');
-  //       console.log("user---", user);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: yupResolver(schema),
+  });
 
-
-  //     } else {
-  //       // Invalid credentials
-  //       showAlert('Invalid username or password', 'error');
-  //     }
-
-
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     showAlert('Login failed, please check your credentials.', 'error');
-  //   }
-  // };
-
-
-  const handleData = async (data: any) => {
+  const handleData = async (
+    data: FormValues
+  ) => {
     try {
-      const encryptedPassword = encryptPassword(data.password);
-      const userName = data.username;
+      setLoading(true);
+
+      const encryptedPassword =
+        encryptPassword(data.password);
 
       const result = await apiRequest({
         url: ApiRoutes.LOGIN,
-        method: 'post',
+        method: "post",
         data: {
-          username: userName,
+          username: data.username,
           password: encryptedPassword,
           is_encrypted: true,
         },
       });
 
+      setValue(
+        "ACCESS_TOKEN_KEY",
+        result.access_token
+      );
 
-      setValue('ACCESS_TOKEN_KEY', result.access_token);
-      const user = jwtDecode<JwtPayload>(result.access_token);
-      setValue('username', user.username);
-      setValue('email', user.email);
-      setValue('rollid', user.group_id);
-      setValue('student_id', user.student_id)
-      setValue('gender', user?.gender)
-      setValue('token_time', JSON.stringify(user?.exp))
-      console.log(user);
+      const user = jwtDecode<JwtPayload>(
+        result.access_token
+      );
 
+      setValue("username", user.username);
+      setValue("email", user.email);
+      setValue("rollid", user.group_id);
+      setValue("student_id", user.student_id);
+      setValue("gender", user?.gender);
+      setValue(
+        "token_time",
+        JSON.stringify(user?.exp)
+      );
 
+      showAlert(
+        "Login successful",
+        "success"
+      );
+
+      /* Role-based navigation */
+      // if (user.group_id === 1) {
+      //   navigate("/dashboard");
+      // } else {
+      //   navigate("/dashboard/student");
+      // }
     } catch (error) {
-      console.error('Login error:', error);
-      showAlert('Login failed, please check your credentials.', 'error');
+      console.error(
+        "Login error:",
+        error
+      );
+
+      showAlert(
+        "Invalid username or password",
+        "error"
+      );
+    } finally {
+      setLoading(false);
     }
   };
-
-
-
-  // Updated Yup schema
-  let schema = Yup.object().shape({
-    username: Yup.string()
-      .required("Username is required")
-      .matches(
-        /^[a-zA-Z0-9._-]{3,}$/,
-        "Enter a valid username (at least 3 characters, letters/numbers/._-)"
-      ),
-    password: Yup.string().required("Password is required"),
-  });
-
-
-
-  let { register, handleSubmit, formState: { errors }, } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-
-  const [showPassword, setShowPassword] = useState(false);
-  const togglePassword = () => setShowPassword(!showPassword);
 
   return (
     <Box className="min-h-screen flex items-center justify-end bg-gray-100 relative px-4 sm:px-6 lg:px-12">
@@ -150,20 +139,20 @@ function LoginPage() {
       <img
         src={logo2}
         alt="Logo"
-        className="absolute top-6 left-6 w-60 sm:w-60 md:w-80"
+        className="absolute top-6 left-6 w-60 md:w-80"
       />
 
-      {/* Illustrations - only shown on xl screens */}
+      {/* Background */}
       <Box className="hidden xl:block absolute inset-0">
         <img
           src={bgimage}
           alt="auth-login-cover"
           className="
-    absolute 
-    top-1/6 
-    md:w-[600px] md:h-[600px] md:left-[10%] 
-    sm:w-[300px] sm:h-[300px] sm:left-[5%]
-  "
+            absolute
+            top-1/6
+            md:w-[600px] md:h-[600px] md:left-[10%]
+            sm:w-[300px] sm:h-[300px] sm:left-[5%]
+          "
         />
 
         <img
@@ -173,85 +162,127 @@ function LoginPage() {
         />
       </Box>
 
-      {/* Right Aligned Form Card */}
+      {/* Form */}
       <Box className="w-full max-w-md md:mr-4">
-        <Paper elevation={6} className="p-8" component="form"
-          onSubmit={handleSubmit(handleData)}>
-          <Typography variant="h5" fontWeight="500" gutterBottom>
+        <Paper
+          elevation={6}
+          className="p-8"
+          component="form"
+          onSubmit={handleSubmit(handleData)}
+        >
+          <Typography
+            variant="h5"
+            fontWeight="500"
+            gutterBottom
+          >
             Welcome to SIS! 👋
           </Typography>
-          <Customtext variantName='body1' fieldName={'Please sign-in to your account'}
-           sx={{ color: theme.palette.custom.accent }} />
 
+          <Customtext
+            variantName="body1"
+            fieldName="Please sign-in to your account"
+            sx={{
+              color:
+                theme.palette.custom.accent,
+            }}
+          />
+
+          {/* Username */}
           <Box className="relative mb-4 mt-7">
-
             <TextField
               fullWidth
               label="Username"
               variant="outlined"
               {...register("username")}
               error={!!errors.username}
-              helperText={errors.username?.message}
+              helperText={
+                errors.username?.message
+              }
             />
-            <Mail className="absolute right-3 top-3 w-5 h-5 text-muted pointer-events-none" />
+
+            <Mail className="absolute right-3 top-3 w-5 h-5 pointer-events-none" />
           </Box>
 
-
-
-          <Box className="relative mb-4">
+          {/* Password */}
+          <Box className="relative mb-2">
             <TextField
               fullWidth
               label="Password"
-              type={showPassword ? "text" : "password"}
+              type={
+                showPassword
+                  ? "text"
+                  : "password"
+              }
               variant="outlined"
               {...register("password")}
               error={!!errors.password}
-              helperText={errors.password?.message}
+              helperText={
+                errors.password?.message
+              }
             />
 
             {showPassword ? (
               <FiEye
-                className="absolute right-3 top-3 w-5 h-5 text-muted cursor-pointer"
-                onClick={togglePassword}
+                className="absolute right-3 top-3 w-5 h-5 cursor-pointer"
+                onClick={
+                  togglePassword
+                }
               />
             ) : (
               <FiEyeOff
-                className="absolute right-3 top-3 w-5 h-5 text-muted cursor-pointer"
-                onClick={togglePassword}
+                className="absolute right-3 top-3 w-5 h-5 cursor-pointer"
+                onClick={
+                  togglePassword
+                }
               />
-
             )}
           </Box>
 
-          {/* <Box className="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <FormControlLabel control={<Checkbox />} label="Remember Me" />
-            <Link href="#" underline="hover" className="mt-2 sm:mt-0">
+          {/* Forgot Password */}
+          <Box className="flex justify-end mb-4">
+            <Link
+              component="button"
+              type="button"
+              variant="body2"
+              underline="hover"
+              onClick={() =>
+                navigate(
+                  "/forgot-password"
+                )
+              }
+              sx={{
+                color:
+                  theme.palette.primary.main,
+                fontWeight: 500,
+              }}
+            >
               Forgot Password?
             </Link>
-          </Box> */}
+          </Box>
 
+          {/* Submit */}
           <Button
             type="submit"
             variant="contained"
             fullWidth
+            disabled={loading}
             sx={{
-              backgroundColor: (theme) => theme.palette.secondary.main,
-              textTransform: 'none',
+              backgroundColor:
+                theme.palette
+                  .secondary.main,
+              textTransform: "none",
               py: 1.5,
               fontWeight: 600,
-              '&:hover': {
-                backgroundColor: (theme) => theme.palette.primary.dark,
-              },
-              mt: 1
+              mt: 1,
             }}
           >
-            Sign in
+            {loading
+              ? "Signing in..."
+              : "Sign in"}
           </Button>
-
         </Paper>
       </Box>
     </Box>
-
   );
 }
 

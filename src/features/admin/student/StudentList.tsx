@@ -92,17 +92,31 @@ export default function StudentTable() {
     const yyyy = date.getFullYear();
     return `${dd}-${mm}-${yyyy}`;
   };
+ 
+
   const getSemesterPaymentDate = (payments?: any[]) => {
-    if (!Array.isArray(payments)) return "-";
+  if (!Array.isArray(payments)) return "-";
 
-    const semesterPayment = payments.find(
-      (p) => p.payment_type === "semester_fee"
-    );
+  // First try semester fee
+  const semesterPayment = payments.find(
+    (p) => p.payment_type === "semester_fee"
+  );
 
-    return semesterPayment?.payment_date
-      ? formatDate(semesterPayment.payment_date)
-      : "-";
-  };
+  if (semesterPayment?.payment_date) {
+    return formatDate(semesterPayment.payment_date);
+  }
+
+  // Fallback to application fee
+  const applicationPayment = payments.find(
+    (p) => p.payment_type === "application_fee"
+  );
+
+  if (applicationPayment?.payment_date) {
+    return formatDate(applicationPayment.payment_date);
+  }
+
+  return "-";
+};
 
 
 

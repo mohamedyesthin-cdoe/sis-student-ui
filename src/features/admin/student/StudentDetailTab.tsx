@@ -621,18 +621,39 @@ export default function StudentDetailTab({
 
   const cutoffDate = new Date("2025-10-16");
 
-  // Find semester fee payment
-  const semesterPayment = student?.payments?.find(
-    (p: any) => p.payment_type === "semester_fee"
-  );
+  // Function to safely get payment date
+  const getPaymentDate = (payments?: any[]) => {
+    if (!Array.isArray(payments)) return null;
 
-  // Normalize payment date safely
-  const paymentDate = semesterPayment?.payment_date
-    ? new Date(semesterPayment.payment_date)
-    : null;
+    // 1️⃣ Try semester fee first
+    const semesterPayment = payments.find(
+      (p) => p.payment_type === "semester_fee"
+    );
 
-  const isBlockedStudent = student?.registration_no === "O0525003";
+    if (semesterPayment?.payment_date) {
+      return new Date(semesterPayment.payment_date);
+    }
 
+    // 2️⃣ Fallback to application fee
+    const applicationPayment = payments.find(
+      (p) => p.payment_type === "application_fee"
+    );
+
+    if (applicationPayment?.payment_date) {
+      return new Date(applicationPayment.payment_date);
+    }
+
+    return null;
+  };
+
+  // Get payment date
+  const paymentDate = getPaymentDate(student?.payments);
+
+  // Block only this student
+  const isBlockedStudent =
+    student?.registration_no === "O0525003";
+
+  // Final eligibility rule
   const isEligibleForResults =
     student?.program_id === 1500038 &&
     paymentDate !== null &&
@@ -654,11 +675,10 @@ export default function StudentDetailTab({
     ...(hideDebTab ? [] : ['DEB']),
     'ID Card',
     'Hall Ticket',
-    // ❌ REMOVE THIS LINE
-    // ...(isEligibleForResults ? ['Exam Results'] : [])
   ];
 
   const tabs = rollid === 2 ? studenttabs : admintabs;
+
   const tabContents =
     rollid === 2
       ? [
@@ -666,8 +686,6 @@ export default function StudentDetailTab({
         ...(hideDebTab ? [] : [debTab]),
         IDCardTab,
         HallTicketTab,
-        // ❌ REMOVE THIS
-        // ...(isEligibleForResults ? [examResultsTab] : [])
       ]
       : [
         basicInfoTab,
@@ -678,7 +696,6 @@ export default function StudentDetailTab({
         HallTicketTab,
         ...(isEligibleForResults ? [examResultsTab] : [])
       ];
-
 
   // useEffect(() => {
   //   if (!isEligibleForResults) return;
