@@ -343,11 +343,11 @@ def create_academic_year(data: AcademicYearCreate, db: Session = Depends(get_db)
         )
 
 
-@router.get("/academic-year/{academic_year_id}", response_model=AcademicYearResponse)
-def get_academic_year(academic_year_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+@router.get("/academic-year/list", response_model=List[AcademicYearResponse])
+def list_academic_years(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
-        return service.get_academic_year(academic_year_id)
+        return service.list_academic_years()
     except HTTPException:
         raise
     except Exception as e:
@@ -357,11 +357,11 @@ def get_academic_year(academic_year_id: int, db: Session = Depends(get_db), curr
         )
 
 
-@router.get("/academic-year/list", response_model=List[AcademicYearResponse])
-def list_academic_years(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+@router.get("/academic-year/{academic_year_id}", response_model=AcademicYearResponse)
+def get_academic_year(academic_year_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
-        return service.list_academic_years()
+        return service.get_academic_year(academic_year_id)
     except HTTPException:
         raise
     except Exception as e:
@@ -499,11 +499,11 @@ def create_semester_master(data: SemesterMasterCreate, db: Session = Depends(get
         )
 
 
-@router.get("/semester-master/{semester_id}", response_model=SemesterMasterResponse)
-def get_semester_master(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+@router.get("/semester-master/list", response_model=List[SemesterMasterResponse])
+def list_all_semester_masters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
-        return service.get_semester_master(semester_id)
+        return service.list_all_semester_masters()
     except HTTPException:
         raise
     except Exception as e:
@@ -527,11 +527,11 @@ def list_semesters_by_type(program_type: str, db: Session = Depends(get_db), cur
         )
 
 
-@router.get("/semester-master/list", response_model=List[SemesterMasterResponse])
-def list_all_semester_masters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+@router.get("/semester-master/{semester_id}", response_model=SemesterMasterResponse)
+def get_semester_master(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
         service = MasterService(db)
-        return service.list_all_semester_masters()
+        return service.get_semester_master(semester_id)
     except HTTPException:
         raise
     except Exception as e:
