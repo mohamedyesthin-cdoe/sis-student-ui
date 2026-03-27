@@ -5,7 +5,8 @@ from fastapi import HTTPException, status
 from src.repositories.base import BaseRepository
 from src.models.master import (
     Programe, FeeDetails, CourseCode, 
-    CourseCategory, CourseTitle, Subjects, Department
+    CourseCategory, CourseTitle, Subjects, Department, ProgramPaymentWorkflowScope,
+    AcademicYear, Batch, SemesterMaster
 )
 from src.schemas.master import (
     ProgrameCreate, ProgrameUpdate, ProgrameResponse, CourseCodeResponse,
@@ -316,3 +317,209 @@ class MasterRepository:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while deleting department: {str(e)}",
             )
+
+    def upsert_program_payment_workflow_scope(
+        self,
+        programe_id: int,
+        batch: str,
+        admission_year: str,
+        semester: str,
+        enabled: bool
+    ) -> ProgramPaymentWorkflowScope:
+        scope = (
+            self.db.query(ProgramPaymentWorkflowScope)
+            .filter(
+                ProgramPaymentWorkflowScope.program_id == programe_id,
+                ProgramPaymentWorkflowScope.batch == batch,
+                ProgramPaymentWorkflowScope.admission_year == admission_year,
+                ProgramPaymentWorkflowScope.semester == semester,
+            )
+            .first()
+        )
+
+        if scope:
+            scope.enabled = enabled
+            self.db.commit()
+            self.db.refresh(scope)
+            return scope
+
+        scope = ProgramPaymentWorkflowScope(
+            program_id=programe_id,
+            batch=batch,
+            admission_year=admission_year,
+            semester=semester,
+            enabled=enabled,
+        )
+        self.db.add(scope)
+        self.db.commit()
+        self.db.refresh(scope)
+        return scope
+
+    def list_program_payment_workflow_scopes(self, programe_id: int = None) -> List[ProgramPaymentWorkflowScope]:
+        query = self.db.query(ProgramPaymentWorkflowScope)
+        if programe_id is not None:
+            query = query.filter(ProgramPaymentWorkflowScope.program_id == programe_id)
+        return (
+            query.order_by(
+                ProgramPaymentWorkflowScope.batch.asc(),
+                ProgramPaymentWorkflowScope.admission_year.asc(),
+                ProgramPaymentWorkflowScope.semester.asc(),
+            )
+            .all()
+        )
+
+    def get_program_payment_workflow_scope(
+        self,
+        programe_id: int,
+        batch: str,
+        admission_year: str,
+        semester: str
+    ) -> Optional[ProgramPaymentWorkflowScope]:
+        return (
+            self.db.query(ProgramPaymentWorkflowScope)
+            .filter(
+                ProgramPaymentWorkflowScope.program_id == programe_id,
+                ProgramPaymentWorkflowScope.batch == batch,
+                ProgramPaymentWorkflowScope.admission_year == admission_year,
+                ProgramPaymentWorkflowScope.semester == semester,
+            )
+            .first()
+        )
+
+    # ------- Academic Year Methods -------
+    def create_academic_year(self, academic_year_data: dict) -> AcademicYear:
+        try:
+            academic_year = AcademicYear(**academic_year_data)
+            self.db.add(academic_year)
+            self.db.commit()
+            self.db.refresh(academic_year)
+            return academic_year
+        except IntegrityError:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Academic year already exists"
+            )
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
+
+    def get_academic_year_by_id(self, academic_year_id: int) -> Optional[AcademicYear]:
+        return self.db.query(AcademicYear).filter(AcademicYear.id == academic_year_id).first()
+
+    def get_all_academic_years(self) -> List[AcademicYear]:
+        return self.db.query(AcademicYear).order_by(AcademicYear.year_code.desc()).all()
+
+    def update_academic_year(self, academic_year_id: int, update_data: dict) -> Optional[AcademicYear]:
+        academic_year = self.get_academic_year_by_id(academic_year_id)
+        if not academic_year:
+            return None
+        for key, value in update_data.items():
+            if value is not None:
+                setattr(academic_year, key, value)
+        self.db.commit()
+        self.db.refresh(academic_year)
+        return academic_year
+
+    def delete_academic_year(self, academic_year_id: int) -> bool:
+        academic_year = self.get_academic_year_by_id(academic_year_id)
+        if not academic_year:
+            return False
+        self.db.delete(academic_year)
+        self.db.commit()
+        return True
+
+    # ------- Batch Methods -------
+    def create_batch(self, batch_data: dict) -> Batch:
+        try:
+            batch = Batch(**batch_data)
+            self.db.add(batch)
+            self.db.commit()
+            self.db.refresh(batch)
+            return batch
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
+
+    def get_batch_by_id(self, batch_id: int) -> Optional[Batch]:
+        return self.db.query(Batch).filter(Batch.id == batch_id).first()
+
+    def get_batches_by_academic_year(self, academic_year_id: int) -> List[Batch]:
+        return self.db.query(Batch).filter(Batch.academic_year_id == academic_year_id).order_by(Batch.batch_number).all()
+
+    def get_all_batches(self) -> List[Batch]:
+        return self.db.query(Batch).all()
+
+    def update_batch(self, batch_id: int, update_data: dict) -> Optional[Batch]:
+        batch = self.get_batch_by_id(batch_id)
+        if not batch:
+            return None
+        for key, value in update_data.items():
+            if value is not None:
+                setattr(batch, key, value)
+        self.db.commit()
+        self.db.refresh(batch)
+        return batch
+
+    def delete_batch(self, batch_id: int) -> bool:
+        batch = self.get_batch_by_id(batch_id)
+        if not batch:
+            return False
+        self.db.delete(batch)
+        self.db.commit()
+        return True
+
+    # ------- Semester Master Methods -------
+    def create_semester_master(self, semester_data: dict) -> SemesterMaster:
+        try:
+            semester = SemesterMaster(**semester_data)
+            self.db.add(semester)
+            self.db.commit()
+            self.db.refresh(semester)
+            return semester
+        except IntegrityError:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Semester already exists for this program type"
+            )
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error: {str(e)}"
+            )
+
+    def get_semester_master_by_id(self, semester_id: int) -> Optional[SemesterMaster]:
+        return self.db.query(SemesterMaster).filter(SemesterMaster.id == semester_id).first()
+
+    def get_semesters_by_program_type(self, program_type: str) -> List[SemesterMaster]:
+        return self.db.query(SemesterMaster).filter(SemesterMaster.program_type == program_type).order_by(SemesterMaster.semester_number).all()
+
+    def get_all_semester_masters(self) -> List[SemesterMaster]:
+        return self.db.query(SemesterMaster).order_by(SemesterMaster.program_type, SemesterMaster.semester_number).all()
+
+    def update_semester_master(self, semester_id: int, update_data: dict) -> Optional[SemesterMaster]:
+        semester = self.get_semester_master_by_id(semester_id)
+        if not semester:
+            return None
+        for key, value in update_data.items():
+            if value is not None:
+                setattr(semester, key, value)
+        self.db.commit()
+        self.db.refresh(semester)
+        return semester
+
+    def delete_semester_master(self, semester_id: int) -> bool:
+        semester = self.get_semester_master_by_id(semester_id)
+        if not semester:
+            return False
+        self.db.delete(semester)
+        self.db.commit()
+        return True

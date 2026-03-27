@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from src.services.master import MasterService
 from src.models.user import User
 from src.schemas.master import *
@@ -48,7 +48,79 @@ def update_program(id: int, programe_data: ProgrameUpdate, db: Session = Depends
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error in endpoint: {str(e)}",
         ) 
-    
+
+
+@router.put(
+    "/programe/{programe_id}/pending-payment-workflow",
+    response_model=ProgramPaymentWorkflowScopeOut
+)
+def update_program_pending_payment_workflow(
+    programe_id: int,
+    payload: ProgramPaymentWorkflowUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
+):
+    try:
+        service = MasterService(db)
+        return service.update_program_payment_workflow(programe_id=programe_id, payload=payload)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get(
+    "/programe/{programe_id}/pending-payment-workflow",
+    response_model=ProgramPaymentWorkflowScopeOut
+)
+def get_program_pending_payment_workflow(
+    programe_id: int,
+    batch: str,
+    admission_year: str,
+    semester: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
+):
+    try:
+        service = MasterService(db)
+        return service.get_program_payment_workflow(
+            programe_id=programe_id,
+            batch=batch,
+            admission_year=admission_year,
+            semester=semester
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get(
+    "/programe/pending-payment-workflow/list",
+    response_model=ProgramPaymentWorkflowScopeListResponse
+)
+def list_program_pending_payment_workflow_scopes(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
+):
+    try:
+        service = MasterService(db)
+        return service.list_program_payment_workflow_scopes(programe_id=None)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
 @router.get("/programe/{programe_id}", response_model=ProgrameResponse)
 def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:
@@ -249,6 +321,247 @@ async def delete_department(
     except HTTPException:
         raise
 
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+# ------- Academic Year Endpoints -------
+@router.post("/academic-year/add", response_model=AcademicYearResponse, status_code=status.HTTP_201_CREATED)
+def create_academic_year(data: AcademicYearCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.create_academic_year(data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/academic-year/{academic_year_id}", response_model=AcademicYearResponse)
+def get_academic_year(academic_year_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.get_academic_year(academic_year_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/academic-year/list", response_model=List[AcademicYearResponse])
+def list_academic_years(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_academic_years()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.put("/academic-year/update/{academic_year_id}", response_model=AcademicYearResponse)
+def update_academic_year(academic_year_id: int, data: AcademicYearUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.update_academic_year(academic_year_id, data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.delete("/academic-year/delete/{academic_year_id}", status_code=status.HTTP_200_OK)
+def delete_academic_year(academic_year_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.delete_academic_year(academic_year_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+# ------- Batch Endpoints -------
+@router.post("/batch/add", response_model=BatchResponse, status_code=status.HTTP_201_CREATED)
+def create_batch(data: BatchCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.create_batch(data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/batch/list", response_model=List[BatchResponse])
+def list_all_batches(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_all_batches()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/batch/by-year/{academic_year_id}", response_model=List[BatchResponse])
+def list_batches_by_year(academic_year_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_batches_by_academic_year(academic_year_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/batch/{batch_id}", response_model=BatchResponse)
+def get_batch(batch_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.get_batch(batch_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.put("/batch/update/{batch_id}", response_model=BatchResponse)
+def update_batch(batch_id: int, data: BatchUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.update_batch(batch_id, data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.delete("/batch/delete/{batch_id}", status_code=status.HTTP_200_OK)
+def delete_batch(batch_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.delete_batch(batch_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+# ------- Semester Master Endpoints -------
+@router.post("/semester-master/add", response_model=SemesterMasterResponse, status_code=status.HTTP_201_CREATED)
+def create_semester_master(data: SemesterMasterCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.create_semester_master(data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/semester-master/{semester_id}", response_model=SemesterMasterResponse)
+def get_semester_master(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.get_semester_master(semester_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/semester-master/by-type/{program_type}", response_model=List[SemesterMasterResponse])
+def list_semesters_by_type(program_type: str, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_semesters_by_program_type(program_type)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.get("/semester-master/list", response_model=List[SemesterMasterResponse])
+def list_all_semester_masters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_all_semester_masters()
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.put("/semester-master/update/{semester_id}", response_model=SemesterMasterResponse)
+def update_semester_master(semester_id: int, data: SemesterMasterUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.update_semester_master(semester_id, data)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+
+@router.delete("/semester-master/delete/{semester_id}", status_code=status.HTTP_200_OK)
+def delete_semester_master(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.delete_semester_master(semester_id)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

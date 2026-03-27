@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey, Boolean, UniqueConstraint
 from sqlalchemy.sql import func
 from src.db.session import Base
 from src.models.base import AuditableBase
@@ -17,8 +17,14 @@ class Programe(AuditableBase):
     application_code = Column(String(30), nullable=True)
     batch = Column(String(10))
     admission_year = Column(String(10))
+    pending_payment_workflow_enabled = Column(Boolean, default=False, nullable=False)
     
     fee = relationship("FeeDetails", back_populates="programe")
+    pending_payment_workflow_scopes = relationship(
+        "ProgramPaymentWorkflowScope",
+        back_populates="program",
+        cascade="all, delete-orphan"
+    )
     syllabuses = relationship("Subjects", back_populates="programe")
     schemes = relationship("Scheme", back_populates="programe")
     #batches = relationship("Batch", back_populates="programe")
@@ -129,3 +135,58 @@ class Department(Base):
     name = Column(String, unique=True, nullable=True)
 
     staff = relationship("Staff", back_populates="department")
+
+
+class ProgramPaymentWorkflowScope(AuditableBase):
+    __tablename__ = "program_payment_workflow_scopes"
+
+    program_id = Column(Integer, ForeignKey("programs.id", ondelete="CASCADE"), nullable=False, index=True)
+    batch = Column(String(20), nullable=False)
+    admission_year = Column(String(20), nullable=False)
+    semester = Column(String(20), nullable=False)
+    enabled = Column(Boolean, default=False, nullable=False)
+
+    program = relationship("Programe", back_populates="pending_payment_workflow_scopes")
+
+
+class AcademicYear(AuditableBase):
+    __tablename__ = "academic_years"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    year_code = Column(String(20), nullable=False, unique=True, index=True)  # e.g., "2025-26"
+    start_year = Column(Integer, nullable=False)  # e.g., 2025
+    end_year = Column(Integer, nullable=False)  # e.g., 2026
+    start_month = Column(Integer, nullable=False, default=7)  # July
+    end_month = Column(Integer, nullable=False, default=6)  # June
+    is_active = Column(Boolean, default=False, nullable=False)
+    description = Column(String(255), nullable=True)
+
+    batches = relationship("Batch", back_populates="academic_year", cascade="all, delete-orphan")
+
+
+class Batch(AuditableBase):
+    __tablename__ = "batches"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    academic_year_id = Column(Integer, ForeignKey("academic_years.id", ondelete="CASCADE"), nullable=False, index=True)
+    batch_number = Column(Integer, nullable=False)  # e.g., 1, 2
+    batch_name = Column(String(100), nullable=False)  # e.g., "Batch 1 (July-Dec)"
+    start_month = Column(Integer, nullable=False)  # e.g., 7
+    end_month = Column(Integer, nullable=False)  # e.g., 12
+    is_active = Column(Boolean, default=False, nullable=False)
+    description = Column(String(255), nullable=True)
+
+    academic_year = relationship("AcademicYear", back_populates="batches")
+
+
+class SemesterMaster(AuditableBase):
+    __tablename__ = "semester_masters"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    program_type = Column(String(50), nullable=False, index=True)  # e.g., "UG", "PG"
+    semester_number = Column(Integer, nullable=False)  # e.g., 1, 2, 3...
+    semester_name = Column(String(100), nullable=False)  # e.g., "Semester 1", "Semester 2"
+    is_active = Column(Boolean, default=True, nullable=False)
+    description = Column(String(255), nullable=True)
+
+    __table_args__ = (UniqueConstraint('program_type', 'semester_number', name='uq_program_type_semester'),)

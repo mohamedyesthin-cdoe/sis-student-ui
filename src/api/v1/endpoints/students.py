@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from src.db.session import get_db
 from src.schemas.students import MarkResponse, StudentCreate, StudentListResponse, StudentMarkCreate, StudentResponse, SyncResponse, DebResponse
+from src.schemas.students import PendingPaymentAssignRequest, PendingPaymentStatusResponse
 from src.schemas.payment import PaymentResponse
 from src.core.security.dependencies import require_superuser, require_staff
 from src.models.user import User
@@ -70,6 +71,57 @@ def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depend
         return payments
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve payments: {str(e)}")
+
+
+@router.get(
+    "/{id}/pending-payment",
+    response_model=PendingPaymentStatusResponse
+)
+def get_pending_payment_status(id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+    try:
+        service = StudentService(db)
+        return service.get_pending_payment_status(id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve pending payment status: {str(e)}")
+
+
+@router.put(
+    "/{id}/pending-payment",
+    response_model=PendingPaymentStatusResponse
+)
+def assign_pending_payment(
+    id: int,
+    payload: PendingPaymentAssignRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_staff)
+):
+    try:
+        service = StudentService(db)
+        return service.assign_pending_payment(
+            student_id=id,
+            payment_link=payload.payment_link,
+            amount=payload.amount,
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to assign pending payment: {str(e)}")
+
+
+@router.post(
+    "/{id}/pending-payment/complete",
+    response_model=PendingPaymentStatusResponse
+)
+def complete_pending_payment(id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+    try:
+        service = StudentService(db)
+        return service.complete_pending_payment(id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to complete pending payment: {str(e)}")
     
 @router.delete("/delete/all", status_code=204, response_model=None)
 def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):

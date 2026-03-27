@@ -76,6 +76,106 @@ class MasterService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while fetching program by code: {str(e)}",
             )
+
+    def update_program_payment_workflow(
+        self,
+        programe_id: int,
+        payload: ProgramPaymentWorkflowUpdate
+    ) -> ProgramPaymentWorkflowScopeOut:
+        try:
+            program = self.repo.get_by_id(programe_id)
+            if not program:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Program not found",
+                )
+
+            scope = self.repo.upsert_program_payment_workflow_scope(
+                programe_id=programe_id,
+                batch=payload.batch,
+                admission_year=payload.admission_year,
+                semester=payload.semester,
+                enabled=payload.enabled,
+            )
+            return ProgramPaymentWorkflowScopeOut.model_validate(scope)
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.repo.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while updating payment workflow: {str(e)}",
+            )
+
+    def get_program_payment_workflow(
+        self,
+        programe_id: int,
+        batch: str,
+        admission_year: str,
+        semester: str
+    ) -> ProgramPaymentWorkflowScopeOut:
+        program = self.repo.get_by_id(programe_id)
+        if not program:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Program not found",
+            )
+
+        scope = self.repo.get_program_payment_workflow_scope(
+            programe_id=programe_id,
+            batch=batch,
+            admission_year=admission_year,
+            semester=semester,
+        )
+        if not scope:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Payment workflow config not found for given program/batch/year/semester",
+            )
+        return ProgramPaymentWorkflowScopeOut.model_validate(scope)
+
+    def upsert_program_payment_workflow_scope(
+        self,
+        programe_id: int,
+        payload: ProgramPaymentWorkflowScopeUpsert
+    ) -> ProgramPaymentWorkflowScopeOut:
+        program = self.repo.get_by_id(programe_id)
+        if not program:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Program not found",
+            )
+
+        scope = self.repo.upsert_program_payment_workflow_scope(
+            programe_id=programe_id,
+            batch=payload.batch,
+            admission_year=payload.admission_year,
+            semester=payload.semester,
+            enabled=payload.enabled
+        )
+        return ProgramPaymentWorkflowScopeOut.model_validate(scope)
+
+    def list_program_payment_workflow_scopes(
+        self,
+        programe_id: int = None
+    ) -> ProgramPaymentWorkflowScopeListResponse:
+        if programe_id is not None:
+            program = self.repo.get_by_id(programe_id)
+            if not program:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Program not found",
+                )
+
+        scopes = self.repo.list_program_payment_workflow_scopes(programe_id)
+        data = [ProgramPaymentWorkflowScopeOut.model_validate(s) for s in scopes]
+        message = "Program payment workflow scopes fetched successfully" if programe_id else "All program payment workflow scopes fetched successfully"
+        return ProgramPaymentWorkflowScopeListResponse(
+            message=message,
+            code=status.HTTP_200_OK,
+            status=True,
+            data=data
+        )
         
     # def _create_item(self, data, repo_get_method, repo_create_method, unique_field, out_model, response_model):
     #     existing = repo_get_method(getattr(data, unique_field))
@@ -365,4 +465,246 @@ class MasterService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while deleting department: {str(e)}",
+            )
+
+    # ------- Academic Year Services -------
+    def create_academic_year(self, data) -> AcademicYearResponse:
+        try:
+            academic_year = self.repo.create_academic_year(data.dict())
+            return AcademicYearResponse.model_validate(academic_year)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while creating academic year: {str(e)}",
+            )
+
+    def get_academic_year(self, academic_year_id: int) -> AcademicYearResponse:
+        try:
+            academic_year = self.repo.get_academic_year_by_id(academic_year_id)
+            if not academic_year:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Academic year not found"
+                )
+            return AcademicYearResponse.model_validate(academic_year)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching academic year: {str(e)}",
+            )
+
+    def list_academic_years(self) -> List[AcademicYearResponse]:
+        try:
+            academic_years = self.repo.get_all_academic_years()
+            return [AcademicYearResponse.model_validate(ay) for ay in academic_years]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing academic years: {str(e)}",
+            )
+
+    def update_academic_year(self, academic_year_id: int, data) -> AcademicYearResponse:
+        try:
+            academic_year = self.repo.update_academic_year(academic_year_id, data.dict(exclude_unset=True))
+            if not academic_year:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Academic year not found"
+                )
+            return AcademicYearResponse.model_validate(academic_year)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while updating academic year: {str(e)}",
+            )
+
+    def delete_academic_year(self, academic_year_id: int) -> dict:
+        try:
+            success = self.repo.delete_academic_year(academic_year_id)
+            if not success:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Academic year not found"
+                )
+            return {"message": "Academic year deleted successfully", "status": True}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while deleting academic year: {str(e)}",
+            )
+
+    # ------- Batch Services -------
+    def create_batch(self, data) -> BatchResponse:
+        try:
+            batch = self.repo.create_batch(data.dict())
+            return BatchResponse.model_validate(batch)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while creating batch: {str(e)}",
+            )
+
+    def get_batch(self, batch_id: int) -> BatchResponse:
+        try:
+            batch = self.repo.get_batch_by_id(batch_id)
+            if not batch:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Batch not found"
+                )
+            return BatchResponse.model_validate(batch)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching batch: {str(e)}",
+            )
+
+    def list_batches_by_academic_year(self, academic_year_id: int) -> List[BatchResponse]:
+        try:
+            batches = self.repo.get_batches_by_academic_year(academic_year_id)
+            return [BatchResponse.model_validate(b) for b in batches]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing batches: {str(e)}",
+            )
+
+    def list_all_batches(self) -> List[BatchResponse]:
+        try:
+            batches = self.repo.get_all_batches()
+            return [BatchResponse.model_validate(b) for b in batches]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing batches: {str(e)}",
+            )
+
+    def update_batch(self, batch_id: int, data) -> BatchResponse:
+        try:
+            batch = self.repo.update_batch(batch_id, data.dict(exclude_unset=True))
+            if not batch:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Batch not found"
+                )
+            return BatchResponse.model_validate(batch)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while updating batch: {str(e)}",
+            )
+
+    def delete_batch(self, batch_id: int) -> dict:
+        try:
+            success = self.repo.delete_batch(batch_id)
+            if not success:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Batch not found"
+                )
+            return {"message": "Batch deleted successfully", "status": True}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while deleting batch: {str(e)}",
+            )
+
+    # ------- Semester Master Services -------
+    def create_semester_master(self, data) -> SemesterMasterResponse:
+        try:
+            semester = self.repo.create_semester_master(data.dict())
+            return SemesterMasterResponse.model_validate(semester)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while creating semester: {str(e)}",
+            )
+
+    def get_semester_master(self, semester_id: int) -> SemesterMasterResponse:
+        try:
+            semester = self.repo.get_semester_master_by_id(semester_id)
+            if not semester:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Semester not found"
+                )
+            return SemesterMasterResponse.model_validate(semester)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching semester: {str(e)}",
+            )
+
+    def list_semesters_by_program_type(self, program_type: str) -> List[SemesterMasterResponse]:
+        try:
+            semesters = self.repo.get_semesters_by_program_type(program_type)
+            return [SemesterMasterResponse.model_validate(s) for s in semesters]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing semesters: {str(e)}",
+            )
+
+    def list_all_semester_masters(self) -> List[SemesterMasterResponse]:
+        try:
+            semesters = self.repo.get_all_semester_masters()
+            return [SemesterMasterResponse.model_validate(s) for s in semesters]
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing semesters: {str(e)}",
+            )
+
+    def update_semester_master(self, semester_id: int, data) -> SemesterMasterResponse:
+        try:
+            semester = self.repo.update_semester_master(semester_id, data.dict(exclude_unset=True))
+            if not semester:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Semester not found"
+                )
+            return SemesterMasterResponse.model_validate(semester)
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while updating semester: {str(e)}",
+            )
+
+    def delete_semester_master(self, semester_id: int) -> dict:
+        try:
+            success = self.repo.delete_semester_master(semester_id)
+            if not success:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Semester not found"
+                )
+            return {"message": "Semester deleted successfully", "status": True}
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while deleting semester: {str(e)}",
             )

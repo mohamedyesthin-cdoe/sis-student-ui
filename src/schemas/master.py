@@ -31,6 +31,7 @@ class ProgrameBase(BaseModel):
     faculty: Optional[str] = None
     batch: Optional[str] = None
     admission_year: Optional[str] = None
+    pending_payment_workflow_enabled: bool = False
 
     class Config:
         from_attributes = True
@@ -62,6 +63,7 @@ class ProgrameUpdate(BaseModel):
     faculty: Optional[str] = None
     batch: Optional[str] = None
     admission_year: Optional[str] = None
+    pending_payment_workflow_enabled: Optional[bool] = None
     fee: Optional[List[FeeUpdate]] = None
 
 
@@ -268,3 +270,150 @@ class DepartmentDeleteResponse(BaseModel):
     message: str
     code: int
     status: bool
+
+
+class ProgramPaymentWorkflowUpdate(BaseModel):
+    batch: str
+    admission_year: str
+    semester: str
+    enabled: bool
+
+
+class ProgramPaymentWorkflowResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    program_id: int
+    pending_payment_workflow_enabled: bool
+
+
+class ProgramPaymentWorkflowScopeUpsert(BaseModel):
+    batch: str
+    admission_year: str
+    semester: str
+    enabled: bool
+
+
+class ProgramPaymentWorkflowScopeOut(BaseModel):
+    id: int
+    program_id: int
+    batch: str
+    admission_year: str
+    semester: str
+    enabled: bool
+
+    class Config:
+        from_attributes = True
+
+
+class ProgramPaymentWorkflowScopeListResponse(BaseModel):
+    message: str
+    code: int
+    status: bool
+    data: List[ProgramPaymentWorkflowScopeOut]
+
+
+# ----------------------------
+# Academic Year Schemas
+# ----------------------------
+class AcademicYearBase(BaseModel):
+    year_code: str
+    start_year: int
+    end_year: int
+    start_month: int = 7
+    end_month: int = 6
+    is_active: bool = False
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AcademicYearCreate(AcademicYearBase):
+    pass
+
+
+class AcademicYearUpdate(BaseModel):
+    year_code: Optional[str] = None
+    start_year: Optional[int] = None
+    end_year: Optional[int] = None
+    start_month: Optional[int] = None
+    end_month: Optional[int] = None
+    is_active: Optional[bool] = None
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AcademicYearResponse(AcademicYearBase):
+    id: int
+
+
+# ----------------------------
+# Batch Schemas
+# ----------------------------
+class BatchBase(BaseModel):
+    academic_year_id: int
+    batch_number: int
+    batch_name: str
+    start_month: int
+    end_month: int
+    is_active: bool = False
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class BatchCreate(BatchBase):
+    pass
+
+
+class BatchUpdate(BaseModel):
+    batch_number: Optional[int] = None
+    batch_name: Optional[str] = None
+    start_month: Optional[int] = None
+    end_month: Optional[int] = None
+    is_active: Optional[bool] = None
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class BatchResponse(BatchBase):
+    id: int
+
+
+# ----------------------------
+# Semester Master Schemas
+# ----------------------------
+class SemesterMasterBase(BaseModel):
+    program_type: str  # "UG" or "PG"
+    semester_number: int
+    semester_name: str
+    is_active: bool = True
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SemesterMasterCreate(SemesterMasterBase):
+    pass
+
+
+class SemesterMasterUpdate(BaseModel):
+    program_type: Optional[str] = None
+    semester_number: Optional[int] = None
+    semester_name: Optional[str] = None
+    is_active: Optional[bool] = None
+    description: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class SemesterMasterResponse(SemesterMasterBase):
+    id: int

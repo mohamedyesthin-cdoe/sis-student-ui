@@ -1,6 +1,6 @@
 from sqlalchemy import (
     CheckConstraint, Column, DateTime, String, Integer, Enum, Date,
-    ForeignKey, Index, func, Boolean, Text
+    ForeignKey, Index, func, Boolean, Text, Float
 )
 from src.db.session import Base
 from src.models.address import Country
@@ -63,6 +63,9 @@ class Student(AuditableBase):
     batch = Column(String(10), nullable=True)
     admission_year = Column(String(10), nullable=True)
     semester_id = Column(Integer, nullable=True)  # Optional semester association
+    pending_payment_due = Column(Boolean, default=False, nullable=False)
+    pending_payment_amount = Column(Float, default=0.0, nullable=False)
+    pending_payment_link = Column(Text, nullable=True)
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)

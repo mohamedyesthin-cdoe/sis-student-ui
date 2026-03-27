@@ -334,6 +334,9 @@ class StudentResponse(BaseModel):
     passport_issued_country: Optional[str] = None
     passport_number: Optional[str]
     passport_expiry_date: Optional[date]
+    pending_payment_due: bool = False
+    pending_payment_amount: float = 0.0
+    pending_payment_link: Optional[str] = None
     is_deleted: bool
     created_at: datetime
     updated_at: datetime
@@ -355,6 +358,21 @@ class StudentResponse(BaseModel):
 class SyncResponse(BaseModel):
     message: str
     total_sync_count: int
+
+
+class PendingPaymentAssignRequest(BaseModel):
+    payment_link: str
+    amount: float
+
+
+class PendingPaymentStatusResponse(BaseModel):
+    student_id: int
+    program_id: int
+    workflow_enabled: bool
+    pending_payment_due: bool
+    pending_payment_amount: float
+    pending_payment_link: Optional[str] = None
+    message: str
 
 class DebStudentResponse(BaseModel):
     StudentID: Optional[str] = None

@@ -1,6 +1,7 @@
 from grpc import Status
 from src.repositories.students import StudentMarkRepository, StudentRepository
 from src.models.students import Student
+from src.models.master import Programe, ProgramPaymentWorkflowScope
 from sqlalchemy.orm import Session
 from typing import List, Dict
 from src.schemas.students import StudentCreate, StudentMarkCreate, StudentResponse
@@ -35,6 +36,82 @@ class StudentService:
     def get_fees(self, student_id: int) -> Student:
         """Retrieve a student by ID."""
         return self.student_repo.get_fees(student_id)
+
+    def get_pending_payment_status(self, student_id: int) -> dict:
+        student = self.db.query(Student).filter(Student.id == student_id).first()
+        if not student:
+            raise HTTPException(status_code=404, detail="Student not found")
+
+        workflow_enabled = self._is_workflow_enabled_for_student(student)
+
+        return {
+            "student_id": student.id,
+            "program_id": student.program_id,
+            "workflow_enabled": workflow_enabled,
+            "pending_payment_due": student.pending_payment_due,
+            "pending_payment_amount": float(student.pending_payment_amount or 0.0),
+            "pending_payment_link": student.pending_payment_link,
+            "message": "Pending payment status fetched successfully",
+        }
+
+    def _is_workflow_enabled_for_student(self, student: Student) -> bool:
+        program = self.db.query(Programe).filter(Programe.id == student.program_id).first()
+        if not program:
+            return False
+
+        # Backward compatibility: program-level switch can still force-enable.
+        if program.pending_payment_workflow_enabled:
+            return True
+
+        if not student.batch or not student.admission_year or student.semester_id is None:
+            return False
+
+        scope = (
+            self.db.query(ProgramPaymentWorkflowScope)
+            .filter(
+                ProgramPaymentWorkflowScope.program_id == student.program_id,
+                ProgramPaymentWorkflowScope.batch == student.batch,
+                ProgramPaymentWorkflowScope.admission_year == student.admission_year,
+                ProgramPaymentWorkflowScope.semester == str(student.semester_id),
+                ProgramPaymentWorkflowScope.enabled.is_(True),
+            )
+            .first()
+        )
+        return bool(scope)
+
+    def assign_pending_payment(self, student_id: int, payment_link: str, amount: float) -> dict:
+        student = self.db.query(Student).filter(Student.id == student_id).first()
+        if not student:
+            raise HTTPException(status_code=404, detail="Student not found")
+
+        if not self._is_workflow_enabled_for_student(student):
+            raise HTTPException(
+                status_code=400,
+                detail="Pending payment workflow is disabled for this student's program/batch/year/semester",
+            )
+
+        student.pending_payment_due = True
+        student.pending_payment_amount = amount
+        student.pending_payment_link = payment_link
+
+        self.db.commit()
+        self.db.refresh(student)
+        return self.get_pending_payment_status(student_id)
+
+    def complete_pending_payment(self, student_id: int) -> dict:
+        student = self.db.query(Student).filter(Student.id == student_id).first()
+        if not student:
+            raise HTTPException(status_code=404, detail="Student not found")
+
+        student.pending_payment_due = False
+        student.pending_payment_amount = 0.0
+        student.pending_payment_link = None
+
+        self.db.commit()
+        self.db.refresh(student)
+        status_data = self.get_pending_payment_status(student_id)
+        status_data["message"] = "Payment completed. No due."
+        return status_data
 
     def get_all_students(self) -> List[StudentResponse]:
         """Retrieve all students with their details."""
