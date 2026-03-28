@@ -24,8 +24,10 @@ def get_group_by_id(db: Session, user_id: int):
 
 def get_student_id_by_user_id(db: Session, user_id: int):
     user = db.query(User).filter(User.id == user_id).first()
-    student = user.student_id
-    result = db.query(Student).filter(Student.id == student).first()
+    if not user or user.student_id is None:
+        return None
+
+    result = db.query(Student).filter(Student.id == user.student_id).first()
     return result if result else None
 
 class UserRepository:
