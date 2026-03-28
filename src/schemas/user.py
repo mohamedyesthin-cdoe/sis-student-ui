@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional, List
 
 class UserBase(BaseModel):
@@ -7,6 +7,13 @@ class UserBase(BaseModel):
     last_name: Optional[str]
     email: EmailStr
     phone: str
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def normalize_phone(cls, value):
+        if value is None:
+            raise ValueError("phone is required")
+        return str(value).strip()
 
 class UserCreate(UserBase):
     password: str
@@ -28,6 +35,13 @@ class BulkUserCreate(BaseModel):
     email: EmailStr
     phone: str
     student_id: Optional[int]
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def normalize_phone(cls, value):
+        if value is None:
+            raise ValueError("phone is required")
+        return str(value).strip()
 
 class BulkUserCreateRequest(BaseModel):
     group_id: int
