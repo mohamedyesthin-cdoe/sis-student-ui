@@ -381,6 +381,8 @@ class StudentService:
 
             return {"message": "No new students to sync.", "total_sync_count": 0}
 
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error(f"Error syncing students: {str(e)}")
             raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")

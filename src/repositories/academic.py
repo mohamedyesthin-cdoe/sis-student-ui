@@ -132,7 +132,11 @@ class SemesterRepository:
             raise
 
     def list_semesters(self) -> list[Semester]:
-        return self.db.query(Semester).all()    
+        from sqlalchemy.orm import joinedload
+        query = self.db.query(Semester).options(
+            joinedload(Semester.scheme).joinedload(Scheme.programe)
+        )
+        return query.all()    
     
 class CourseRepository:
     def __init__(self, db: Session):

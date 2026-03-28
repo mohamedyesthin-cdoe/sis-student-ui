@@ -30,6 +30,7 @@ class SemesterCreate(SemesterBase):
     pass
 
 class SemesterUpdate(BaseModel):
+    semester_no: int | None = None
     semester_name: str | None = None
 
 class SemesterResponse(SemesterBase):

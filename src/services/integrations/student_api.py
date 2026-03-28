@@ -31,6 +31,7 @@ async def fetch_students_list() -> dict:
     
     async with httpx.AsyncClient(timeout=100.0) as client:
         try:
+            logger.info("Fetching students from Merrito API: %s", api_url)
             response = await client.post(api_url, headers=headers, json=payload)
             response.raise_for_status()
             data = response.json()
@@ -39,7 +40,16 @@ async def fetch_students_list() -> dict:
             #     raise HTTPException(status_code=500, detail="Invalid response format: Expected a list")
             return data
         except httpx.HTTPStatusError as e:
-            raise HTTPException(status_code=e.response.status_code, detail="External API request failed")
+            error_body = e.response.text.strip()
+            logger.error(
+                "Merrito API request failed with status %s: %s",
+                e.response.status_code,
+                error_body or "<empty response body>",
+            )
+            detail = f"External API request failed"
+            if error_body:
+                detail = f"{detail}: {error_body}"
+            raise HTTPException(status_code=e.response.status_code, detail=detail)
         except httpx.RequestError as e:
             raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")
         except json.JSONDecodeError as e:
