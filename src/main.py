@@ -137,5 +137,7 @@ async def push_student_deb(db: Session = Depends(get_db), current_user: User = D
     try:
         students = await push_deb_student_details(db)
         return students
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")

@@ -5,6 +5,7 @@ import httpx
 from src.core.config import settings
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from src.models.students import Student
 from src.models.payment import Payment
 from src.models.master import Programe
@@ -114,14 +115,35 @@ async def push_deb_student_details(db: Session) -> dict:
         try:
             for student in students:
                 admission_date = db.query(Payment).filter(
-                    Payment.student_id == student.id and
-                    Payment.semester_fee=='semester_fee'
+                    Payment.student_id == student.id,
+                    Payment.payment_type == "semester_fee",
+                ).order_by(Payment.payment_date.asc()
                 ).first()
-                nationality = db.query(Country).filter(Country.id == student.nationality).first()
+                nationality_value = (student.nationality or "").strip()
+                normalized_nationality = "India" if nationality_value.lower() == "indian" else nationality_value
+                nationality = None
+                if normalized_nationality:
+                    nationality = (
+                        db.query(Country)
+                        .filter(func.lower(Country.name) == normalized_nationality.lower())
+                        .first()
+                    )
                 course = db.query(Programe).filter(Programe.id == student.program_id).first()
                 if not admission_date:
+                    logger.warning("Skipping UGC push for student %s due to missing semester fee payment", student.id)
                     continue
                 if not nationality:
+                    logger.warning(
+                        "Skipping UGC push for student %s due to unknown nationality '%s'",
+                        student.id,
+                        student.nationality,
+                    )
+                    continue
+                if not student.deb_details or not student.deb_details.deb_id:
+                    logger.warning("Skipping UGC push for student %s due to missing DEB details", student.id)
+                    continue
+                if not course:
+                    logger.warning("Skipping UGC push for student %s due to missing program", student.id)
                     continue
 
                 CountryResidence = 'Indian' if nationality.name == 'India' else 'Others'
@@ -162,6 +184,8 @@ async def push_deb_student_details(db: Session) -> dict:
                 db.refresh(student)
             return data
         
+        except HTTPException:
+            raise
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=e.response.status_code, detail="External API request failed")
         except httpx.RequestError as e:
