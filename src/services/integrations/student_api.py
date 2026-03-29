@@ -146,7 +146,8 @@ async def push_deb_student_details(db: Session) -> dict:
                     logger.warning("Skipping UGC push for student %s due to missing program", student.id)
                     continue
 
-                CountryResidence = 'Indian' if nationality.name == 'India' else 'Others'
+                # CountryResidence = 'Indian' if nationality.name == 'India' else 'Others'
+                CountryResidence = 'Indian' if student.nationality == 'India' else 'Others'
                 Locality = 'Urban' if student.locality == '1500102' else 'Rural' 
                 Category = 'General' if student.category == '1500033' else (
                            'OBC' if student.category == '1500034' else (
