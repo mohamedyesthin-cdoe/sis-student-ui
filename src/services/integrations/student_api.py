@@ -107,6 +107,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 joinedload(Student.payments)
             ).filter_by(is_pushed=False,program_id="1500038").all()
     #Course = 'BACHELOR OF SCIENCE (HONS) (DATA SCIENCE)'
+    print(f"Found {len(students)} students to push to UGC DEB API")
 
     if not students:
         raise HTTPException(status_code=404, detail="No students to push")
