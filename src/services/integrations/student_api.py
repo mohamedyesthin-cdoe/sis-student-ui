@@ -132,10 +132,10 @@ async def push_deb_student_details(db: Session) -> dict:
                         .first()
                     )
                 course = db.query(Programe).filter(Programe.id == student.program_id).first()
-                if not admission_date:
-                    print(f"❌ Student {student.first_name} ({student.registration_no}): Missing semester fee payment")
-                    logger.warning("Skipping UGC push for student %s due to missing semester fee payment", student.id)
-                    continue
+                # if not admission_date:
+                #     print(f"❌ Student {student.first_name} ({student.registration_no}): Missing semester fee payment")
+                #     logger.warning("Skipping UGC push for student %s due to missing semester fee payment", student.id)
+                #     continue
                 if not nationality:
                     print(f"❌ Student {student.first_name} ({student.registration_no}): Unknown nationality '{student.nationality}'")
                     logger.warning(
