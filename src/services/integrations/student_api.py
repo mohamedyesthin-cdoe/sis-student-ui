@@ -133,9 +133,11 @@ async def push_deb_student_details(db: Session) -> dict:
                     )
                 course = db.query(Programe).filter(Programe.id == student.program_id).first()
                 if not admission_date:
+                    print(f"❌ Student {student.first_name} ({student.registration_no}): Missing semester fee payment")
                     logger.warning("Skipping UGC push for student %s due to missing semester fee payment", student.id)
                     continue
                 if not nationality:
+                    print(f"❌ Student {student.first_name} ({student.registration_no}): Unknown nationality '{student.nationality}'")
                     logger.warning(
                         "Skipping UGC push for student %s due to unknown nationality '%s'",
                         student.id,
@@ -143,9 +145,11 @@ async def push_deb_student_details(db: Session) -> dict:
                     )
                     continue
                 if not student.deb_details or not student.deb_details.deb_id:
+                    print(f"❌ Student {student.first_name} ({student.registration_no}): Missing DEB ID")
                     logger.warning("Skipping UGC push for student %s due to missing DEB details", student.id)
                     continue
                 if not course:
+                    print(f"❌ Student {student.first_name} ({student.registration_no}): Missing program (ID: {student.program_id})")
                     logger.warning("Skipping UGC push for student %s due to missing program", student.id)
                     continue
 
@@ -187,6 +191,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 db.commit()
                 db.refresh(student)
                 all_responses.append(data)
+                print(f"✅ Student {student.first_name} ({student.registration_no}): Successfully pushed to UGC DEB API")
             return {"Message": f"Successfully pushed {len(all_responses)} students to UGC DEB API", "Status": "success"}
         
         except HTTPException:
