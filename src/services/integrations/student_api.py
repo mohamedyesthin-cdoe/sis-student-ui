@@ -117,11 +117,11 @@ async def push_deb_student_details(db: Session) -> dict:
         try:
             all_responses = []
             for student in students:
-                # admission_date = db.query(Payment).filter(
-                #     Payment.student_id == student.id,
-                #     Payment.payment_type == "semester_fee",
-                # ).order_by(Payment.payment_date.asc()
-                # ).first()
+                admission_date = db.query(Payment).filter(
+                    Payment.student_id == student.id,
+                    Payment.payment_type == "semester_fee",
+                ).order_by(Payment.payment_date.asc()
+                ).first()
                 nationality_value = (student.nationality or "").strip()
                 normalized_nationality = "India" if nationality_value.lower() == "indian" else nationality_value
                 nationality = None
@@ -132,10 +132,10 @@ async def push_deb_student_details(db: Session) -> dict:
                         .first()
                     )
                 course = db.query(Programe).filter(Programe.id == student.program_id).first()
-                # if not admission_date:
-                #     print(f"❌ Student {student.first_name} ({student.registration_no}): Missing semester fee payment")
-                #     logger.warning("Skipping UGC push for student %s due to missing semester fee payment", student.id)
-                #     continue
+                if not admission_date:
+                    print(f"❌ Student {student.first_name} ({student.registration_no}): Missing semester fee payment")
+                    logger.warning("Skipping UGC push for student %s due to missing semester fee payment", student.id)
+                    continue
                 if not nationality:
                     print(f"❌ Student {student.first_name} ({student.registration_no}): Unknown nationality '{student.nationality}'")
                     logger.warning(
@@ -164,8 +164,7 @@ async def push_deb_student_details(db: Session) -> dict:
                     "DEBuniqueID": student.deb_details.deb_id,
                     "UniversityName": UNIVERSITY_NAME,
                     "CourseName": course.programe,
-                    # "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
-                    "AdmissionDate": "30-03-2026",
+                    "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
                     "AdmissionDetails": ADMISSION_DETAILS,
                     "EnrollmentNumber": student.registration_no,
                     "ModeEducation": MODE_EDUCATION,
@@ -192,7 +191,6 @@ async def push_deb_student_details(db: Session) -> dict:
                 db.commit()
                 db.refresh(student)
                 all_responses.append(data)
-                print(f"✅ Student {student.first_name} ({student.registration_no}): Successfully pushed to UGC DEB API")
             return {"Message": f"Successfully pushed {len(all_responses)} students to UGC DEB API", "Status": "success"}
         
         except HTTPException:
