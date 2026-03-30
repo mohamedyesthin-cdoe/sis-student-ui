@@ -60,7 +60,7 @@ class UserService:
 
         # Build reset link
         reset_link = (
-            "https://uat.sriramachandradigilearn.edu.in/reset-password"
+            "https://sis.sriramachandradigilearn.edu.in/reset-password"
             f"?token={token}"
         )
 
