@@ -107,15 +107,13 @@ async def push_deb_student_details(db: Session) -> dict:
                 joinedload(Student.payments)
             ).filter_by(is_pushed=False,program_id="1500038").all()
     #Course = 'BACHELOR OF SCIENCE (HONS) (DATA SCIENCE)'
-    # print(f"Fetched {len(students)} students to push to UGC DEB API")  # Debug log
-    # print([student.registration_no for student in students])
-    print([student.first_name for student in students])
 
     if not students:
         raise HTTPException(status_code=404, detail="No students to push")
                 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
+            all_responses = []
             for student in students:
                 admission_date = db.query(Payment).filter(
                     Payment.student_id == student.id,
@@ -186,7 +184,8 @@ async def push_deb_student_details(db: Session) -> dict:
                 db.add(student)
                 db.commit()
                 db.refresh(student)
-            return data
+                all_responses.append(data)
+            return {"status": "success", "count": len(all_responses), "data": all_responses}
         
         except HTTPException:
             raise
