@@ -117,11 +117,11 @@ async def push_deb_student_details(db: Session) -> dict:
         try:
             all_responses = []
             for student in students:
-                admission_date = db.query(Payment).filter(
-                    Payment.student_id == student.id,
-                    Payment.payment_type == "semester_fee",
-                ).order_by(Payment.payment_date.asc()
-                ).first()
+                # admission_date = db.query(Payment).filter(
+                #     Payment.student_id == student.id,
+                #     Payment.payment_type == "semester_fee",
+                # ).order_by(Payment.payment_date.asc()
+                # ).first()
                 nationality_value = (student.nationality or "").strip()
                 normalized_nationality = "India" if nationality_value.lower() == "indian" else nationality_value
                 nationality = None
@@ -164,7 +164,8 @@ async def push_deb_student_details(db: Session) -> dict:
                     "DEBuniqueID": student.deb_details.deb_id,
                     "UniversityName": UNIVERSITY_NAME,
                     "CourseName": course.programe,
-                    "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
+                    # "AdmissionDate": admission_date.payment_date.strftime("%d-%m-%Y"),
+                    "AdmissionDate": "30-03-2026",
                     "AdmissionDetails": ADMISSION_DETAILS,
                     "EnrollmentNumber": student.registration_no,
                     "ModeEducation": MODE_EDUCATION,
