@@ -185,7 +185,7 @@ async def push_deb_student_details(db: Session) -> dict:
                 db.commit()
                 db.refresh(student)
                 all_responses.append(data)
-            return {"status": "success", "count": len(all_responses), "data": all_responses}
+            return {"Message": f"Successfully pushed {len(all_responses)} students to UGC DEB API", "Status": "success"}
         
         except HTTPException:
             raise
