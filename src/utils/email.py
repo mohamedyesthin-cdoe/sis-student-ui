@@ -16,7 +16,8 @@ conf = ConnectionConfig(
    MAIL_SSL_TLS=False,
    USE_CREDENTIALS=True,
    MAIL_FROM=settings.MAIL_FROM,
-   MAIL_FROM_NAME=settings.MAIL_FROM_NAME
+   MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
+   SUPPRESS_SEND=False  # Ensure emails are actually sent
 )
 
 async def send_credentials_email(email_to: str, username: str, password: str, fullname: str):
@@ -107,17 +108,21 @@ cdoesupport@sriramachandra.edu.in | +91 90439 53673
         </html>
     """
     
-    # Create message with proper headers for better deliverability
+    # Create message with proper headers and HTML for better deliverability
     message = MessageSchema(
         subject=subject,
         recipients=[email_to],
-        html=html_body,
-        body=plain_text,  # Plain text fallback
+        body=html_body,
         subtype="html",
         headers={
             "X-Priority": "3",
             "X-MSMail-Priority": "Normal",
-            "Importance": "Normal"
+            "Importance": "Normal",
+            "X-Mailer": "FastAPI-Mail/3.1",
+            "MIME-Version": "1.0",
+            "Content-Transfer-Encoding": "8bit",
+            "List-Unsubscribe": "<mailto:cdoesupport@sriramachandra.edu.in>, <https://sis.sriramachandradigilearn.edu.in/unsubscribe>",
+            "X-Originating-IP": "[127.0.0.1]"
         }
     )
     
@@ -223,18 +228,21 @@ cdoesupport@sriramachandra.edu.in | +91 99404 90118
         </html>
     """
     
-    # Create message with proper headers for better deliverability
+    # Create message with proper headers and HTML for better deliverability
     message = MessageSchema(
         subject=subject,
         recipients=[email_to],
-        html=html_body,
-        body=plain_text,  # Plain text fallback - CRITICAL for avoiding spam filters
+        body=html_body,
         subtype="html",
         headers={
             "X-Priority": "3",
             "X-MSMail-Priority": "Normal",
             "Importance": "Normal",
-            "X-Mailer": "FastAPI-Mail"
+            "X-Mailer": "FastAPI-Mail/3.1",
+            "MIME-Version": "1.0",
+            "Content-Transfer-Encoding": "8bit",
+            "List-Unsubscribe": "<mailto:cdoesupport@sriramachandra.edu.in>, <https://sis.sriramachandradigilearn.edu.in/unsubscribe>",
+            "X-Originating-IP": "[127.0.0.1]"
         }
     )
     
