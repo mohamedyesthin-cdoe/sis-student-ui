@@ -16,8 +16,7 @@ conf = ConnectionConfig(
    MAIL_SSL_TLS=False,
    USE_CREDENTIALS=True,
    MAIL_FROM=settings.MAIL_FROM,
-   MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
-   TEMPLATE_FOLDER=Path(__file__).resolve().parent.parent.parent / "templates"
+   MAIL_FROM_NAME=settings.MAIL_FROM_NAME
 )
 
 async def send_credentials_email(email_to: str, username: str, password: str, fullname: str):
