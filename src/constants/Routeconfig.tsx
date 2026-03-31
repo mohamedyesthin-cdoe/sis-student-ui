@@ -36,6 +36,12 @@ import ExamTimeTableList from "../features/admin/master/examtimetable/ExamTimeTa
 import ExamTimetableAdd from "../features/admin/master/examtimetable/ExamTimeTableAdd";
 import StudentMarksEntry from "../features/admin/student/StudentsMarkScreen";
 import ExamResults from "../features/admin/student/ExamResults";
+import PaymentControlList from "../features/admin/master/payments/Payment-Contorl";
+import PaymentWorkflowAdd from "../features/admin/master/payments/Payment-Contorl add";
+import BatchList from "../features/admin/master/batch/BatchList";
+import BatchAdd from "../features/admin/master/batch/BatchAdd";
+import YearList from "../features/admin/master/year/YearList";
+import YearAdd from "../features/admin/master/year/YearAdd";
 
 export const routesConfig = [
   {
@@ -216,7 +222,7 @@ export const routesConfig = [
     path: '/schemes',
     // breadcrumb: 'Fees',
     children: [
-       {
+      {
         path: 'list',
         element: <SchemesList />,
         breadcrumb: 'Schemes List',
@@ -228,7 +234,7 @@ export const routesConfig = [
       },
       {
         path: 'edit/:id',   // ✅ edit program route
-        element: <SchemesAdd/>,
+        element: <SchemesAdd />,
         breadcrumb: 'Scheme Edit',
       },
     ]
@@ -254,7 +260,7 @@ export const routesConfig = [
     ]
   },
   {
-    path:'/courses',
+    path: '/courses',
     children: [
       {
         path: 'list',
@@ -274,7 +280,7 @@ export const routesConfig = [
     ]
   },
   {
-    path:'/course-components',
+    path: '/course-components',
     children: [
       {
         path: 'list',
@@ -333,9 +339,70 @@ export const routesConfig = [
       },
     ]
   },
-   {
+  {
     path: '/students-marks-entry',
     element: <StudentMarksEntry />,
     breadcrumb: 'Marks Entry',
   },
+  {
+    path: '/payment-control',
+    children: [
+      {
+        path: 'list',
+        element: <PaymentControlList />,
+        breadcrumb: 'Payment Control List',
+      },
+      {
+        path: 'add',
+        element: <PaymentWorkflowAdd />,
+        breadcrumb: 'Pending Payment Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <PaymentWorkflowAdd />,
+        breadcrumb: 'Pending Payment Edit',
+      },
+    ],
+  },
+  {
+    path: '/batch',
+    children: [
+      {
+        path: 'list',
+        element: <BatchList />,
+        breadcrumb: 'Batch List',
+      },
+      {
+        path: 'add',
+        element: <BatchAdd />,
+        breadcrumb: 'Batch Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <BatchAdd />,
+        breadcrumb: 'Batch Edit',
+      },
+    ],
+  },
+  {
+    path: '/year',
+    children: [
+      {
+        path: 'list',
+        element: <YearList />,
+        breadcrumb: 'Year List',
+      },
+      {
+        path: 'add',
+        element: <YearAdd />,
+        breadcrumb: 'Year Add',
+      },
+      {
+        path: 'edit/:id',
+        element: <YearAdd />,
+        breadcrumb: 'Year Edit',
+      },
+
+    ],
+  }
 ];
