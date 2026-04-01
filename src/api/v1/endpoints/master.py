@@ -121,6 +121,42 @@ def list_program_pending_payment_workflow_scopes(
         )
 
 
+@router.post(
+    "/programe/{programe_id}/pending-payment-workflow/webhook"
+)
+def handle_payment_workflow_webhook(
+    programe_id: int,
+    payload: dict,
+    db: Session = Depends(get_db)
+):
+    """
+    Webhook endpoint to handle Collexo payment confirmations for program workflow.
+    
+    Receives payment confirmation and:
+    1. Creates PaymentTransaction record
+    2. Creates Payment + SemesterFee records
+    3. Clears pending payment flags for student
+    """
+    try:
+        from src.services.student_service import StudentService
+        service = StudentService(db)
+        
+        return service.handle_webhook_payment(
+            student_id=payload.get("student_id"),
+            gateway_transaction_id=payload.get("transaction_id"),
+            payment_amount=payload.get("amount"),
+            semester=payload.get("semester"),
+            gateway_response=payload
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Webhook processing failed: {str(e)}",
+        )
+
+
 @router.get("/programe/{programe_id}", response_model=ProgrameResponse)
 def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     try:

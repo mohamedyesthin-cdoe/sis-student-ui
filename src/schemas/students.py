@@ -337,6 +337,7 @@ class StudentResponse(BaseModel):
     pending_payment_due: bool = False
     pending_payment_amount: float = 0.0
     pending_payment_link: Optional[str] = None
+    pending_payment_semester: Optional[str] = None
     is_deleted: bool
     created_at: datetime
     updated_at: datetime

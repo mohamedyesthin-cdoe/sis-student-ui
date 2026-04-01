@@ -52,3 +52,23 @@ class ApplicationFee(Base):
     payment_id = Column(Integer, ForeignKey("payments.id"), nullable=False, unique=True)
 
     payment = relationship("Payment", back_populates="application_fee")
+
+
+class PaymentTransaction(AuditableBase):
+    """Tracks payment gateway webhook events (Collexo, etc.)"""
+    __tablename__ = "payment_transactions"
+
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    payment_id = Column(Integer, ForeignKey("payments.id"), nullable=True)  # Links to Payment after confirmation
+    gateway_transaction_id = Column(String(100), nullable=False, unique=True, index=True)  # Collexo transaction ID
+    gateway_name = Column(String(50), default="collexo")  # Payment gateway name
+    amount = Column(Float, nullable=False)
+    semester = Column(String(20), nullable=True)  # Which semester this payment is for
+    status = Column(String(50))  # pending, completed, failed, webhook_received, payment_created
+    gateway_response = Column(Text, nullable=True)  # Full webhook response from Collexo
+    webhook_received_at = Column(DateTime, nullable=True)
+    payment_confirmed_at = Column(DateTime, nullable=True)
+    
+    student = relationship("Student", foreign_keys=[student_id])
+    payment = relationship("Payment", foreign_keys=[payment_id])

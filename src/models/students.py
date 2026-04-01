@@ -66,6 +66,7 @@ class Student(AuditableBase):
     pending_payment_due = Column(Boolean, default=False, nullable=False)
     pending_payment_amount = Column(Float, default=0.0, nullable=False)
     pending_payment_link = Column(Text, nullable=True)
+    pending_payment_semester = Column(String(20), nullable=True)  # Track which semester this pending payment is for
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)

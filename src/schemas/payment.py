@@ -205,5 +205,56 @@ class AccountMasterResponse(BaseModel):
     data: Optional[List[AccountMaster]] = None
 
 
+# ============================================
+# Payment Workflow Schemas (Collexo Integration)
+# ============================================
+
+class CollexoWebhookPayload(BaseModel):
+    """Webhook payload from Collexo payment gateway"""
+    transaction_id: str
+    student_id: int
+    application_no: str
+    amount: float
+    status: str  # completed, failed, pending
+    payment_method: Optional[str] = None
+    payment_date: Optional[datetime] = None
+    metadata: Optional[dict] = None
+
+
+class PaymentTransactionResponse(BaseModel):
+    id: int
+    student_id: int
+    payment_id: Optional[int] = None
+    gateway_transaction_id: str
+    gateway_name: str
+    amount: float
+    semester: Optional[str] = None
+    status: str
+    webhook_received_at: Optional[datetime] = None
+    payment_confirmed_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+
+
+class AutoPopulatePendingPaymentRequest(BaseModel):
+    """Request to auto-populate pending payments for a workflow scope"""
+    program_id: int
+    batch: str
+    admission_year: str
+    semester: str
+
+
+class AutoPopulatePendingPaymentResponse(BaseModel):
+    message: str
+    updated_count: int
+    students_updated: List[dict]  # [{"id": 1, "amount": 1000, "link": "..."}, ...]
+
+
+class UpdatePendingPaymentByWebhookRequest(BaseModel):
+    """Mark pending payment as completed after webhook verification"""
+    student_id: int
+    transaction_id: str
+    payment_amount: float
 
 

@@ -38,6 +38,9 @@ class BaseConfig(BaseSettings):
     DIGICAMPUS_API_URL: str
     DIGICAMPUS_USERNAME: str
     DIGICAMPUS_PASSWORD: str
+    COLLEXO_PAYMENT_URL: str = "https://payment.collexo.com/user/login/"
+    COLLEXO_WEBHOOK_SECRET: str = ""
+    COLLEXO_INSTITUTION_ID: str = ""
 
     class Config:
         env_file = ".env.dev"

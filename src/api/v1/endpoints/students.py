@@ -122,6 +122,7 @@ def complete_pending_payment(id: int, db: Session = Depends(get_db), current_use
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to complete pending payment: {str(e)}")
+
     
 @router.delete("/delete/all", status_code=204, response_model=None)
 def delete_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
