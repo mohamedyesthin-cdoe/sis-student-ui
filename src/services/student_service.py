@@ -4,7 +4,7 @@ from src.models.students import Student
 from src.models.master import Programe, ProgramPaymentWorkflowScope, FeeDetails
 from src.models.payment import Payment, SemesterFee, PaymentTransaction
 from sqlalchemy.orm import Session
-from typing import List, Dict
+from typing import List, Dict, Optional
 from src.schemas.students import StudentCreate, StudentMarkCreate, StudentResponse
 from src.core.config import settings
 import httpx
@@ -12,6 +12,7 @@ from src.services.integrations.student_api import fetch_students_list
 import logging
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 import traceback
 import re
 from datetime import datetime
@@ -47,6 +48,13 @@ class StudentService:
             raise HTTPException(status_code=404, detail="Student not found")
 
         workflow_enabled = self._is_workflow_enabled_for_student(student)
+        logger.info(
+            "Workflow enabled for student %s: %s (semester=%s semester_id=%s)",
+            student_id,
+            workflow_enabled,
+            student.semester,
+            student.semester_id,
+        )
 
         return {
             "student_id": student.id,
@@ -58,6 +66,62 @@ class StudentService:
             "message": "Pending payment status fetched successfully",
         }
 
+    def _extract_semester_number(self, semester_value: object) -> Optional[int]:
+        if semester_value is None:
+            return None
+
+        if isinstance(semester_value, int):
+            return semester_value
+
+        semester_str = str(semester_value).strip().lower()
+        if not semester_str:
+            return None
+
+        match = re.search(r"(\d+)", semester_str)
+        if match:
+            return int(match.group(1))
+
+        return None
+
+    def _ordinal_semester_label(self, semester_number: int) -> str:
+        if 10 <= semester_number % 100 <= 20:
+            suffix = "th"
+        else:
+            suffix = {1: "st", 2: "nd", 3: "rd"}.get(semester_number % 10, "th")
+        return f"{semester_number}{suffix}"
+
+    def _semester_candidates(self, semester_value: object) -> List[str]:
+        candidates: List[str] = []
+        semester_number = self._extract_semester_number(semester_value)
+
+        raw_value = str(semester_value).strip() if semester_value is not None else ""
+        if raw_value:
+            candidates.append(raw_value)
+
+        if semester_number is not None:
+            candidates.extend(
+                [
+                    str(semester_number),
+                    f"semester_{semester_number}",
+                    f"Semester {semester_number}",
+                    self._ordinal_semester_label(semester_number),
+                ]
+            )
+
+        deduped: List[str] = []
+        seen = set()
+        for candidate in candidates:
+            if candidate not in seen:
+                deduped.append(candidate)
+                seen.add(candidate)
+        return deduped
+
+    def _get_student_semester_candidates(self, student: Student) -> List[str]:
+        candidates = self._semester_candidates(student.semester)
+        if candidates:
+            return candidates
+        return self._semester_candidates(student.semester_id)
+
     def _is_workflow_enabled_for_student(self, student: Student) -> bool:
         program = self.db.query(Programe).filter(Programe.id == student.program_id).first()
         if not program:
@@ -67,7 +131,9 @@ class StudentService:
         if program.pending_payment_workflow_enabled:
             return True
 
-        if not student.batch or not student.admission_year or not student.semester:
+        semester_candidates = self._get_student_semester_candidates(student)
+
+        if not student.batch or not student.admission_year or not semester_candidates:
             return False
 
         scope = (
@@ -76,7 +142,7 @@ class StudentService:
                 ProgramPaymentWorkflowScope.program_id == student.program_id,
                 ProgramPaymentWorkflowScope.batch == student.batch,
                 ProgramPaymentWorkflowScope.admission_year == student.admission_year,
-                ProgramPaymentWorkflowScope.semester == student.semester,  # ✅ Now uses string semester value
+                ProgramPaymentWorkflowScope.semester.in_(semester_candidates),
                 ProgramPaymentWorkflowScope.enabled.is_(True),
             )
             .first()
@@ -128,10 +194,16 @@ class StudentService:
         Sets payment link from Collexo gateway
         """
         try:
+            semester_candidates = self._semester_candidates(semester)
+            semester_number = self._extract_semester_number(semester)
+
+            if not semester_candidates:
+                raise HTTPException(status_code=400, detail="Invalid semester value")
+
             # Get FeeDetails for this semester
             fee_details = self.db.query(FeeDetails).filter(
                 FeeDetails.programe_id == program_id,
-                FeeDetails.semester == semester
+                FeeDetails.semester.in_(semester_candidates)
             ).first()
 
             if not fee_details:
@@ -149,11 +221,15 @@ class StudentService:
             payment_link = f"{settings.COLLEXO_PAYMENT_URL}?dest=/{institution_id}/applicant/add/"
 
             # Find all students matching criteria
+            semester_filters = [Student.semester.in_(semester_candidates)]
+            if semester_number is not None:
+                semester_filters.append(Student.semester_id == semester_number)
+
             students = self.db.query(Student).filter(
                 Student.program_id == program_id,
                 Student.batch == batch,
                 Student.admission_year == admission_year,
-                Student.semester_id == int(semester),
+                or_(*semester_filters),
                 Student.is_deleted == False
             ).all()
 
