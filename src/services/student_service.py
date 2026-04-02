@@ -67,7 +67,7 @@ class StudentService:
         if program.pending_payment_workflow_enabled:
             return True
 
-        if not student.batch or not student.admission_year or student.semester_id is None:
+        if not student.batch or not student.admission_year or not student.semester:
             return False
 
         scope = (
@@ -76,7 +76,7 @@ class StudentService:
                 ProgramPaymentWorkflowScope.program_id == student.program_id,
                 ProgramPaymentWorkflowScope.batch == student.batch,
                 ProgramPaymentWorkflowScope.admission_year == student.admission_year,
-                ProgramPaymentWorkflowScope.semester == str(student.semester_id),
+                ProgramPaymentWorkflowScope.semester == student.semester,  # ✅ Now uses string semester value
                 ProgramPaymentWorkflowScope.enabled.is_(True),
             )
             .first()

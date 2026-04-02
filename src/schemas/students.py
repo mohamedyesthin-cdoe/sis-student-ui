@@ -231,6 +231,9 @@ class StudentBase(BaseModel):
     passport_issued_country: Optional[str] = None
     passport_number: Optional[str] = None
     passport_expiry_date: Optional[str] = None
+    batch: Optional[str] = None
+    admission_year: Optional[str] = None
+    semester: Optional[str] = None
     is_deleted: bool = False
 
     # Nested
@@ -295,6 +298,9 @@ class StudentUpdate(BaseModel):
     passport_issued_country: Optional[str] = None
     passport_number: Optional[str] = None
     passport_expiry_date: Optional[str] = None
+    batch: Optional[str] = None
+    admission_year: Optional[str] = None
+    semester: Optional[str] = None
     is_deleted: Optional[bool] = None
 
     # Nested Updates
@@ -334,6 +340,9 @@ class StudentResponse(BaseModel):
     passport_issued_country: Optional[str] = None
     passport_number: Optional[str]
     passport_expiry_date: Optional[date]
+    batch: Optional[str] = None
+    admission_year: Optional[str] = None
+    semester: Optional[str] = None
     pending_payment_due: bool = False
     pending_payment_amount: float = 0.0
     pending_payment_link: Optional[str] = None
