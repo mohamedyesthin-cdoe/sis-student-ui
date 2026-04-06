@@ -4,6 +4,7 @@ from src.models.students import Student
 from src.models.master import Programe, ProgramPaymentWorkflowScope, FeeDetails
 from src.models.payment import Payment, SemesterFee, PaymentTransaction
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
 from typing import List, Dict, Optional
 from src.schemas.students import StudentCreate, StudentMarkCreate, StudentResponse
 from src.core.config import settings
@@ -12,7 +13,6 @@ from src.services.integrations.student_api import fetch_students_list
 import logging
 from fastapi import HTTPException, status
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import or_
 import traceback
 import re
 from datetime import datetime
@@ -49,11 +49,12 @@ class StudentService:
 
         workflow_enabled = self._is_workflow_enabled_for_student(student)
         logger.info(
-            "Workflow enabled for student %s: %s (semester=%s semester_id=%s)",
+            "Workflow enabled for student %s: %s (semester=%s batch=%s admission_year=%s)",
             student_id,
             workflow_enabled,
             student.semester,
-            student.semester_id,
+            student.batch,
+            student.admission_year,
         )
 
         return {
@@ -134,17 +135,45 @@ class StudentService:
         if not student.batch or not student.admission_year or not semester_candidates:
             return False
 
+        # Case-insensitive semester match
+        semester_candidates_lower = [c.lower() for c in semester_candidates]
+
+        logger.info(
+            "Workflow scope lookup for student %s => batch=%s, admission_year=%s, semester_candidates=%s",
+            student.id,
+            student.batch,
+            student.admission_year,
+            semester_candidates_lower,
+        )
+
         scope = (
             self.db.query(ProgramPaymentWorkflowScope)
             .filter(
                 ProgramPaymentWorkflowScope.program_id == student.program_id,
                 ProgramPaymentWorkflowScope.batch == student.batch,
                 ProgramPaymentWorkflowScope.admission_year == student.admission_year,
-                ProgramPaymentWorkflowScope.semester.in_(semester_candidates),
+                func.lower(ProgramPaymentWorkflowScope.semester).in_(semester_candidates_lower),
                 ProgramPaymentWorkflowScope.enabled.is_(True),
             )
             .first()
         )
+        if scope:
+            logger.info(
+                "Matched scope: program_id=%s batch=%s admission_year=%s semester=%s enabled=%s",
+                scope.program_id,
+                scope.batch,
+                scope.admission_year,
+                scope.semester,
+                scope.enabled,
+            )
+        else:
+            logger.info(
+                "No matching scope found for student %s with batch=%s, admission_year=%s, semester_candidates=%s",
+                student.id,
+                student.batch,
+                student.admission_year,
+                semester_candidates_lower,
+            )
         return bool(scope)
 
     def assign_pending_payment(self, student_id: int, payment_link: str, amount: float) -> dict:
@@ -193,7 +222,6 @@ class StudentService:
         """
         try:
             semester_candidates = self._semester_candidates(semester)
-            semester_number = self._extract_semester_number(semester)
 
             if not semester_candidates:
                 raise HTTPException(status_code=400, detail="Invalid semester value")
@@ -219,15 +247,11 @@ class StudentService:
             payment_link = f"{settings.COLLEXO_PAYMENT_URL}?dest=/{institution_id}/applicant/add/"
 
             # Find all students matching criteria
-            semester_filters = [Student.semester.in_(semester_candidates)]
-            if semester_number is not None:
-                semester_filters.append(Student.semester_id == semester_number)
-
             students = self.db.query(Student).filter(
                 Student.program_id == program_id,
                 Student.batch == batch,
                 Student.admission_year == admission_year,
-                or_(*semester_filters),
+                Student.semester.in_(semester_candidates),
                 Student.is_deleted == False
             ).all()
 
