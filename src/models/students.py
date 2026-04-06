@@ -64,10 +64,10 @@ class Student(AuditableBase):
     admission_year = Column(String(10), nullable=True)
     semester_id = Column(Integer, nullable=True)  # Optional semester association (FK to Semester)
     semester = Column(String(20), nullable=True)  # Semester value: "semester_1", "semester_2", etc. (matches workflow scope)
+    pending_payment_workflow_enabled = Column(Boolean, default=False, nullable=False)
     pending_payment_due = Column(Boolean, default=False, nullable=False)
     pending_payment_amount = Column(Float, default=0.0, nullable=False)
     pending_payment_link = Column(Text, nullable=True)
-    pending_payment_semester = Column(String(20), nullable=True)  # Track which semester this pending payment is for
     
     # Soft Delete (optional)
     is_deleted = Column(Boolean, default=False)

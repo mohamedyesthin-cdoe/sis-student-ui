@@ -343,10 +343,10 @@ class StudentResponse(BaseModel):
     batch: Optional[str] = None
     admission_year: Optional[str] = None
     semester: Optional[str] = None
+    pending_payment_workflow_enabled: bool = False
     pending_payment_due: bool = False
     pending_payment_amount: float = 0.0
     pending_payment_link: Optional[str] = None
-    pending_payment_semester: Optional[str] = None
     is_deleted: bool
     created_at: datetime
     updated_at: datetime
@@ -382,6 +382,7 @@ class PendingPaymentStatusResponse(BaseModel):
     pending_payment_due: bool
     pending_payment_amount: float
     pending_payment_link: Optional[str] = None
+    pending_payment_workflow_enabled: bool = False
     message: str
 
 class DebStudentResponse(BaseModel):

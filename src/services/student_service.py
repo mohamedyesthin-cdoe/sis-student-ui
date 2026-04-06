@@ -61,6 +61,7 @@ class StudentService:
             "student_id": student.id,
             "program_id": student.program_id,
             "workflow_enabled": workflow_enabled,
+            "pending_payment_workflow_enabled": student.pending_payment_workflow_enabled,
             "pending_payment_due": student.pending_payment_due,
             "pending_payment_amount": float(student.pending_payment_amount or 0.0),
             "pending_payment_link": student.pending_payment_link,
@@ -131,6 +132,10 @@ class StudentService:
             )
             return False
 
+        # Student-level flag set by workflow scope sync
+        if student.pending_payment_workflow_enabled:
+            return True
+
         # Backward compatibility: program-level switch can still force-enable.
         if program.pending_payment_workflow_enabled:
             return True
@@ -187,6 +192,48 @@ class StudentService:
                 semester_candidates_lower,
             )
         return bool(scope)
+
+    def sync_workflow_flag_for_scope(
+        self,
+        program_id: int,
+        batch: str,
+        admission_year: str,
+        semester: str,
+        enabled: bool,
+    ) -> int:
+        """
+        Set pending_payment_workflow_enabled on students that match the scope payload.
+        Returns count of students updated.
+        """
+        semester_candidates = self._semester_candidates(semester)
+        if not semester_candidates:
+            raise HTTPException(status_code=400, detail="Invalid semester value for workflow flag update")
+
+        semester_candidates_lower = [c.lower() for c in semester_candidates]
+
+        updated = (
+            self.db.query(Student)
+            .filter(
+                Student.program_id == program_id,
+                Student.batch == batch,
+                Student.admission_year == admission_year,
+                func.lower(Student.semester).in_(semester_candidates_lower),
+                Student.is_deleted.is_(False),
+            )
+            .update({Student.pending_payment_workflow_enabled: enabled}, synchronize_session=False)
+        )
+        self.db.commit()
+
+        logger.info(
+            "Updated workflow flag for program_id=%s batch=%s admission_year=%s semester_candidates=%s -> enabled=%s (rows=%s)",
+            program_id,
+            batch,
+            admission_year,
+            semester_candidates_lower,
+            enabled,
+            updated,
+        )
+        return updated
 
     def assign_pending_payment(self, student_id: int, payment_link: str, amount: float) -> dict:
         student = self.db.query(Student).filter(Student.id == student_id).first()
@@ -279,7 +326,6 @@ class StudentService:
                 student.pending_payment_due = True
                 student.pending_payment_amount = total_fee
                 student.pending_payment_link = payment_link
-                student.pending_payment_semester = semester
                 self.db.add(student)
 
                 updated_students.append({
@@ -360,7 +406,6 @@ class StudentService:
             student.pending_payment_due = False
             student.pending_payment_amount = 0.0
             student.pending_payment_link = None
-            student.pending_payment_semester = None
 
             self.db.commit()
             self.db.refresh(student)
@@ -406,7 +451,6 @@ class StudentService:
             student.pending_payment_due = False
             student.pending_payment_amount = 0.0
             student.pending_payment_link = None
-            student.pending_payment_semester = None
 
             self.db.commit()
             self.db.refresh(student)

@@ -4,6 +4,7 @@ from src.models.master import *
 from src.schemas.master import *
 from fastapi import HTTPException, status
 from typing import List
+from src.services.student_service import StudentService
 
 class MasterService:
     def __init__(self, db: Session):
@@ -97,6 +98,16 @@ class MasterService:
                 semester=payload.semester,
                 enabled=payload.enabled,
             )
+            # Sync workflow flag on matching students
+            student_service = StudentService(self.repo.db)
+            updated_count = student_service.sync_workflow_flag_for_scope(
+                program_id=programe_id,
+                batch=payload.batch,
+                admission_year=payload.admission_year,
+                semester=payload.semester,
+                enabled=payload.enabled,
+            )
+
             return ProgramPaymentWorkflowScopeOut.model_validate(scope)
         except HTTPException:
             raise
