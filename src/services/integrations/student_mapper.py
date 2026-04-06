@@ -196,6 +196,22 @@ def map_api_to_student_schema(api_response: dict) -> Dict[str, Any]:
         ]
     }
 
+    # Normalize address: ensure required perm_country is present and mirror correspondence when flagged
+    addr = mapped_data["address_details"]
+    if addr.get("corr_addr_same"):
+        # Mirror correspondence fields when user marked them as same
+        addr["perm_addr1"] = addr["perm_addr1"] or addr["corr_addr1"]
+        addr["perm_addr2"] = addr["perm_addr2"] or addr["corr_addr2"]
+        addr["perm_city"] = addr["perm_city"] or addr["corr_city"]
+        addr["perm_district"] = addr["perm_district"] or addr["corr_district"]
+        addr["perm_state"] = addr["perm_state"] or addr["corr_state"]
+        addr["perm_pin"] = addr["perm_pin"] or addr["corr_pin"]
+        addr["perm_country"] = addr["perm_country"] or addr["corr_country"]
+
+    # Guarantee non-null perm_country (DB constraint)
+    if not addr.get("perm_country"):
+        addr["perm_country"] = addr.get("corr_country") or "India"
+
     mapped_data["semester_fees"] = [fee for fee in mapped_data["semester_fees"] if fee is not None]
     return mapped_data
 
