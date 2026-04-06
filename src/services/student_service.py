@@ -5,6 +5,7 @@ from src.models.master import Programe, ProgramPaymentWorkflowScope, FeeDetails
 from src.models.payment import Payment, SemesterFee, PaymentTransaction
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
+from sqlalchemy import exists, and_, or_
 from typing import List, Dict, Optional
 from src.schemas.students import StudentCreate, StudentMarkCreate, StudentResponse
 from src.core.config import settings
@@ -218,7 +219,7 @@ class StudentService:
                 Student.batch == batch,
                 Student.admission_year == admission_year,
                 func.lower(Student.semester).in_(semester_candidates_lower),
-                Student.is_deleted.is_(False),
+                or_(Student.is_deleted.is_(False), Student.is_deleted.is_(None)),
             )
             .update({Student.pending_payment_workflow_enabled: enabled}, synchronize_session=False)
         )
@@ -231,6 +232,38 @@ class StudentService:
             admission_year,
             semester_candidates_lower,
             enabled,
+            updated,
+        )
+        return updated
+
+    def sync_flags_from_enabled_scopes(self, program_id: Optional[int] = None) -> int:
+        """
+        Bulk-set student pending_payment_workflow_enabled to True wherever an enabled scope exists.
+        Does not force-disable others.
+        """
+        scope_exists = exists().where(
+            and_(
+                ProgramPaymentWorkflowScope.enabled.is_(True),
+                ProgramPaymentWorkflowScope.program_id == Student.program_id,
+                ProgramPaymentWorkflowScope.batch == Student.batch,
+                ProgramPaymentWorkflowScope.admission_year == Student.admission_year,
+                func.lower(ProgramPaymentWorkflowScope.semester) == func.lower(Student.semester),
+                *( [ProgramPaymentWorkflowScope.program_id == program_id] if program_id is not None else [] ),
+            )
+        )
+
+        updated = (
+            self.db.query(Student)
+            .filter(
+                or_(Student.is_deleted.is_(False), Student.is_deleted.is_(None)),
+                scope_exists,
+            )
+            .update({Student.pending_payment_workflow_enabled: True}, synchronize_session=False)
+        )
+        self.db.commit()
+        logger.info(
+            "Synced workflow flags from enabled scopes%s (rows=%s)",
+            f" for program_id={program_id}" if program_id else "",
             updated,
         )
         return updated

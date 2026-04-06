@@ -107,6 +107,8 @@ class MasterService:
                 semester=payload.semester,
                 enabled=payload.enabled,
             )
+            # Also ensure any other enabled scopes are reflected on students (one-way enable)
+            student_service.sync_flags_from_enabled_scopes(program_id=programe_id)
 
             return ProgramPaymentWorkflowScopeOut.model_validate(scope)
         except HTTPException:
