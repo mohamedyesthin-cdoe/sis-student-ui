@@ -117,10 +117,9 @@ class StudentService:
         return deduped
 
     def _get_student_semester_candidates(self, student: Student) -> List[str]:
-        candidates = self._semester_candidates(student.semester)
-        if candidates:
-            return candidates
-        return self._semester_candidates(student.semester_id)
+        # We match workflow scopes using the student's stored semester string only.
+        # Avoid falling back to semester_id to keep the comparison consistent with ProgramPaymentWorkflowScope.semester.
+        return self._semester_candidates(student.semester)
 
     def _is_workflow_enabled_for_student(self, student: Student) -> bool:
         program = self.db.query(Programe).filter(Programe.id == student.program_id).first()
