@@ -26,6 +26,7 @@ class StudentService:
     def __init__(self, db: Session):
         self.db = db
         self.student_repo = StudentRepository(db)
+        self.default_pending_payment_link = "https://payment.collexo.com/user/login/?dest=/sri-ramachandra-digilearn-27224/applicant/add/"
 
     def create_student(self, student_data: StudentCreate) -> Student:
         """Create a new student."""
@@ -91,14 +92,17 @@ class StudentService:
         if effective_amount <= 0.0 and fee_total is not None:
             effective_amount = fee_total
 
+        pending_due = student.pending_payment_due or (effective_amount > 0.0)
+        pending_link = student.pending_payment_link or self.default_pending_payment_link
+
         return {
             "student_id": student.id,
             "program_id": student.program_id,
             "workflow_enabled": workflow_enabled,
             "pending_payment_workflow_enabled": student.pending_payment_workflow_enabled,
-            "pending_payment_due": student.pending_payment_due,
+            "pending_payment_due": pending_due,
             "pending_payment_amount": effective_amount,
-            "pending_payment_link": student.pending_payment_link,
+            "pending_payment_link": pending_link,
             "message": "Pending payment status fetched successfully",
         }
 
