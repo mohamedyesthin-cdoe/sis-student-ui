@@ -124,6 +124,11 @@ class StudentService:
     def _is_workflow_enabled_for_student(self, student: Student) -> bool:
         program = self.db.query(Programe).filter(Programe.id == student.program_id).first()
         if not program:
+            logger.info(
+                "Workflow disabled for student %s: program not found (program_id=%s)",
+                student.id,
+                student.program_id,
+            )
             return False
 
         # Backward compatibility: program-level switch can still force-enable.
@@ -133,6 +138,13 @@ class StudentService:
         semester_candidates = self._get_student_semester_candidates(student)
 
         if not student.batch or not student.admission_year or not semester_candidates:
+            logger.info(
+                "Workflow disabled for student %s: missing batch/admission_year/semester (batch=%s admission_year=%s semester=%s)",
+                student.id,
+                student.batch,
+                student.admission_year,
+                student.semester,
+            )
             return False
 
         # Case-insensitive semester match
