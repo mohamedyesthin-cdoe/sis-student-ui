@@ -43,6 +43,34 @@ class StudentService:
         """Retrieve a student by ID."""
         return self.student_repo.get_fees(student_id)
 
+    def _get_fee_total_for_student(self, student: Student) -> Optional[float]:
+        """
+        Resolve total fee for the student's current semester from FeeDetails.
+        """
+        if not student or not student.program_id:
+            return None
+
+        semester_candidates = self._get_student_semester_candidates(student)
+        if not semester_candidates:
+            return None
+
+        semester_candidates_lower = [c.lower() for c in semester_candidates]
+
+        fee = (
+            self.db.query(FeeDetails)
+            .filter(
+                FeeDetails.programe_id == student.program_id,
+                func.lower(FeeDetails.semester).in_(semester_candidates_lower),
+            )
+            .first()
+        )
+        if not fee:
+            return None
+        try:
+            return float(fee.total_fee or 0.0)
+        except Exception:
+            return None
+
     def get_pending_payment_status(self, student_id: int) -> dict:
         student = self.db.query(Student).filter(Student.id == student_id).first()
         if not student:
@@ -58,13 +86,18 @@ class StudentService:
             student.admission_year,
         )
 
+        fee_total = self._get_fee_total_for_student(student)
+        effective_amount = float(student.pending_payment_amount or 0.0)
+        if effective_amount <= 0.0 and fee_total is not None:
+            effective_amount = fee_total
+
         return {
             "student_id": student.id,
             "program_id": student.program_id,
             "workflow_enabled": workflow_enabled,
             "pending_payment_workflow_enabled": student.pending_payment_workflow_enabled,
             "pending_payment_due": student.pending_payment_due,
-            "pending_payment_amount": float(student.pending_payment_amount or 0.0),
+            "pending_payment_amount": effective_amount,
             "pending_payment_link": student.pending_payment_link,
             "message": "Pending payment status fetched successfully",
         }
