@@ -9,3 +9,4 @@ from src.models.payment import *
 from src.models.exam import *
 from src.models.academic import *
 from src.models.finance import *
+from src.models.grievance import *

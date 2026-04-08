@@ -1,6 +1,7 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig
 from src.core.config import settings
 from pathlib import Path
+from typing import Optional
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # goes from utils → src → SisHub
 logo_path = BASE_DIR / "assets" / "image" / "logo.png"
@@ -19,6 +20,82 @@ conf = ConnectionConfig(
    MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
    SUPPRESS_SEND=False  # Ensure emails are actually sent
 )
+
+async def send_simple_email(email_to: str, subject: str, html_body: str, plain_body: Optional[str] = None):
+    """
+    Lightweight helper to send a simple HTML (and optional plain text) email.
+    """
+    message = MessageSchema(
+        subject=subject,
+        recipients=[email_to],
+        body=html_body,
+        subtype="html",
+    )
+
+    fm = FastMail(conf)
+    try:
+        await fm.send_message(message)
+    except Exception as e:
+        # Fall back to console log if sending fails
+        print(f"Email send failed for {email_to}: {e}")
+
+
+async def send_grievance_email(
+    email_to: str,
+    action: str,
+    grievance_id: int,
+    subject_line: str,
+    student_name: Optional[str],
+    attachment_url: Optional[str],
+):
+    """
+    Minimal grievance notification: ID, student name, and attachment link.
+    """
+    title_map = {
+        "created": "New Grievance Added",
+        "updated": "Grievance Updated",
+        "deleted": "Grievance Deleted",
+    }
+    title = title_map.get(action, "Grievance Notice")
+
+    link_block = (
+        f"<a href=\"{attachment_url}\">Download attachment</a>"
+        if attachment_url else "No attachment provided"
+    )
+    student_label = student_name or "Student name not available"
+
+    html_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 20px auto; padding: 16px; border: 1px solid #e6e9f0; border-radius: 8px;">
+            <h2 style="margin: 0 0 12px 0; color: #183f8c;">{title}</h2>
+            <p style="margin: 0 0 10px 0;">A grievance has been processed.</p>
+            <ul style="padding-left: 18px; margin: 0 0 12px 0; color: #333;">
+                <li><strong>Grievance ID:</strong> {grievance_id}</li>
+                <li><strong>Student:</strong> {student_label}</li>
+                <li><strong>Attachment:</strong> {link_block}</li>
+            </ul>
+            <p style="margin: 0; font-size: 12px; color: #666;">Support: cdoesupport@sriramachandra.edu.in</p>
+        </div>
+    """
+
+    plain_body = f"""{title}
+Grievance ID: {grievance_id}
+Student: {student_label}
+Attachment: {attachment_url or "No attachment"}
+Support: cdoesupport@sriramachandra.edu.in
+"""
+
+    message = MessageSchema(
+        subject=f"[SIS] {title} - #{grievance_id}",
+        recipients=[email_to],
+        body=html_body,
+        subtype="html",
+    )
+
+    fm = FastMail(conf)
+    try:
+        await fm.send_message(message)
+    except Exception as e:
+        print(f"Email send failed for grievance #{grievance_id} to {email_to}: {e}")
 
 async def send_credentials_email(email_to: str, username: str, password: str, fullname: str):
     """
