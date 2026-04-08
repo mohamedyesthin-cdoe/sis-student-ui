@@ -21,7 +21,29 @@ class GrievanceUpdate(BaseModel):
 
 
 class GrievanceStatusUpdate(BaseModel):
-    status: str = Field(..., max_length=30, description="open | in_progress | resolved | closed")
+    status: str = Field(
+        ...,
+        max_length=30,
+        description="open | in_progress | assigned | closed_by_faculty | closed_by_admin",
+    )
+    resolution_notes: Optional[str] = None
+
+
+class GrievanceAssign(BaseModel):
+    staff_id: int = Field(..., description="Staff (faculty) id to assign the grievance to")
+    notes: Optional[str] = None
+
+
+class GrievanceFacultyClose(BaseModel):
+    resolution_notes: Optional[str] = None
+
+
+class GrievanceFacultyStatusUpdate(BaseModel):
+    status: str = Field(
+        ...,
+        max_length=30,
+        description="in_progress | closed_by_faculty",
+    )
     resolution_notes: Optional[str] = None
 
 
@@ -37,6 +59,8 @@ class GrievanceResponse(BaseModel):
     status: str
     attachment_url: Optional[str] = None
     resolution_notes: Optional[str] = None
+    assigned_to_id: Optional[int] = None
+    assigned_to_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -53,6 +77,9 @@ class GrievanceAdminResponse(BaseModel):
     student_id: Optional[int] = None
     student_name: Optional[str] = None
     registration_no: Optional[str] = None
+    status: str
+    assigned_to_id: Optional[int] = None
+    assigned_to_name: Optional[str] = None
     subject: str
     description: str
     attachment_url: Optional[str] = None
@@ -63,11 +90,21 @@ class GrievanceAdminResponse(BaseModel):
         from_attributes = True
 
 
+class GrievanceAdminStudentGroup(BaseModel):
+    student_id: Optional[int] = None
+    student_name: Optional[str] = None
+    registration_no: Optional[str] = None
+    grievances: List[GrievanceAdminResponse]
+
+
 class GrievancePublicResponse(BaseModel):
     id: int
     student_id: Optional[int] = None
     student_name: Optional[str] = None
     registration_no: Optional[str] = None
+    status: str
+    assigned_to_id: Optional[int] = None
+    assigned_to_name: Optional[str] = None
     subject: str
     description: str
     attachment_url: Optional[str] = None

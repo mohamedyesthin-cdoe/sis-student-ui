@@ -1,15 +1,19 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, Form
+from fastapi import APIRouter, Depends, Query, UploadFile, Form
 from sqlalchemy.orm import Session
 
 from src.db.session import get_db
 from src.core.security.dependencies import require_staff
+from src.core.security.jwt import get_current_user
 from src.schemas.grievance import (
     GrievanceCreate,
     GrievanceUpdate,
     GrievanceResponse,
-    GrievanceAdminResponse,
+    GrievanceAdminStudentGroup,
     GrievancePublicResponse,
+    GrievanceStatusUpdate,
+    GrievanceAssign,
+    GrievanceFacultyStatusUpdate,
 )
 from src.services.grievance_service import GrievanceService
 from src.services.student_service import StudentService
@@ -149,49 +153,9 @@ def delete_grievance_alias(
     return None
 
 
-@router.post(
-    "/student/{student_id}",
-    response_model=GrievanceResponse,
-    status_code=201,
-)
-async def create_grievance_for_student(
-    student_id: int,
-    subject: str = Form(...),
-    description: str = Form(...),
-    file: Optional[UploadFile] = None,
-    db: Session = Depends(get_db),
-):
-    """
-    Student-facing endpoint: accepts subject/description/file.
-    Auto-populates name/email/mobile from student record when available.
-    """
-    student_service = StudentService(db)
-    student = student_service.get_student_id(student_id)
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-
-    attachment_url = None
-    if file:
-        doc_service = DocumentService()
-        attachment_url = await doc_service.upload_to_s3(file)
-
-    payload = GrievanceCreate(
-        student_id=student_id,
-        name=f"{student.first_name} {student.last_name}",
-        email=student.email,
-        mobile_number=student.mobile_number,
-        subject=subject,
-        description=description,
-        attachment_url=attachment_url,
-    )
-
-    service = GrievanceService(db)
-    return service.create_grievance(payload)
-
-
 @router.get(
     "/admin/list",
-    response_model=List[GrievanceAdminResponse],
+    response_model=List[GrievanceAdminStudentGroup],
     dependencies=[Depends(require_staff)],
 )
 def list_grievances_admin(
@@ -199,3 +163,86 @@ def list_grievances_admin(
 ):
     service = GrievanceService(db)
     return service.list_grievances_with_details()
+
+
+@router.post(
+    "/admin/close/{grievance_id}",
+    response_model=GrievanceResponse,
+    dependencies=[Depends(require_staff)],
+)
+def admin_close_grievance(
+    grievance_id: int,
+    payload: GrievanceStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    service = GrievanceService(db)
+    return service.admin_close(grievance_id, payload)
+
+
+@router.get(
+    "/admin/student/{student_id}",
+    response_model=List[GrievanceResponse],
+    dependencies=[Depends(require_staff)],
+)
+def list_grievances_for_student_admin(
+    student_id: int,
+    db: Session = Depends(get_db),
+):
+    service = GrievanceService(db)
+    return service.list_grievances_for_student_admin(student_id)
+
+
+@router.post(
+    "/admin/assign/{grievance_id}",
+    response_model=GrievanceResponse,
+    dependencies=[Depends(require_staff)],
+)
+def admin_assign_grievance(
+    grievance_id: int,
+    payload: GrievanceAssign,
+    db: Session = Depends(get_db),
+):
+    service = GrievanceService(db)
+    return service.assign_grievance(grievance_id, payload)
+
+
+@router.get(
+    "/faculty/list",
+    response_model=List[GrievanceResponse],
+    dependencies=[Depends(require_staff)],
+)
+def list_faculty_grievances(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    service = GrievanceService(db)
+    return service.list_for_faculty(current_user.id)
+
+
+@router.get(
+    "/faculty/{grievance_id}",
+    response_model=GrievanceResponse,
+    dependencies=[Depends(require_staff)],
+)
+def get_faculty_grievance(
+    grievance_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    service = GrievanceService(db)
+    return service.get_for_faculty(grievance_id, current_user.id)
+
+
+@router.post(
+    "/faculty/status/{grievance_id}",
+    response_model=GrievanceResponse,
+    dependencies=[Depends(require_staff)],
+)
+def faculty_update_status(
+    grievance_id: int,
+    payload: GrievanceFacultyStatusUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    service = GrievanceService(db)
+    return service.faculty_update_status(grievance_id, current_user.id, payload)
