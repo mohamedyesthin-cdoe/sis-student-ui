@@ -57,6 +57,15 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     routePath: '',
   },
   {
+    text: 'Grievances',
+    icon: 'Grievances',
+    subItems: [
+      // { text: 'Grievance', routePath: '/grievances' },
+      // { text: 'Offline Grievance', routePath: '/grievances/offline' },
+    ],
+    routePath: '/grievances/admin/list',
+  },
+  {
     text: 'Master',
     icon: 'Master',
     subItems: [
@@ -71,9 +80,9 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
       { text: 'Exams', routePath: '/exam/list' },
       { text: 'Exam Timetable', routePath: '/exam-timetables/list' },
       // { text: 'Mark Entry', routePath: '/students-marks-entry' },
-      // { text: 'Payment Control', routePath: '/payment-control/list' },
-      // { text: 'Batches', routePath: '/batch/list' },
-      // { text: 'Years', routePath: '/year/list' },
+      { text: 'Payment Control', routePath: '/payment-control/list' },
+      { text: 'Batches', routePath: '/batch/list' },
+      { text: 'Years', routePath: '/year/list' },
     ],
     routePath: '',
   },
@@ -115,7 +124,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
       // { text: 'Grievance', routePath: '/grievances' },
       // { text: 'Offline Grievance', routePath: '/grievances/offline' },
     ],
-    routePath: '/grievances',
+    routePath: '/grievances/list',
   },
   {
     text: 'Exam Results',

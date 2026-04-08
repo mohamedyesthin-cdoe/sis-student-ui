@@ -111,14 +111,14 @@ export default function PaymentWorkflowAdd() {
     useState<any[]>([]);
 
   const SEMESTER_LIST = [
-    "SEMESTER 1",
-    "SEMESTER 2",
-    "SEMESTER 3",
-    "SEMESTER 4",
-    "SEMESTER 5",
-    "SEMESTER 6",
-    "SEMESTER 7",
-    "SEMESTER 8",
+    { label: "SEMESTER 1", value: 'Semester 1' },
+    { label: "SEMESTER 2", value: 'Semester 2' },
+    { label: "SEMESTER 3", value: 'Semester 3' },
+    { label: "SEMESTER 4", value: 'Semester 4' },
+    { label: "SEMESTER 5", value: 'Semester 5' },
+    { label: "SEMESTER 6", value: 'Semester 6' },
+    { label: "SEMESTER 7", value: 'Semester 7' },
+    { label: "SEMESTER 8", value: 'Semester 8' }
   ];
 
   const {
@@ -206,10 +206,12 @@ export default function PaymentWorkflowAdd() {
         );
 
         setSemesterOptions(
-          SEMESTER_LIST.map(
-            (s) => ({
-              label: s,
-              value: s,
+          (SEMESTER_LIST || []).map(
+            (s: any) => ({
+              label:
+                s.label,
+              value:
+                s.value,
             })
           )
         );

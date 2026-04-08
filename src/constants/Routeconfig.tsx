@@ -5,9 +5,8 @@ import StudentDetail from "../features/admin/student/StudentDetail";
 import ProgramAdd from "../features/admin/programs/ProgramAdd";
 import ProgramList from "../features/admin/programs/ProgramList";
 import DashboardStudent from "../features/student/dashboard/DashboardStudent";
-import FeesDetail from "../features/student/fees/Feesdetail";
 import FeesReceipt from "../features/student/fees/feesreceipt";
-import Onlinegrievances from "../features/student/grievances/onlinegrievances";
+import GrievanceList from "../features/student/grievances/GrievanceList";
 import Grievanceadd from "../features/student/grievances/grievanceadd";
 import DocumemtsCard from "../features/student/documents/documents"
 import StudentCounselling from "../features/student/counselling/counselling";
@@ -42,6 +41,8 @@ import BatchList from "../features/admin/master/batch/BatchList";
 import BatchAdd from "../features/admin/master/batch/BatchAdd";
 import YearList from "../features/admin/master/year/YearList";
 import YearAdd from "../features/admin/master/year/YearAdd";
+import FeesLayout from "../features/student/fees/FeesLayout";
+import GrievanceAdminList from "../features/student/grievances/GrievanceListAdmin";
 
 export const routesConfig = [
   {
@@ -152,7 +153,7 @@ export const routesConfig = [
     children: [
       {
         path: 'detail',
-        element: <FeesDetail />,
+        element: <FeesLayout />,
         breadcrumb: 'Fees Detail',
       },
       {
@@ -167,15 +168,31 @@ export const routesConfig = [
     breadcrumb: 'Grievances',
     children: [
       {
-        path: '',
-        element: <Onlinegrievances />,
-        // breadcrumb: 'Online Grievances',
+        path: 'list',
+        element: <GrievanceList />,
+        breadcrumb: 'Grievances List',
       },
       {
         path: 'add',
         element: <Grievanceadd />,
         breadcrumb: 'Grievance Add',
+      },
+       {
+        path: 'edit/:id',
+        element: <Grievanceadd />,
+        breadcrumb: 'Grievance Edit',
       }
+    ]
+  },
+    {
+    path: '/grievances',
+    breadcrumb: 'Grievances',
+    children: [
+      {
+        path: 'admin/list',
+        element: <GrievanceAdminList />,
+        breadcrumb: 'Grievances List',
+      },
     ]
   },
   {

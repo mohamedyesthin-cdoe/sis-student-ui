@@ -1,7 +1,13 @@
-import { useEffect } from "react";
-import { Grid, TextField, Box, Button, Typography } from "@mui/material";
-import { useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import {
+    Grid,
+    Box,
+    Button,
+    Typography,
+} from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 
@@ -9,25 +15,60 @@ import CardComponent from "../../../components/card/Card";
 import { useAlert } from "../../../context/AlertContext";
 import { ApiRoutes } from "../../../constants/ApiConstants";
 import { apiRequest } from "../../../utils/ApiRequest";
+import { useGlobalError } from "../../../context/ErrorContext";
+import { useLoader } from "../../../context/LoaderContext";
+import GrievanceSkeleton from "../../../components/card/skeletonloader/GrievanceSkeleton";
+import CustomInputText from "../../../components/inputs/customtext/CustomInputText";
+import Customtext from "../../../components/inputs/customtext/Customtext";
+import { getValue } from "../../../utils/localStorageUtil";
 
-// ✅ Validation schema
-type ProgramFormValues = {
+// ================= TYPES =================
+
+type GrievanceFormValues = {
     subject: string;
     description: string;
-    grievanceFile: File | null;
+    grievanceFile?: File | null;
 };
 
-const ProgramSchema: Yup.ObjectSchema<ProgramFormValues> = Yup.object().shape({
-    subject: Yup.string().required("Subject is required"),
-    description: Yup.string().required("Description is required"),
-    grievanceFile: Yup.mixed<File>()
-        .nullable()
-        .required("File is required"),
-});
+// ================= VALIDATION =================
 
-const Grievanceadd = () => {
+const GrievanceSchema: Yup.ObjectSchema<GrievanceFormValues> =
+    Yup.object({
+        subject: Yup.string()
+            .required("Subject is required")
+            .max(200, "Subject must be less than 200 characters"),
+
+        description: Yup.string()
+            .required("Description is required")
+            .max(2000, "Description must be less than 2000 characters"),
+
+        grievanceFile: Yup.mixed<File>()
+            .nullable()
+            .notRequired()
+            .test(
+                "fileSize",
+                "File size must be less than 10MB",
+                (value) => {
+                    if (!value) return true;
+                    return value.size <= 10 * 1024 * 1024;
+                }
+            ),
+    });
+
+const GrievanceAddEdit: React.FC = () => {
     const { id } = useParams();
-    const { showConfirm, showAlert } = useAlert();
+    const navigate = useNavigate();
+
+    const { showAlert, showConfirm } = useAlert();
+    const { clearError } = useGlobalError();
+    const { loading } = useLoader();
+
+
+    const defaultValues: GrievanceFormValues = {
+        subject: "",
+        description: "",
+        grievanceFile: null,
+    };
 
     const {
         control,
@@ -36,42 +77,50 @@ const Grievanceadd = () => {
         setValue,
         watch,
         formState: { errors, isDirty },
-    } = useForm<ProgramFormValues>({
-        resolver: yupResolver(ProgramSchema),
-        defaultValues: {
-            subject: "",
-            description: "",
-            grievanceFile: null,
-        },
+    } = useForm<GrievanceFormValues>({
+        resolver: yupResolver(GrievanceSchema),
+        defaultValues,
     });
 
     const uploadedFile = watch("grievanceFile");
+    const studentId = getValue("student_id") || "";
+    // ================= FETCH BY ID =================
 
-    // Prefill if editing
     useEffect(() => {
         if (!id) return;
 
-        const fetchProgram = async () => {
+        const fetchGrievance = async () => {
             try {
                 const res = await apiRequest({
-                    url: `${ApiRoutes.PROGRAMFETCH}/${id}`,
+                    url: `${ApiRoutes.GRIEVANCEBYID}/${id}`,
                     method: "get",
                 });
-                const data = res.data || res;
+
+                const data = res
 
                 reset({
-                    subject: data.programe_code || id,
-                    description: data.programe || "",
-                    grievanceFile: null, // cannot prefill file
+                    subject: data.subject || "",
+                    description: data.description || "",
+                    grievanceFile: null,
                 });
             } catch (err: any) {
-                console.error(err);
-                showAlert(err.response?.data?.message || "Failed to fetch program details.", "error");
+                console.error(
+                    "Failed to fetch grievance:",
+                    err.response?.data || err.message
+                );
+
+                showAlert(
+                    err.response?.data?.message ||
+                    "Failed to fetch grievance details.",
+                    "error"
+                );
             }
         };
 
-        fetchProgram();
-    }, [id]);
+        fetchGrievance();
+    }, [id, reset, showAlert]);
+
+    // ================= BACK =================
 
     const handleBack = () => {
         if (isDirty) {
@@ -85,164 +134,274 @@ const Grievanceadd = () => {
         }
     };
 
-    const onSubmit = async (data: ProgramFormValues) => {
-        const payload = new FormData();
-        payload.append("programe_code", data.subject);
-        payload.append("programe", data.description);
-        if (data.grievanceFile) payload.append("grievanceFile", data.grievanceFile);
+    // ================= SUBMIT =================
 
-        const apiUrl = id ? `${ApiRoutes.PROGRAMUPDATE}/${id}` : ApiRoutes.PROGRAMADD;
-        const method = id ? "put" : "post";
-
+    const onSubmit: SubmitHandler<GrievanceFormValues> = async (data) => {
         try {
-            await apiRequest({ url: apiUrl, method, data: payload });
-            showAlert(id ? "Program updated successfully!" : "Program added successfully!", "success");
+            const payload = new FormData();
+
+            payload.append("subject", data.subject);
+            payload.append("description", data.description);
+
+            payload.append("student_id", String(studentId));
+
+            if (data.grievanceFile instanceof File) {
+                payload.append("file", data.grievanceFile);
+            }
+
+            const apiUrl = id
+                ? `${ApiRoutes.GRIEVANCEUPDATE}/${id}`
+                : ApiRoutes.GRIEVANCEADD;
+
+            const method = id ? "put" : "post";
+
+            await apiRequest({
+                url: apiUrl,
+                method,
+                data: payload,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            showAlert(
+                id
+                    ? "Grievance updated successfully!"
+                    : "Grievance submitted successfully!",
+                "success"
+            );
+
+            clearError();
+            navigate("/grievances/list");
+
         } catch (err: any) {
-            console.error(err);
-            showAlert(err.response?.data?.message || "Something went wrong. Please try again.", "error");
+            showAlert(
+                err.response?.data?.message ||
+                "Something went wrong. Please try again.",
+                "error"
+            );
         }
     };
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            sx={{ width: "100%", maxWidth: { xs: '350px', sm: '900px', md: '1300px' }, mx: "auto", mt: 3, mb: 5 }}
-        >
-            <CardComponent sx={{ p: 4 }}>
-                <Grid container spacing={5}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Controller
-                            name="subject"
-                            control={control}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label="Subject"
-                                    fullWidth
-                                    size="small"
-                                    disabled={!!id}
-                                    error={!!errors.subject}
-                                    helperText={errors.subject?.message as string}
-                                />
-                            )}
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Controller
-                            name="description"
-                            control={control}
-                            render={({ field }) => (
-                                <TextField
-                                    {...field}
-                                    label="Description"
-                                    fullWidth
-                                    size="small"
-                                    error={!!errors.description}
-                                    helperText={errors.description?.message as string}
-                                />
-                            )}
-                        />
-                    </Grid>
-
-                    {/* Row 2: File Upload */}
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <Controller
-                            name="grievanceFile"
-                            control={control}
-                            render={({ field }) => (
-                                <Box
-                                    sx={{
-                                        border: "2px dashed #1976d2",
-                                        borderRadius: 2,
-                                        py: 2,
-                                        px: 1.5,
-                                        textAlign: "center",
-                                        cursor: "pointer",
-                                        "&:hover": { backgroundColor: "#f8f9fa" },
-                                    }}
-                                    onClick={() => document.getElementById("file-input")?.click()}
-                                >
-                                    {uploadedFile ? (
-                                        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
-                                            <Typography sx={{ fontSize: "0.9rem" }}>{uploadedFile.name}</Typography>
-                                            <Button
-                                                size="small"
-                                                color="error"
-                                                variant="outlined"
-                                                sx={{ minWidth: "auto", p: "2px 6px", fontSize: "0.7rem", textTransform: "none" }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setValue("grievanceFile", null);
-                                                }}
-                                            >
-                                                Remove
-                                            </Button>
-                                        </Box>
-                                    ) : (
-                                        <Typography sx={{ fontSize: "0.9rem" }}>Click or drag file to upload</Typography>
-                                    )}
-
-                                    <Typography variant="body2" color="textSecondary" sx={{ fontSize: "0.75rem" }}>
-                                        Supported formats: .xlsx, .xls, .csv, .pdf
-                                    </Typography>
-
-                                    <input
-                                        id="file-input"
-                                        type="file"
-                                        accept=".xlsx,.xls,.csv,.pdf"
-                                        hidden
-                                        onChange={(e) => {
-                                            if (e.target.files && e.target.files.length > 0) {
-                                                field.onChange(e.target.files[0]);
-                                                e.target.value = ""; // allow re-upload same file
-                                            }
-                                        }}
-                                    />
-                                </Box>
-                            )}
-                        />
-                        {errors.grievanceFile && (
-                            <Typography variant="caption" color="error">
-                                {errors.grievanceFile.message}
-                            </Typography>
-                        )}
-                    </Grid>
-                </Grid>
-
-            </CardComponent>
-
-            {/* Action Buttons */}
-            <Box mt={4} display="flex"
-                sx={{
-                    justifyContent: {
-                        xs: "center", // center on mobile
-                        sm: "flex-end", // right align on tablet and above
-                    },
-                }} gap={2}>
-                <Button variant="contained" color="primary" onClick={handleBack}>
-                    Back
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={() =>
-                        reset({
-                            subject: "",
-                            description: "",
-                            grievanceFile: null,
-                        })
-                    }
+        <>
+            {loading ? (
+                <GrievanceSkeleton />
+            ) : (
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit(onSubmit)}
+                    sx={{
+                        width: "100%",
+                        maxWidth: {
+                            xs: "350px",
+                            sm: "900px",
+                            md: "900px",
+                        },
+                        mx: "auto",
+                        mt: 3,
+                        mb: 5,
+                    }}
                 >
-                    Reset
-                </Button>
-                <Button variant="contained" color="secondary" type="submit">
-                    {id ? "Update" : "Submit"}
-                </Button>
-            </Box>
-        </Box>
+                    {/* Grievance Details */}
+
+                    <CardComponent sx={{ p: 3 }}>
+                        <Customtext
+                            fieldName="Grievance Details"
+                            sx={{ mb: 2 }}
+                        />
+
+                        <Grid container spacing={2}>
+                            {/* Subject */}
+
+                            <Grid size={{ xs: 12, md: 6 }} my={1}>
+                                <Controller
+                                    name="subject"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <CustomInputText
+                                            label="Subject"
+                                            field={field}
+                                            error={!!errors.subject}
+                                            helperText={
+                                                errors.subject?.message
+                                            }
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* Description */}
+
+                            <Grid size={{ xs: 12 }} my={1}>
+                                <Controller
+                                    name="description"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <CustomInputText
+                                            label="Description"
+                                            multiline
+                                            rows={4}
+                                            field={field}
+                                            error={!!errors.description}
+                                            helperText={
+                                                errors.description?.message
+                                            }
+                                        />
+                                    )}
+                                />
+                            </Grid>
+
+                            {/* File Upload */}
+
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Controller
+                                    name="grievanceFile"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Box
+                                            sx={{
+                                                border: "2px dashed #1976d2",
+                                                borderRadius: 2,
+                                                py: 2,
+                                                px: 1.5,
+                                                textAlign: "center",
+                                                cursor: "pointer",
+                                                "&:hover": { backgroundColor: "#f8f9fa" },
+                                            }}
+                                            onClick={() =>
+                                                document
+                                                    .getElementById("file-input")
+                                                    ?.click()
+                                            }
+                                        >
+                                            {uploadedFile ? (
+                                                <Box
+                                                    display="flex"
+                                                    alignItems="center"
+                                                    justifyContent="center"
+                                                    gap={1}
+                                                >
+                                                    <Typography sx={{ fontSize: "0.9rem" }}>
+                                                        {uploadedFile.name}
+                                                    </Typography>
+
+                                                    <Button
+                                                        size="small"
+                                                        color="error"
+                                                        variant="outlined"
+                                                        sx={{
+                                                            minWidth: "auto",
+                                                            p: "2px 6px",
+                                                            fontSize: "0.7rem",
+                                                            textTransform: "none",
+                                                        }}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+
+                                                            field.onChange(null);
+
+                                                            setValue(
+                                                                "grievanceFile",
+                                                                null,
+                                                                { shouldDirty: true }
+                                                            );
+                                                        }}
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                </Box>
+                                            ) : (
+                                                <Typography sx={{ fontSize: "0.9rem" }}>
+                                                    Click or drag file to upload
+                                                </Typography>
+                                            )}
+
+                                            <Typography
+                                                variant="body2"
+                                                color="textSecondary"
+                                                sx={{ fontSize: "0.75rem" }}
+                                            >
+                                                Supported formats: All file types
+                                            </Typography>
+
+                                            <input
+                                                id="file-input"
+                                                type="file"
+                                                hidden
+                                                onChange={(e) => {
+                                                    const file =
+                                                        e.target.files?.[0] || null;
+
+                                                    field.onChange(file);
+
+                                                    setValue(
+                                                        "grievanceFile",
+                                                        file,
+                                                        { shouldDirty: true }
+                                                    );
+
+                                                    // allow reselect same file
+                                                    e.target.value = "";
+                                                }}
+                                            />
+                                        </Box>
+                                    )}
+                                />
+
+                                {errors.grievanceFile && (
+                                    <Typography
+                                        variant="caption"
+                                        color="error"
+                                    >
+                                        {errors.grievanceFile.message}
+                                    </Typography>
+                                )}
+                            </Grid>
+                        </Grid>
+                    </CardComponent>
+
+                    {/* Buttons */}
+
+                    <Box
+                        mt={4}
+                        display="flex"
+                        gap={2}
+                        sx={{
+                            justifyContent: {
+                                xs: "center",
+                                sm: "flex-end",
+                            },
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleBack}
+                        >
+                            Back
+                        </Button>
+
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => reset(defaultValues)}
+                        >
+                            Reset
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            type="submit"
+                        >
+                            {id ? "Update" : "Submit"}
+                        </Button>
+                    </Box>
+                </Box>
+            )}
+        </>
     );
 };
 
-export default Grievanceadd;
+export default GrievanceAddEdit;

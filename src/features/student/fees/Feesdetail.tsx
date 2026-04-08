@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import CardComponent from "../../../components/card/Card";
@@ -25,7 +25,8 @@ export default function FeesDetail() {
   const [searchText, setSearchText] = useState("");
   const [showSearch] = React.useState(true);
   const { loading } = useLoader();
-
+  const [workflowEnabled,] = useState(false);
+  const [dueStatus,] = useState<any>(null);
 
   // Fetch student fees
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function FeesDetail() {
     };
     if (student_id) fetchFees();
   }, [student_id, navigate]);
+
 
   // Filter payments by search text
   const filteredPayments = payments.filter((p) => {
@@ -83,6 +85,51 @@ export default function FeesDetail() {
       }}
     >
       <>
+        {
+          workflowEnabled && dueStatus && (
+            <Box
+              sx={{
+                mb: 2,
+                p: 2,
+                borderRadius: 2,
+                backgroundColor:
+                  dueStatus?.status === "PAID"
+                    ? "#e8f5e9"
+                    : "#fff3e0",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              {
+                dueStatus?.status === "PENDING" ? (
+                  <>
+                    <Typography fontWeight={600}>
+                      Outstanding Due: ₹{dueStatus?.due_amount}
+                    </Typography>
+
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() =>
+                        window.open(dueStatus.payment_link, "_blank")
+                      }
+                    >
+                      Pay Now
+                    </Button>
+                  </>
+                ) : (
+                  <Typography
+                    fontWeight={700}
+                    color="success.main"
+                  >
+                    No Due ✅
+                  </Typography>
+                )
+              }
+            </Box>
+          )
+        }
 
         {/* Search and Export Toolbar */}
         <TableToolbar

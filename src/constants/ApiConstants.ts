@@ -47,7 +47,7 @@ export const ApiRoutes = {
   FORGOTPASSWORD: 'user/forgot-password',
   RESETPASSWORD: 'user/reset-password',
   GET_STUDENT_DUE: 'students/',
-  GET_PAYMENT_WORKFLOW: '',
+  GETPEDNINGPAYMENT: 'student',
   PAYMENTCONTROLLIST: 'programe/pending-payment-workflow/list',
   PAYMENTCONTROL: 'programe',
 
@@ -67,4 +67,12 @@ export const ApiRoutes = {
   BATCHUPDATE: 'batch/update',
   BATCHADD: 'batch/add',
   BATCHDELETE: 'batch/delete',
+
+
+  GRIEVANCEADD: 'grievance/add',
+  GRIEVANCELIST: 'grievance/list',
+  GRIEVANCEBYID: 'grievance/grievance',
+  GRIEVANCEDELETE: 'grievance/delete',
+  GRIEVANCEUPDATE: 'grievance/update',
+  GRIVANCELISTFORADMIN: 'grievance/admin/list'
 };
