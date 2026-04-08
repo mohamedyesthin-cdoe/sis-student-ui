@@ -378,6 +378,7 @@ class PendingPaymentAssignRequest(BaseModel):
 class PendingPaymentStatusResponse(BaseModel):
     student_id: int
     program_id: int
+    semester: Optional[str] = None
     workflow_enabled: bool
     pending_payment_due: bool
     pending_payment_amount: float

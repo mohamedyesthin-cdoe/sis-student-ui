@@ -98,6 +98,7 @@ class StudentService:
         return {
             "student_id": student.id,
             "program_id": student.program_id,
+            "semester": student.semester,
             "workflow_enabled": workflow_enabled,
             "pending_payment_workflow_enabled": student.pending_payment_workflow_enabled,
             "pending_payment_due": pending_due,
