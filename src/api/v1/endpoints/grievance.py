@@ -9,6 +9,7 @@ from src.schemas.grievance import (
     GrievanceUpdate,
     GrievanceResponse,
     GrievanceAdminResponse,
+    GrievancePublicResponse,
 )
 from src.services.grievance_service import GrievanceService
 from src.services.student_service import StudentService
@@ -59,22 +60,22 @@ async def create_grievance_alias(
     return grievance
 
 
-@router.get("/list", response_model=List[GrievanceResponse])
+@router.get("/list", response_model=List[GrievancePublicResponse])
 def list_grievances_alias(
     student_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
 ):
     service = GrievanceService(db)
-    return service.list_grievances(student_id=student_id, status_filter=None)
+    return service.list_grievances_public(student_id=student_id)
 
 
-@router.get("/grievance/{grievance_id}", response_model=GrievanceResponse)
+@router.get("/grievance/{grievance_id}", response_model=GrievancePublicResponse)
 def get_grievance_alias(
     grievance_id: int,
     db: Session = Depends(get_db),
 ):
     service = GrievanceService(db)
-    return service.get_grievance(grievance_id)
+    return service.get_grievance_public(grievance_id)
 
 
 @router.put("/update/{grievance_id}", response_model=GrievanceResponse)

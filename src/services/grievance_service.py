@@ -47,6 +47,34 @@ class GrievanceService:
 
         return query.order_by(Grievance.created_at.desc()).all()
 
+    def list_grievances_public(
+        self,
+        student_id: Optional[int] = None,
+    ) -> List[dict]:
+        query = (
+            self.db.query(Grievance, Student)
+            .outerjoin(Student, Grievance.student_id == Student.id)
+        )
+        if student_id is not None:
+            query = query.filter(Grievance.student_id == student_id)
+
+        results = []
+        for grievance, student in query.order_by(Grievance.created_at.desc()).all():
+            results.append(
+                {
+                    "id": grievance.id,
+                    "student_id": grievance.student_id,
+                    "student_name": f"{student.first_name} {student.last_name}" if student else None,
+                    "registration_no": student.registration_no if student else None,
+                    "subject": grievance.subject,
+                    "description": grievance.description,
+                    "attachment_url": grievance.attachment_url,
+                    "created_at": grievance.created_at,
+                    "updated_at": grievance.updated_at,
+                }
+            )
+        return results
+
     def list_grievances_with_details(self) -> List[dict]:
         query = (
             self.db.query(Grievance, Student, Programe)
@@ -60,18 +88,14 @@ class GrievanceService:
             results.append(
                 {
                     "id": grievance.id,
-                    "subject": grievance.subject,
-                    "description": grievance.description,
-                    "status": grievance.status,
-                    "category": grievance.category,
-                    "attachment_url": grievance.attachment_url,
-                    "resolution_notes": grievance.resolution_notes,
-                    "created_at": grievance.created_at,
-                    "updated_at": grievance.updated_at,
                     "student_id": grievance.student_id,
                     "student_name": f"{student.first_name} {student.last_name}" if student else None,
                     "registration_no": student.registration_no if student else None,
-                    "program_name": program.programe if program else None,
+                    "subject": grievance.subject,
+                    "description": grievance.description,
+                    "attachment_url": grievance.attachment_url,
+                    "created_at": grievance.created_at,
+                    "updated_at": grievance.updated_at,
                 }
             )
         return results
@@ -84,6 +108,31 @@ class GrievanceService:
                 detail="Grievance not found",
             )
         return grievance
+
+    def get_grievance_public(self, grievance_id: int) -> dict:
+        record = (
+            self.db.query(Grievance, Student)
+            .outerjoin(Student, Grievance.student_id == Student.id)
+            .filter(Grievance.id == grievance_id)
+            .first()
+        )
+        if not record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grievance not found",
+            )
+        grievance, student = record
+        return {
+            "id": grievance.id,
+            "student_id": grievance.student_id,
+            "student_name": f"{student.first_name} {student.last_name}" if student else None,
+            "registration_no": student.registration_no if student else None,
+            "subject": grievance.subject,
+            "description": grievance.description,
+            "attachment_url": grievance.attachment_url,
+            "created_at": grievance.created_at,
+            "updated_at": grievance.updated_at,
+        }
 
     def update_status(self, grievance_id: int, payload: GrievanceStatusUpdate) -> Grievance:
         grievance = self.get_grievance(grievance_id)

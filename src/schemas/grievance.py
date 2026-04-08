@@ -50,18 +50,29 @@ class GrievanceListResponse(BaseModel):
 
 class GrievanceAdminResponse(BaseModel):
     id: int
-    subject: str
-    description: str
-    status: str
-    category: str
-    attachment_url: Optional[str] = None
-    resolution_notes: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
     student_id: Optional[int] = None
     student_name: Optional[str] = None
     registration_no: Optional[str] = None
-    program_name: Optional[str] = None
+    subject: str
+    description: str
+    attachment_url: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class GrievancePublicResponse(BaseModel):
+    id: int
+    student_id: Optional[int] = None
+    student_name: Optional[str] = None
+    registration_no: Optional[str] = None
+    subject: str
+    description: str
+    attachment_url: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True
