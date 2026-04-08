@@ -61,7 +61,7 @@ class GrievanceResponse(BaseModel):
     resolution_notes: Optional[str] = None
     assigned_to_id: Optional[int] = None
     assigned_to_name: Optional[str] = None
-    created_at: datetime
+    created_at: datetime 
     updated_at: datetime
 
     class Config:
