@@ -66,7 +66,7 @@ export default function GrievanceAdminList() {
       clearError();
 
       const res = await apiRequest({
-        url: ApiRoutes.GRIEVANCELIST,
+        url: ApiRoutes.GRIVANCELISTFORADMIN,
         method: "get",
       });
 
