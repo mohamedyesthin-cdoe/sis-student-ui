@@ -1,0 +1,155 @@
+{
+  "info": {
+    "name": "Payment Workflow Testing",
+    "description": "Collection for testing SisHub payment workflow (no Collexo required)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auto-Populate Pending Payments",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staff_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"program_id\": 1,\n  \"batch\": \"july-2026\",\n  \"admission_year\": \"2026\",\n  \"semester\": \"semester_2\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/students/payment-workflow/auto-populate",
+          "host": ["{{base_url}}"],
+          "path": ["students", "payment-workflow", "auto-populate"]
+        },
+        "description": "Auto-populate pending payments for all students in a workflow scope"
+      }
+    },
+    {
+      "name": "2. Get Pending Payment Status",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staff_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/students/{{student_id}}/pending-payment",
+          "host": ["{{base_url}}"],
+          "path": ["students", "{{student_id}}", "pending-payment"]
+        },
+        "description": "Get pending payment status for specific student"
+      }
+    },
+    {
+      "name": "3. Webhook - Payment Success (SIMULATE)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transaction_id\": \"POSTMAN-SUCCESS-{{$timestamp}}\",\n  \"student_id\": {{student_id}},\n  \"application_no\": \"TEST-APP-001\",\n  \"amount\": 50000.00,\n  \"status\": \"completed\",\n  \"payment_method\": \"semester_2\",\n  \"payment_date\": \"{{$isoTimestamp}}\",\n  \"metadata\": {\n    \"order_id\": \"ORDER-{{$randomInt}}\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/students/payment-workflow/webhook/collexo",
+          "host": ["{{base_url}}"],
+          "path": ["students", "payment-workflow", "webhook", "collexo"]
+        },
+        "description": "Simulate successful payment webhook from Collexo (NO AUTHENTICATION NEEDED for testing)"
+      }
+    },
+    {
+      "name": "4. Webhook - Payment Failed (SIMULATE)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transaction_id\": \"POSTMAN-FAILED-{{$timestamp}}\",\n  \"student_id\": {{student_id}},\n  \"application_no\": \"TEST-APP-001\",\n  \"amount\": 50000.00,\n  \"status\": \"failed\",\n  \"payment_method\": \"semester_2\",\n  \"payment_date\": \"{{$isoTimestamp}}\",\n  \"metadata\": {\n    \"reason\": \"Card declined\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/students/payment-workflow/webhook/collexo",
+          "host": ["{{base_url}}"],
+          "path": ["students", "payment-workflow", "webhook", "collexo"]
+        },
+        "description": "Simulate failed payment webhook from Collexo"
+      }
+    },
+    {
+      "name": "5. Manual Payment Verification",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staff_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/students/payment-workflow/verify/{{student_id}}/{{transaction_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["students", "payment-workflow", "verify", "{{student_id}}", "{{transaction_id}}"]
+        },
+        "description": "Manually verify and complete a pending payment (fallback if webhook fails)"
+      }
+    },
+    {
+      "name": "6. Get Student Fees",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{staff_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/students/{{student_id}}/fees",
+          "host": ["{{base_url}}"],
+          "path": ["students", "{{student_id}}", "fees"]
+        },
+        "description": "Get all payment records for a student"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "staff_token",
+      "value": "YOUR_STAFF_JWT_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "student_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "POSTMAN-SUCCESS-1234567890",
+      "type": "string"
+    }
+  ]
+}
