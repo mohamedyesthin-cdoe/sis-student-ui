@@ -65,7 +65,7 @@ class GrievanceResponse(BaseModel):
     updated_at: datetime
 
     class Config:
-        from_attributes = True
+        from_attributes = True 
 
 
 class GrievanceListResponse(BaseModel):
