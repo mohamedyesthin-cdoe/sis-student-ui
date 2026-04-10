@@ -74,9 +74,6 @@ class GrievanceListResponse(BaseModel):
 
 class GrievanceAdminResponse(BaseModel):
     id: int
-    student_id: Optional[int] = None
-    student_name: Optional[str] = None
-    registration_no: Optional[str] = None
     status: str
     assigned_to_id: Optional[int] = None
     assigned_to_name: Optional[str] = None

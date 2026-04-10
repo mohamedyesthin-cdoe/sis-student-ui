@@ -1,7 +1,7 @@
 """add assigned_to to grievances
 
 Revision ID: 20260408_add_assigned_to_grievance
-Revises: ca51e6cf55bd
+Revises: add_grievances_table
 Create Date: 2026-04-08
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = "20260408_add_assigned_to_grievance"
-down_revision: Union[str, None] = "ca51e6cf55bd"
+down_revision: Union[str, None] = "add_grievances_table"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

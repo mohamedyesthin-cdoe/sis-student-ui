@@ -1,7 +1,6 @@
 from typing import List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
-from sqlalchemy.orm import joinedload
 
 from src.models.students import Student
 from src.models.master import Programe
@@ -14,8 +13,6 @@ from src.schemas.grievance import (
     GrievanceAssign,
     GrievanceFacultyClose,
     GrievanceFacultyStatusUpdate,
-    GrievanceAdminResponse,
-    GrievanceAdminStudentGroup,
 )
 
 
@@ -92,22 +89,11 @@ class GrievanceService:
             .order_by(Grievance.created_at.desc())
         )
 
-        grouped = {}
-        for grievance, student, program in query.all():
-            key = grievance.student_id or 0  # 0 bucket for anonymous/no student link
-            if key not in grouped:
-                grouped[key] = {
-                    "student_id": grievance.student_id,
-                    "student_name": f"{student.first_name} {student.last_name}" if student else None,
-                    "registration_no": student.registration_no if student else None,
-                    "grievances": [],
-                }
-            grouped[key]["grievances"].append(
+        flat_list: List[dict] = []
+        for grievance, student, _program in query.all():
+            flat_list.append(
                 {
                     "id": grievance.id,
-                    "student_id": grievance.student_id,
-                    "student_name": f"{student.first_name} {student.last_name}" if student else None,
-                    "registration_no": student.registration_no if student else None,
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
                     "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
@@ -118,8 +104,7 @@ class GrievanceService:
                     "updated_at": grievance.updated_at,
                 }
             )
-        # preserve ordering by latest grievance per student bucket
-        return list(grouped.values())
+        return flat_list
 
     def list_grievances_for_student_admin(self, student_id: int) -> List[Grievance]:
         return (

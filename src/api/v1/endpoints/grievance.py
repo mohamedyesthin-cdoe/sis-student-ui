@@ -9,7 +9,7 @@ from src.schemas.grievance import (
     GrievanceCreate,
     GrievanceUpdate,
     GrievanceResponse,
-    GrievanceAdminStudentGroup,
+    GrievanceAdminResponse,
     GrievancePublicResponse,
     GrievanceStatusUpdate,
     GrievanceAssign,
@@ -155,7 +155,7 @@ def delete_grievance_alias(
 
 @router.get(
     "/admin/list",
-    response_model=List[GrievanceAdminStudentGroup],
+    response_model=List[GrievanceAdminResponse],
     dependencies=[Depends(require_staff)],
 )
 def list_grievances_admin(
