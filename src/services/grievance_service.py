@@ -109,13 +109,35 @@ class GrievanceService:
             )
         return flat_list
 
-    def list_grievances_for_student_admin(self, student_id: int) -> List[Grievance]:
-        return (
-            self.db.query(Grievance)
-            .filter(Grievance.student_id == student_id)
-            .order_by(Grievance.created_at.desc())
-            .all()
+    def get_grievance_with_details(self, grievance_id: int) -> dict:
+        record = (
+            self.db.query(Grievance, Student, Programe)
+            .outerjoin(Student, Grievance.student_id == Student.id)
+            .outerjoin(Programe, Student.program_id == Programe.id)
+            .filter(Grievance.id == grievance_id)
+            .first()
         )
+        if not record:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Grievance not found",
+            )
+
+        grievance, student, _program = record
+        return {
+            "id": grievance.id,
+            "student_id": grievance.student_id,
+            "student_name": f"{student.first_name} {student.last_name}" if student else None,
+            "registration_no": student.registration_no if student else None,
+            "status": grievance.status,
+            "assigned_to_id": grievance.assigned_to_id,
+            "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+            "subject": grievance.subject,
+            "description": grievance.description,
+            "attachment_url": grievance.attachment_url,
+            "created_at": grievance.created_at,
+            "updated_at": grievance.updated_at,
+        }
 
     def get_grievance(self, grievance_id: int) -> Grievance:
         grievance = self.db.query(Grievance).filter(Grievance.id == grievance_id).first()

@@ -180,16 +180,16 @@ def admin_close_grievance(
 
 
 @router.get(
-    "/admin/student/{student_id}",
-    response_model=List[GrievanceResponse],
+    "/admin/{grievance_id}",
+    response_model=GrievanceAdminResponse,
     dependencies=[Depends(require_staff)],
 )
-def list_grievances_for_student_admin(
-    student_id: int,
+def get_grievance_for_admin(
+    grievance_id: int,
     db: Session = Depends(get_db),
 ):
     service = GrievanceService(db)
-    return service.list_grievances_for_student_admin(student_id)
+    return service.get_grievance_with_details(grievance_id)
 
 
 @router.post(
