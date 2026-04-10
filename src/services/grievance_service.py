@@ -94,6 +94,9 @@ class GrievanceService:
             flat_list.append(
                 {
                     "id": grievance.id,
+                    "student_id": grievance.student_id,
+                    "student_name": f"{student.first_name} {student.last_name}" if student else None,
+                    "registration_no": student.registration_no if student else None,
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
                     "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
