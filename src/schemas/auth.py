@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
 class Token(BaseModel):
@@ -9,6 +9,8 @@ class TokenData(BaseModel):
     sub: Optional[str] = None
 
 class LoginSchema(BaseModel):
-    username: str
+    model_config = ConfigDict(populate_by_name=True)
+
+    identifier: str = Field(..., alias="username")
     password: str
     is_encrypted: bool = True

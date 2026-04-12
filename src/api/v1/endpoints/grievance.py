@@ -194,7 +194,7 @@ def get_grievance_for_admin(
 
 @router.post(
     "/admin/assign/{grievance_id}",
-    response_model=GrievanceResponse,
+    response_model=GrievanceAdminResponse,
     dependencies=[Depends(require_staff)],
 )
 def admin_assign_grievance(

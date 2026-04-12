@@ -186,7 +186,7 @@ class GrievanceService:
         self.db.refresh(grievance)
         return grievance
 
-    def assign_grievance(self, grievance_id: int, payload: GrievanceAssign) -> Grievance:
+    def assign_grievance(self, grievance_id: int, payload: GrievanceAssign) -> dict:
         grievance = self.get_grievance(grievance_id)
 
         staff = self.db.query(Staff).filter(Staff.id == payload.staff_id).first()
@@ -203,7 +203,7 @@ class GrievanceService:
 
         self.db.commit()
         self.db.refresh(grievance)
-        return grievance
+        return self.get_grievance_with_details(grievance_id)
 
     def faculty_close(self, grievance_id: int, staff_user_id: int, payload: GrievanceFacultyClose) -> Grievance:
         grievance = self.get_grievance(grievance_id)

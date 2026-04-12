@@ -9,4 +9,4 @@ router = APIRouter()
 
 @router.post("/login", response_model=Token)
 def login(data: LoginSchema, db: Session = Depends(get_db)):
-    return login_user(data.username, data.password, db, is_encrypted=data.is_encrypted)
+    return login_user(data.identifier, data.password, db, is_encrypted=data.is_encrypted)
