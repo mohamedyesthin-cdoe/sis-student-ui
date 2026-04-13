@@ -417,42 +417,51 @@ class ApiService:
         }
     
     async def post_student_data(self) -> list[dict]:
-        logger.info("post_student_data: start")
         students = self.repo.get_all_students()
         results = []
-
-        # ensure token fetch errors are logged and re-raised
-        try:
-            token = self._get_auth_token()
-        except HTTPException:
-            logger.exception("post_student_data: failed to get auth token")
-            raise
+        token = self._get_auth_token()
 
         for s in students:
             try:
                 payload = self.to_digicampus_payload(s)
 
-                api_response = await create_odl_student(token, payload)
-                results.append({
-                    "application_no": s.application_no,
-                    "status": "success",
-                    "response": api_response
-                })
+                # LOG outgoing payload so we can confirm what DigiCampus actually receives
+                logger.debug("Digicampus -> sending payload for application_no=%s: %s", s.application_no, payload)
 
-                s.is_pushed_digi = True
-                self.repo.db.commit()
-                self.repo.db.refresh(s)
-                results.append(payload)
+                api_response = await create_odl_student(token, payload)
+
+                # LOG full response from DigiCampus
+                logger.debug("Digicampus <- response for application_no=%s: %s", s.application_no, api_response)
+
+                # treat non-success responses as failures and include validation errors
+                status_code = None
+                if isinstance(api_response, dict):
+                    status_code = api_response.get("status_code") or api_response.get("code") or None
+
+                if status_code and int(status_code) >= 400:
+                    results.append({
+                        "application_no": s.application_no,
+                        "status": "failed",
+                        "response": api_response
+                    })
+                else:
+                    results.append({
+                        "application_no": s.application_no,
+                        "status": "success",
+                        "response": api_response
+                    })
+                    s.is_pushed_digi = True
+                    self.repo.db.commit()
+                    self.repo.db.refresh(s)
 
             except Exception as e:
-                logger.exception("Digicampus sync failed for application_no=%s", s.application_no)
+                logger.exception("Digicampus sync failed for application_no=%s: %s", s.application_no, e)
                 results.append({
                     "application_no": s.application_no,
                     "status": "failed",
                     "error": str(e)
                 })
 
-        logger.info("post_student_data: finished, processed %d students", len(results))
         return results
     
     async def put_student_data(self) -> list[dict]:
