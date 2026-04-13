@@ -37,27 +37,35 @@ class ApiService:
         """
         Fetch and cache DigiCampus auth token
         """
-        if (
-            self._token_cache["token"]
-            and time.time() < self._token_cache["exp"]
-        ):
-            return self._token_cache["token"]
+        try:
+            if (
+                self._token_cache["token"]
+                and time.time() < self._token_cache["exp"]
+            ):
+                return self._token_cache["token"]
 
-        url = f"{DIGICAMPUS_BASE_URL}/users/get-auth-token"
-        payload = {
-            "username": DIGICAMPUS_USERNAME,
-            "password": DIGICAMPUS_PASSWORD
-        }
+            url = f"{DIGICAMPUS_BASE_URL}/users/get-auth-token"
+            payload = {
+                "username": DIGICAMPUS_USERNAME,
+                "password": DIGICAMPUS_PASSWORD
+            }
 
-        response = requests.post(url, data=payload, timeout=10)
-        response.raise_for_status()
+            response = requests.post(url, data=payload, timeout=10)
+            response.raise_for_status()
 
-        data = response.json()["data"]
+            resp_json = response.json()
+            data = resp_json.get("data")
+            if not data or "token" not in data:
+                logger.error("Invalid token response from DigiCampus: %s", response.text)
+                raise HTTPException(status_code=502, detail="Invalid token response from DigiCampus")
 
-        self._token_cache["token"] = data["token"]
-        self._token_cache["exp"] = data["exp"]
+            self._token_cache["token"] = data["token"]
+            self._token_cache["exp"] = data.get("exp", 0)
 
-        return data["token"]
+            return data["token"]
+        except requests.RequestException as e:
+            logger.exception("Failed to fetch DigiCampus auth token: %s", e)
+            raise HTTPException(status_code=502, detail=f"Digicampus auth failed: {e}")
     
     def fees_master(self) -> FeesMasterResponse:
         try:
@@ -386,26 +394,31 @@ class ApiService:
     async def post_student_data(self) -> list[dict]:
         students = self.repo.get_all_students()
         results = []
-        token = self._get_auth_token()
-        
+        # get token once, with clear error if fails
+        try:
+            token = self._get_auth_token()
+        except HTTPException:
+            # propagate HTTPException to caller so route can return meaningful error
+            raise
+
         for s in students:
             try:
                 payload = self.to_digicampus_payload(s)
-                
+
                 api_response = await create_odl_student(token, payload)
                 results.append({
                     "application_no": s.application_no,
                     "status": "success",
                     "response": api_response
                 })
-                
+
                 s.is_pushed_digi = True
                 self.repo.db.commit()
                 self.repo.db.refresh(s)
                 results.append(payload)
 
             except Exception as e:
-                logger.exception("Digicampus sync failed")
+                logger.exception("Digicampus sync failed for application_no=%s: %s", s.application_no, e)
                 results.append({
                     "application_no": s.application_no,
                     "status": "failed",
