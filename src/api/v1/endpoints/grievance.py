@@ -14,6 +14,7 @@ from src.schemas.grievance import (
     GrievanceStatusUpdate,
     GrievanceAssign,
     GrievanceFacultyStatusUpdate,
+    GrievanceFacultyResponse
 )
 from src.services.grievance_service import GrievanceService
 from src.services.student_service import StudentService
@@ -208,7 +209,7 @@ def admin_assign_grievance(
 
 @router.get(
     "/faculty/list",
-    response_model=List[GrievanceResponse],
+    response_model=List[GrievanceFacultyResponse],
     dependencies=[Depends(require_staff)],
 )
 def list_faculty_grievances(

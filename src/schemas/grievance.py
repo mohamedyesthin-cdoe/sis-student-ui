@@ -113,3 +113,17 @@ class GrievancePublicResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class GrievanceFacultyResponse(BaseModel):
+    id: int
+    student_id: Optional[int]
+    student_name: Optional[str]
+    registration_no: Optional[str]
+    status: Optional[str]
+    assigned_to_id: Optional[int]
+    assigned_to_name: Optional[str]
+    subject: Optional[str]
+    description: Optional[str]
+    attachment_url: Optional[str]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]

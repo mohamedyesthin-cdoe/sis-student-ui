@@ -1,7 +1,6 @@
 from typing import List, Optional
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
-
+from sqlalchemy.orm import Session, aliased
 from src.models.students import Student
 from src.models.master import Programe
 from src.models.grievance import Grievance
@@ -259,7 +258,10 @@ class GrievanceService:
         self.db.refresh(grievance)
         return grievance
 
-    def list_for_faculty(self, staff_user_id: int) -> List[Grievance]:
+    def list_for_faculty(self, staff_user_id: int) -> List[dict]:
+        """
+        Return grievances assigned to the staff user with student_name, registration_no and assigned_to_name.
+        """
         staff = (
             self.db.query(Staff)
             .filter(Staff.user_id == staff_user_id)
@@ -270,13 +272,54 @@ class GrievanceService:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Faculty access required",
             )
-        return (
-            self.db.query(Grievance)
+
+        AssignedStaff = aliased(Staff)
+
+        query = (
+            self.db.query(Grievance, Student, AssignedStaff)
+            .outerjoin(Student, Grievance.student_id == Student.id)
+            .outerjoin(AssignedStaff, Grievance.assigned_to_id == AssignedStaff.id)
             .filter(Grievance.assigned_to_id == staff.id)
             .order_by(Grievance.created_at.desc())
-            .all()
         )
 
+        results: List[dict] = []
+        for grievance, student, assigned in query.all():
+            # build student_name and registration_no
+            student_name = None
+            registration_no = None
+            if student:
+                first = getattr(student, "first_name", "") or ""
+                last = getattr(student, "last_name", "") or ""
+                student_name = (first + " " + last).strip() or None
+                registration_no = getattr(student, "registration_no", None)
+
+            # build assigned_to_name
+            assigned_to_name = None
+            if assigned:
+                first = getattr(assigned, "first_name", "") or ""
+                last = getattr(assigned, "last_name", "") or ""
+                assigned_to_name = (first + " " + last).strip() or getattr(assigned, "name", None)
+
+            results.append(
+                {
+                    "id": grievance.id,
+                    "student_id": grievance.student_id,
+                    "student_name": student_name,
+                    "registration_no": registration_no,
+                    "status": grievance.status,
+                    "assigned_to_id": grievance.assigned_to_id,
+                    "assigned_to_name": assigned_to_name,
+                    "subject": grievance.subject,
+                    "description": grievance.description,
+                    "attachment_url": grievance.attachment_url,
+                    "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
+                    "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
+                }
+            )
+
+        return results
+    
     def get_for_faculty(self, grievance_id: int, staff_user_id: int) -> Grievance:
         grievance = self.get_grievance(grievance_id)
         staff = (
