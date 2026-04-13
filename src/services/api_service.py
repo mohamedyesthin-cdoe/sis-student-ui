@@ -51,18 +51,44 @@ class ApiService:
             }
 
             response = requests.post(url, data=payload, timeout=10)
-            response.raise_for_status()
 
-            resp_json = response.json()
-            data = resp_json.get("data")
-            if not data or "token" not in data:
-                logger.error("Invalid token response from DigiCampus: %s", response.text)
+            # Log response status/text for debugging before raising
+            try:
+                response.raise_for_status()
+            except requests.HTTPError as http_err:
+                logger.error("Digicampus token request failed: %s %s", response.status_code, response.text)
+                raise HTTPException(status_code=502, detail=f"Digicampus auth failed: {response.status_code} {response.text}")
+
+            # try parse JSON and accept multiple token shapes
+            try:
+                resp_json = response.json()
+            except ValueError:
+                logger.error("Digicampus token response is not JSON: %s", response.text)
+                raise HTTPException(status_code=502, detail="Invalid token response from DigiCampus (non-JSON)")
+
+            # possible shapes: {"data": {"token": "..." , "exp": ...}}, {"token":"..."}, {"access_token":"..."}
+            token = None
+            exp = 0
+
+            if isinstance(resp_json, dict):
+                # common nested shape
+                data = resp_json.get("data") or resp_json.get("result") or {}
+                if isinstance(data, dict) and data.get("token"):
+                    token = data.get("token")
+                    exp = data.get("exp", 0)
+                # top-level token names
+                token = token or resp_json.get("token") or resp_json.get("access_token")
+                if token and resp_json.get("exp"):
+                    exp = resp_json.get("exp")
+
+            if not token:
+                logger.error("Invalid token response from DigiCampus: %s", resp_json)
                 raise HTTPException(status_code=502, detail="Invalid token response from DigiCampus")
 
-            self._token_cache["token"] = data["token"]
-            self._token_cache["exp"] = data.get("exp", 0)
+            self._token_cache["token"] = token
+            self._token_cache["exp"] = exp or 0
 
-            return data["token"]
+            return token
         except requests.RequestException as e:
             logger.exception("Failed to fetch DigiCampus auth token: %s", e)
             raise HTTPException(status_code=502, detail=f"Digicampus auth failed: {e}")
