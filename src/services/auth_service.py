@@ -66,4 +66,6 @@ def login_user(identifier: str, password: str, db: Session, is_encrypted: bool =
     token = create_access_token(data=token_payload)
     if staff_rec:
         print(f"staff_rec.id={staff_rec.id}, employee_id={getattr(staff_rec, 'employee_id', None)}")
+    else:
+        print(f"student_id={user.student_id}")
     return {"access_token": token, "token_type": "bearer"}
