@@ -425,15 +425,29 @@ class ApiService:
             try:
                 payload = self.to_digicampus_payload(s)
 
-                # LOG outgoing payload so we can confirm what DigiCampus actually receives
+                # validate required fields before sending
+                required = ["programme", "registration_no", "first_name", "full_name", "gender", "dob", "blood_group", "email", "mobile_no"]
+                missing = [k for k in required if not payload.get(k)]
+                if missing:
+                    logger.warning("Skipping push for %s — missing required fields: %s. Payload: %s", s.application_no, missing, payload)
+                    results.append({
+                        "application_no": s.application_no,
+                        "status": "failed",
+                        "response": {
+                            "status_code": 400,
+                            "status": "error",
+                            "message": "Missing required fields for DigiCampus",
+                            "errors": {k: {"_required": "This field is required"} for k in missing}
+                        }
+                    })
+                    continue
+
                 logger.debug("Digicampus -> sending payload for application_no=%s: %s", s.application_no, payload)
 
                 api_response = await create_odl_student(token, payload)
 
-                # LOG full response from DigiCampus
                 logger.debug("Digicampus <- response for application_no=%s: %s", s.application_no, api_response)
 
-                # treat non-success responses as failures and include validation errors
                 status_code = None
                 if isinstance(api_response, dict):
                     status_code = api_response.get("status_code") or api_response.get("code") or None
@@ -462,8 +476,7 @@ class ApiService:
                     "error": str(e)
                 })
 
-        return results
-    
+        return results    
     async def put_student_data(self) -> list[dict]:
         students = self.repo.get_updated_students()
         results = []
