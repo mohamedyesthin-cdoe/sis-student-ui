@@ -204,23 +204,23 @@ async def push_deb_student_details(db: Session) -> dict:
         
 from typing import Dict, Any
 
-async def create_odl_student(token: str, student_data: Dict[str, Any]) -> Dict[str, Any]:
-    url = "https://digicampus.sriramachandra.edu.in/api/api-external/save-ext-stu"
+# async def create_odl_student(token: str, student_data: Dict[str, Any]) -> Dict[str, Any]:
+#     url = "https://digicampus.sriramachandra.edu.in/api/api-external/save-ext-stu"
 
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "multipart/form-data",
-    }
+#     headers = {
+#         "Authorization": f"Bearer {token}",
+#         "Content-Type": "multipart/form-data",
+#     }
 
-    async with httpx.AsyncClient(timeout=30) as client:
-        response = await client.post(
-            url,
-            headers=headers,
-            data=student_data,
-        )
+#     async with httpx.AsyncClient(timeout=30) as client:
+#         response = await client.post(
+#             url,
+#             headers=headers,
+#             data=student_data,
+#         )
 
-        response.raise_for_status()
-        return response.json()
+#         response.raise_for_status()
+#         return response.json()
 
 async def create_odl_student(token: str, student_data: Dict[str, Any]) -> Dict[str, Any]:
     url = "https://digicampus.sriramachandra.edu.in/api/api-external/save-ext-stu"
