@@ -392,13 +392,15 @@ class ApiService:
         }
     
     async def post_student_data(self) -> list[dict]:
+        logger.info("post_student_data: start")
         students = self.repo.get_all_students()
         results = []
-        # get token once, with clear error if fails
+
+        # ensure token fetch errors are logged and re-raised
         try:
             token = self._get_auth_token()
         except HTTPException:
-            # propagate HTTPException to caller so route can return meaningful error
+            logger.exception("post_student_data: failed to get auth token")
             raise
 
         for s in students:
@@ -418,13 +420,14 @@ class ApiService:
                 results.append(payload)
 
             except Exception as e:
-                logger.exception("Digicampus sync failed for application_no=%s: %s", s.application_no, e)
+                logger.exception("Digicampus sync failed for application_no=%s", s.application_no)
                 results.append({
                     "application_no": s.application_no,
                     "status": "failed",
                     "error": str(e)
                 })
 
+        logger.info("post_student_data: finished, processed %d students", len(results))
         return results
     
     async def put_student_data(self) -> list[dict]:
