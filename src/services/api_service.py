@@ -52,38 +52,37 @@ class ApiService:
 
             response = requests.post(url, data=payload, timeout=10)
 
-            # Log response status/text for debugging before raising
+            # Log status + body for diagnosis
+            logger.debug("Digicampus token response status=%s body=%s", response.status_code, response.text)
+
             try:
                 response.raise_for_status()
-            except requests.HTTPError as http_err:
-                logger.error("Digicampus token request failed: %s %s", response.status_code, response.text)
+            except requests.HTTPError:
+                # include response.text in error so we can see provider message
+                logger.error("Digicampus token request failed: %s", response.text)
                 raise HTTPException(status_code=502, detail=f"Digicampus auth failed: {response.status_code} {response.text}")
 
-            # try parse JSON and accept multiple token shapes
+            # parse JSON (if any)
             try:
                 resp_json = response.json()
             except ValueError:
                 logger.error("Digicampus token response is not JSON: %s", response.text)
-                raise HTTPException(status_code=502, detail="Invalid token response from DigiCampus (non-JSON)")
+                raise HTTPException(status_code=502, detail=f"Invalid token response from DigiCampus (non-JSON): {response.text}")
 
-            # possible shapes: {"data": {"token": "..." , "exp": ...}}, {"token":"..."}, {"access_token":"..."}
+            # try common token shapes and fall back to logging full JSON
             token = None
             exp = 0
 
             if isinstance(resp_json, dict):
-                # common nested shape
                 data = resp_json.get("data") or resp_json.get("result") or {}
                 if isinstance(data, dict) and data.get("token"):
-                    token = data.get("token")
-                    exp = data.get("exp", 0)
-                # top-level token names
+                    token = data.get("token"); exp = data.get("exp", 0)
                 token = token or resp_json.get("token") or resp_json.get("access_token")
-                if token and resp_json.get("exp"):
-                    exp = resp_json.get("exp")
 
             if not token:
-                logger.error("Invalid token response from DigiCampus: %s", resp_json)
-                raise HTTPException(status_code=502, detail="Invalid token response from DigiCampus")
+                # log full JSON and return it as detail for debugging (temporary)
+                logger.error("Invalid token response from DigiCampus JSON: %s", resp_json)
+                raise HTTPException(status_code=502, detail=f"Invalid token response from DigiCampus JSON: {resp_json}")
 
             self._token_cache["token"] = token
             self._token_cache["exp"] = exp or 0
