@@ -58,6 +58,8 @@ def login_user(identifier: str, password: str, db: Session, is_encrypted: bool =
     else:
         # try to find staff record and include faculty_id (int) when present
         staff_rec = db.query(Staff).filter(Staff.user_id == user.id).first()
+        print(Staff.user_id)
+        print(user.id)
         if staff_rec:
             token_payload["faculty_id"] = staff_rec.id
         else:
