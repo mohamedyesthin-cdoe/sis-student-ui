@@ -9,6 +9,8 @@ from src.models.user import User
 from src.models.staff import Staff
 from src.utils.hash import verify_password
 from src.utils.encryption import decrypt_password
+from src.utils.logger import setup_logger
+logger = setup_logger()
 
 def authenticate_user(identifier: str, password: str, db: Session, is_encrypted: bool = True) -> User:
 
@@ -48,24 +50,22 @@ def login_user(identifier: str, password: str, db: Session, is_encrypted: bool =
         "group_id": group_id,
     }
 
-    # student -> include student_id + optional gender
+    staff_rec = None
+
     if student_info:
         token_payload["student_id"] = user.student_id
         if getattr(student_info, "gender", None):
             token_payload["gender"] = student_info.gender
     else:
-        # staff -> include faculty_id when present
         staff_rec = db.query(Staff).filter(Staff.user_id == user.id).first()
-        # remove debug print in production; use logger if needed
         if staff_rec:
             token_payload["faculty_id"] = staff_rec.id
         else:
-            # fallback preserve existing behaviour
             token_payload["student_id"] = user.student_id
 
     token = create_access_token(data=token_payload)
+
+    # use logger (will appear in app logs)
     if staff_rec:
-        print(f"staff_rec.id={staff_rec.id}, employee_id={getattr(staff_rec, 'employee_id', None)}")
-    else:
-        print(f"student_id={user.student_id}")
+        logger.info("staff_rec.id=%s, employee_id=%s", staff_rec.id, getattr(staff_rec, "employee_id", None))
     return {"access_token": token, "token_type": "bearer"}
