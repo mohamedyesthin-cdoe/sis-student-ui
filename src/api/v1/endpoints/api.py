@@ -117,13 +117,9 @@ async def get_student_data(db: Session = Depends(get_db)):
     try:
         service = ApiService(db)
         program_fees = await service.post_student_data()
-        if program_fees is None:
-            logger.error("ApiService.post_student_data returned None")
-            raise HTTPException(status_code=500, detail="Digicampus service returned no data")
         return program_fees
     except Exception as e:
-        logger.exception("digicampus/students error")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch program fees: {str(e)}")
 
 #digi campus student put data
 @router.put("/digicampus/students/update", response_model=List[dict], tags=["digicampus"])
