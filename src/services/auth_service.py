@@ -66,6 +66,9 @@ def login_user(identifier: str, password: str, db: Session, is_encrypted: bool =
     token = create_access_token(data=token_payload)
 
     # use logger (will appear in app logs)
+    print("Staff.user_id", Staff.user_id)
+    print("user.id",user.id)
+    print("staff_rec",staff_rec)
     if staff_rec:
-        logger.info("staff_rec.id=%s, employee_id=%s", staff_rec.id, getattr(staff_rec, "employee_id", None))
+        print("staff_rec.id=%s, employee_id=%s" % (staff_rec.id, getattr(staff_rec, "employee_id", None)))
     return {"access_token": token, "token_type": "bearer"}
