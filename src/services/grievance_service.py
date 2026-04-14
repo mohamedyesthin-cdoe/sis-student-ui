@@ -259,9 +259,6 @@ class GrievanceService:
         return grievance
 
     def list_for_faculty(self, staff_user_id: int) -> List[dict]:
-        """
-        Return grievances assigned to the staff user with student_name, registration_no and assigned_to_name.
-        """
         staff = (
             self.db.query(Staff)
             .filter(Staff.user_id == staff_user_id)
@@ -320,8 +317,9 @@ class GrievanceService:
 
         return results
     
-    def get_for_faculty(self, grievance_id: int, staff_user_id: int) -> Grievance:
+    def get_for_faculty(self, grievance_id: int, staff_user_id: int) -> dict:
         grievance = self.get_grievance(grievance_id)
+
         staff = (
             self.db.query(Staff)
             .filter(Staff.user_id == staff_user_id)
@@ -337,7 +335,45 @@ class GrievanceService:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Grievance assigned to another faculty",
             )
-        return grievance
+
+        # student info
+        student = None
+        if getattr(grievance, "student_id", None):
+            student = self.db.query(Student).filter(Student.id == grievance.student_id).first()
+
+        student_name = None
+        registration_no = None
+        if student:
+            first = getattr(student, "first_name", "") or ""
+            last = getattr(student, "last_name", "") or ""
+            student_name = (first + " " + last).strip() or None
+            registration_no = getattr(student, "registration_no", None)
+
+        # assigned_to name
+        assigned_staff = None
+        if grievance.assigned_to_id:
+            assigned_staff = self.db.query(Staff).filter(Staff.id == grievance.assigned_to_id).first()
+
+        assigned_to_name = None
+        if assigned_staff:
+            first = getattr(assigned_staff, "first_name", "") or ""
+            last = getattr(assigned_staff, "last_name", "") or ""
+            assigned_to_name = (first + " " + last).strip() or getattr(assigned_staff, "name", None)
+
+        return {
+            "id": grievance.id,
+            "student_id": grievance.student_id,
+            "student_name": student_name,
+            "registration_no": registration_no,
+            "status": grievance.status,
+            "assigned_to_id": grievance.assigned_to_id,
+            "assigned_to_name": assigned_to_name,
+            "subject": grievance.subject,
+            "description": grievance.description,
+            "attachment_url": grievance.attachment_url,
+            "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
+            "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
+        }
 
     def admin_close(self, grievance_id: int, payload: GrievanceStatusUpdate) -> Grievance:
         grievance = self.get_grievance(grievance_id)

@@ -222,7 +222,7 @@ def list_faculty_grievances(
 
 @router.get(
     "/faculty/{grievance_id}",
-    response_model=GrievanceResponse,
+    response_model=GrievanceFacultyResponse,
     dependencies=[Depends(require_staff)],
 )
 def get_faculty_grievance(
