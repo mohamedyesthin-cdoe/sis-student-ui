@@ -47,45 +47,21 @@ class GrievanceFacultyStatusUpdate(BaseModel):
     resolution_notes: Optional[str] = None
 
 
-class GrievanceResponse(BaseModel):
-    id: int
-    student_id: Optional[int] = None
-    name: str
-    email: Optional[EmailStr] = None
-    mobile_number: Optional[str] = None
-    category: str
-    subject: str
-    description: str
-    status: str
-    attachment_url: Optional[str] = None
-    resolution_notes: Optional[str] = None
-    assigned_to_id: Optional[int] = None
-    assigned_to_name: Optional[str] = None
-    created_at: datetime 
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True 
-
-
-class GrievanceListResponse(BaseModel):
-    grievances: List[GrievanceResponse]
-
-
 class GrievanceAdminResponse(BaseModel):
     id: int
-    student_id: Optional[int] = None
-    student_name: Optional[str] = None
-    registration_no: Optional[str] = None
-    status: str
-    assigned_to_id: Optional[int] = None
-    assigned_to_name: Optional[str] = None
-    subject: str
-    description: str
-    attachment_url: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
-
+    student_id: Optional[int]
+    student_name: Optional[str]
+    registration_no: Optional[str]
+    status: Optional[str]
+    assigned_to_id: Optional[int]
+    assigned_to_name: Optional[str]
+    subject: Optional[str]
+    description: Optional[str]
+    attachment_url: Optional[str]
+    resolution_notes: Optional[str]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+    
     class Config:
         from_attributes = True
 
@@ -99,17 +75,18 @@ class GrievanceAdminStudentGroup(BaseModel):
 
 class GrievancePublicResponse(BaseModel):
     id: int
-    student_id: Optional[int] = None
-    student_name: Optional[str] = None
-    registration_no: Optional[str] = None
-    status: str
-    assigned_to_id: Optional[int] = None
-    assigned_to_name: Optional[str] = None
-    subject: str
-    description: str
-    attachment_url: Optional[str] = None
-    created_at: datetime
-    updated_at: datetime
+    student_id: Optional[int]
+    student_name: Optional[str]
+    registration_no: Optional[str]
+    status: Optional[str]
+    assigned_to_id: Optional[int]
+    assigned_to_name: Optional[str]
+    subject: Optional[str]
+    description: Optional[str]
+    attachment_url: Optional[str]
+    resolution_notes: Optional[str]
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 
     class Config:
         from_attributes = True
@@ -125,5 +102,6 @@ class GrievanceFacultyResponse(BaseModel):
     subject: Optional[str]
     description: Optional[str]
     attachment_url: Optional[str]
+    resolution_notes: Optional[str]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]

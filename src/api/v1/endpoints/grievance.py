@@ -8,7 +8,6 @@ from src.core.security.jwt import get_current_user
 from src.schemas.grievance import (
     GrievanceCreate,
     GrievanceUpdate,
-    GrievanceResponse,
     GrievanceAdminResponse,
     GrievancePublicResponse,
     GrievanceStatusUpdate,
@@ -26,7 +25,7 @@ from src.models.user import User
 router = APIRouter()
 
 # -------- Student-friendly alias routes --------
-@router.post("/add", response_model=GrievanceResponse, status_code=201)
+@router.post("/add", response_model=GrievanceFacultyResponse, status_code=201)
 async def create_grievance_alias(
     subject: str = Form(...),
     description: str = Form(...),
@@ -83,7 +82,7 @@ def get_grievance_alias(
     return service.get_grievance_public(grievance_id)
 
 
-@router.put("/update/{grievance_id}", response_model=GrievanceResponse)
+@router.put("/update/{grievance_id}", response_model=GrievanceFacultyResponse)
 async def update_grievance_alias(
     grievance_id: int,
     subject: Optional[str] = Form(None),
@@ -168,7 +167,7 @@ def list_grievances_admin(
 
 @router.post(
     "/admin/close/{grievance_id}",
-    response_model=GrievanceResponse,
+    response_model=GrievanceFacultyResponse,
     dependencies=[Depends(require_staff)],
 )
 def admin_close_grievance(
@@ -236,7 +235,7 @@ def get_faculty_grievance(
 
 @router.post(
     "/faculty/status/{grievance_id}",
-    response_model=GrievanceResponse,
+    response_model=GrievanceFacultyResponse,
     dependencies=[Depends(require_staff)],
 )
 def faculty_update_status(

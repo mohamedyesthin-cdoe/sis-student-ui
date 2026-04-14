@@ -74,6 +74,7 @@ class GrievanceService:
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
+                    "resolution_notes": grievance.resolution_notes,
                     "created_at": grievance.created_at,
                     "updated_at": grievance.updated_at,
                 }
@@ -102,12 +103,13 @@ class GrievanceService:
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
+                    "resolution_notes": grievance.resolution_notes,
                     "created_at": grievance.created_at,
                     "updated_at": grievance.updated_at,
                 }
             )
         return flat_list
-
+    
     def get_grievance_with_details(self, grievance_id: int) -> dict:
         record = (
             self.db.query(Grievance, Student, Programe)
@@ -134,6 +136,7 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
+            "resolution_notes": grievance.resolution_notes,
             "created_at": grievance.created_at,
             "updated_at": grievance.updated_at,
         }
@@ -171,6 +174,7 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
+            "resolution_notes": grievance.resolution_notes,
             "created_at": grievance.created_at,
             "updated_at": grievance.updated_at,
         }
@@ -233,7 +237,7 @@ class GrievanceService:
         self.db.refresh(grievance)
         return grievance
 
-    def faculty_update_status(self, grievance_id: int, staff_user_id: int, payload: GrievanceFacultyStatusUpdate) -> Grievance:
+    def faculty_update_status(self, grievance_id: int, staff_user_id: int, payload: GrievanceFacultyStatusUpdate) -> dict:
         grievance = self.get_grievance(grievance_id)
         staff = (
             self.db.query(Staff)
@@ -251,13 +255,56 @@ class GrievanceService:
                 detail="Grievance assigned to another faculty",
             )
 
-        grievance.status = payload.status
+        # Auto-set status to 'resolved' if resolution_notes are provided
+        if payload.resolution_notes:
+            grievance.status = "resolved"
+        else:
+            grievance.status = payload.status
+        
         grievance.resolution_notes = payload.resolution_notes
 
         self.db.commit()
         self.db.refresh(grievance)
-        return grievance
 
+        # Get student and assigned staff info
+        student = None
+        if grievance.student_id:
+            student = self.db.query(Student).filter(Student.id == grievance.student_id).first()
+
+        student_name = None
+        registration_no = None
+        if student:
+            first = getattr(student, "first_name", "") or ""
+            last = getattr(student, "last_name", "") or ""
+            student_name = (first + " " + last).strip() or None
+            registration_no = getattr(student, "registration_no", None)
+
+        assigned_staff = None
+        if grievance.assigned_to_id:
+            assigned_staff = self.db.query(Staff).filter(Staff.id == grievance.assigned_to_id).first()
+
+        assigned_to_name = None
+        if assigned_staff:
+            first = getattr(assigned_staff, "first_name", "") or ""
+            last = getattr(assigned_staff, "last_name", "") or ""
+            assigned_to_name = (first + " " + last).strip() or getattr(assigned_staff, "name", None)
+
+        return {
+            "id": grievance.id,
+            "student_id": grievance.student_id,
+            "student_name": student_name,
+            "registration_no": registration_no,
+            "status": grievance.status,
+            "assigned_to_id": grievance.assigned_to_id,
+            "assigned_to_name": assigned_to_name,
+            "subject": grievance.subject,
+            "description": grievance.description,
+            "attachment_url": grievance.attachment_url,
+            "resolution_notes": grievance.resolution_notes,
+            "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
+            "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
+        }
+    
     def list_for_faculty(self, staff_user_id: int) -> List[dict]:
         staff = (
             self.db.query(Staff)
@@ -310,6 +357,7 @@ class GrievanceService:
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
+                    "resolution_notes": grievance.resolution_notes,
                     "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
                     "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
                 }
@@ -371,6 +419,7 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
+            "resolution_notes": grievance.resolution_notes,
             "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
             "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
         }
