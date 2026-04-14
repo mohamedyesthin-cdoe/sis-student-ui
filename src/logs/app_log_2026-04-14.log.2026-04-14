@@ -1,0 +1,926 @@
+2026-04-14 19:49:08 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 19:49:09 - INFO - app_logger - GET / started from 127.0.0.1
+2026-04-14 19:49:09 - INFO - app_logger - GET / completed in 0.001s → 307
+2026-04-14 19:49:09 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 19:49:09 - INFO - app_logger - GET /api/v1/docs completed in 0.0s → 200
+2026-04-14 19:49:09 - INFO - app_logger - GET /api/v1/openapi.json started from 127.0.0.1
+2026-04-14 19:49:09 - INFO - app_logger - GET /api/v1/openapi.json completed in 0.045s → 200
+2026-04-14 19:52:05 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 19:55:07 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 19:55:17 - INFO - app_logger - GET /grievance/faculty/2 started from 127.0.0.1
+2026-04-14 19:55:17 - INFO - app_logger - GET /grievance/faculty/2 completed in 0.001s → 403
+2026-04-14 19:56:12 - INFO - app_logger - POST /auth/login started from 127.0.0.1
+2026-04-14 19:56:13 - INFO - app_logger - POST /auth/login completed in 0.25s → 200
+2026-04-14 19:56:39 - INFO - app_logger - GET /grievance/faculty/2 started from 127.0.0.1
+2026-04-14 19:56:39 - ERROR - app_logger - Error processing request /grievance/faculty/2
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'name'), 'msg': 'Field required', 'input': {'id': 2, 'student_id': 29, 'student_name': 'Jeswin L', 'registration_no': 'O0525001', 'status': 'assigned', 'assigned_to_id': 1, 'assigned_to_name': 'mohamed yesthin', 'subject': 'testing subject1', 'description': 'testing comments....', 'attachment_url': 'https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Screenshot 2026-03-31 at 11.35.51\u202fAM.png', 'created_at': '2026-04-08T07:32:12.952101', 'updated_at': '2026-04-13T15:55:45.416909'}}
+  {'type': 'missing', 'loc': ('response', 'category'), 'msg': 'Field required', 'input': {'id': 2, 'student_id': 29, 'student_name': 'Jeswin L', 'registration_no': 'O0525001', 'status': 'assigned', 'assigned_to_id': 1, 'assigned_to_name': 'mohamed yesthin', 'subject': 'testing subject1', 'description': 'testing comments....', 'attachment_url': 'https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Screenshot 2026-03-31 at 11.35.51\u202fAM.png', 'created_at': '2026-04-08T07:32:12.952101', 'updated_at': '2026-04-13T15:55:45.416909'}}
+
+2026-04-14 19:56:51 - INFO - app_logger - GET /grievance/faculty/2 started from 127.0.0.1
+2026-04-14 19:56:51 - ERROR - app_logger - Error processing request /grievance/faculty/2
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'name'), 'msg': 'Field required', 'input': {'id': 2, 'student_id': 29, 'student_name': 'Jeswin L', 'registration_no': 'O0525001', 'status': 'assigned', 'assigned_to_id': 1, 'assigned_to_name': 'mohamed yesthin', 'subject': 'testing subject1', 'description': 'testing comments....', 'attachment_url': 'https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Screenshot 2026-03-31 at 11.35.51\u202fAM.png', 'created_at': '2026-04-08T07:32:12.952101', 'updated_at': '2026-04-13T15:55:45.416909'}}
+  {'type': 'missing', 'loc': ('response', 'category'), 'msg': 'Field required', 'input': {'id': 2, 'student_id': 29, 'student_name': 'Jeswin L', 'registration_no': 'O0525001', 'status': 'assigned', 'assigned_to_id': 1, 'assigned_to_name': 'mohamed yesthin', 'subject': 'testing subject1', 'description': 'testing comments....', 'attachment_url': 'https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Screenshot 2026-03-31 at 11.35.51\u202fAM.png', 'created_at': '2026-04-08T07:32:12.952101', 'updated_at': '2026-04-13T15:55:45.416909'}}
+
+2026-04-14 19:58:05 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 19:58:10 - INFO - app_logger - GET /grievance/faculty/2 started from 127.0.0.1
+2026-04-14 19:58:10 - ERROR - app_logger - Error processing request /grievance/faculty/2
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'name'), 'msg': 'Field required', 'input': {'id': 2, 'student_id': 29, 'student_name': 'Jeswin L', 'registration_no': 'O0525001', 'status': 'assigned', 'assigned_to_id': 1, 'assigned_to_name': 'mohamed yesthin', 'subject': 'testing subject1', 'description': 'testing comments....', 'attachment_url': 'https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Screenshot 2026-03-31 at 11.35.51\u202fAM.png', 'created_at': '2026-04-08T07:32:12.952101', 'updated_at': '2026-04-13T15:55:45.416909'}}
+  {'type': 'missing', 'loc': ('response', 'category'), 'msg': 'Field required', 'input': {'id': 2, 'student_id': 29, 'student_name': 'Jeswin L', 'registration_no': 'O0525001', 'status': 'assigned', 'assigned_to_id': 1, 'assigned_to_name': 'mohamed yesthin', 'subject': 'testing subject1', 'description': 'testing comments....', 'attachment_url': 'https://cdoe-sriher-online-content.s3.ap-south-1.amazonaws.com/cdoedocument/Screenshot 2026-03-31 at 11.35.51\u202fAM.png', 'created_at': '2026-04-08T07:32:12.952101', 'updated_at': '2026-04-13T15:55:45.416909'}}
+
+2026-04-14 19:58:35 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 19:58:35 - INFO - app_logger - GET /grievance/faculty/list completed in 0.009s → 200
+2026-04-14 20:03:40 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:03:45 - INFO - app_logger - GET /grievance/faculty/2 started from 127.0.0.1
+2026-04-14 20:03:45 - INFO - app_logger - GET /grievance/faculty/2 completed in 0.063s → 200
+2026-04-14 20:05:23 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:29:50 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:29:53 - INFO - app_logger - GET / started from 127.0.0.1
+2026-04-14 20:29:53 - INFO - app_logger - GET / completed in 0.001s → 307
+2026-04-14 20:29:53 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 20:29:53 - INFO - app_logger - GET /api/v1/docs completed in 0.0s → 200
+2026-04-14 20:29:53 - INFO - app_logger - GET /api/v1/openapi.json started from 127.0.0.1
+2026-04-14 20:29:53 - INFO - app_logger - GET /api/v1/openapi.json completed in 0.047s → 200
+2026-04-14 20:38:23 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:40:36 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:41:50 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 20:41:50 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.052s → 401
+2026-04-14 20:42:39 - INFO - app_logger - POST /auth/login started from 127.0.0.1
+2026-04-14 20:42:40 - INFO - app_logger - POST /auth/login completed in 0.192s → 200
+2026-04-14 20:42:56 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 20:42:56 - ERROR - app_logger - Error processing request /grievance/faculty/status/2
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'student_name'), 'msg': 'Field required', 'input': <src.models.grievance.Grievance object at 0x116414560>}
+  {'type': 'missing', 'loc': ('response', 'registration_no'), 'msg': 'Field required', 'input': <src.models.grievance.Grievance object at 0x116414560>}
+
+2026-04-14 20:44:43 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:45:16 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:45:21 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 20:45:21 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.075s → 200
+2026-04-14 20:45:38 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:45:58 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 20:45:58 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.075s → 200
+2026-04-14 20:46:41 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 20:46:41 - INFO - app_logger - GET /grievance/admin/2 completed in 0.014s → 200
+2026-04-14 20:49:24 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:53:15 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:55:39 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:55:43 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 20:55:43 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.079s → 200
+2026-04-14 20:56:05 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 20:56:05 - ERROR - app_logger - Error processing request /grievance/admin/2
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/api/v1/endpoints/grievance.py", line 192, in get_grievance_for_admin
+    return service.get_grievance_with_details(grievance_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/services/grievance_service.py", line 139, in get_grievance_with_details
+    +           "resolution_notes": grievance.resolution_notes,
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: bad operand type for unary +: 'str'
+2026-04-14 20:59:27 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 20:59:31 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 20:59:31 - INFO - app_logger - GET /grievance/admin/2 completed in 0.052s → 200
+2026-04-14 21:02:58 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 21:03:08 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 21:03:08 - INFO - app_logger - GET /grievance/admin/2 completed in 0.055s → 200
+2026-04-14 21:04:17 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 21:04:34 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 21:04:34 - INFO - app_logger - GET /grievance/admin/2 completed in 0.064s → 200
+2026-04-14 21:05:57 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 21:05:57 - INFO - app_logger - GET /grievance/admin/list completed in 0.007s → 200
+2026-04-14 21:06:54 - INFO - app_logger - GET /grievance/list started from 127.0.0.1
+2026-04-14 21:06:54 - INFO - app_logger - GET /grievance/list completed in 0.006s → 200
+2026-04-14 21:09:15 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 21:09:48 - INFO - app_logger - GET /grievance/list started from 127.0.0.1
+2026-04-14 21:09:48 - INFO - app_logger - GET /grievance/list completed in 0.057s → 200
+2026-04-14 21:10:18 - INFO - app_logger - GET /grievance/grievance/2 started from 127.0.0.1
+2026-04-14 21:10:18 - INFO - app_logger - GET /grievance/grievance/2 completed in 0.006s → 200
+2026-04-14 21:10:43 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 21:10:43 - INFO - app_logger - GET /grievance/admin/list completed in 0.017s → 200
+2026-04-14 21:10:55 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 21:10:55 - INFO - app_logger - GET /grievance/admin/2 completed in 0.008s → 200
+2026-04-14 21:12:16 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 21:12:16 - INFO - app_logger - GET /grievance/admin/2 completed in 0.007s → 200
+2026-04-14 21:12:43 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 21:12:43 - INFO - app_logger - GET /grievance/faculty/list completed in 0.012s → 200
+2026-04-14 21:12:53 - INFO - app_logger - GET /grievance/faculty/2 started from 127.0.0.1
+2026-04-14 21:12:53 - INFO - app_logger - GET /grievance/faculty/2 completed in 0.013s → 200
+2026-04-14 21:13:11 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 21:13:11 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.01s → 200
+2026-04-14 21:13:12 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 21:13:12 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.004s → 200
+2026-04-14 21:13:20 - INFO - app_logger - POST /grievance/faculty/status/2 started from 127.0.0.1
+2026-04-14 21:13:20 - INFO - app_logger - POST /grievance/faculty/status/2 completed in 0.006s → 200
+2026-04-14 21:16:50 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 21:48:54 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 21:49:01 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 21:49:01 - INFO - app_logger - GET /api/v1/docs completed in 0.0s → 200
+2026-04-14 21:50:02 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 21:50:02 - INFO - app_logger - GET /grievance/admin/2 completed in 0.001s → 403
+2026-04-14 21:50:37 - INFO - app_logger - POST /auth/login started from 127.0.0.1
+2026-04-14 21:50:37 - INFO - app_logger - POST /auth/login completed in 0.248s → 200
+2026-04-14 21:50:57 - INFO - app_logger - GET /grievance/admin/2 started from 127.0.0.1
+2026-04-14 21:50:57 - INFO - app_logger - GET /grievance/admin/2 completed in 0.011s → 200
+2026-04-14 21:52:05 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 21:52:05 - ERROR - app_logger - Error processing request /grievance/admin/close/2
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 148, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/streams/memory.py", line 126, in receive
+    raise EndOfStream from None
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 327, in app
+    content = await serialize_response(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 176, in serialize_response
+    raise ResponseValidationError(
+fastapi.exceptions.ResponseValidationError: 2 validation errors:
+  {'type': 'missing', 'loc': ('response', 'student_name'), 'msg': 'Field required', 'input': <src.models.grievance.Grievance object at 0x117a35070>}
+  {'type': 'missing', 'loc': ('response', 'registration_no'), 'msg': 'Field required', 'input': <src.models.grievance.Grievance object at 0x117a35070>}
+
+2026-04-14 22:08:22 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:09:15 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:09:20 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 22:09:20 - INFO - app_logger - POST /grievance/admin/close/2 completed in 0.079s → 200
+2026-04-14 22:10:03 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 22:10:03 - INFO - app_logger - POST /grievance/admin/close/2 completed in 0.014s → 200
+2026-04-14 22:10:19 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 22:10:19 - INFO - app_logger - POST /grievance/admin/close/2 completed in 0.008s → 200
+2026-04-14 22:10:36 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 22:10:36 - INFO - app_logger - POST /grievance/admin/close/2 completed in 0.009s → 200
+2026-04-14 22:17:56 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:17:58 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 22:17:58 - INFO - app_logger - GET /api/v1/docs completed in 0.0s → 200
+2026-04-14 22:17:58 - INFO - app_logger - GET /api/v1/openapi.json started from 127.0.0.1
+2026-04-14 22:17:58 - INFO - app_logger - GET /api/v1/openapi.json completed in 0.044s → 200
+2026-04-14 22:18:19 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 22:18:19 - INFO - app_logger - POST /grievance/admin/close/2 completed in 0.001s → 403
+2026-04-14 22:18:54 - INFO - app_logger - POST /auth/login started from 127.0.0.1
+2026-04-14 22:18:55 - INFO - app_logger - POST /auth/login completed in 0.235s → 200
+2026-04-14 22:19:13 - INFO - app_logger - POST /grievance/admin/close/2 started from 127.0.0.1
+2026-04-14 22:19:13 - INFO - app_logger - POST /grievance/admin/close/2 completed in 0.012s → 200
+2026-04-14 22:22:34 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:23:24 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:28:13 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:30:52 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:33:16 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 22:33:16 - INFO - app_logger - GET /api/v1/docs completed in 0.0s → 200
+2026-04-14 22:33:16 - INFO - app_logger - GET /api/v1/openapi.json started from 127.0.0.1
+2026-04-14 22:33:16 - INFO - app_logger - GET /api/v1/openapi.json completed in 0.042s → 200
+2026-04-14 22:35:41 - INFO - app_logger - POST /grievance/reissue/2 started from 127.0.0.1
+2026-04-14 22:35:41 - INFO - app_logger - POST /grievance/reissue/2 completed in 0.128s → 200
+2026-04-14 22:44:01 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:45:47 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:46:23 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:48:17 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:56:17 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:57:42 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 22:59:30 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:00:18 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:02:51 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:05:06 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:07:19 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:07:23 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:19:32 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:25:53 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:32:08 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 23:32:08 - INFO - app_logger - GET /api/v1/docs completed in 0.001s → 200
+2026-04-14 23:32:08 - INFO - app_logger - GET /api/v1/openapi.json started from 127.0.0.1
+2026-04-14 23:32:08 - INFO - app_logger - GET /api/v1/openapi.json completed in 0.05s → 200
+2026-04-14 23:32:25 - INFO - app_logger - POST /grievance/reissue/2 started from 127.0.0.1
+2026-04-14 23:32:25 - INFO - app_logger - POST /grievance/reissue/2 completed in 0.059s → 400
+2026-04-14 23:33:15 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:33:15 - INFO - app_logger - GET /grievance/admin/list completed in 0.001s → 403
+2026-04-14 23:34:02 - INFO - app_logger - POST /auth/login started from 127.0.0.1
+2026-04-14 23:34:02 - INFO - app_logger - POST /auth/login completed in 0.219s → 200
+2026-04-14 23:34:22 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:34:22 - INFO - app_logger - GET /grievance/admin/list completed in 0.009s → 200
+2026-04-14 23:34:59 - INFO - app_logger - GET /grievance/admin/3 started from 127.0.0.1
+2026-04-14 23:34:59 - INFO - app_logger - GET /grievance/admin/3 completed in 0.006s → 200
+2026-04-14 23:35:13 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 23:35:13 - INFO - app_logger - GET /grievance/faculty/list completed in 0.005s → 200
+2026-04-14 23:35:36 - INFO - app_logger - POST /grievance/faculty/status/3 started from 127.0.0.1
+2026-04-14 23:35:36 - INFO - app_logger - POST /grievance/faculty/status/3 completed in 0.007s → 200
+2026-04-14 23:35:49 - INFO - app_logger - GET /grievance/faculty/3 started from 127.0.0.1
+2026-04-14 23:35:49 - INFO - app_logger - GET /grievance/faculty/3 completed in 0.004s → 200
+2026-04-14 23:36:03 - INFO - app_logger - GET /grievance/admin/3 started from 127.0.0.1
+2026-04-14 23:36:03 - INFO - app_logger - GET /grievance/admin/3 completed in 0.005s → 200
+2026-04-14 23:36:18 - INFO - app_logger - POST /grievance/reissue/3 started from 127.0.0.1
+2026-04-14 23:36:18 - ERROR - app_logger - Error processing request /grievance/reissue/3
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "timestamp" of relation "grievance_history" violates not-null constraint
+DETAIL:  Failing row contains (3, reissued, resolved, null, string, null, 1, 2026-04-14 18:06:18.343337, 2026-04-14 18:06:18.343341).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/api/v1/endpoints/grievance.py", line 163, in reissue_grievance_student
+    result = service.reissue_grievance(grievance_id, reason)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/services/grievance_service.py", line 544, in reissue_grievance
+    self.db.commit()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1415, in execute
+    return meth(
+           ^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1637, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1842, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1982, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2351, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "timestamp" of relation "grievance_history" violates not-null constraint
+DETAIL:  Failing row contains (3, reissued, resolved, null, string, null, 1, 2026-04-14 18:06:18.343337, 2026-04-14 18:06:18.343341).
+
+[SQL: INSERT INTO grievance_history (grievance_id, action, status, resolved_by_id, notes, created_at, updated_at) VALUES (%(grievance_id)s, %(action)s, %(status)s, %(resolved_by_id)s, %(notes)s, %(created_at)s, %(updated_at)s) RETURNING grievance_history.id]
+[parameters: {'grievance_id': 3, 'action': 'reissued', 'status': 'resolved', 'resolved_by_id': None, 'notes': 'string', 'created_at': datetime.datetime(2026, 4, 14, 18, 6, 18, 343337), 'updated_at': datetime.datetime(2026, 4, 14, 18, 6, 18, 343341)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-04-14 23:39:04 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:39:18 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:39:25 - INFO - app_logger - POST /grievance/reissue/3 started from 127.0.0.1
+2026-04-14 23:39:25 - ERROR - app_logger - Error processing request /grievance/reissue/3
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "timestamp" of relation "grievance_history" violates not-null constraint
+DETAIL:  Failing row contains (3, reissued, resolved, null, string, null, 2, 2026-04-14 18:09:25.518872, 2026-04-14 18:09:25.518874).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/api/v1/endpoints/grievance.py", line 163, in reissue_grievance_student
+    result = service.reissue_grievance(grievance_id, reason)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/services/grievance_service.py", line 544, in reissue_grievance
+    self.db.commit()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1415, in execute
+    return meth(
+           ^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1637, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1842, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1982, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2351, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "timestamp" of relation "grievance_history" violates not-null constraint
+DETAIL:  Failing row contains (3, reissued, resolved, null, string, null, 2, 2026-04-14 18:09:25.518872, 2026-04-14 18:09:25.518874).
+
+[SQL: INSERT INTO grievance_history (grievance_id, action, status, resolved_by_id, notes, created_at, updated_at) VALUES (%(grievance_id)s, %(action)s, %(status)s, %(resolved_by_id)s, %(notes)s, %(created_at)s, %(updated_at)s) RETURNING grievance_history.id]
+[parameters: {'grievance_id': 3, 'action': 'reissued', 'status': 'resolved', 'resolved_by_id': None, 'notes': 'string', 'created_at': datetime.datetime(2026, 4, 14, 18, 9, 25, 518872), 'updated_at': datetime.datetime(2026, 4, 14, 18, 9, 25, 518874)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-04-14 23:39:46 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:39:51 - INFO - app_logger - POST /grievance/reissue/3 started from 127.0.0.1
+2026-04-14 23:39:51 - ERROR - app_logger - Error processing request /grievance/reissue/3
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.NotNullViolation: null value in column "timestamp" of relation "grievance_history" violates not-null constraint
+DETAIL:  Failing row contains (3, reissued, resolved, null, string, null, 3, 2026-04-14 18:09:51.055893, 2026-04-14 18:09:51.055895).
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/main.py", line 75, in log_requests
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 156, in call_next
+    raise app_exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/fastapi/routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/starlette/concurrency.py", line 37, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/to_thread.py", line 56, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 2470, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 967, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/api/v1/endpoints/grievance.py", line 163, in reissue_grievance_student
+    result = service.reissue_grievance(grievance_id, reason)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/src/services/grievance_service.py", line 544, in reissue_grievance
+    self.db.commit()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/state_changes.py", line 139, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
+    self.session.flush()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
+    self._flush(objects)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4480, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
+    flush_context.execute()
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/orm/persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1415, in execute
+    return meth(
+           ^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 523, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1637, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1842, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1982, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2351, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1963, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/sriher-mac01/Documents/sis/back_end/sis-api-uat/.venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 943, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (psycopg2.errors.NotNullViolation) null value in column "timestamp" of relation "grievance_history" violates not-null constraint
+DETAIL:  Failing row contains (3, reissued, resolved, null, string, null, 3, 2026-04-14 18:09:51.055893, 2026-04-14 18:09:51.055895).
+
+[SQL: INSERT INTO grievance_history (grievance_id, action, status, resolved_by_id, notes, created_at, updated_at) VALUES (%(grievance_id)s, %(action)s, %(status)s, %(resolved_by_id)s, %(notes)s, %(created_at)s, %(updated_at)s) RETURNING grievance_history.id]
+[parameters: {'grievance_id': 3, 'action': 'reissued', 'status': 'resolved', 'resolved_by_id': None, 'notes': 'string', 'created_at': datetime.datetime(2026, 4, 14, 18, 9, 51, 55893), 'updated_at': datetime.datetime(2026, 4, 14, 18, 9, 51, 55895)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+2026-04-14 23:41:01 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:41:12 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:41:17 - INFO - app_logger - POST /grievance/reissue/3 started from 127.0.0.1
+2026-04-14 23:41:17 - INFO - app_logger - POST /grievance/reissue/3 completed in 0.055s → 200
+2026-04-14 23:41:33 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:41:33 - INFO - app_logger - GET /grievance/admin/list completed in 0.015s → 200
+2026-04-14 23:41:48 - INFO - app_logger - GET /grievance/admin/3 started from 127.0.0.1
+2026-04-14 23:41:48 - INFO - app_logger - GET /grievance/admin/3 completed in 0.01s → 200
+2026-04-14 23:42:23 - INFO - app_logger - POST /grievance/admin/assign/3 started from 127.0.0.1
+2026-04-14 23:42:23 - INFO - app_logger - POST /grievance/admin/assign/3 completed in 0.018s → 200
+2026-04-14 23:42:29 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:42:29 - INFO - app_logger - GET /grievance/admin/list completed in 0.004s → 200
+2026-04-14 23:42:57 - INFO - app_logger - GET /grievance/admin/3 started from 127.0.0.1
+2026-04-14 23:42:57 - INFO - app_logger - GET /grievance/admin/3 completed in 0.007s → 200
+2026-04-14 23:43:05 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 23:43:05 - INFO - app_logger - GET /grievance/faculty/list completed in 0.012s → 200
+2026-04-14 23:43:19 - INFO - app_logger - POST /grievance/faculty/status/3 started from 127.0.0.1
+2026-04-14 23:43:19 - INFO - app_logger - POST /grievance/faculty/status/3 completed in 0.011s → 200
+2026-04-14 23:43:25 - INFO - app_logger - GET /grievance/admin/3 started from 127.0.0.1
+2026-04-14 23:43:25 - INFO - app_logger - GET /grievance/admin/3 completed in 0.003s → 200
+2026-04-14 23:43:50 - INFO - app_logger - POST /grievance/admin/close/3 started from 127.0.0.1
+2026-04-14 23:43:50 - INFO - app_logger - POST /grievance/admin/close/3 completed in 0.006s → 200
+2026-04-14 23:45:10 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:45:10 - INFO - app_logger - GET /grievance/admin/list completed in 0.008s → 200
+2026-04-14 23:45:24 - INFO - app_logger - POST /grievance/reissue/3 started from 127.0.0.1
+2026-04-14 23:45:24 - INFO - app_logger - POST /grievance/reissue/3 completed in 0.005s → 200
+2026-04-14 23:45:31 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:45:31 - INFO - app_logger - GET /grievance/admin/list completed in 0.003s → 200
+2026-04-14 23:48:16 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:54:58 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:55:21 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 23:55:21 - INFO - app_logger - GET /grievance/faculty/list completed in 0.08s → 200
+2026-04-14 23:56:26 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:56:56 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 23:56:56 - INFO - app_logger - GET /grievance/faculty/list completed in 0.055s → 200
+2026-04-14 23:57:12 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:57:14 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 23:57:14 - INFO - app_logger - GET /grievance/faculty/list completed in 0.061s → 200
+2026-04-14 23:57:30 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:57:31 - INFO - app_logger - GET /grievance/faculty/list started from 127.0.0.1
+2026-04-14 23:57:31 - INFO - app_logger - GET /grievance/faculty/list completed in 0.065s → 200
+2026-04-14 23:57:50 - INFO - app_logger - FastAPI application started successfully
+2026-04-14 23:58:01 - INFO - app_logger - GET /grievance/admin/list started from 127.0.0.1
+2026-04-14 23:58:01 - INFO - app_logger - GET /grievance/admin/list completed in 0.062s → 200
+2026-04-14 23:58:19 - INFO - app_logger - POST /grievance/reissue/3 started from 127.0.0.1
+2026-04-14 23:58:19 - INFO - app_logger - POST /grievance/reissue/3 completed in 0.003s → 400
+2026-04-14 23:59:36 - INFO - app_logger - GET /grievance/admin/3 started from 127.0.0.1
+2026-04-14 23:59:36 - INFO - app_logger - GET /grievance/admin/3 completed in 0.015s → 200
+2026-04-14 23:59:50 - INFO - app_logger - GET /api/v1/docs started from 127.0.0.1
+2026-04-14 23:59:50 - INFO - app_logger - GET /api/v1/docs completed in 0.001s → 200
+2026-04-14 23:59:50 - INFO - app_logger - GET /api/v1/openapi.json started from 127.0.0.1
+2026-04-14 23:59:50 - INFO - app_logger - GET /api/v1/openapi.json completed in 0.068s → 200

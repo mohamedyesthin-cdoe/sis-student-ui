@@ -3,7 +3,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, aliased
 from src.models.students import Student
 from src.models.master import Programe
-from src.models.grievance import Grievance
+from src.models.grievance import Grievance,GrievanceHistory
 from src.models.staff import Staff
 from src.schemas.grievance import (
     GrievanceCreate,
@@ -91,23 +91,47 @@ class GrievanceService:
 
         flat_list: List[dict] = []
         for grievance, student, _program in query.all():
-            flat_list.append(
-                {
-                    "id": grievance.id,
-                    "student_id": grievance.student_id,
-                    "student_name": f"{student.first_name} {student.last_name}" if student else None,
-                    "registration_no": student.registration_no if student else None,
-                    "status": grievance.status,
-                    "assigned_to_id": grievance.assigned_to_id,
-                    "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
-                    "subject": grievance.subject,
-                    "description": grievance.description,
-                    "attachment_url": grievance.attachment_url,
-                    "resolution_notes": grievance.resolution_notes,
-                    "created_at": grievance.created_at,
-                    "updated_at": grievance.updated_at,
-                }
+            # Get grievance history
+            history = (
+                self.db.query(GrievanceHistory)
+                .filter(GrievanceHistory.grievance_id == grievance.id)
+                .order_by(GrievanceHistory.created_at.desc())
+                .all()
             )
+        
+            history_list = []
+            for record in history:
+                resolved_by_name = None
+                if record.resolved_by:
+                   resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
+            
+                history_list.append({
+                    "action": record.action,
+                    "status": record.status,
+                    "resolved_by_id": record.resolved_by_id,
+                    "resolved_by_name": resolved_by_name,
+                    "notes": record.notes,
+                    "created_at": record.created_at.isoformat() if record.created_at else None,
+                })
+
+            flat_list.append(
+            {
+                "id": grievance.id,
+                "student_id": grievance.student_id,
+                "student_name": f"{student.first_name} {student.last_name}" if student else None,
+                "registration_no": student.registration_no if student else None,
+                "status": grievance.status,
+                "assigned_to_id": grievance.assigned_to_id,
+                "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+                "subject": grievance.subject,
+                "description": grievance.description,
+                "attachment_url": grievance.attachment_url,
+                "resolution_notes": grievance.resolution_notes,
+                "created_at": grievance.created_at,
+                "updated_at": grievance.updated_at,
+                "history": history_list,
+            }
+        )
         return flat_list
     
     def get_grievance_with_details(self, grievance_id: int) -> dict:
@@ -125,6 +149,30 @@ class GrievanceService:
             )
 
         grievance, student, _program = record
+        
+        # Get grievance history
+        history = (
+            self.db.query(GrievanceHistory)
+            .filter(GrievanceHistory.grievance_id == grievance_id)
+            .order_by(GrievanceHistory.created_at.desc())
+            .all()
+        )
+        
+        history_list = []
+        for record in history:
+            resolved_by_name = None
+            if record.resolved_by:
+                resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
+            
+            history_list.append({
+                "action": record.action,
+                "status": record.status,
+                "resolved_by_id": record.resolved_by_id,
+                "resolved_by_name": resolved_by_name,
+                "notes": record.notes,
+                "created_at": record.created_at.isoformat() if record.created_at else None,
+            })
+        
         return {
             "id": grievance.id,
             "student_id": grievance.student_id,
@@ -139,6 +187,7 @@ class GrievanceService:
             "resolution_notes": grievance.resolution_notes,
             "created_at": grievance.created_at,
             "updated_at": grievance.updated_at,
+            "history": history_list,
         }
 
     def get_grievance(self, grievance_id: int) -> Grievance:
@@ -424,15 +473,53 @@ class GrievanceService:
             "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
         }
 
-    def admin_close(self, grievance_id: int, payload: GrievanceStatusUpdate) -> Grievance:
+    def admin_close(self, grievance_id: int, payload: GrievanceStatusUpdate, resolved_by_id: Optional[int] = None) -> dict:
         grievance = self.get_grievance(grievance_id)
-
         grievance.status = "closed_by_admin"
         grievance.resolution_notes = payload.resolution_notes
 
+        # Log history
+        history = GrievanceHistory(
+            grievance_id=grievance_id,
+            action="closed",
+            status="closed_by_admin",
+            resolved_by_id=resolved_by_id,
+            notes=payload.resolution_notes,
+        )
+        self.db.add(history)
         self.db.commit()
         self.db.refresh(grievance)
-        return grievance
+
+        # Fetch student details to build response
+        student = None
+        if grievance.student_id:
+            student = self.db.query(Student).filter(Student.id == grievance.student_id).first()
+        
+        student_name = None
+        registration_no = None
+        if student:
+            student_name = f"{student.first_name} {student.last_name}"
+            registration_no = student.registration_no
+
+        assigned_to_name = None
+        if grievance.assigned_to:
+            assigned_to_name = f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}"
+    
+        return {
+            "id": grievance.id,
+            "student_id": grievance.student_id,
+            "student_name": student_name,
+            "registration_no": registration_no,
+            "status": grievance.status,
+            "assigned_to_id": grievance.assigned_to_id,
+            "assigned_to_name": assigned_to_name,
+            "subject": grievance.subject,
+            "description": grievance.description,
+            "attachment_url": grievance.attachment_url,
+            "resolution_notes": grievance.resolution_notes,
+            "created_at": grievance.created_at,
+            "updated_at": grievance.updated_at,
+        }
 
     def update_grievance(self, grievance_id: int, payload: GrievanceUpdate) -> Grievance:
         grievance = self.get_grievance(grievance_id)
@@ -452,3 +539,33 @@ class GrievanceService:
         grievance = self.get_grievance(grievance_id)
         self.db.delete(grievance)
         self.db.commit()
+
+    def reissue_grievance(self, grievance_id: int, reason: Optional[str] = None) -> dict:
+        """Reissue a closed/resolved grievance back to open status"""
+        grievance = self.get_grievance(grievance_id)
+
+        # Only allow reissuing closed or resolved grievances
+        if grievance.status not in ["closed_by_admin", "closed_by_faculty", "resolved"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Cannot reissue grievance with status '{grievance.status}'",
+            )
+
+        # Log history before reissuing
+        history = GrievanceHistory(
+            grievance_id=grievance_id,
+            action="reissued",
+            status=grievance.status,
+            notes=reason or "Reissued by student",
+        )
+        self.db.add(history)
+
+        # Reset grievance to open
+        grievance.status = "open"
+        grievance.resolution_notes = reason or f"Reissued from {grievance.status}"
+        grievance.assigned_to_id = None  # Clear assignment
+
+        self.db.commit()
+        self.db.refresh(grievance)
+
+        return self.get_grievance_public(grievance_id)

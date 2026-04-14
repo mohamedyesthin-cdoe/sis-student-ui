@@ -46,6 +46,16 @@ class GrievanceFacultyStatusUpdate(BaseModel):
     )
     resolution_notes: Optional[str] = None
 
+class GrievanceHistoryResponse(BaseModel):
+    action: str
+    status: str
+    resolved_by_id: Optional[int] = None
+    resolved_by_name: Optional[str] = None
+    notes: Optional[str] = None
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
 
 class GrievanceAdminResponse(BaseModel):
     id: int
@@ -58,6 +68,7 @@ class GrievanceAdminResponse(BaseModel):
     subject: Optional[str]
     description: Optional[str]
     attachment_url: Optional[str]
+    history: Optional[List[GrievanceHistoryResponse]] = None
     resolution_notes: Optional[str]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
@@ -84,6 +95,7 @@ class GrievancePublicResponse(BaseModel):
     subject: Optional[str]
     description: Optional[str]
     attachment_url: Optional[str]
+    history: Optional[List[GrievanceHistoryResponse]] = None
     resolution_notes: Optional[str]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
@@ -102,6 +114,10 @@ class GrievanceFacultyResponse(BaseModel):
     subject: Optional[str]
     description: Optional[str]
     attachment_url: Optional[str]
+    history: Optional[List[GrievanceHistoryResponse]] = None
     resolution_notes: Optional[str]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True

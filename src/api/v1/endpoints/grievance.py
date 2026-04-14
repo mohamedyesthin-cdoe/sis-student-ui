@@ -152,6 +152,37 @@ def delete_grievance_alias(
         pass
     return None
 
+@router.post("/reissue/{grievance_id}", response_model=GrievancePublicResponse)
+def reissue_grievance_student(
+    grievance_id: int,
+    reason: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+):
+    """Allow student to reissue a closed grievance"""
+    service = GrievanceService(db)
+    result = service.reissue_grievance(grievance_id, reason)
+    
+    # Notify support of reissue (result already contains the grievance data)
+    student_name = result.get("student_name")
+    subject_line = result.get("subject")
+    attachment_url = result.get("attachment_url")
+
+    try:
+        import asyncio
+        asyncio.create_task(
+            send_grievance_email(
+                email_to="cdoesupport@sriramachandra.edu.in",
+                action="reissued",
+                grievance_id=grievance_id,
+                subject_line=subject_line,
+                student_name=student_name,
+                attachment_url=attachment_url,
+            )
+        )
+    except RuntimeError:
+        pass
+    
+    return result
 
 @router.get(
     "/admin/list",
@@ -173,10 +204,17 @@ def list_grievances_admin(
 def admin_close_grievance(
     grievance_id: int,
     payload: GrievanceStatusUpdate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     service = GrievanceService(db)
-    return service.admin_close(grievance_id, payload)
+    
+    # Get staff record for current user
+    from src.models.staff import Staff
+    staff = db.query(Staff).filter(Staff.user_id == current_user.id).first()
+    staff_id = staff.id if staff else None
+    
+    return service.admin_close(grievance_id, payload, resolved_by_id=staff_id)
 
 
 @router.get(
