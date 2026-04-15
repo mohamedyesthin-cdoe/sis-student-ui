@@ -98,13 +98,17 @@ class GrievanceService:
                 .order_by(GrievanceHistory.created_at.desc())
                 .all()
             )
-        
+
             history_list = []
             for record in history:
                 resolved_by_name = None
-                if record.resolved_by:
-                   resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
-            
+                if getattr(record, "resolved_by", None):
+                    resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
+                elif getattr(record, "resolved_by_id", None):
+                    staff = self.db.query(Staff).filter(Staff.id == record.resolved_by_id).first()
+                    if staff:
+                        resolved_by_name = f"{staff.first_name} {staff.last_name}"
+
                 history_list.append({
                     "action": record.action,
                     "status": record.status,
@@ -113,25 +117,25 @@ class GrievanceService:
                     "notes": record.notes,
                     "created_at": record.created_at.isoformat() if record.created_at else None,
                 })
-
+        
             flat_list.append(
-            {
-                "id": grievance.id,
-                "student_id": grievance.student_id,
-                "student_name": f"{student.first_name} {student.last_name}" if student else None,
-                "registration_no": student.registration_no if student else None,
-                "status": grievance.status,
-                "assigned_to_id": grievance.assigned_to_id,
-                "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
-                "subject": grievance.subject,
-                "description": grievance.description,
-                "attachment_url": grievance.attachment_url,
-                "resolution_notes": grievance.resolution_notes,
-                "created_at": grievance.created_at,
-                "updated_at": grievance.updated_at,
-                "history": history_list,
-            }
-        )
+                {
+                    "id": grievance.id,
+                    "student_id": grievance.student_id,
+                    "student_name": f"{student.first_name} {student.last_name}" if student else None,
+                    "registration_no": student.registration_no if student else None,
+                    "status": grievance.status,
+                    "assigned_to_id": grievance.assigned_to_id,
+                    "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+                    "subject": grievance.subject,
+                    "description": grievance.description,
+                    "attachment_url": grievance.attachment_url,
+                    "resolution_notes": grievance.resolution_notes,
+                    "created_at": grievance.created_at,
+                    "updated_at": grievance.updated_at,
+                    "history": history_list,
+                }
+            )
         return flat_list
     
     def get_grievance_with_details(self, grievance_id: int) -> dict:
@@ -161,8 +165,12 @@ class GrievanceService:
         history_list = []
         for record in history:
             resolved_by_name = None
-            if record.resolved_by:
+            if getattr(record, "resolved_by", None):
                 resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
+            elif getattr(record, "resolved_by_id", None):
+                staff = self.db.query(Staff).filter(Staff.id == record.resolved_by_id).first()
+                if staff:
+                    resolved_by_name = f"{staff.first_name} {staff.last_name}"
             
             history_list.append({
                 "action": record.action,
@@ -189,7 +197,7 @@ class GrievanceService:
             "updated_at": grievance.updated_at,
             "history": history_list,
         }
-
+    
     def get_grievance(self, grievance_id: int) -> Grievance:
         grievance = self.db.query(Grievance).filter(Grievance.id == grievance_id).first()
         if not grievance:
