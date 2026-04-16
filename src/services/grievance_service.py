@@ -22,10 +22,7 @@ class GrievanceService:
     def create_grievance(self, data: GrievanceCreate) -> Grievance:
         grievance = Grievance(
             student_id=getattr(data, "student_id", None),
-            name=getattr(data, "name", None) or "Anonymous",
-            email=getattr(data, "email", None),
-            mobile_number=getattr(data, "mobile_number", None),
-            category="general",
+            student_name=getattr(data, "student_name", None) or "Anonymous",
             subject=data.subject,
             description=data.description,
             attachment_url=data.attachment_url,
@@ -90,7 +87,7 @@ class GrievanceService:
         )
 
         flat_list: List[dict] = []
-        for grievance, student, _program in query.all():
+        for grievance, student in query.all():
             # Get grievance history
             history = (
                 self.db.query(GrievanceHistory)
@@ -510,6 +507,7 @@ class GrievanceService:
             registration_no = student.registration_no
 
         assigned_to_name = None
+        print(grievance)
         if grievance.assigned_to:
             assigned_to_name = f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}"
     

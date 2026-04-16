@@ -20,7 +20,7 @@ from src.services.student_service import StudentService
 from src.utils.s3_service import DocumentService
 from src.utils.email import send_grievance_email
 from src.models.user import User
-
+from src.models.staff import Staff
 
 router = APIRouter()
 
@@ -210,7 +210,6 @@ def admin_close_grievance(
     service = GrievanceService(db)
     
     # Get staff record for current user
-    from src.models.staff import Staff
     staff = db.query(Staff).filter(Staff.user_id == current_user.id).first()
     staff_id = staff.id if staff else None
     

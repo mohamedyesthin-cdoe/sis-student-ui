@@ -8,10 +8,7 @@ class Grievance(AuditableBase):
     __tablename__ = "grievances"
 
     student_id = Column(Integer, ForeignKey("students.id"), nullable=True)
-    name = Column(String(100), nullable=False)
-    email = Column(String(120), nullable=True)
-    mobile_number = Column(String(20), nullable=True)
-    category = Column(String(50), nullable=False, default="general")
+    student_name = Column(String(100), nullable=False)
     subject = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     status = Column(String(30), nullable=False, default="open")

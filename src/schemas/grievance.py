@@ -105,19 +105,19 @@ class GrievancePublicResponse(BaseModel):
 
 class GrievanceFacultyResponse(BaseModel):
     id: int
-    student_id: Optional[int]
-    student_name: Optional[str]
-    registration_no: Optional[str]
-    status: Optional[str]
-    assigned_to_id: Optional[int]
-    assigned_to_name: Optional[str]
-    subject: Optional[str]
-    description: Optional[str]
-    attachment_url: Optional[str]
+    student_id: Optional[int] = None
+    student_name: Optional[str] = None
+    registration_no: Optional[str] = None
+    status: Optional[str] = None
+    assigned_to_id: Optional[int] = None
+    assigned_to_name: Optional[str] = None
+    subject: Optional[str] = None
+    description: Optional[str] = None
+    attachment_url: Optional[str] = None
     history: Optional[List[GrievanceHistoryResponse]] = None
-    resolution_notes: Optional[str]
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    resolution_notes: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
