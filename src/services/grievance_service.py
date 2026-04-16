@@ -87,7 +87,7 @@ class GrievanceService:
         )
 
         flat_list: List[dict] = []
-        for grievance, student in query.all():
+        for grievance, student, programe in query.all():
             # Get grievance history
             history = (
                 self.db.query(GrievanceHistory)
