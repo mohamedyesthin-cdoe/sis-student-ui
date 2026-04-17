@@ -74,5 +74,16 @@ export const ApiRoutes = {
   GRIEVANCEBYID: 'grievance/grievance',
   GRIEVANCEDELETE: 'grievance/delete',
   GRIEVANCEUPDATE: 'grievance/update',
-  GRIVANCELISTFORADMIN: 'grievance/admin/list'
+  GRIEVANCEREISSUE: 'grievance/reissue',
+
+
+  GRIVANCELISTFORADMIN: 'grievance/admin/list',
+  GRIVANCEVIEWBYIDADMIN: 'grievance/admin',
+  GRIVANCEASSIGN: 'grievance/admin/assign',
+  GRIEVANCEASSIGNADMIN: 'grievance/admin/assign',
+  GRIEVANCECLOSEBYADMIN: 'grievance/admin/close',
+
+  GRIEVANCEFACULTYLIST: 'grievance/faculty/list',
+  GRIEVANCEFACULTYVIEW: 'grievance/faculty',
+  GRIEVANCEUPDATEBYFACULTY: 'grievance/faculty/status',
 };

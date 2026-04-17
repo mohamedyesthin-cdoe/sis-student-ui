@@ -14,7 +14,7 @@ import { ExpandLess, ExpandMore, } from '@mui/icons-material';
 import logo2 from '/assets/logo2.png';
 import sidebarlogo from '/assets/sidebar-logo.png';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS } from '../../constants/MenuItems';
+import { ICON_MAP, ADMIN_MENU_ITEMS, STUDENT_MENU_ITEMS, FACULTY_MENU_ITEMS } from '../../constants/MenuItems';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { getValue } from '../../utils/localStorageUtil';
 import Customtext from '../inputs/customtext/Customtext';
@@ -139,35 +139,37 @@ export default function Sidebar({
   };
 
 
-const registrationNo = getValue("username");
+  const registrationNo = getValue("username");
 
-const shouldShowExamResults = () => {
-  if (!registrationNo) return false;
+  const shouldShowExamResults = () => {
+    if (!registrationNo) return false;
 
-  // Extract numeric part after O0
-  // Example: O0525001 -> 525001
-  const numericPart = parseInt(registrationNo.replace("O0", ""), 10);
+    // Extract numeric part after O0
+    // Example: O0525001 -> 525001
+    const numericPart = parseInt(registrationNo.replace("O0", ""), 10);
 
-  const start = 525001; // O0525001
-  const end = 525024;   // O0525024
+    const start = 525001; // O0525001
+    const end = 525024;   // O0525024
 
-  const isInRange = numericPart >= start && numericPart <= end;
+    const isInRange = numericPart >= start && numericPart <= end;
 
-  const isExcluded = registrationNo === "O0525003";
+    const isExcluded = registrationNo === "O0525003";
 
-  return isInRange && !isExcluded;
-};
+    return isInRange && !isExcluded;
+  };
 
   const filteredMenuItems =
-  rollId == "1"
-    ? ADMIN_MENU_ITEMS
-    : STUDENT_MENU_ITEMS.filter((item) => {
-        if (item.text === "Exam Results") {
-          return shouldShowExamResults();
-        }
-        return true;
-      });
-
+    rollId == "1"
+      ? ADMIN_MENU_ITEMS :
+      rollId == "2" ?
+        STUDENT_MENU_ITEMS.filter((item) => {
+          if (item.text === "Exam Results") {
+            return shouldShowExamResults();
+          }
+          return true;
+        }) :
+        rollId == "3" ?
+          FACULTY_MENU_ITEMS : [];
 
 
   const drawerContent = (

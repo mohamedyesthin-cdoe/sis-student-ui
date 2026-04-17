@@ -6,8 +6,8 @@ import ProgramAdd from "../features/admin/programs/ProgramAdd";
 import ProgramList from "../features/admin/programs/ProgramList";
 import DashboardStudent from "../features/student/dashboard/DashboardStudent";
 import FeesReceipt from "../features/student/fees/feesreceipt";
-import GrievanceList from "../features/student/grievances/GrievanceList";
-import Grievanceadd from "../features/student/grievances/grievanceadd";
+import GrievanceList from "../features/student/grievances/student/GrievanceList";
+import Grievanceadd from "../features/student/grievances/student/grievanceadd";
 import DocumemtsCard from "../features/student/documents/documents"
 import StudentCounselling from "../features/student/counselling/counselling";
 import ChangePasswordForm from "../features/student/passwordmang/ChangePasswordForm";
@@ -42,7 +42,10 @@ import BatchAdd from "../features/admin/master/batch/BatchAdd";
 import YearList from "../features/admin/master/year/YearList";
 import YearAdd from "../features/admin/master/year/YearAdd";
 import FeesLayout from "../features/student/fees/FeesLayout";
-import GrievanceAdminList from "../features/student/grievances/GrievanceListAdmin";
+import GrievanceViewAdmin from "../features/student/grievances/admin/grievanceviewadmin";
+import GrievanceAdminList from "../features/student/grievances/admin/Grievancelistadmin";
+import GrievanceFacultyView from "../features/student/grievances/faculty/GrievanceFacultyView";
+import GrievanceFacultyList from "../features/student/grievances/faculty/GrievanceFacultyList";
 
 export const routesConfig = [
   {
@@ -177,14 +180,14 @@ export const routesConfig = [
         element: <Grievanceadd />,
         breadcrumb: 'Grievance Add',
       },
-       {
+      {
         path: 'edit/:id',
         element: <Grievanceadd />,
         breadcrumb: 'Grievance Edit',
       }
     ]
   },
-    {
+  {
     path: '/grievances',
     breadcrumb: 'Grievances',
     children: [
@@ -192,6 +195,11 @@ export const routesConfig = [
         path: 'admin/list',
         element: <GrievanceAdminList />,
         breadcrumb: 'Grievances List',
+      },
+      {
+        path: 'admin/view/:id',
+        element: <GrievanceViewAdmin />,
+        breadcrumb: 'Grievances View',
       },
     ]
   },
@@ -421,5 +429,20 @@ export const routesConfig = [
       },
 
     ],
+  },
+  {
+    path:'facultylogin',
+    children: [
+       {
+        path: 'grievance/list',
+        element: <GrievanceFacultyList />,
+        breadcrumb: 'Grievance List',
+      },
+      {
+        path: 'grievance/view/:id',
+        element: <GrievanceFacultyView />,
+        breadcrumb: 'Grievance View',
+      },
+    ]
   }
 ];

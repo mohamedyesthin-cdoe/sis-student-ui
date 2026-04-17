@@ -95,6 +95,8 @@ function LoginPage() {
       const user = jwtDecode<JwtPayload>(
         result.access_token
       );
+      console.log(user);
+      
 
       setValue("username", user.username);
       setValue("email", user.email);
@@ -105,6 +107,8 @@ function LoginPage() {
         "token_time",
         JSON.stringify(user?.exp)
       );
+      setValue('faculty_id',user?.faculty_id)
+      setValue('user_id',user?.id)
 
       showAlert(
         "Login successful",

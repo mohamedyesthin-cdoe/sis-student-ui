@@ -1,41 +1,36 @@
 import * as React from "react";
-
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import { useNavigate } from "react-router-dom";
 
-import { useGlobalError } from "../../../context/ErrorContext";
-import { useAlert } from "../../../context/AlertContext";
-import { useLoader } from "../../../context/LoaderContext";
+import { useGlobalError } from "../../../../context/ErrorContext";
+import { useAlert } from "../../../../context/AlertContext";
+import { useLoader } from "../../../../context/LoaderContext";
 
-import { apiRequest } from "../../../utils/ApiRequest";
-import { ApiRoutes } from "../../../constants/ApiConstants";
+import { apiRequest } from "../../../../utils/ApiRequest";
+import { ApiRoutes } from "../../../../constants/ApiConstants";
 
-import { exportToExcel } from "../../../constants/excelExport";
+import { exportToExcel } from "../../../../constants/excelExport";
 
-import CardComponent from "../../../components/card/Card";
-import TableToolbar from "../../../components/tabletoolbar/tableToolbar";
-import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton";
-import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
-import ReusableTable from "../../../components/table/table";
-import TablePagination from "../../../components/tablepagination/tablepagination";
-import CustomDialog from "../../../context/ConfirmDialog";
+import CardComponent from "../../../../components/card/Card";
+import TableToolbar from "../../../../components/tabletoolbar/tableToolbar";
+import TableSkeleton from "../../../../components/card/skeletonloader/Tableskeleton";
+import { NoDataFoundUI } from "../../../../components/card/errorUi/NoDataFoundUI";
+import ReusableTable from "../../../../components/table/table";
+import TablePagination from "../../../../components/tablepagination/tablepagination";
 
 type Grievance = {
   id: number;
-  student_id: number;
-  student_name: string;
-  registration_no: string;
   subject: string;
   description: string;
-  attachment_url: string;
+  attachment_url: string | null;
   created_at: string;
+  status: string;
+  assigned_to_name: string | null;
 };
 
-export default function GrievanceList() {
+export default function GrievanceFacultyList() {
   const navigate = useNavigate();
 
   const { clearError } = useGlobalError();
@@ -49,12 +44,6 @@ export default function GrievanceList() {
   const [grievances, setGrievances] =
     React.useState<Grievance[]>([]);
 
-  const [openDelete, setOpenDelete] =
-    React.useState(false);
-
-  const [selectedRow, setSelectedRow] =
-    React.useState<Grievance | null>(null);
-
   /* ---------------- FETCH LIST ---------------- */
 
   React.useEffect(() => {
@@ -66,66 +55,23 @@ export default function GrievanceList() {
       clearError();
 
       const res = await apiRequest({
-        url: ApiRoutes.GRIEVANCELIST,
+        url: ApiRoutes.GRIEVANCEFACULTYLIST,
         method: "get",
       });
 
-      const list =
-        res
+      /* NEW RESPONSE IS DIRECT LIST */
 
-      setGrievances(list);
+      setGrievances(res || []);
 
     } catch (err: any) {
       showAlert(
         err.response?.data?.message ||
-          "Failed to load grievances.",
+        "Failed to load grievances.",
         "error"
       );
     }
   };
 
-  /* ---------------- DELETE ---------------- */
-
-  const handleOpenDelete = (row: Grievance) => {
-    setSelectedRow(row);
-    setOpenDelete(true);
-  };
-
-  const handleCloseDelete = () => {
-    setSelectedRow(null);
-    setOpenDelete(false);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!selectedRow?.id) return;
-
-    try {
-      await apiRequest({
-        url: `${ApiRoutes.GRIEVANCEDELETE}/${selectedRow.id}`,
-        method: "delete",
-      });
-
-      setGrievances((prev) =>
-        prev.filter(
-          (item) => item.id !== selectedRow.id
-        )
-      );
-
-      showAlert(
-        "Grievance deleted successfully!",
-        "success"
-      );
-
-      handleCloseDelete();
-
-    } catch (err: any) {
-      showAlert(
-        err.response?.data?.message ||
-          "Failed to delete grievance.",
-        "error"
-      );
-    }
-  };
 
   /* ---------------- SEARCH FILTER ---------------- */
 
@@ -133,8 +79,6 @@ export default function GrievanceList() {
     (g) => {
       const combined = `
         ${g.subject}
-        ${g.student_name}
-        ${g.registration_no}
         ${g.description}
       `.toLowerCase();
 
@@ -150,8 +94,6 @@ export default function GrievanceList() {
     exportToExcel(
       filteredData.map((g, index) => ({
         sno: index + 1,
-        registration_no: g.registration_no,
-        student_name: g.student_name,
         subject: g.subject,
         description: g.description,
         created_at: new Date(
@@ -160,6 +102,14 @@ export default function GrievanceList() {
       })),
       [
         { header: "S.No", key: "sno" },
+        {
+          header: "Registration No",
+          key: "registration_no",
+        },
+        {
+          header: "Student Name",
+          key: "student_name",
+        },
         { header: "Subject", key: "subject" },
         {
           header: "Description",
@@ -177,19 +127,10 @@ export default function GrievanceList() {
 
   /* ---------------- VIEW ATTACHMENT ---------------- */
 
-  const handleViewAttachment = (
+  const handleView = (
     row: Grievance
   ) => {
-    if (row.attachment_url) {
-      window.open(
-        row.attachment_url,
-        "_blank"
-      );
-    } else {
-      showAlert(
-        "No attachment available."
-      );
-    }
+    navigate(`/facultylogin/grievance/view/${row.id}`);
   };
 
   /* ---------------- UI ---------------- */
@@ -233,14 +174,6 @@ export default function GrievanceList() {
               onClick:
                 handleExportExcel,
             },
-            {
-              label: "Add Grievance",
-              color: "primary",
-              onClick: () =>
-                navigate(
-                  "/grievances/add"
-                ),
-            },
           ]}
         />
 
@@ -250,7 +183,18 @@ export default function GrievanceList() {
           <NoDataFoundUI />
         ) : (
           <ReusableTable
+            actionDisplay="inline"
             columns={[
+              {
+                key: "registration_no",
+                label:
+                  "Registration No",
+              },
+              {
+                key: "student_name",
+                label:
+                  "Student Name",
+              },
               {
                 key: "subject",
                 label: "Subject",
@@ -259,6 +203,16 @@ export default function GrievanceList() {
                 key: "description",
                 label:
                   "Description",
+              },
+              {
+                key: "assigned_to_name",
+                label:
+                  "Assigned To",
+              },
+              {
+                key: "status",
+                label:
+                  "Ticket Status",
               },
               {
                 key: "created_at",
@@ -280,35 +234,14 @@ export default function GrievanceList() {
             actions={[
               {
                 label:
-                  "View Attachment",
+                  "View",
                 icon: (
                   <VisibilityIcon fontSize="small" />
                 ),
                 color:
                   "primary",
                 onClick:
-                  handleViewAttachment,
-              },
-              {
-                label: "Edit",
-                icon: (
-                  <EditIcon fontSize="small" />
-                ),
-                color:
-                  "primary",
-                onClick: (row) =>
-                  navigate(
-                    `/grievances/edit/${row.id}`
-                  ),
-              },
-              {
-                label: "Delete",
-                icon: (
-                  <DeleteIcon fontSize="small" />
-                ),
-                color: "error",
-                onClick:
-                  handleOpenDelete,
+                  handleView,
               },
             ]}
           />
@@ -327,31 +260,6 @@ export default function GrievanceList() {
           }
         />
       </CardComponent>
-
-      <CustomDialog
-        open={openDelete}
-        title="Delete Grievance"
-        description={
-          <>
-            Are you sure you want to
-            delete{" "}
-            <strong>
-              {
-                selectedRow?.subject
-              }
-            </strong>
-            ?
-          </>
-        }
-        confirmText="Delete"
-        cancelText="Cancel"
-        onClose={
-          handleCloseDelete
-        }
-        onConfirm={
-          handleConfirmDelete
-        }
-      />
     </>
   );
 }

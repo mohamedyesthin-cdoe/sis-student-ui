@@ -7,22 +7,24 @@ import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import { useNavigate } from "react-router-dom";
 
-import { useGlobalError } from "../../../context/ErrorContext";
-import { useAlert } from "../../../context/AlertContext";
-import { useLoader } from "../../../context/LoaderContext";
+import { useGlobalError } from "../../../../context/ErrorContext";
+import { useAlert } from "../../../../context/AlertContext";
+import { useLoader } from "../../../../context/LoaderContext";
 
-import { apiRequest } from "../../../utils/ApiRequest";
-import { ApiRoutes } from "../../../constants/ApiConstants";
+import { apiRequest } from "../../../../utils/ApiRequest";
+import { ApiRoutes } from "../../../../constants/ApiConstants";
 
-import { exportToExcel } from "../../../constants/excelExport";
+import { exportToExcel } from "../../../../constants/excelExport";
 
-import CardComponent from "../../../components/card/Card";
-import TableToolbar from "../../../components/tabletoolbar/tableToolbar";
-import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton";
-import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
-import ReusableTable from "../../../components/table/table";
-import TablePagination from "../../../components/tablepagination/tablepagination";
-import CustomDialog from "../../../context/ConfirmDialog";
+import CardComponent from "../../../../components/card/Card";
+import TableToolbar from "../../../../components/tabletoolbar/tableToolbar";
+import TableSkeleton from "../../../../components/card/skeletonloader/Tableskeleton";
+import { NoDataFoundUI } from "../../../../components/card/errorUi/NoDataFoundUI";
+import ReusableTable from "../../../../components/table/table";
+import TablePagination from "../../../../components/tablepagination/tablepagination";
+import CustomDialog from "../../../../context/ConfirmDialog";
+import { Chip, Tooltip } from "@mui/material";
+import ReplayIcon from "@mui/icons-material/Replay";
 
 type Grievance = {
   id: number;
@@ -33,9 +35,9 @@ type Grievance = {
   description: string;
   attachment_url: string;
   created_at: string;
+  status: string;
 };
-
-export default function GrievanceAdminList() {
+export default function GrievanceList() {
   const navigate = useNavigate();
 
   const { clearError } = useGlobalError();
@@ -55,6 +57,9 @@ export default function GrievanceAdminList() {
   const [selectedRow, setSelectedRow] =
     React.useState<Grievance | null>(null);
 
+  const [openReissue, setOpenReissue] =
+    React.useState(false);
+
   /* ---------------- FETCH LIST ---------------- */
 
   React.useEffect(() => {
@@ -66,7 +71,7 @@ export default function GrievanceAdminList() {
       clearError();
 
       const res = await apiRequest({
-        url: ApiRoutes.GRIVANCELISTFORADMIN,
+        url: ApiRoutes.GRIEVANCELIST,
         method: "get",
       });
 
@@ -78,12 +83,49 @@ export default function GrievanceAdminList() {
     } catch (err: any) {
       showAlert(
         err.response?.data?.message ||
-          "Failed to load grievances.",
+        "Failed to load grievances.",
         "error"
       );
     }
   };
 
+  const handleOpenReissue = (row: Grievance) => {
+    setSelectedRow(row);
+    setOpenReissue(true);
+  };
+
+  const handleCloseReissue = () => {
+    setSelectedRow(null);
+    setOpenReissue(false);
+  };
+
+
+  const handleConfirmReissue = async () => {
+    if (!selectedRow?.id) return;
+
+    try {
+      await apiRequest({
+        url: `${ApiRoutes.GRIEVANCEREISSUE}/${selectedRow.id}`,
+        method: "post",
+      });
+
+      showAlert(
+        "Grievance reissued successfully!",
+        "success"
+      );
+
+      fetchGrievances();
+
+      handleCloseReissue();
+
+    } catch (err: any) {
+      showAlert(
+        err.response?.data?.message ||
+        "Failed to reissue grievance.",
+        "error"
+      );
+    }
+  };
   /* ---------------- DELETE ---------------- */
 
   const handleOpenDelete = (row: Grievance) => {
@@ -121,7 +163,7 @@ export default function GrievanceAdminList() {
     } catch (err: any) {
       showAlert(
         err.response?.data?.message ||
-          "Failed to delete grievance.",
+        "Failed to delete grievance.",
         "error"
       );
     }
@@ -160,14 +202,6 @@ export default function GrievanceAdminList() {
       })),
       [
         { header: "S.No", key: "sno" },
-        {
-          header: "Registration No",
-          key: "registration_no",
-        },
-        {
-          header: "Student Name",
-          key: "student_name",
-        },
         { header: "Subject", key: "subject" },
         {
           header: "Description",
@@ -195,7 +229,7 @@ export default function GrievanceAdminList() {
       );
     } else {
       showAlert(
-        "No attachment available.",
+        "No attachment available."
       );
     }
   };
@@ -241,6 +275,14 @@ export default function GrievanceAdminList() {
               onClick:
                 handleExportExcel,
             },
+            {
+              label: "Add Grievance",
+              color: "primary",
+              onClick: () =>
+                navigate(
+                  "/grievances/add"
+                ),
+            },
           ]}
         />
 
@@ -250,17 +292,8 @@ export default function GrievanceAdminList() {
           <NoDataFoundUI />
         ) : (
           <ReusableTable
+            actionDisplay="inline"
             columns={[
-              {
-                key: "registration_no",
-                label:
-                  "Registration No",
-              },
-              {
-                key: "student_name",
-                label:
-                  "Student Name",
-              },
               {
                 key: "subject",
                 label: "Subject",
@@ -269,6 +302,23 @@ export default function GrievanceAdminList() {
                 key: "description",
                 label:
                   "Description",
+              },
+              {
+                key: "status",
+                label: "Status",
+                render: (row: Grievance) => (
+                  <Chip
+                    label={row.status}
+                    color={
+                      row.status === "Resolved"
+                        ? "success"
+                        : row.status === "Open"
+                          ? "warning"
+                          : "default"
+                    }
+                    size="small"
+                  />
+                ),
               },
               {
                 key: "created_at",
@@ -289,15 +339,49 @@ export default function GrievanceAdminList() {
             }
             actions={[
               {
-                label:
-                  "View Attachment",
+                label: "View Attachment",
                 icon: (
-                  <VisibilityIcon fontSize="small" />
+                  <Tooltip title="View Attachment">
+                    <VisibilityIcon fontSize="small" />
+                  </Tooltip>
                 ),
-                color:
-                  "primary",
-                onClick:
-                  handleViewAttachment,
+                color: "primary",
+                onClick: handleViewAttachment,
+              },
+              {
+                label: "Edit",
+                icon: (
+                  <Tooltip title="Edit Grievance">
+                    <EditIcon fontSize="small" />
+                  </Tooltip>
+                ),
+                color: "primary",
+                onClick: (row) =>
+                  navigate(`/grievances/edit/${row.id}`),
+              },
+              {
+                label: "Delete",
+                icon: (
+                  <Tooltip title="Delete Grievance">
+                    <DeleteIcon fontSize="small" />
+                  </Tooltip>
+                ),
+                color: "error",
+                onClick: handleOpenDelete,
+              },
+              {
+                label: "Reissue",
+                icon: (
+                  <Tooltip title="Reissue Grievance">
+                    <ReplayIcon fontSize="small" />
+                  </Tooltip>
+                ),
+                color: "secondary",
+
+                disabled: (row) =>
+                  row.status === "open",
+
+                onClick: handleOpenReissue,
               },
             ]}
           />
@@ -340,6 +424,23 @@ export default function GrievanceAdminList() {
         onConfirm={
           handleConfirmDelete
         }
+      />
+      <CustomDialog
+        open={openReissue}
+        title="Reissue Grievance"
+        description={
+          <>
+            Are you sure you want to reissue{" "}
+            <strong>
+              {selectedRow?.subject}
+            </strong>
+            ?
+          </>
+        }
+        confirmText="Reissue"
+        cancelText="Cancel"
+        onClose={handleCloseReissue}
+        onConfirm={handleConfirmReissue}
       />
     </>
   );

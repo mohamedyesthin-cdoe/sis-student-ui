@@ -163,7 +163,19 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
     routePath: '/passwordmang',
   },
 ];
+export const FACULTY_MENU_ITEMS: MenuItem[] = [
+ 
+  {
+    text: 'Grievances',
+    icon: 'Grievances',
+    subItems: [
+      // { text: 'Grievance', routePath: '/grievances' },
+      // { text: 'Offline Grievance', routePath: '/grievances/offline' },
+    ],
+    routePath: '/facultylogin/grievance',
+  },
 
+];
 
 export const ICON_MAP: Record<string, JSX.Element> = {
   Dashboard: <DashboardIcon />,

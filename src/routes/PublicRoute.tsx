@@ -19,6 +19,9 @@ const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
     if (rollid == 2 && student_id) {
       return <Navigate to={`/students/detail`} />;
     }
+     if (rollid == 3) {
+      return <Navigate to={`/facultylogin/grievance/list`} />;
+    }
     // return <Navigate to="/unauthorized" />;
   }
 
