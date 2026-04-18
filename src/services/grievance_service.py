@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, aliased
@@ -490,6 +491,7 @@ class GrievanceService:
             status="closed_by_admin",
             resolved_by_id=resolved_by_id,
             notes=payload.resolution_notes,
+            timestamp=datetime.utcnow(),
         )
         self.db.add(history)
         self.db.commit()
@@ -563,6 +565,7 @@ class GrievanceService:
             action="reissued",
             status=grievance.status,
             notes=reason or "Reissued by student",
+            timestamp=datetime.utcnow(),
         )
         self.db.add(history)
 

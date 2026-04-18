@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, Query, UploadFile, Form
+from fastapi import APIRouter, Depends, Query, UploadFile, Form, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db.session import get_db
@@ -209,8 +209,10 @@ def admin_close_grievance(
 ):
     service = GrievanceService(db)
     
-    # Get staff record for current user
-    staff = db.query(Staff).filter(Staff.user_id == current_user.id).first()
+    # Resolve the acting staff member from the authenticated user.
+    staff = getattr(current_user, "staff", None) or db.query(Staff).filter(Staff.user_id == current_user.id).first()
+    if not staff:
+        raise HTTPException(status_code=403, detail="Staff profile required to close grievances")
     staff_id = staff.id if staff else None
     
     return service.admin_close(grievance_id, payload, resolved_by_id=staff_id)
