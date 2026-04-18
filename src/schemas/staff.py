@@ -101,7 +101,7 @@ class StaffUpdate(BaseModel):
     experience_years: Optional[float] = None
     employment_type: Optional[EmploymentTypeEnum] = None
     status: Optional[FacultyStatusEnum] = None
-    role: Optional[str] = None
+    role: Optional[int] = None
 
 class StaffUpdateResponse(BaseModel):
     message: str
