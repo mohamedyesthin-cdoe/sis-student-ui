@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Grid,
     Box,
@@ -21,7 +21,6 @@ import { useAlert } from "../../../../context/AlertContext";
 import { useGlobalError } from "../../../../context/ErrorContext";
 import { useLoader } from "../../../../context/LoaderContext";
 
-
 // ================= TYPES =================
 
 type GrievanceFormValues = {
@@ -36,11 +35,11 @@ const GrievanceSchema: Yup.ObjectSchema<GrievanceFormValues> =
     Yup.object({
         subject: Yup.string()
             .required("Subject is required")
-            .max(200, "Subject must be less than 200 characters"),
+            .max(200),
 
         description: Yup.string()
             .required("Description is required")
-            .max(2000, "Description must be less than 2000 characters"),
+            .max(2000),
 
         grievanceFile: Yup.mixed<File>()
             .nullable()
@@ -63,6 +62,11 @@ const GrievanceAddEdit: React.FC = () => {
     const { clearError } = useGlobalError();
     const { loading } = useLoader();
 
+    const [existingAttachment, setExistingAttachment] =
+        useState<string | null>(null);
+
+    const [previewFileUrl, setPreviewFileUrl] =
+        useState<string | null>(null);
 
     const defaultValues: GrievanceFormValues = {
         subject: "",
@@ -84,7 +88,8 @@ const GrievanceAddEdit: React.FC = () => {
 
     const uploadedFile = watch("grievanceFile");
     const studentId = getValue("student_id") || "";
-    // ================= FETCH BY ID =================
+
+    // ================= FETCH =================
 
     useEffect(() => {
         if (!id) return;
@@ -96,36 +101,37 @@ const GrievanceAddEdit: React.FC = () => {
                     method: "get",
                 });
 
-                const data = res
+                const data = res;
 
                 reset({
                     subject: data.subject || "",
                     description: data.description || "",
                     grievanceFile: null,
                 });
-            } catch (err: any) {
-                console.error(
-                    "Failed to fetch grievance:",
-                    err.response?.data || err.message
+
+                setExistingAttachment(
+                    data.attachment_url || null
                 );
 
+            } catch (err: any) {
                 showAlert(
                     err.response?.data?.message ||
-                    "Failed to fetch grievance details.",
+                    "Failed to fetch grievance",
                     "error"
                 );
             }
         };
 
         fetchGrievance();
-    }, [id, reset, showAlert]);
+
+    }, [id]);
 
     // ================= BACK =================
 
     const handleBack = () => {
         if (isDirty) {
             showConfirm(
-                "You have unsaved changes. Your changes will be lost if you continue.",
+                "You have unsaved changes. Continue?",
                 () => window.history.back(),
                 () => { }
             );
@@ -133,34 +139,54 @@ const GrievanceAddEdit: React.FC = () => {
             window.history.back();
         }
     };
-
     // ================= SUBMIT =================
 
-    const onSubmit: SubmitHandler<GrievanceFormValues> = async (data) => {
+    const onSubmit: SubmitHandler<
+        GrievanceFormValues
+    > = async (data) => {
         try {
-            const payload = new FormData();
+            const payload =
+                new FormData();
 
-            payload.append("subject", data.subject);
-            payload.append("description", data.description);
+            payload.append(
+                "subject",
+                data.subject
+            );
 
-            payload.append("student_id", String(studentId));
+            payload.append(
+                "description",
+                data.description
+            );
 
-            if (data.grievanceFile instanceof File) {
-                payload.append("file", data.grievanceFile);
+            payload.append(
+                "student_id",
+                String(studentId)
+            );
+
+            if (
+                data.grievanceFile instanceof File
+            ) {
+                payload.append(
+                    "file",
+                    data.grievanceFile
+                );
             }
 
             const apiUrl = id
                 ? `${ApiRoutes.GRIEVANCEUPDATE}/${id}`
                 : ApiRoutes.GRIEVANCEADD;
 
-            const method = id ? "put" : "post";
+            const method = id
+                ? "put"
+                : "post";
 
             await apiRequest({
                 url: apiUrl,
                 method,
                 data: payload,
                 headers: {
-                    "Content-Type": "multipart/form-data",
+                    "Content-Type":
+                        "multipart/form-data",
                 },
             });
 
@@ -172,12 +198,15 @@ const GrievanceAddEdit: React.FC = () => {
             );
 
             clearError();
-            navigate("/grievances/list");
+
+            navigate(
+                "/grievances/list"
+            );
 
         } catch (err: any) {
             showAlert(
                 err.response?.data?.message ||
-                "Something went wrong. Please try again.",
+                "Something went wrong",
                 "error"
             );
         }
@@ -190,21 +219,16 @@ const GrievanceAddEdit: React.FC = () => {
             ) : (
                 <Box
                     component="form"
-                    onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit(
+                        onSubmit
+                    )}
                     sx={{
                         width: "100%",
-                        maxWidth: {
-                            xs: "350px",
-                            sm: "900px",
-                            md: "900px",
-                        },
+                        maxWidth: 900,
                         mx: "auto",
                         mt: 3,
-                        mb: 5,
                     }}
                 >
-                    {/* Grievance Details */}
-
                     <CardComponent sx={{ p: 3 }}>
                         <Customtext
                             fieldName="Grievance Details"
@@ -212,9 +236,8 @@ const GrievanceAddEdit: React.FC = () => {
                         />
 
                         <Grid container spacing={2}>
-                            {/* Subject */}
 
-                            <Grid size={{ xs: 12, md: 6 }} my={1}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <Controller
                                     name="subject"
                                     control={control}
@@ -231,9 +254,7 @@ const GrievanceAddEdit: React.FC = () => {
                                 />
                             </Grid>
 
-                            {/* Description */}
-
-                            <Grid size={{ xs: 12 }} my={1}>
+                            <Grid size={{ xs: 12 }}>
                                 <Controller
                                     name="description"
                                     control={control}
@@ -252,7 +273,7 @@ const GrievanceAddEdit: React.FC = () => {
                                 />
                             </Grid>
 
-                            {/* File Upload */}
+                            {/* FILE UPLOAD */}
 
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <Controller
@@ -261,69 +282,32 @@ const GrievanceAddEdit: React.FC = () => {
                                     render={({ field }) => (
                                         <Box
                                             sx={{
-                                                border: "2px dashed #1976d2",
+                                                border:
+                                                    "2px dashed #1976d2",
                                                 borderRadius: 2,
                                                 py: 2,
-                                                px: 1.5,
-                                                textAlign: "center",
-                                                cursor: "pointer",
-                                                "&:hover": { backgroundColor: "#f8f9fa" },
+                                                textAlign:
+                                                    "center",
+                                                cursor:
+                                                    "pointer",
                                             }}
                                             onClick={() =>
                                                 document
-                                                    .getElementById("file-input")
+                                                    .getElementById(
+                                                        "file-input"
+                                                    )
                                                     ?.click()
                                             }
                                         >
                                             {uploadedFile ? (
-                                                <Box
-                                                    display="flex"
-                                                    alignItems="center"
-                                                    justifyContent="center"
-                                                    gap={1}
-                                                >
-                                                    <Typography sx={{ fontSize: "0.9rem" }}>
-                                                        {uploadedFile.name}
-                                                    </Typography>
-
-                                                    <Button
-                                                        size="small"
-                                                        color="error"
-                                                        variant="outlined"
-                                                        sx={{
-                                                            minWidth: "auto",
-                                                            p: "2px 6px",
-                                                            fontSize: "0.7rem",
-                                                            textTransform: "none",
-                                                        }}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-
-                                                            field.onChange(null);
-
-                                                            setValue(
-                                                                "grievanceFile",
-                                                                null,
-                                                                { shouldDirty: true }
-                                                            );
-                                                        }}
-                                                    >
-                                                        Remove
-                                                    </Button>
-                                                </Box>
+                                                <Typography>
+                                                    {uploadedFile.name}
+                                                </Typography>
                                             ) : (
-                                                <Typography sx={{ fontSize: "0.9rem" }}>
+                                                <Typography>
                                                     Click or drag file to upload
                                                 </Typography>
                                             )}
-
-                                            <Typography
-                                                variant="body2"
-                                                color="textSecondary"
-                                                sx={{ fontSize: "0.75rem" }}
-                                            >
-                                                Supported formats: All file types
-                                            </Typography>
 
                                             <input
                                                 id="file-input"
@@ -331,52 +315,130 @@ const GrievanceAddEdit: React.FC = () => {
                                                 hidden
                                                 onChange={(e) => {
                                                     const file =
-                                                        e.target.files?.[0] || null;
+                                                        e.target.files?.[0] ||
+                                                        null;
 
                                                     field.onChange(file);
 
                                                     setValue(
                                                         "grievanceFile",
                                                         file,
-                                                        { shouldDirty: true }
+                                                        {
+                                                            shouldDirty: true,
+                                                        }
                                                     );
 
-                                                    // allow reselect same file
+                                                    if (file) {
+                                                        const url =
+                                                            URL.createObjectURL(
+                                                                file
+                                                            );
+
+                                                        setPreviewFileUrl(
+                                                            url
+                                                        );
+
+                                                        setExistingAttachment(
+                                                            null
+                                                        );
+                                                    }
+
                                                     e.target.value = "";
                                                 }}
                                             />
                                         </Box>
                                     )}
                                 />
-
-                                {errors.grievanceFile && (
-                                    <Typography
-                                        variant="caption"
-                                        color="error"
-                                    >
-                                        {errors.grievanceFile.message}
-                                    </Typography>
-                                )}
                             </Grid>
                         </Grid>
+
+                        {/* ATTACHMENT PREVIEW */}
+
+                        <Box mt={4}>
+                            <Typography
+                                fontWeight={600}
+                                mb={2}
+                            >
+                                Attachment
+                            </Typography>
+
+                            {(previewFileUrl ||
+                                existingAttachment) ? (
+                                <Box>
+                                    <Box
+                                        sx={{
+                                            width: "100%",
+                                            height: 420,
+                                            border:
+                                                "1px solid #e0e0e0",
+                                            borderRadius: 2,
+                                            overflow:
+                                                "hidden",
+                                            display:
+                                                "flex",
+                                            alignItems:
+                                                "center",
+                                            justifyContent:
+                                                "center",
+                                            backgroundColor:
+                                                "#fafafa",
+                                        }}
+                                    >
+                                        {(previewFileUrl ||
+                                            existingAttachment)!
+                                            .match(
+                                                /\.(jpeg|jpg|png|gif|webp)$/i
+                                            ) ? (
+                                            <Box
+                                                component="img"
+                                                src={
+                                                    previewFileUrl ||
+                                                    existingAttachment!
+                                                }
+                                                sx={{
+                                                    width:
+                                                        "100%",
+                                                    height:
+                                                        "100%",
+                                                    objectFit:
+                                                        "contain",
+                                                }}
+                                            />
+                                        ) : (
+                                            <iframe
+                                                src={
+                                                    previewFileUrl ||
+                                                    existingAttachment!
+                                                }
+                                                width="100%"
+                                                height="100%"
+                                                style={{
+                                                    border:
+                                                        "none",
+                                                }}
+                                            />
+                                        )}
+                                    </Box>
+
+                                </Box>
+                            ) : (
+                                <Typography color="text.secondary">
+                                    No attachment available
+                                </Typography>
+                            )}
+                        </Box>
                     </CardComponent>
 
-                    {/* Buttons */}
+                    {/* BUTTONS */}
 
                     <Box
                         mt={4}
                         display="flex"
                         gap={2}
-                        sx={{
-                            justifyContent: {
-                                xs: "center",
-                                sm: "flex-end",
-                            },
-                        }}
+                        justifyContent="flex-end"
                     >
                         <Button
                             variant="contained"
-                            color="primary"
                             onClick={handleBack}
                         >
                             Back
@@ -385,7 +447,9 @@ const GrievanceAddEdit: React.FC = () => {
                         <Button
                             variant="outlined"
                             color="error"
-                            onClick={() => reset(defaultValues)}
+                            onClick={() =>
+                                reset(defaultValues)
+                            }
                         >
                             Reset
                         </Button>
@@ -395,7 +459,9 @@ const GrievanceAddEdit: React.FC = () => {
                             color="secondary"
                             type="submit"
                         >
-                            {id ? "Update" : "Submit"}
+                            {id
+                                ? "Update"
+                                : "Submit"}
                         </Button>
                     </Box>
                 </Box>

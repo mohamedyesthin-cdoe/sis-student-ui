@@ -124,7 +124,7 @@ export default function GrievanceViewAdmin() {
       await apiClient.post(
         `${ApiRoutes.GRIEVANCECLOSEBYADMIN}/${id}`,
         {
-          status: "closed",
+          status: "closed_by_admin",
         }
       );
 
@@ -182,10 +182,7 @@ export default function GrievanceViewAdmin() {
 
   const handleDownload = () => {
     if (data?.attachment_url) {
-      const link = document.createElement("a");
-      link.href = data.attachment_url;
-      link.download = "attachment";
-      link.click();
+      window.open(data.attachment_url, "_blank", "noopener,noreferrer");
     }
   };
 

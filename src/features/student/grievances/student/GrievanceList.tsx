@@ -2,7 +2,6 @@ import * as React from "react";
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 import { useNavigate } from "react-router-dom";
@@ -217,23 +216,6 @@ export default function GrievanceList() {
     );
   };
 
-  /* ---------------- VIEW ATTACHMENT ---------------- */
-
-  const handleViewAttachment = (
-    row: Grievance
-  ) => {
-    if (row.attachment_url) {
-      window.open(
-        row.attachment_url,
-        "_blank"
-      );
-    } else {
-      showAlert(
-        "No attachment available."
-      );
-    }
-  };
-
   /* ---------------- UI ---------------- */
 
   return (
@@ -305,7 +287,7 @@ export default function GrievanceList() {
               },
               {
                 key: "status",
-                label: "Status",
+                label: "Ticket Status",
                 render: (row: Grievance) => (
                   <Chip
                     label={row.status}
@@ -338,16 +320,6 @@ export default function GrievanceList() {
               rowsPerPage
             }
             actions={[
-              {
-                label: "View Attachment",
-                icon: (
-                  <Tooltip title="View Attachment">
-                    <VisibilityIcon fontSize="small" />
-                  </Tooltip>
-                ),
-                color: "primary",
-                onClick: handleViewAttachment,
-              },
               {
                 label: "Edit",
                 icon: (

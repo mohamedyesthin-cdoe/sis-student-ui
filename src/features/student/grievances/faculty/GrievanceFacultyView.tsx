@@ -118,12 +118,17 @@ export default function GrievanceFacultyView() {
   }, [data]);
 
 
+  // const handleDownload = () => {
+  //   if (data?.attachment_url) {
+  //     const link = document.createElement("a");
+  //     link.href = data.attachment_url;
+  //     link.download = "attachment";
+  //     link.click();
+  //   }
+  // };
   const handleDownload = () => {
     if (data?.attachment_url) {
-      const link = document.createElement("a");
-      link.href = data.attachment_url;
-      link.download = "attachment";
-      link.click();
+      window.open(data.attachment_url, "_blank", "noopener,noreferrer");
     }
   };
 
