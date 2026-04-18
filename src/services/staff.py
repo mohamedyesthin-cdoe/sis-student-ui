@@ -250,7 +250,7 @@ class StaffService:
                     },
                 )
 
-            self.repo.delete_staff(staff)
+            self.repo.delete_staff_with_user(staff)
 
             return StaffResponse(
                 message="Staff deleted successfully.",

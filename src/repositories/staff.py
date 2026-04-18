@@ -9,6 +9,7 @@ from src.repositories.base import BaseRepository
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 from src.models.master import Department
+from src.models.user import User, user_group
 
 class StaffRepository(BaseRepository[Staff]):
     def __init__(self, db: Session):
@@ -209,3 +210,38 @@ class StaffRepository(BaseRepository[Staff]):
                     "status": False
                 }
             )   
+
+    def delete_staff_with_user(self, staff: Staff) -> Staff:
+        """Delete a staff record and its linked user account.
+
+        The `user_group` rows are removed first so the user can be deleted
+        cleanly even without database-level cascade rules.
+        """
+        try:
+            linked_user = (
+                self.db.query(User)
+                .filter(User.id == staff.user_id)
+                .first()
+            )
+
+            self.db.query(user_group).filter(
+                user_group.c.user_id == staff.user_id
+            ).delete(synchronize_session=False)
+
+            self.db.delete(staff)
+
+            if linked_user:
+                self.db.delete(linked_user)
+
+            self.commit()
+            return staff
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Error deleting staff and linked user: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False
+                }
+            )
