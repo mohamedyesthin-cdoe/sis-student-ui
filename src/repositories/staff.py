@@ -7,6 +7,7 @@ from typing import List, Optional
 from src.schemas.staff import StaffBase
 from src.repositories.base import BaseRepository
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import joinedload
 
 class StaffRepository(BaseRepository[Staff]):
     def __init__(self, db: Session):
@@ -73,7 +74,11 @@ class StaffRepository(BaseRepository[Staff]):
             List[staff]: List of staff objects.
         """
         try:
-            return self.db.query(Staff).all()
+            return (
+                self.db.query(Staff)
+                .options(joinedload(Staff.department))
+                .all()
+            )
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

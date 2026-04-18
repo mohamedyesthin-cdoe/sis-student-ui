@@ -6,6 +6,7 @@ from enum import Enum
 from src.schemas.address import AddressCreate, AddressResponse
 from src.utils.enum import EmploymentTypeEnum, FacultyStatusEnum, GenderEnum
 from typing_extensions import Annotated
+from src.schemas.master import DepartmentOut
 
 class CountryCreate(BaseModel):
     name: str
@@ -63,6 +64,7 @@ class StaffBase(BaseModel):
 class StaffCreate(StaffBase):
     id: int
     user_id: Optional[int] = None
+    department: Optional[DepartmentOut] = None
 
     class Config:
         from_attributes = True
