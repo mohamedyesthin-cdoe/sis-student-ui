@@ -211,7 +211,10 @@ def admin_close_grievance(
     
     # Resolve the acting staff member from the authenticated user.
     staff = getattr(current_user, "staff", None) or db.query(Staff).filter(Staff.user_id == current_user.id).first()
-    if not staff:
+    # Superusers are allowed to close grievances even when they do not have a
+    # dedicated staff profile. In that case we still close the grievance, but
+    # we leave resolved_by_id unset instead of hard-failing with 403.
+    if not staff and not current_user.is_superuser:
         raise HTTPException(status_code=403, detail="Staff profile required to close grievances")
     staff_id = staff.id if staff else None
     
