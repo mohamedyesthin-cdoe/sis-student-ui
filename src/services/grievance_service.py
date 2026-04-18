@@ -20,6 +20,40 @@ class GrievanceService:
     def __init__(self, db: Session):
         self.db = db
 
+    def resolve_staff_for_user(self, user) -> Optional[Staff]:
+        """
+        Resolve the Staff row for an authenticated user.
+
+        Some environments only populate one of these links, so we try the
+        relationship first and then fall back to common staff identity fields.
+        """
+        if not user:
+            return None
+
+        staff = getattr(user, "staff", None)
+        if staff:
+            return staff
+
+        user_id = getattr(user, "id", None)
+        if user_id is not None:
+            staff = self.db.query(Staff).filter(Staff.user_id == user_id).first()
+            if staff:
+                return staff
+
+        email = getattr(user, "email", None)
+        if email:
+            staff = self.db.query(Staff).filter(Staff.email == email).first()
+            if staff:
+                return staff
+
+        username = getattr(user, "username", None)
+        if username:
+            staff = self.db.query(Staff).filter(Staff.employee_id == username).first()
+            if staff:
+                return staff
+
+        return None
+
     def create_grievance(self, data: GrievanceCreate) -> Grievance:
         grievance = Grievance(
             student_id=getattr(data, "student_id", None),
@@ -113,7 +147,15 @@ class GrievanceService:
                     "resolved_by_id": record.resolved_by_id,
                     "resolved_by_name": resolved_by_name,
                     "notes": record.notes,
-                    "created_at": record.created_at.isoformat() if record.created_at else None,
+                    "created_at": (
+                        record.created_at.isoformat()
+                        if getattr(record, "created_at", None)
+                        else (
+                            record.timestamp.isoformat()
+                            if getattr(record, "timestamp", None)
+                            else None
+                        )
+                    ),
                 })
         
             flat_list.append(
@@ -176,7 +218,15 @@ class GrievanceService:
                 "resolved_by_id": record.resolved_by_id,
                 "resolved_by_name": resolved_by_name,
                 "notes": record.notes,
-                "created_at": record.created_at.isoformat() if record.created_at else None,
+                "created_at": (
+                    record.created_at.isoformat()
+                    if getattr(record, "created_at", None)
+                    else (
+                        record.timestamp.isoformat()
+                        if getattr(record, "timestamp", None)
+                        else None
+                    )
+                ),
             })
         
         return {
@@ -509,7 +559,6 @@ class GrievanceService:
             registration_no = student.registration_no
 
         assigned_to_name = None
-        print(grievance)
         if grievance.assigned_to:
             assigned_to_name = f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}"
     

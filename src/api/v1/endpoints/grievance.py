@@ -20,7 +20,6 @@ from src.services.student_service import StudentService
 from src.utils.s3_service import DocumentService
 from src.utils.email import send_grievance_email
 from src.models.user import User
-from src.models.staff import Staff
 
 router = APIRouter()
 
@@ -210,7 +209,7 @@ def admin_close_grievance(
     service = GrievanceService(db)
     
     # Resolve the acting staff member from the authenticated user.
-    staff = getattr(current_user, "staff", None) or db.query(Staff).filter(Staff.user_id == current_user.id).first()
+    staff = service.resolve_staff_for_user(current_user)
     # Superusers are allowed to close grievances even when they do not have a
     # dedicated staff profile. In that case we still close the grievance, but
     # we leave resolved_by_id unset instead of hard-failing with 403.
