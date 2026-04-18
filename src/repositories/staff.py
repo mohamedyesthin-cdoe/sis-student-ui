@@ -8,6 +8,7 @@ from src.schemas.staff import StaffBase
 from src.repositories.base import BaseRepository
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
+from src.models.master import Department
 
 class StaffRepository(BaseRepository[Staff]):
     def __init__(self, db: Session):
@@ -68,17 +69,28 @@ class StaffRepository(BaseRepository[Staff]):
         self.db.refresh(obj)
 
     def get_staff(self) -> List[Staff]:
-        """Retrieve a list of staff
-
-        Returns:
-            List[staff]: List of staff objects.
-        """
+        """Retrieve a list of staff Returns:List[staff]: List of staff objects."""
         try:
-            return (
-                self.db.query(Staff)
-                .options(joinedload(Staff.department))
+            staff_list = (
+                self.db.query(
+                    Staff,
+                    Department.name.label("department_name")
+                )
+                .outerjoin(
+                    Department,
+                    Staff.department_id == Department.id
+                )
                 .all()
             )
+
+            result = []
+
+            for staff, department_name in staff_list:
+                staff.department_name = department_name
+                result.append(staff)
+
+            return result
+
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -87,7 +99,7 @@ class StaffRepository(BaseRepository[Staff]):
                     "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
                     "status": False
                 }
-            )
+        )
     
     def get_by_staff_id(self, staff_id: int) -> Staff:
         """Retrieve a list of staff
