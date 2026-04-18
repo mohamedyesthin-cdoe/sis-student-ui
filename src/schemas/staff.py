@@ -72,7 +72,7 @@ class StaffResponse(BaseModel):
     message: str
     code: int
     status: bool
-    data: StaffCreate = None
+    data: List[StaffCreate] = Field(default_factory=list)
 
 class StaffDeleteResponse(BaseModel):
     message: str
@@ -83,7 +83,7 @@ class StaffListResponse(BaseModel):
     message: str
     code: int
     status: bool
-    data: List[StaffCreate] = []
+    data: List[StaffCreate] = Field(default_factory=list)
 
 class StaffUpdate(BaseModel):
     first_name: Optional[str] = None

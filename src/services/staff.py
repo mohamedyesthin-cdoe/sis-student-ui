@@ -94,7 +94,7 @@ class StaffService:
                 message="Staff created successfully.",
                 code=status.HTTP_201_CREATED,
                 status=True,
-                data=staff,
+                data=[staff],
             )
 
         except HTTPException:
@@ -162,7 +162,7 @@ class StaffService:
                 message="Staff retrieved successfully.",
                 code=status.HTTP_200_OK,
                 status=True,
-                data=staff,
+                data=[staff],
             )
         except HTTPException:
             raise
@@ -198,13 +198,14 @@ class StaffService:
                 if isinstance(v, Enum):
                     staff_data[k] = v.value
 
-            updated_staff = self.repo.update_staff(staff, staff_data)
+            self.repo.update_staff(staff, staff_data)
+            updated_staff = self.repo.get_by_staff_id(staff_id)
 
             return StaffResponse(
                 message="Staff updated successfully.",
                 code=status.HTTP_200_OK,
                 status=True,
-                data=updated_staff,
+                data=[updated_staff],
             )
 
         except HTTPException:
@@ -255,7 +256,7 @@ class StaffService:
                 message="Staff deleted successfully.",
                 code=status.HTTP_200_OK,
                 status=True,
-                data=None,
+                data=[staff],
             )
 
         except HTTPException:

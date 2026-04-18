@@ -97,38 +97,61 @@ class StaffRepository(BaseRepository[Staff]):
                 detail={
                     "message": f"Error retrieving staff: {str(e)}",
                     "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "status": False
-                }
-        )
-    
-    def get_by_staff_id(self, staff_id: int) -> Staff:
-        """Retrieve a list of staff
+                    "status": False,
+                },
+            )
 
-        Returns:
-            List[staff]: List of staff objects.
-        """
+    def get_by_staff_id(self, staff_id: int) -> Staff:
+        """Retrieve a staff by ID with department name."""
         try:
-            staff = self.db.query(Staff).filter(Staff.id == staff_id).first()
-            if not staff:
+            result = (
+                self.db.query(
+                    Staff,
+                    Department.name.label("department_name"),
+                )
+                .outerjoin(
+                    Department,
+                    Staff.department_id == Department.id,
+                )
+                .filter(Staff.id == staff_id)
+                .first()
+            )
+
+            if not result:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail={
                         "message": "staff not found",
                         "code": status.HTTP_404_NOT_FOUND,
-                        "status": False
-                    }
+                        "status": False,
+                    },
                 )
+
+            staff, department_name = result
+            staff.department_name = department_name
             return staff
+
+        except HTTPException:
+            raise
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail={
                     "message": f"Error retrieving staff by ID: {str(e)}",
                     "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "status": False
-                }
+                    "status": False,
+                },
             )
-        
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail={
+                    "message": f"Unexpected error retrieving staff by ID: {str(e)}",
+                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "status": False,
+                },
+            )
+
     def update_staff(self, staff: Staff, update_data: dict) -> Staff:
         """Update an existing staff's details.
 

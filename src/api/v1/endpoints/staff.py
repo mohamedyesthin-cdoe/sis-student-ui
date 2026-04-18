@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, Query, status
-from typing import List
+from fastapi import APIRouter, Depends, status
 from pytest import Session
 from src.db.session import get_db
 from src.services.staff import StaffService
@@ -72,19 +71,4 @@ def delete_staff(staff_id: int, db: Session = Depends(get_db), current_user: Use
     """
     service = StaffService(db)
     return service.delete_staff(staff_id)
-
-@router.patch("/patch/{staff_id}", response_model=StaffResponse, tags=["Staff"])
-def patch_staff(staff_id: int, staff: StaffUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    """Partially update a staff's details.
-
-    Args:
-        staff_id (int): ID of the staff to update.
-        staff (StaffUpdate): Staff update data.
-        db (Session): Database session.
-
-    Returns:
-        StaffResponse: Updated staff details.
-    """
-    service = StaffService(db)
-    return service.update_staff(staff_id, staff)
 
