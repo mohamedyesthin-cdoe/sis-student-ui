@@ -31,10 +31,10 @@ export interface FacultyFormValues {
   last_name: string;
   email: string;
   phone: string;
-  role: string;
+  role: number;
 
   faculty: string | null;
-  department: string | null;
+  department_id: number;
   designation: string | null;
   qualification: string | null;
   specialization: string | null;
@@ -74,10 +74,10 @@ const defaultValues: FacultyFormValues = {
   last_name: "",
   email: "",
   phone: "",
-  role: "",
+  role: 0,
 
   faculty: "CDOE",
-  department: null,
+  department_id: 0,
   designation: null,
   qualification: null,
   specialization: null,
@@ -112,10 +112,13 @@ export const schema: Yup.ObjectSchema<FacultyFormValues> = Yup.object({
   phone: Yup.string()
     .required("Phone required")
     .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
+  role: Yup.number()
+    .min(0, "Role cannot be negative")
+    .defined(),
 
-  role: Yup.string().required("Role is required"),
-
-  department: Yup.string().nullable().defined(),
+  department_id: Yup.number()
+    .min(0, "Department ID cannot be negative")
+    .defined(),
   faculty: Yup.string().nullable().defined(),
   designation: Yup.string().nullable().defined(),
   qualification: Yup.string().nullable().defined(),
@@ -250,12 +253,12 @@ export default function FacultyAdd() {
         const res = await apiRequest({ url: `${ApiRoutes.GETFACULTYBYID}/${id}`, method: "get" });
         console.log("Faculty API response:", res);
 
-        const d = res?.data || res;
+        const d = res?.data[0] || res;
 
         const mapped: any = {
           employee_id: d.employee_id ?? "",
           faculty: d.faculty ?? "CDOE",
-          department: d.department ?? "",
+          department_id: d.department_id ?? 0,
           designation: d.designation ?? "",
           qualification: d.qualification ?? "",
           specialization: d.specialization ?? "",
@@ -264,12 +267,15 @@ export default function FacultyAdd() {
           employment_type: d.employment_type ?? "Internal",
           gender: d.gender ?? "Male",
           dob: d.dob ? dayjs(d.dob) : null,
+
           id: d.id ?? id,
           first_name: d.first_name ?? "",
           last_name: d.last_name ?? "",
           email: d.email ?? "",
           phone: d.phone ?? "",
-          role: d.role?.id ?? "",
+
+          // ✅ FIXED
+          role: d.role ?? 0,
         };
 
         setInitialData(mapped);
@@ -307,7 +313,7 @@ export default function FacultyAdd() {
       };
 
       if (id) {
-        await apiRequest({ url: `${ApiRoutes.FACULTYADD}/${id}`, method: "put", data: payload });
+        await apiRequest({ url: `${ApiRoutes.FACULTYUPDATE}/${id}`, method: "put", data: payload });
         showAlert("Faculty updated successfully", "success");
       } else {
         await apiRequest({ url: ApiRoutes.FACULTYADD, method: "post", data: payload });
@@ -463,15 +469,15 @@ export default function FacultyAdd() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 4 }}>
                       <Controller
-                        name="department"
+                        name="department_id"
                         control={control}
                         render={({ field }) => (
                           <CustomSelect
                             label="Department"
                             field={field}
                             options={departmentOptions}
-                            error={!!errors.department}
-                            helperText={errors.department?.message}
+                            error={!!errors.department_id}
+                            helperText={errors.department_id?.message}
                           />
                         )}
                       />

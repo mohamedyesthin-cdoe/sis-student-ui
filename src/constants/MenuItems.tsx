@@ -172,7 +172,7 @@ export const FACULTY_MENU_ITEMS: MenuItem[] = [
       // { text: 'Grievance', routePath: '/grievances' },
       // { text: 'Offline Grievance', routePath: '/grievances/offline' },
     ],
-    routePath: '/facultylogin/grievance',
+    routePath: '/facultylogin/grievance/list',
   },
 
 ];

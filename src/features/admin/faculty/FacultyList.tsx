@@ -14,6 +14,8 @@ import TableSkeleton from "../../../components/card/skeletonloader/Tableskeleton
 import { useLoader } from "../../../context/LoaderContext";
 import { useGlobalError } from "../../../context/ErrorContext";
 import { NoDataFoundUI } from "../../../components/card/errorUi/NoDataFoundUI";
+import CustomDialog from "../../../context/ConfirmDialog";
+import { useAlert } from "../../../context/AlertContext";
 
 export default function FacultyList() {
   const navigate = useNavigate();
@@ -22,10 +24,12 @@ export default function FacultyList() {
   const [searchText, setSearchText] = React.useState("");
   const [showSearch] = React.useState(true);
   const { clearError } = useGlobalError();
-
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const [selectedFaculty, setSelectedFaculty] = React.useState<any>(null);
 
   const [faculties, setFaculties] = React.useState<any[]>([]);
   const { loading } = useLoader();
+  const { showAlert } = useAlert();
 
   // Fetch Faculty List
   React.useEffect(() => {
@@ -40,7 +44,7 @@ export default function FacultyList() {
     ...f,
     sno: index + 1,
     full_name: `${f.first_name || ""} ${f.last_name || ""}`.trim(),
-    search_text: `${f.employee_id} ${f.first_name} ${f.last_name} ${f.email} ${f.phone} ${f.department} ${f.designation}`.toLowerCase(),
+    search_text: `${f.employee_id} ${f.first_name} ${f.last_name} ${f.email} ${f.phone} ${f.department_name} ${f.designation}`.toLowerCase(),
   }));
 
   // Search
@@ -58,7 +62,7 @@ export default function FacultyList() {
         { header: "Full Name", key: "full_name" },
         { header: "Email", key: "email" },
         { header: "Mobile", key: "phone" },
-        { header: "Department", key: "department" },
+        { header: "Department", key: "department_name" },
         { header: "Designation", key: "designation" },
         { header: "Employment Type", key: "employment_type" },
       ],
@@ -70,6 +74,48 @@ export default function FacultyList() {
   // Navigate to Add/Edit
   const handleAdd = () => navigate("/faculty/add");
   const handleEdit = (row: any) => navigate(`/faculty/add?id=${row.id}`);
+
+  const handleOpenDelete = (row: any) => {
+    setSelectedFaculty(row);
+    setOpenDelete(true);
+  };
+
+  const handleCloseDelete = () => {
+    setSelectedFaculty(null);
+    setOpenDelete(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedFaculty?.id) return;
+
+    try {
+      console.log(selectedFaculty.id);
+      
+      await apiRequest({
+        url: `${ApiRoutes.FACULTYDELETE}/${selectedFaculty.id}`,
+        method: "delete",
+      });
+
+      setFaculties((prev) =>
+        prev.filter(
+          (item) => item.id !== selectedFaculty.id
+        )
+      );
+
+      showAlert(
+        "Faculty deleted successfully!",
+        "success"
+      );
+
+      handleCloseDelete();
+    } catch (err: any) {
+      showAlert(
+        err.response?.data?.message ||
+        "Failed to delete batch.",
+        "error"
+      );
+    }
+  };
 
   return (
     <>
@@ -124,7 +170,7 @@ export default function FacultyList() {
                       { key: "full_name", label: "Full Name" },
                       { key: "email", label: "Email" },
                       { key: "phone", label: "Mobile" },
-                      { key: "department", label: "Department" },
+                      { key: "department_name", label: "Department" },
                       { key: "designation", label: "Designation" },
                     ]}
                     data={filteredFaculties}
@@ -140,8 +186,8 @@ export default function FacultyList() {
                       {
                         label: "Delete",
                         icon: <DeleteIcon fontSize="small" />,
-                        onClick: () => { },
                         color: "error",
+                        onClick: handleOpenDelete,
                       },
                     ]}
                   />
@@ -157,6 +203,23 @@ export default function FacultyList() {
           onPageChange={(newPage) => setPage(newPage)}
         />
       </CardComponent>
+      <CustomDialog
+        open={openDelete}
+        title="Delete Faculty"
+        description={
+          <>
+            Are you sure you want to delete{" "}
+            <strong>
+              {selectedFaculty?.full_name}
+            </strong>
+            ?
+          </>
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        onClose={handleCloseDelete}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 }

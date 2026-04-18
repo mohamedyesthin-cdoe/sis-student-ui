@@ -16,9 +16,14 @@ export const ApiRoutes = {
   BULKADD: 'user/bulk-add',
   GETSTUDENTFEES: 'student/fees',
   CHANGEPASSWORD: 'user/change-password',
+
   GETFACULTYLIST: 'staff/list',
   FACULTYADD: 'staff/add',
   GETFACULTYBYID: 'staff',
+  FACULTYUPDATE: 'staff/update',
+  FACULTYDELETE: 'staff/delete',
+
+
   GETSYLLABUSLIST: 'syllabus/list',
   SYLLABUSADD: 'syllabus/add',
   COURSECODELIST: 'coursecode/list',

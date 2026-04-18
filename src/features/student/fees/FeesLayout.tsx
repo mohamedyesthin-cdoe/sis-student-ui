@@ -92,10 +92,11 @@ export default function FeesLayout() {
         sx={{ mb: 2 }}
       >
         <Tab label="Fees Details" />
-
-        {pendingPayment && (
+        {/* hide temporary this tab */}
+        
+        {/* {pendingPayment && (
           <Tab label="Payment Due" />
-        )}
+        )} */}
       </Tabs>
 
       {/* Fees Details Tab */}
