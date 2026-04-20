@@ -32,6 +32,8 @@ interface GrievanceData {
   status: string;
   assigned_to_id?: number;
   assigned_to_name?: string | null;
+  mobile_number: string;
+  email: string;
   created_at: string;
   attachment_url?: string;
   resolution_notes?: string;
@@ -266,6 +268,32 @@ export default function GrievanceViewAdmin() {
 
                     <Typography fontWeight={600}>
                       {data?.registration_no}
+                    </Typography>
+                  </Grid>
+
+                  <Grid size={6}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      Mobile Number
+                    </Typography>
+
+                    <Typography fontWeight={600}>
+                      {data?.mobile_number}
+                    </Typography>
+                  </Grid>
+
+                  <Grid size={6}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      Email
+                    </Typography>
+
+                    <Typography fontWeight={600}>
+                      {data?.email}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -588,15 +616,6 @@ export default function GrievanceViewAdmin() {
                               ).toLocaleString()}
                             </Typography>
 
-                            {item.notes && (
-                              <Typography
-                                variant="body2"
-                                sx={{ mt: 1 }}
-                              >
-                                {item.notes}
-                              </Typography>
-                            )}
-
                             {item.resolved_by_name && (
                               <Typography
                                 variant="body2"
@@ -605,6 +624,14 @@ export default function GrievanceViewAdmin() {
                                 Resolved By: {
                                   item.resolved_by_name
                                 }
+                              </Typography>
+                            )}
+                            {item.notes && (
+                              <Typography
+                                variant="body2"
+                                sx={{ mt: 1 }}
+                              >
+                                Notes: {item.notes}
                               </Typography>
                             )}
                           </Box>

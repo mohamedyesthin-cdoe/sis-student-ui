@@ -25,6 +25,8 @@ interface GrievanceData {
   status: string;
   assigned_to_id?: number;
   assigned_to_name?: string | null;
+  mobile_number: string;
+  email: string;  
   created_at: string;
   attachment_url?: string;
 
@@ -210,6 +212,32 @@ export default function GrievanceFacultyView() {
 
                     <Typography fontWeight={600}>
                       {data?.registration_no}
+                    </Typography>
+                  </Grid>
+
+                   <Grid size={6}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      Mobile Number
+                    </Typography>
+
+                    <Typography fontWeight={600}>
+                      {data?.mobile_number}
+                    </Typography>
+                  </Grid>
+
+                   <Grid size={6}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                    >
+                      Email
+                    </Typography>
+
+                    <Typography fontWeight={600}>
+                      {data?.email}
                     </Typography>
                   </Grid>
                 </Grid>
