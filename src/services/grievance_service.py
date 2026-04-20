@@ -93,6 +93,19 @@ def _resolve_history_actor(grievance: Grievance, record) -> tuple[Optional[int],
     return resolved_by_id, resolved_by_name
 
 
+def _build_student_fields(student: Optional[Student]) -> dict:
+    if not student:
+        return {
+            "mobile_number": None,
+            "email": None,
+        }
+
+    return {
+        "mobile_number": getattr(student, "mobile_number", None),
+        "email": getattr(student, "email", None),
+    }
+
+
 class GrievanceService:
     def __init__(self, db: Session):
         self.db = db
@@ -171,12 +184,14 @@ class GrievanceService:
 
         results = []
         for grievance, student in query.order_by(Grievance.created_at.desc()).all():
+            student_fields = _build_student_fields(student)
             results.append(
                 {
                     "id": grievance.id,
                     "student_id": grievance.student_id,
                     "student_name": f"{student.first_name} {student.last_name}" if student else None,
                     "registration_no": student.registration_no if student else None,
+                    **student_fields,
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
                     "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
@@ -235,6 +250,7 @@ class GrievanceService:
                     "student_id": grievance.student_id,
                     "student_name": f"{student.first_name} {student.last_name}" if student else None,
                     "registration_no": student.registration_no if student else None,
+                    **_build_student_fields(student),
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
                     "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
@@ -299,6 +315,7 @@ class GrievanceService:
             "student_id": grievance.student_id,
             "student_name": f"{student.first_name} {student.last_name}" if student else None,
             "registration_no": student.registration_no if student else None,
+            **_build_student_fields(student),
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
             "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
@@ -338,6 +355,7 @@ class GrievanceService:
             "student_id": grievance.student_id,
             "student_name": f"{student.first_name} {student.last_name}" if student else None,
             "registration_no": student.registration_no if student else None,
+            **_build_student_fields(student),
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
             "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
@@ -448,6 +466,7 @@ class GrievanceService:
             last = getattr(student, "last_name", "") or ""
             student_name = (first + " " + last).strip() or None
             registration_no = getattr(student, "registration_no", None)
+        student_fields = _build_student_fields(student)
 
         assigned_staff = None
         if grievance.assigned_to_id:
@@ -464,6 +483,7 @@ class GrievanceService:
             "student_id": grievance.student_id,
             "student_name": student_name,
             "registration_no": registration_no,
+            **student_fields,
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
             "assigned_to_name": assigned_to_name,
@@ -502,6 +522,7 @@ class GrievanceService:
             # build student_name and registration_no
             student_name = None
             registration_no = None
+            student_fields = _build_student_fields(student)
             if student:
                 first = getattr(student, "first_name", "") or ""
                 last = getattr(student, "last_name", "") or ""
@@ -521,6 +542,7 @@ class GrievanceService:
                     "student_id": grievance.student_id,
                     "student_name": student_name,
                     "registration_no": registration_no,
+                    **student_fields,
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
                     "assigned_to_name": assigned_to_name,
@@ -566,6 +588,7 @@ class GrievanceService:
             last = getattr(student, "last_name", "") or ""
             student_name = (first + " " + last).strip() or None
             registration_no = getattr(student, "registration_no", None)
+        student_fields = _build_student_fields(student)
 
         # assigned_to name
         assigned_staff = None
@@ -583,6 +606,7 @@ class GrievanceService:
             "student_id": grievance.student_id,
             "student_name": student_name,
             "registration_no": registration_no,
+            **student_fields,
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
             "assigned_to_name": assigned_to_name,
@@ -628,6 +652,7 @@ class GrievanceService:
         if student:
             student_name = f"{student.first_name} {student.last_name}"
             registration_no = student.registration_no
+        student_fields = _build_student_fields(student)
 
         assigned_to_name = None
         if grievance.assigned_to:
@@ -638,6 +663,7 @@ class GrievanceService:
             "student_id": grievance.student_id,
             "student_name": student_name,
             "registration_no": registration_no,
+            **student_fields,
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
             "assigned_to_name": assigned_to_name,

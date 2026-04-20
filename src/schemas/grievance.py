@@ -70,6 +70,8 @@ class GrievanceAdminResponse(BaseModel):
     student_id: Optional[int]
     student_name: Optional[str]
     registration_no: Optional[str]
+    mobile_number: Optional[str]
+    email: Optional[str]
     status: Optional[str]
     assigned_to_id: Optional[int]
     assigned_to_name: Optional[str]
@@ -97,6 +99,8 @@ class GrievancePublicResponse(BaseModel):
     student_id: Optional[int]
     student_name: Optional[str]
     registration_no: Optional[str]
+    mobile_number: Optional[str]
+    email: Optional[str]
     status: Optional[str]
     assigned_to_id: Optional[int]
     assigned_to_name: Optional[str]
@@ -116,6 +120,8 @@ class GrievanceFacultyResponse(BaseModel):
     student_id: Optional[int] = None
     student_name: Optional[str] = None
     registration_no: Optional[str] = None
+    mobile_number: Optional[str] = None
+    email: Optional[str] = None
     status: Optional[str] = None
     assigned_to_id: Optional[int] = None
     assigned_to_name: Optional[str] = None
