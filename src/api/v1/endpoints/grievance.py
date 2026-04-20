@@ -11,6 +11,7 @@ from src.schemas.grievance import (
     GrievanceAdminResponse,
     GrievancePublicResponse,
     GrievanceStatusUpdate,
+    GrievanceAdminClose,
     GrievanceAssign,
     GrievanceFacultyStatusUpdate,
     GrievanceFacultyResponse
@@ -202,7 +203,7 @@ def list_grievances_admin(
 )
 def admin_close_grievance(
     grievance_id: int,
-    payload: GrievanceStatusUpdate,
+    payload: GrievanceAdminClose | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

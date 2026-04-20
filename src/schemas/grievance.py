@@ -29,6 +29,14 @@ class GrievanceStatusUpdate(BaseModel):
     resolution_notes: Optional[str] = None
 
 
+class GrievanceAdminClose(BaseModel):
+    status: str = Field(
+        default="closed_by_admin",
+        max_length=30,
+        description="closed_by_admin",
+    )
+
+
 class GrievanceAssign(BaseModel):
     staff_id: int = Field(..., description="Staff (faculty) id to assign the grievance to")
     notes: Optional[str] = None

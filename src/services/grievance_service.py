@@ -8,12 +8,89 @@ from src.models.grievance import Grievance,GrievanceHistory
 from src.models.staff import Staff
 from src.schemas.grievance import (
     GrievanceCreate,
+    GrievanceAdminClose,
     GrievanceStatusUpdate,
     GrievanceUpdate,
     GrievanceAssign,
     GrievanceFacultyClose,
     GrievanceFacultyStatusUpdate,
 )
+
+
+def _normalize_notes(value: Optional[str]) -> str:
+    if value is None:
+        return ""
+
+    cleaned = value.strip()
+    if not cleaned or cleaned.lower() == "string":
+        return ""
+    return cleaned
+
+
+def _get_latest_faculty_note(db: Session, grievance_id: int) -> str:
+    history = (
+        db.query(GrievanceHistory)
+        .filter(GrievanceHistory.grievance_id == grievance_id)
+        .filter(GrievanceHistory.action.in_(["faculty_closed", "faculty_status_updated"]))
+        .order_by(GrievanceHistory.created_at.desc())
+        .all()
+    )
+    for record in history:
+        note = _normalize_notes(record.notes)
+        if note:
+            return note
+    return ""
+
+
+def _resolve_resolution_notes(
+    db: Session,
+    grievance: Grievance,
+    history_entries: Optional[List[dict]] = None,
+) -> str:
+    direct_notes = _normalize_notes(grievance.resolution_notes)
+    if grievance.status != "closed_by_admin":
+        return direct_notes
+
+    if direct_notes:
+        return direct_notes
+
+    if history_entries is not None:
+        for entry in history_entries:
+            if entry.get("action") in {"faculty_closed", "faculty_status_updated"}:
+                note = _normalize_notes(entry.get("notes"))
+                if note:
+                    return note
+
+    faculty_note = _get_latest_faculty_note(db, grievance.id)
+    if faculty_note:
+        return faculty_note
+
+    if history_entries is not None:
+        for entry in history_entries:
+            note = _normalize_notes(entry.get("notes"))
+            if note:
+                return note
+
+    return ""
+
+
+def _resolve_history_actor(grievance: Grievance, record) -> tuple[Optional[int], Optional[str]]:
+    resolved_by_id = getattr(record, "resolved_by_id", None)
+    resolved_by_name = None
+
+    if getattr(record, "resolved_by", None):
+        resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
+        return resolved_by_id or record.resolved_by.id, resolved_by_name
+
+    if resolved_by_id:
+        return resolved_by_id, None
+
+    assigned_staff = getattr(grievance, "assigned_to", None)
+    if assigned_staff:
+        resolved_by_id = assigned_staff.id
+        resolved_by_name = f"{assigned_staff.first_name} {assigned_staff.last_name}"
+
+    return resolved_by_id, resolved_by_name
 
 
 class GrievanceService:
@@ -106,7 +183,7 @@ class GrievanceService:
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
-                    "resolution_notes": grievance.resolution_notes,
+                    "resolution_notes": _resolve_resolution_notes(self.db, grievance),
                     "created_at": grievance.created_at,
                     "updated_at": grievance.updated_at,
                 }
@@ -133,20 +210,14 @@ class GrievanceService:
 
             history_list = []
             for record in history:
-                resolved_by_name = None
-                if getattr(record, "resolved_by", None):
-                    resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
-                elif getattr(record, "resolved_by_id", None):
-                    staff = self.db.query(Staff).filter(Staff.id == record.resolved_by_id).first()
-                    if staff:
-                        resolved_by_name = f"{staff.first_name} {staff.last_name}"
+                resolved_by_id, resolved_by_name = _resolve_history_actor(grievance, record)
 
                 history_list.append({
                     "action": record.action,
                     "status": record.status,
-                    "resolved_by_id": record.resolved_by_id,
+                    "resolved_by_id": resolved_by_id,
                     "resolved_by_name": resolved_by_name,
-                    "notes": record.notes,
+                    "notes": _normalize_notes(record.notes),
                     "created_at": (
                         record.created_at.isoformat()
                         if getattr(record, "created_at", None)
@@ -170,7 +241,7 @@ class GrievanceService:
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
-                    "resolution_notes": grievance.resolution_notes,
+                    "resolution_notes": _resolve_resolution_notes(self.db, grievance, history_list),
                     "created_at": grievance.created_at,
                     "updated_at": grievance.updated_at,
                     "history": history_list,
@@ -204,20 +275,14 @@ class GrievanceService:
         
         history_list = []
         for record in history:
-            resolved_by_name = None
-            if getattr(record, "resolved_by", None):
-                resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
-            elif getattr(record, "resolved_by_id", None):
-                staff = self.db.query(Staff).filter(Staff.id == record.resolved_by_id).first()
-                if staff:
-                    resolved_by_name = f"{staff.first_name} {staff.last_name}"
+            resolved_by_id, resolved_by_name = _resolve_history_actor(grievance, record)
             
             history_list.append({
                 "action": record.action,
                 "status": record.status,
-                "resolved_by_id": record.resolved_by_id,
+                "resolved_by_id": resolved_by_id,
                 "resolved_by_name": resolved_by_name,
-                "notes": record.notes,
+                "notes": _normalize_notes(record.notes),
                 "created_at": (
                     record.created_at.isoformat()
                     if getattr(record, "created_at", None)
@@ -240,7 +305,7 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
-            "resolution_notes": grievance.resolution_notes,
+            "resolution_notes": _resolve_resolution_notes(self.db, grievance, history_list),
             "created_at": grievance.created_at,
             "updated_at": grievance.updated_at,
             "history": history_list,
@@ -279,7 +344,7 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
-            "resolution_notes": grievance.resolution_notes,
+            "resolution_notes": _resolve_resolution_notes(self.db, grievance),
             "created_at": grievance.created_at,
             "updated_at": grievance.updated_at,
         }
@@ -462,7 +527,7 @@ class GrievanceService:
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
-                    "resolution_notes": grievance.resolution_notes,
+                    "resolution_notes": _resolve_resolution_notes(self.db, grievance),
                     "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
                     "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
                 }
@@ -524,15 +589,21 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
-            "resolution_notes": grievance.resolution_notes,
+            "resolution_notes": _resolve_resolution_notes(self.db, grievance),
             "created_at": grievance.created_at.isoformat() if getattr(grievance, "created_at", None) else None,
             "updated_at": grievance.updated_at.isoformat() if getattr(grievance, "updated_at", None) else None,
         }
 
-    def admin_close(self, grievance_id: int, payload: GrievanceStatusUpdate, resolved_by_id: Optional[int] = None) -> dict:
+    def admin_close(
+        self,
+        grievance_id: int,
+        payload: Optional[GrievanceAdminClose] = None,
+        resolved_by_id: Optional[int] = None,
+    ) -> dict:
         grievance = self.get_grievance(grievance_id)
+        faculty_note = _normalize_notes(grievance.resolution_notes) or _get_latest_faculty_note(self.db, grievance_id)
+        resolved_by_id = resolved_by_id or grievance.assigned_to_id
         grievance.status = "closed_by_admin"
-        grievance.resolution_notes = payload.resolution_notes
 
         # Log history
         history = GrievanceHistory(
@@ -540,7 +611,7 @@ class GrievanceService:
             action="closed",
             status="closed_by_admin",
             resolved_by_id=resolved_by_id,
-            notes=payload.resolution_notes,
+            notes=faculty_note,
             timestamp=datetime.utcnow(),
         )
         self.db.add(history)
@@ -573,7 +644,7 @@ class GrievanceService:
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
-            "resolution_notes": grievance.resolution_notes,
+            "resolution_notes": faculty_note,
             "created_at": grievance.created_at,
             "updated_at": grievance.updated_at,
         }
