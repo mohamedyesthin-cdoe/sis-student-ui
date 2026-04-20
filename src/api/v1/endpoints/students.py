@@ -8,10 +8,19 @@ from src.schemas.students import MarkResponse, StudentCreate, StudentListRespons
 from src.schemas.students import PendingPaymentAssignRequest, PendingPaymentStatusResponse
 from src.schemas.payment import PaymentResponse
 from src.core.security.dependencies import require_superuser, require_staff
+from src.core.security.jwt import get_current_user
 from src.models.user import User
 from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
+
+
+def _can_access_student_record(current_user: User, student_id: int) -> bool:
+    if current_user.is_superuser:
+        return True
+    if getattr(current_user, "staff", None):
+        return True
+    return getattr(current_user, "student_id", None) == student_id
 
 # @router.post("/add", response_model=StudentResponse, status_code=status.HTTP_201_CREATED)
 # def create_student(student_data: StudentCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
@@ -50,25 +59,41 @@ def get_all_students(db: Session = Depends(get_db), current_user: User = Depends
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
     
 @router.get("/{id}", response_model=StudentResponse)
-def get_students_by_id(id: int,db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+def get_students_by_id(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     """Retrieve all students."""
     try:
+        if not _can_access_student_record(current_user, id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Staff privileges required")
         service = StudentService(db)
         student = service.get_student_id(id)
         if not student:
             raise HTTPException(status_code=404, detail="Student not found")
         return student
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
     
 @router.get("/fees/{id}", response_model=List[PaymentResponse])
-def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+def get_fees(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     try:
+        if not _can_access_student_record(current_user, id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Staff privileges required")
         service = StudentService(db)
         payments = service.get_fees(id)
         if not payments:
             raise HTTPException(status_code=404, detail="No payments found")
         return payments
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve payments: {str(e)}")
 
@@ -77,8 +102,14 @@ def get_fees(id: int, db: Session = Depends(get_db), current_user: User = Depend
     "/{id}/pending-payment",
     response_model=PendingPaymentStatusResponse
 )
-def get_pending_payment_status(id: int, db: Session = Depends(get_db), current_user: User = Depends(require_staff)):
+def get_pending_payment_status(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     try:
+        if not _can_access_student_record(current_user, id):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Staff privileges required")
         service = StudentService(db)
         return service.get_pending_payment_status(id)
     except HTTPException:
