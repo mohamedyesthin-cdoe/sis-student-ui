@@ -29,16 +29,16 @@ class StaffService:
         self.repo = StaffRepository(db)
         self.user_repo = UserRepository()
 
-    def _validate_department_code(self, department_code: int | None) -> None:
-        """Ensure the department reference exists before persisting staff data."""
-        if department_code is None:
-            return
+    def _resolve_department_code(self, department_code: int | None) -> int | None:
+        """Normalize and validate the department reference before persisting staff data."""
+        if department_code in (None, 0):
+            return None
 
-        if department_code <= 0:
+        if department_code < 0:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
-                    "message": "Department is required and must be a valid department id.",
+                    "message": "Department id must be a positive integer.",
                     "code": status.HTTP_400_BAD_REQUEST,
                     "status": False,
                 },
@@ -59,9 +59,11 @@ class StaffService:
                 },
             )
 
+        return department.id
+
     async def create_staff(self, data: StaffBase) -> StaffResponse:
         try:
-            self._validate_department_code(data.department_code)
+            data.department_code = self._resolve_department_code(data.department_code)
 
             existing_user = self.user_repo.get_user_by_identifier(
                 self.db,
@@ -227,7 +229,11 @@ class StaffService:
                 )
 
             staff_data = data.model_dump(exclude_none=True)
-            self._validate_department_code(staff_data.get("department_code"))
+            department_code = self._resolve_department_code(staff_data.get("department_code"))
+            if department_code is None:
+                staff_data.pop("department_code", None)
+            else:
+                staff_data["department_code"] = department_code
 
             # Convert Enums
             for k, v in list(staff_data.items()):
