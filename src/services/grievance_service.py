@@ -3,7 +3,6 @@ from typing import List, Optional
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, aliased
 from src.models.students import Student
-from src.models.master import Programe
 from src.models.grievance import Grievance,GrievanceHistory
 from src.models.staff import Staff
 from src.schemas.grievance import (
@@ -207,14 +206,13 @@ class GrievanceService:
 
     def list_grievances_with_details(self) -> List[dict]:
         query = (
-            self.db.query(Grievance, Student, Programe)
+            self.db.query(Grievance, Student)
             .outerjoin(Student, Grievance.student_id == Student.id)
-            .outerjoin(Programe, Student.program_id == Programe.id)
             .order_by(Grievance.created_at.desc())
         )
 
         flat_list: List[dict] = []
-        for grievance, student, programe in query.all():
+        for grievance, student in query.all():
             # Get grievance history
             history = (
                 self.db.query(GrievanceHistory)
@@ -267,9 +265,8 @@ class GrievanceService:
     
     def get_grievance_with_details(self, grievance_id: int) -> dict:
         record = (
-            self.db.query(Grievance, Student, Programe)
+            self.db.query(Grievance, Student)
             .outerjoin(Student, Grievance.student_id == Student.id)
-            .outerjoin(Programe, Student.program_id == Programe.id)
             .filter(Grievance.id == grievance_id)
             .first()
         )
@@ -279,7 +276,7 @@ class GrievanceService:
                 detail="Grievance not found",
             )
 
-        grievance, student, _program = record
+        grievance, student = record
         
         # Get grievance history
         history = (

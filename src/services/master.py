@@ -61,6 +61,26 @@ class MasterService:
             "updated_at": self._value(program, "updated_at"),
         }
 
+    def _generated_semester_rows(self, program) -> list[dict]:
+        duration = self._value(program, "duration")
+        try:
+            semester_count = self.repo._semester_count_from_duration(duration)
+        except HTTPException:
+            return []
+
+        program_id = self._value(program, "id")
+        program_code = self._value(program, "programe_code")
+        return [
+            {
+                "id": None,
+                "program_id": program_id,
+                "program_code": program_code,
+                "semester_no": semester_no,
+                "semester_name": f"Semester {semester_no}",
+            }
+            for semester_no in range(1, semester_count + 1)
+        ]
+
     def create_program(self, data: ProgrameCreate) -> ProgrameResponse:
         try:
             program = self.repo.create_program(data)
@@ -88,7 +108,8 @@ class MasterService:
             return [
                 self._serialize_program(
                     program,
-                    semesters_by_program.get(program.id, []),
+                    semesters_by_program.get(self._value(program, "id"), [])
+                    or self._generated_semester_rows(program),
                 )
                 for program in programs
             ]
@@ -159,10 +180,13 @@ class MasterService:
                 )
 
             semesters = self.repo.get_semesters_by_program_id(programe_id)
+            if not semesters:
+                semesters = self._generated_semester_rows(program)
+
             return ProgramSemesterResponse(
-                program_id=program.id,
-                program_code=program.programe_code,
-                department_code=program.department_code,
+                program_id=self._value(program, "id"),
+                program_code=self._value(program, "programe_code"),
+                department_code=self._value(program, "department_code"),
                 semesters=[
                     ProgramSemesterItem(
                         semester_no=semester["semester_no"],
@@ -190,16 +214,17 @@ class MasterService:
 
             return [
                 ProgramSemesterResponse(
-                    program_id=program.id,
-                    program_code=program.programe_code,
-                    department_code=program.department_code,
+                    program_id=self._value(program, "id"),
+                    program_code=self._value(program, "programe_code"),
+                    department_code=self._value(program, "department_code"),
                     semesters=[
                         ProgramSemesterItem(
                             semester_no=semester["semester_no"],
                             semester_name=semester["semester_name"],
                         )
                         for semester in sorted(
-                            semesters_by_program.get(program.id, []),
+                            semesters_by_program.get(self._value(program, "id"), [])
+                            or self._generated_semester_rows(program),
                             key=lambda item: item["semester_no"],
                         )
                     ],
