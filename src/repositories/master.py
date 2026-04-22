@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from typing import List, Optional
 import re
+from types import SimpleNamespace
 from fastapi import HTTPException, status
 from src.repositories.base import BaseRepository
 from src.models.master import (
@@ -32,6 +33,18 @@ class MasterRepository:
 
         semester_columns = {col["name"] for col in inspector.get_columns("semesters")}
         return "program_id" in semester_columns
+
+    def _programs_use_department_id(self) -> bool:
+        bind = self.db.get_bind() or self.db.bind
+        if bind is None:
+            return False
+
+        inspector = sa.inspect(bind)
+        if not inspector.has_table("programs"):
+            return False
+
+        program_columns = {col["name"] for col in inspector.get_columns("programs")}
+        return "department_id" in program_columns
 
     def _fetch_semester_rows(self, program_id: Optional[int] = None) -> list[dict]:
         if self._semesters_use_program_id():
@@ -94,6 +107,116 @@ class MasterRepository:
 
         rows = self.db.execute(stmt, params).mappings().all()
         return [dict(row) for row in rows]
+
+    def _fetch_legacy_program_rows(self, program_id: Optional[int] = None) -> list[SimpleNamespace]:
+        stmt = sa.text(
+            """
+            SELECT
+                p.id AS id,
+                p.department_code AS department_code,
+                p.programe AS programe,
+                p.short_name AS short_name,
+                p.programe_code AS programe_code,
+                p.duration AS duration,
+                p.category AS category,
+                p.application_code AS application_code,
+                p.batch AS batch,
+                p.academic_year AS academic_year,
+                p.pending_payment_workflow_enabled AS pending_payment_workflow_enabled,
+                p.created_at AS created_at,
+                p.updated_at AS updated_at,
+                f.id AS fee_id,
+                f.programe_id AS fee_programe_id,
+                f.semester AS fee_semester,
+                f.application_fee AS fee_application_fee,
+                f.admission_fee AS fee_admission_fee,
+                f.tuition_fee AS fee_tuition_fee,
+                f.exam_fee AS fee_exam_fee,
+                f.lms_fee AS fee_lms_fee,
+                f.lab_fee AS fee_lab_fee,
+                f.total_fee AS fee_total_fee
+            FROM programs p
+            LEFT JOIN fee_details f ON f.programe_id = p.id
+            """
+        )
+        params: dict[str, object] = {}
+        if program_id is not None:
+            stmt = sa.text(
+                """
+                SELECT
+                    p.id AS id,
+                    p.department_code AS department_code,
+                    p.programe AS programe,
+                    p.short_name AS short_name,
+                    p.programe_code AS programe_code,
+                    p.duration AS duration,
+                    p.category AS category,
+                    p.application_code AS application_code,
+                    p.batch AS batch,
+                    p.academic_year AS academic_year,
+                    p.pending_payment_workflow_enabled AS pending_payment_workflow_enabled,
+                    p.created_at AS created_at,
+                    p.updated_at AS updated_at,
+                    f.id AS fee_id,
+                    f.programe_id AS fee_programe_id,
+                    f.semester AS fee_semester,
+                    f.application_fee AS fee_application_fee,
+                    f.admission_fee AS fee_admission_fee,
+                    f.tuition_fee AS fee_tuition_fee,
+                    f.exam_fee AS fee_exam_fee,
+                    f.lms_fee AS fee_lms_fee,
+                    f.lab_fee AS fee_lab_fee,
+                    f.total_fee AS fee_total_fee
+                FROM programs p
+                LEFT JOIN fee_details f ON f.programe_id = p.id
+                WHERE p.id = :program_id
+                """
+            )
+            params["program_id"] = program_id
+
+        rows = self.db.execute(stmt, params).mappings().all()
+        grouped: dict[int, dict] = {}
+
+        for row in rows:
+            program_id_value = row["id"]
+            program = grouped.setdefault(
+                program_id_value,
+                {
+                    "id": row["id"],
+                    "department_id": None,
+                    "department_code": row["department_code"],
+                    "programe": row["programe"],
+                    "short_name": row["short_name"],
+                    "programe_code": row["programe_code"],
+                    "duration": row["duration"],
+                    "category": row["category"],
+                    "application_code": row["application_code"],
+                    "batch": row["batch"],
+                    "academic_year": row["academic_year"],
+                    "pending_payment_workflow_enabled": row["pending_payment_workflow_enabled"],
+                    "created_at": row["created_at"],
+                    "updated_at": row["updated_at"],
+                    "fee": [],
+                },
+            )
+
+            if row["fee_id"] is not None:
+                program["fee"].append(
+                    SimpleNamespace(
+                        id=row["fee_id"],
+                        programe_id=row["fee_programe_id"],
+                        semester=row["fee_semester"],
+                        application_fee=row["fee_application_fee"],
+                        admission_fee=row["fee_admission_fee"],
+                        tuition_fee=row["fee_tuition_fee"],
+                        exam_fee=row["fee_exam_fee"],
+                        lms_fee=row["fee_lms_fee"],
+                        lab_fee=row["fee_lab_fee"],
+                        total_fee=row["fee_total_fee"],
+                    )
+                )
+
+        return [SimpleNamespace(**program) for program in grouped.values()]
 
     def _semester_count_from_duration(self, duration: Optional[str]) -> int:
         if not duration:
@@ -221,6 +344,9 @@ class MasterRepository:
 
     def get_all_programs(self):
         try:
+            if not self._programs_use_department_id():
+                return self._fetch_legacy_program_rows()
+
             return (
                 self.db.query(self.model)
                 .options(
@@ -237,6 +363,10 @@ class MasterRepository:
 
     def get_by_id(self, programe_id: int) -> Optional[Programe]:
         try:
+            if not self._programs_use_department_id():
+                rows = self._fetch_legacy_program_rows(programe_id)
+                return rows[0] if rows else None
+
             return self.db.query(self.model).filter(self.model.id == programe_id).first()
         except SQLAlchemyError as e:
             raise HTTPException(
@@ -255,6 +385,10 @@ class MasterRepository:
         
     def get_by_id_with_fees(self, programe_id: int) -> Optional[Programe]:
         try:
+            if not self._programs_use_department_id():
+                rows = self._fetch_legacy_program_rows(programe_id)
+                return rows[0] if rows else None
+
             return (
                 self.db.query(self.model)
                 .options(
@@ -290,6 +424,9 @@ class MasterRepository:
 
     def get_programs_with_semesters(self) -> List[Programe]:
         try:
+            if not self._programs_use_department_id():
+                return self._fetch_legacy_program_rows()
+
             return self.db.query(Programe).order_by(Programe.id.asc()).all()
         except SQLAlchemyError as e:
             raise HTTPException(

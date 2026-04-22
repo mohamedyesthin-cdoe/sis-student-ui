@@ -11,17 +11,22 @@ class MasterService:
     def __init__(self, db: Session):
         self.repo = MasterRepository(db)
 
+    def _value(self, obj, key: str, default=None):
+        if isinstance(obj, dict):
+            return obj.get(key, default)
+        return getattr(obj, key, default)
+
     def _serialize_fee(self, fee: FeeDetails) -> dict:
         return {
-            "id": fee.id,
-            "semester": fee.semester,
-            "application_fee": fee.application_fee,
-            "admission_fee": fee.admission_fee,
-            "tuition_fee": fee.tuition_fee,
-            "exam_fee": fee.exam_fee,
-            "lms_fee": fee.lms_fee,
-            "lab_fee": fee.lab_fee,
-            "total_fee": fee.total_fee,
+            "id": self._value(fee, "id"),
+            "semester": self._value(fee, "semester"),
+            "application_fee": self._value(fee, "application_fee"),
+            "admission_fee": self._value(fee, "admission_fee"),
+            "tuition_fee": self._value(fee, "tuition_fee"),
+            "exam_fee": self._value(fee, "exam_fee"),
+            "lms_fee": self._value(fee, "lms_fee"),
+            "lab_fee": self._value(fee, "lab_fee"),
+            "total_fee": self._value(fee, "total_fee"),
         }
 
     def _serialize_program(self, program: Programe, semester_rows: list[dict]) -> dict:
@@ -36,22 +41,24 @@ class MasterService:
             for row in semester_rows
         ]
 
+        fees = self._value(program, "fee", []) or []
+
         return {
-            "id": program.id,
-            "department_id": program.department_id,
-            "department_code": program.department_code,
-            "programe": program.programe,
-            "short_name": program.short_name,
-            "programe_code": program.programe_code,
-            "duration": program.duration,
-            "category": program.category,
-            "batch": program.batch,
-            "academic_year": program.academic_year,
-            "pending_payment_workflow_enabled": program.pending_payment_workflow_enabled,
-            "fee": [self._serialize_fee(fee) for fee in (program.fee or [])],
+            "id": self._value(program, "id"),
+            "department_id": self._value(program, "department_id"),
+            "department_code": self._value(program, "department_code"),
+            "programe": self._value(program, "programe"),
+            "short_name": self._value(program, "short_name"),
+            "programe_code": self._value(program, "programe_code"),
+            "duration": self._value(program, "duration"),
+            "category": self._value(program, "category"),
+            "batch": self._value(program, "batch"),
+            "academic_year": self._value(program, "academic_year"),
+            "pending_payment_workflow_enabled": self._value(program, "pending_payment_workflow_enabled"),
+            "fee": [self._serialize_fee(fee) for fee in fees],
             "semesters": semesters,
-            "created_at": program.created_at,
-            "updated_at": program.updated_at,
+            "created_at": self._value(program, "created_at"),
+            "updated_at": self._value(program, "updated_at"),
         }
 
     def create_program(self, data: ProgrameCreate) -> ProgrameResponse:
