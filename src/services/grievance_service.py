@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 from fastapi import HTTPException, status
+import sqlalchemy as sa
 from sqlalchemy.orm import Session, aliased
 from src.models.students import Student
 from src.models.grievance import Grievance,GrievanceHistory
@@ -73,23 +74,65 @@ def _resolve_resolution_notes(
     return ""
 
 
-def _resolve_history_actor(grievance: Grievance, record) -> tuple[Optional[int], Optional[str]]:
+def _resolve_history_actor(db: Session, grievance: Grievance, record) -> tuple[Optional[int], Optional[str]]:
     resolved_by_id = getattr(record, "resolved_by_id", None)
     resolved_by_name = None
 
-    if getattr(record, "resolved_by", None):
-        resolved_by_name = f"{record.resolved_by.first_name} {record.resolved_by.last_name}"
-        return resolved_by_id or record.resolved_by.id, resolved_by_name
-
     if resolved_by_id:
+        row = db.execute(
+            sa.text(
+                """
+                SELECT first_name, last_name
+                FROM staff
+                WHERE id = :staff_id
+                """
+            ),
+            {"staff_id": resolved_by_id},
+        ).mappings().first()
+        if row:
+            full_name = f"{row.get('first_name', '')} {row.get('last_name', '')}".strip()
+            return resolved_by_id, full_name or None
         return resolved_by_id, None
 
-    assigned_staff = getattr(grievance, "assigned_to", None)
-    if assigned_staff:
-        resolved_by_id = assigned_staff.id
-        resolved_by_name = f"{assigned_staff.first_name} {assigned_staff.last_name}"
+    assigned_to_id = getattr(grievance, "assigned_to_id", None)
+    if assigned_to_id:
+        row = db.execute(
+            sa.text(
+                """
+                SELECT first_name, last_name
+                FROM staff
+                WHERE id = :staff_id
+                """
+            ),
+            {"staff_id": assigned_to_id},
+        ).mappings().first()
+        if row:
+            full_name = f"{row.get('first_name', '')} {row.get('last_name', '')}".strip()
+            return assigned_to_id, full_name or None
+        return assigned_to_id, None
 
     return resolved_by_id, resolved_by_name
+
+
+def _get_staff_name(db: Session, staff_id: Optional[int]) -> Optional[str]:
+    if not staff_id:
+        return None
+
+    row = db.execute(
+        sa.text(
+            """
+            SELECT first_name, last_name
+            FROM staff
+            WHERE id = :staff_id
+            """
+        ),
+        {"staff_id": staff_id},
+    ).mappings().first()
+
+    if not row:
+        return None
+
+    return f"{row.get('first_name', '')} {row.get('last_name', '')}".strip() or None
 
 
 def _build_student_fields(student: Optional[Student]) -> dict:
@@ -193,7 +236,7 @@ class GrievanceService:
                     **student_fields,
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
-                    "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+                    "assigned_to_name": _get_staff_name(self.db, grievance.assigned_to_id),
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
@@ -223,7 +266,7 @@ class GrievanceService:
 
             history_list = []
             for record in history:
-                resolved_by_id, resolved_by_name = _resolve_history_actor(grievance, record)
+                resolved_by_id, resolved_by_name = _resolve_history_actor(self.db, grievance, record)
 
                 history_list.append({
                     "action": record.action,
@@ -251,7 +294,7 @@ class GrievanceService:
                     **_build_student_fields(student),
                     "status": grievance.status,
                     "assigned_to_id": grievance.assigned_to_id,
-                    "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+                    "assigned_to_name": _get_staff_name(self.db, grievance.assigned_to_id),
                     "subject": grievance.subject,
                     "description": grievance.description,
                     "attachment_url": grievance.attachment_url,
@@ -288,7 +331,7 @@ class GrievanceService:
         
         history_list = []
         for record in history:
-            resolved_by_id, resolved_by_name = _resolve_history_actor(grievance, record)
+            resolved_by_id, resolved_by_name = _resolve_history_actor(self.db, grievance, record)
             
             history_list.append({
                 "action": record.action,
@@ -315,7 +358,7 @@ class GrievanceService:
             **_build_student_fields(student),
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
-            "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+            "assigned_to_name": _get_staff_name(self.db, grievance.assigned_to_id),
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
@@ -355,7 +398,7 @@ class GrievanceService:
             **_build_student_fields(student),
             "status": grievance.status,
             "assigned_to_id": grievance.assigned_to_id,
-            "assigned_to_name": f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}" if grievance.assigned_to else None,
+            "assigned_to_name": _get_staff_name(self.db, grievance.assigned_to_id),
             "subject": grievance.subject,
             "description": grievance.description,
             "attachment_url": grievance.attachment_url,
@@ -651,9 +694,7 @@ class GrievanceService:
             registration_no = student.registration_no
         student_fields = _build_student_fields(student)
 
-        assigned_to_name = None
-        if grievance.assigned_to:
-            assigned_to_name = f"{grievance.assigned_to.first_name} {grievance.assigned_to.last_name}"
+        assigned_to_name = _get_staff_name(self.db, grievance.assigned_to_id)
     
         return {
             "id": grievance.id,
