@@ -15,13 +15,15 @@ class StaffRepository(BaseRepository[Staff]):
     def __init__(self, db: Session):
         super().__init__(db, Staff)
     
-    def create_staff(self, staff_data: dict) -> Staff:
+    def create_staff(self, staff_data: dict, commit: bool = True) -> Staff:
         """Create a staff record linked to an existing user."""
         try:
             obj = Staff(**staff_data)
             self.db.add(obj)
-            self.db.flush()
-            self.commit()
+            if commit:
+                self.commit()
+            else:
+                self.db.flush()
             self.refresh(obj)
             return obj
         

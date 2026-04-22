@@ -37,39 +37,39 @@ class StaffService:
                 phone=data.phone,
             )
 
-            if existing_user:
-                if getattr(existing_user, "username", None) == data.employee_id:
-                    detail = "User with this employee ID already exists."
-                elif getattr(existing_user, "phone", None) == data.phone:
-                    detail = "User with this phone already exists."
-                else:
-                    detail = "User with this email already exists."
-
-                raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail={
-                        "message": detail,
-                        "code": status.HTTP_409_CONFLICT,
-                        "status": False,
-                    },
-                )
-
             plain_password = generate_password()
-            hashed_password = hash_password(plain_password)
             fullname = f"{data.first_name} {data.last_name}"
 
-            user = self.user_repo.create_user(
-                self.db,
-                UserCreate(
-                    username=data.employee_id,
-                    email=data.email,
-                    first_name=data.first_name,
-                    last_name=data.last_name,
-                    phone=data.phone,
-                    password=hashed_password,
-                    group_id=data.role,
-                ),
-            )
+            if existing_user:
+                if existing_user.staff:
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail={
+                            "message": "Staff with this employee ID already exists.",
+                            "code": status.HTTP_409_CONFLICT,
+                            "status": False,
+                        },
+                    )
+                user = existing_user
+                user.first_name = data.first_name
+                user.last_name = data.last_name
+                user.email = data.email
+                user.phone = data.phone
+                user.hashed_password = hash_password(plain_password)
+            else:
+                user = self.user_repo.create_user(
+                    self.db,
+                    UserCreate(
+                        username=data.employee_id,
+                        email=data.email,
+                        first_name=data.first_name,
+                        last_name=data.last_name,
+                        phone=data.phone,
+                        password=plain_password,
+                        group_id=data.role,
+                    ),
+                    commit=False,
+                )
 
             staff_data = data.model_dump(exclude_none=True)
             staff_data["user_id"] = user.id
@@ -82,7 +82,9 @@ class StaffService:
             # Ensure employment_type present
             staff_data["employment_type"] = data.employment_type
 
-            staff = self.repo.create_staff(staff_data)
+            staff = self.repo.create_staff(staff_data, commit=False)
+
+            self.db.commit()
 
             # send credentials email (async)
             try:

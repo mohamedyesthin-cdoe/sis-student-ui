@@ -42,7 +42,7 @@ class UserRepository:
         Retrieves all available groups (roles) from the database.
     """
     @staticmethod
-    def create_user(db: Session, user_data: UserCreate) -> User:
+    def create_user(db: Session, user_data: UserCreate, commit: bool = True) -> User:
         try:
             group = db.query(Group).filter(Group.id == user_data.group_id).first()
             if not group:
@@ -58,11 +58,12 @@ class UserRepository:
                 phone=user_data.phone,
                 hashed_password=hashed_password
             )
-            # db.flush()
-            # db.add(user)
             user.groups.append(group)
             db.add(user)
-            db.commit()
+            if commit:
+                db.commit()
+            else:
+                db.flush()
             db.refresh(user)
             return user
         
