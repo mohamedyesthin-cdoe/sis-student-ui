@@ -72,7 +72,8 @@ class MasterService:
         program_code = self._value(program, "programe_code")
         return [
             {
-                "id": None,
+                # Synthetic id keeps response validation happy when UAT has no semester rows yet.
+                "id": int(f"{program_id}{semester_no:02d}"),
                 "program_id": program_id,
                 "program_code": program_code,
                 "semester_no": semester_no,
