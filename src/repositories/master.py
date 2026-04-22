@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from typing import List, Optional
+import re
 from fastapi import HTTPException, status
 from src.repositories.base import BaseRepository
 from src.models.master import (
@@ -8,6 +9,7 @@ from src.models.master import (
     CourseCategory, CourseTitle, Subjects, Department, ProgramPaymentWorkflowScope,
     AcademicYear, Batch, SemesterMaster
 )
+from src.models.academic import Semester
 from src.schemas.master import (
     ProgrameCreate, ProgrameUpdate, ProgrameResponse, CourseCodeResponse,
     CourseCategoryResponse
@@ -18,16 +20,97 @@ class MasterRepository:
         self.db = db
         self.model = Programe
 
+    def _semester_count_from_duration(self, duration: Optional[str]) -> int:
+        if not duration:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Duration is required to generate semesters.",
+            )
+
+        match = re.search(r"(\d+)", str(duration))
+        if not match:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Duration must contain a valid year count.",
+            )
+
+        years = int(match.group(1))
+        if years <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Duration must be greater than zero.",
+            )
+
+        return years * 2
+
+    def _resolve_department(self, department_id: Optional[int], department_code: Optional[str]) -> Department:
+        department = None
+
+        if department_id is not None:
+            department = self.get_department_by_id(department_id)
+            if not department:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Department id '{department_id}' not found.",
+                )
+
+        if department is None and department_code is not None:
+            normalized_code = department_code.strip()
+            if not normalized_code:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Department code cannot be empty.",
+                )
+            department = self.get_department_by_code(normalized_code)
+            if not department:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Department code '{normalized_code}' not found.",
+                )
+
+        if department is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Either department_id or department_code is required.",
+            )
+
+        return department
+
+    def _sync_program_semester_codes(self, program: Programe) -> None:
+        if not program.semesters:
+            return
+
+        for semester in program.semesters:
+            semester.program_code = program.programe_code
+
     def create_program(self, programe: ProgrameCreate) -> ProgrameResponse:
         try:
             # exclude fees when creating the main program
             program_data = programe.dict(exclude={"fee"})
+            semester_count = self._semester_count_from_duration(program_data.get("duration"))
+            department = self._resolve_department(
+                program_data.get("department_id"),
+                program_data.get("department_code"),
+            )
+            program_data["department_id"] = department.id
+            program_data["department_code"] = department.department_code
             obj = self.model(**program_data)
             self.db.add(obj)
             self.db.flush()  # ensures obj.id is available
 
+            semesters = [
+                Semester(
+                    program_id=obj.id,
+                    program_code=obj.programe_code,
+                    semester_no=index,
+                    semester_name=f"Semester {index}",
+                )
+                for index in range(1, semester_count + 1)
+            ]
+            self.db.add_all(semesters)
+
             # insert fee records
-            for fee in programe.fee:
+            for fee in programe.fee or []:
                 fee_data = fee.dict()
                 fee_data["programe_id"] = obj.id
                 self.db.add(FeeDetails(**fee_data))
@@ -35,6 +118,10 @@ class MasterRepository:
             self.db.commit()
             self.db.refresh(obj)
             return obj
+
+        except HTTPException:
+            self.db.rollback()
+            raise
 
         except SQLAlchemyError as e:
             self.db.rollback()
@@ -47,7 +134,11 @@ class MasterRepository:
         try:
             return (
                 self.db.query(self.model)
-                .options(joinedload(self.model.fee))  # eager load fees
+                .options(
+                    joinedload(self.model.fee),  # eager load fees
+                    joinedload(self.model.department),
+                    joinedload(self.model.semesters),
+                )
                 .all()
             )
         except SQLAlchemyError as e:
@@ -78,7 +169,11 @@ class MasterRepository:
         try:
             return (
                 self.db.query(self.model)
-                .options(joinedload(self.model.fee))
+                .options(
+                    joinedload(self.model.fee),
+                    joinedload(self.model.department),
+                    joinedload(self.model.semesters),
+                )
                 .filter(self.model.id == programe_id)
                 .first()
             )
@@ -86,6 +181,49 @@ class MasterRepository:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching program with fees by id: {str(e)}",
+            )
+
+    def get_semesters_by_program_id(self, programe_id: int) -> List[Semester]:
+        try:
+            return (
+                self.db.query(Semester)
+                .filter(Semester.program_id == programe_id)
+                .order_by(Semester.semester_no.asc())
+                .all()
+            )
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching semesters by program id: {str(e)}",
+            )
+
+    def get_all_semesters(self) -> List[Semester]:
+        try:
+            return (
+                self.db.query(Semester)
+                .order_by(Semester.program_id.asc(), Semester.semester_no.asc())
+                .all()
+            )
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching all semesters: {str(e)}",
+            )
+
+    def get_programs_with_semesters(self) -> List[Programe]:
+        try:
+            return (
+                self.db.query(Programe)
+                .options(
+                    joinedload(Programe.semesters),
+                )
+                .order_by(Programe.id.asc())
+                .all()
+            )
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching programs with semesters: {str(e)}",
             )
     
     def update_program(self, programe_id: int, program_update: ProgrameUpdate) -> ProgrameResponse:
@@ -98,15 +236,23 @@ class MasterRepository:
         
         try:
             # Update main program fields
-            for key, value in program_update.dict(exclude_unset=True, exclude={"fees"}).items():
+            update_data = program_update.dict(exclude_unset=True, exclude={"fee"})
+            department_id = update_data.get("department_id")
+            department_code = update_data.get("department_code")
+            if department_id is not None or department_code is not None:
+                department = self._resolve_department(department_id, department_code)
+                update_data["department_id"] = department.id
+                update_data["department_code"] = department.department_code
+
+            for key, value in update_data.items():
                 setattr(program, key, value)
 
             # Update fees if provided
-            if program_update.fees is not None:
+            if program_update.fee is not None:
                 existing_fees = {fee.id: fee for fee in program.fee}
                 updated_fee_ids = set()
 
-                for fee_data in program_update.fees:
+                for fee_data in program_update.fee:
                     if fee_data.id and fee_data.id in existing_fees:
                         # Update existing fee
                         fee = existing_fees[fee_data.id]
@@ -122,11 +268,17 @@ class MasterRepository:
                 for fee_id, fee in existing_fees.items():
                     if fee_id not in updated_fee_ids:
                         self.db.delete(fee)
+
+            self._sync_program_semester_codes(program)
             
             self.db.commit()
             self.db.refresh(program)
             return program
         
+        except HTTPException:
+            self.db.rollback()
+            raise
+
         except SQLAlchemyError as e:
             self.db.rollback()
             raise HTTPException(
@@ -235,6 +387,19 @@ class MasterRepository:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching department by name: {str(e)}",
+            )
+
+    def get_department_by_code(self, department_code: str):
+        try:
+            return (
+                self.db.query(Department)
+                .filter(Department.department_code == department_code)
+                .first()
+            )
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while fetching department by code: {str(e)}",
             )
 
 

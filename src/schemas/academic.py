@@ -1,28 +1,9 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-class SchemeBase(BaseModel):
-    programe_id: int
-    regulation_year: str
-    program_pattern: str
-    program_pattern_no: int
-
-class SchemeCreate(SchemeBase):
-    pass
-
-class SchemeUpdate(BaseModel):
-    regulation_year: str | None = None
-    program_pattern: str | None = None
-    program_pattern_no: int | None = None
-
-class SchemeResponse(SchemeBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
 class SemesterBase(BaseModel):
-    scheme_id: int
+    program_id: int
+    program_code: Optional[str] = None
     semester_no: int
     semester_name: str
 
@@ -35,6 +16,22 @@ class SemesterUpdate(BaseModel):
 
 class SemesterResponse(SemesterBase):
     id: int
+
+    class Config:
+        from_attributes = True
+
+class ProgramSemesterItem(BaseModel):
+    semester_no: int
+    semester_name: str
+
+    class Config:
+        from_attributes = True
+
+class ProgramSemesterResponse(BaseModel):
+    program_id: int
+    program_code: Optional[str] = None
+    department_code: Optional[str] = None
+    semesters: List[ProgramSemesterItem]
 
     class Config:
         from_attributes = True

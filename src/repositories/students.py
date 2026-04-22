@@ -240,8 +240,8 @@ class StudentRepository(BaseRepository[Student]):
 
             program_code = program.programe_code
             batch = program.batch
-            admission_year = program.admission_year
-            admyr = admission_year.split("-")[0]
+            academic_year = program.academic_year
+            admyr = academic_year.split("-")[0]
             # --- 2. Get last registration number (only 1 DB call) ---
             last_student = self.get_last_sync_student(program_code)
             last_reg_no = last_student.registration_no if last_student else None
@@ -252,7 +252,7 @@ class StudentRepository(BaseRepository[Student]):
             # This ensures correct data types before proceeding
             student_data['registration_no'] = registration_number  # Add generated reg no
             student_data['batch'] = batch
-            student_data['admission_year'] = admission_year
+            student_data['admission_year'] = academic_year
             student_data['semester_id'] = 1
             
             student_schema = StudentBase(**student_data)

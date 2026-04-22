@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from src.repositories.master import MasterRepository
 from src.models.master import *
 from src.schemas.master import *
+from src.schemas.academic import ProgramSemesterResponse, ProgramSemesterItem
 from fastapi import HTTPException, status
 from typing import List
 from src.services.student_service import StudentService
@@ -76,6 +77,62 @@ class MasterService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while fetching program by code: {str(e)}",
+            )
+
+    def list_program_semesters(self, programe_id: int) -> ProgramSemesterResponse:
+        try:
+            program = self.repo.get_by_id(programe_id)
+            if not program:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Program not found",
+                )
+
+            semesters = self.repo.get_semesters_by_program_id(programe_id)
+            return ProgramSemesterResponse(
+                program_id=program.id,
+                program_code=program.programe_code,
+                department_code=program.department_code,
+                semesters=[
+                    ProgramSemesterItem(
+                        semester_no=semester.semester_no,
+                        semester_name=semester.semester_name,
+                    )
+                    for semester in semesters
+                ],
+            )
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while fetching semesters: {str(e)}",
+            )
+
+    def list_all_semesters(self) -> List[ProgramSemesterResponse]:
+        try:
+            programs = self.repo.get_programs_with_semesters()
+            return [
+                ProgramSemesterResponse(
+                    program_id=program.id,
+                    program_code=program.programe_code,
+                    department_code=program.department_code,
+                    semesters=[
+                        ProgramSemesterItem(
+                            semester_no=semester.semester_no,
+                            semester_name=semester.semester_name,
+                        )
+                        for semester in sorted(program.semesters, key=lambda item: item.semester_no)
+                    ],
+                )
+                for program in programs
+            ]
+        except HTTPException:
+            raise
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error while listing semesters: {str(e)}",
             )
 
     def update_program_payment_workflow(
@@ -385,12 +442,28 @@ class MasterService:
         
     def create_department(self, data: DepartmentBase) -> DepartmentResponse:
         try:
+            department_code = data.department_code.strip()
+            if not department_code:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Department code is required.",
+                )
+
             existing = self.repo.get_department_by_name(data.name)
             if existing:
                 raise HTTPException(
                     status_code=status.HTTP_409_CONFLICT,
                     detail=f"Department '{data.name}' already exists.",
                 )
+
+            existing_code = self.repo.get_department_by_code(department_code)
+            if existing_code:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=f"Department code '{department_code}' already exists.",
+                )
+
+            data.department_code = department_code
             
             department = self.repo.create_fields(data=data, model=Department, response_model=DepartmentOut)
 
@@ -449,6 +522,21 @@ class MasterService:
         
     def update_department(self, department_id: int, data: DepartmentUpdate) -> DepartmentUpdateResponse:
         try:
+            if data.department_code is not None:
+                department_code = data.department_code.strip()
+                if not department_code:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Department code cannot be empty.",
+                    )
+
+                existing_code = self.repo.get_department_by_code(department_code)
+                if existing_code and existing_code.id != department_id:
+                    raise HTTPException(
+                        status_code=status.HTTP_409_CONFLICT,
+                        detail=f"Department code '{department_code}' already exists.",
+                    )
+                data.department_code = department_code
             updated_department = self.repo.update_department(department_id, data.dict(exclude_unset=True))
             return DepartmentUpdateResponse(
                 message="Department updated successfully",

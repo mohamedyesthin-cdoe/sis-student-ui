@@ -85,14 +85,11 @@ class RegistrationExamService:
                 if self.exam_repo.exam_registration_exists(student.id, exam_id):
                     continue
                 
-                scheme_id = self.exam_repo.get_semester_by_id(semester_id)
-
                 # 2️⃣ Create Exam Registration
                 exam_registration = self.exam_repo.create_registration({
                     "student_id": student.id,
                     "exam_id": exam_id,
                     "semester_id": semester_id,
-                    "scheme_id": scheme_id.scheme_id,
                 }, commit=False)
 
                 # 3️⃣ Get Arrear Components
@@ -199,4 +196,3 @@ class RegistrationExamService:
         except Exception:
             self.exam_repo.rollback()
             raise
-

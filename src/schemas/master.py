@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
+from src.schemas.academic import SemesterResponse
 
 class FeeSchema(BaseModel):
     semester: str
@@ -23,14 +24,15 @@ class FeeUpdate(FeeSchema):
 # ----------------------------
 class ProgrameBase(BaseModel):
     id: Optional[int] = None
+    department_id: Optional[int] = None
+    department_code: Optional[str] = None
     programe: str
     short_name: Optional[str] = None
     programe_code: str
     duration: Optional[str] = None
     category: Optional[str] = None
-    faculty: Optional[str] = None
     batch: Optional[str] = None
-    admission_year: Optional[str] = None
+    academic_year: Optional[str] = None
     pending_payment_workflow_enabled: bool = False
 
     class Config:
@@ -44,7 +46,6 @@ class ProgrameOut(BaseModel):
     des: Optional[str] = None
     cshort: Optional[str] = None
     duration: Optional[str] = None
-    faculty: Optional[str] = None
 
 class ProgramListResponse(BaseModel):
     code: int
@@ -56,13 +57,14 @@ class ProgrameCreate(ProgrameBase):
     fee: Optional[List[FeeSchema]] = None
 
 class ProgrameUpdate(BaseModel):
+    department_id: Optional[int] = None
+    department_code: Optional[str] = None
     programe: Optional[str] = None
     programe_code: Optional[str] = None
     duration: Optional[str] = None
     category: Optional[str] = None
-    faculty: Optional[str] = None
     batch: Optional[str] = None
-    admission_year: Optional[str] = None
+    academic_year: Optional[str] = None
     pending_payment_workflow_enabled: Optional[bool] = None
     fee: Optional[List[FeeUpdate]] = None
 
@@ -70,6 +72,7 @@ class ProgrameUpdate(BaseModel):
 class ProgrameResponse(ProgrameBase):
     id: int
     fee: Optional[List[FeeSchema]]
+    semesters: Optional[List[SemesterResponse]] = None
     created_at: datetime
     updated_at: Optional[datetime]
 
@@ -88,6 +91,8 @@ class Programeout(ProgrameBase):
 
 class OfferingResponse(BaseModel):
     id: int
+    department_id: Optional[int] = None
+    department_code: Optional[str] = None
     programe: str
     short_name: Optional[str] = None
     programe_code: str
@@ -235,6 +240,7 @@ class SyllabusResponse(BaseModel):
 
 class DepartmentBase(BaseModel):
     name: str
+    department_code: str
 
     class Config:
         from_attributes = True
@@ -259,6 +265,7 @@ class DepartmentResponse(BaseModel):
 
 class DepartmentUpdate(BaseModel):
     name: Optional[str] = None
+    department_code: Optional[str] = None
 
 class DepartmentUpdateResponse(BaseModel):
     message: str

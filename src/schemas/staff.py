@@ -42,7 +42,7 @@ class StaffBase(BaseModel):
     dob: Optional[date] = None
     gender: Optional[str] = None
     faculty: Optional[str] = None
-    department_id: Optional[int] = None
+    department_code: Optional[int] = Field(default=None, validation_alias="department_id")
     department_name: Optional[str] = None
     designation: Optional[str] = None
     qualification: Optional[str] = None
@@ -93,7 +93,7 @@ class StaffUpdate(BaseModel):
     dob: Optional[date] = None
     gender: Optional[str] = None
     faculty: Optional[str] = None
-    department_id: Optional[int] = None
+    department_code: Optional[int] = Field(default=None, validation_alias="department_id")
     designation: Optional[str] = None
     qualification: Optional[str] = None
     specialization: Optional[str] = None

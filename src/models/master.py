@@ -8,15 +8,16 @@ class Programe(AuditableBase):
     __tablename__ = "programs"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
+    department_id = Column(Integer, ForeignKey("departments.id", ondelete="SET NULL"), nullable=True, index=True)
+    department_code = Column(String(50), nullable=True, index=True)
     programe = Column(String(100), nullable=False, unique=True, index=True)
     short_name = Column(String(20), nullable=True)
     programe_code = Column(String(50), nullable=False, unique=True)
     duration = Column(String(20), nullable=True)
     category = Column(String(50), nullable=True)
-    faculty = Column(String(100), nullable=True)
     application_code = Column(String(30), nullable=True)
     batch = Column(String(10))
-    admission_year = Column(String(10))
+    academic_year = Column(String(10))
     pending_payment_workflow_enabled = Column(Boolean, default=False, nullable=False)
     
     fee = relationship("FeeDetails", back_populates="programe")
@@ -26,7 +27,12 @@ class Programe(AuditableBase):
         cascade="all, delete-orphan"
     )
     syllabuses = relationship("Subjects", back_populates="programe")
-    schemes = relationship("Scheme", back_populates="programe")
+    semesters = relationship(
+        "Semester",
+        back_populates="program",
+        cascade="all, delete-orphan",
+    )
+    department = relationship("Department", back_populates="programs")
     #batches = relationship("Batch", back_populates="programe")
     #student = relationship("Student", back_populates="program")
 
@@ -133,8 +139,10 @@ class Department(Base):
     __tablename__ = "departments"
     id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     name = Column(String, unique=True, nullable=True)
+    department_code = Column(String(50), unique=True, nullable=True, index=True)
 
     staff = relationship("Staff", back_populates="department")
+    programs = relationship("Programe", back_populates="department")
 
 
 class ProgramPaymentWorkflowScope(AuditableBase):

@@ -172,7 +172,6 @@ class ApiService:
                     "des": data["programe"],
                     "cshort": data["short_name"],
                     "duration": data["duration"],
-                    "faculty": data["faculty"]
                 }
                 course_data.append(dic)
             return {
@@ -638,7 +637,7 @@ class ApiService:
     # def get_all_students_fees(self) -> StudentFeeFlatResponse:
     #     students = self.repo.get_fees()
     #     program = self.repo.db.query(Programe).first()
-    #     admyr = program.admission_year if program else None
+    #     admyr = program.academic_year if program else None
 
     #     result: list[StudentFeeFlat] = []
 
@@ -707,7 +706,7 @@ class ApiService:
         )
 
         program = self.repo.db.query(Programe).first()
-        admyr = program.admission_year if program else None
+        admyr = program.academic_year if program else None
 
         result: list[StudentFeeFlat] = []
 

@@ -22,13 +22,13 @@ class ApiRepository:
     ) -> Tuple[List[Student], Optional[str], Optional[str]]:
         """Fetch paginated students with payment details."""
         program = self.db.query(Programe).first()
-        admission_year = program.admission_year if program else None
+        academic_year = program.academic_year if program else None
         query = self.db.query(Student).options(
             joinedload(Student.programe),
             joinedload(Student.address_details),
             joinedload(Student.payments).joinedload(Payment.semester_fee),
             joinedload(Student.payments).joinedload(Payment.application_fee)
-        ).filter(Student.admission_year == admission_year).order_by(Student.id)
+        ).filter(Student.admission_year == academic_year).order_by(Student.id)
 
         students = []
     
@@ -104,7 +104,7 @@ class ApiRepository:
     ):
 
         program = self.db.query(Programe).first()
-        admission_year = program.admission_year if program else None
+        academic_year = program.academic_year if program else None
         query = (
             self.db.query(Student)
             .options(
@@ -112,7 +112,7 @@ class ApiRepository:
                     .joinedload(Payment.application_fee),
                 joinedload(Student.payments)
                     .joinedload(Payment.semester_fee),
-            ).filter(Student.admission_year == admission_year)
+            ).filter(Student.admission_year == academic_year)
             .order_by(Student.id.asc())
         )
         print(query)

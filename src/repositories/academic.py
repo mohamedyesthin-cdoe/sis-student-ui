@@ -2,72 +2,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from src.models.academic import *
 
-class SchemeRepository:
-    def __init__(self, db: Session):
-        self.db = db
-
-    def create_scheme(self, scheme_data: dict) -> Scheme:
-        try:
-            scheme = Scheme(**scheme_data)
-            self.db.add(scheme)
-            self.db.commit()
-            self.db.refresh(scheme)
-            return scheme
-
-        except IntegrityError:
-            self.db.rollback()
-            raise
-
-        except SQLAlchemyError:
-            self.db.rollback()
-            raise
-
-    def get_scheme(self, scheme_id: int) -> Scheme | None:
-        return (
-            self.db.query(Scheme)
-            .filter(Scheme.id == scheme_id)
-            .first()
-        )
-
-    def update_scheme(self, scheme_id: int, update_data: dict) -> Scheme | None:
-        scheme = self.get_scheme(scheme_id)
-        if not scheme:
-            return None
-
-        try:
-            for key, value in update_data.items():
-                if hasattr(scheme, key):   # 🔒 protect model
-                    setattr(scheme, key, value)
-
-            self.db.commit()
-            self.db.refresh(scheme)
-            return scheme
-
-        except IntegrityError:
-            self.db.rollback()
-            raise
-
-        except SQLAlchemyError:
-            self.db.rollback()
-            raise
-
-    def delete_scheme(self, scheme_id: int) -> bool:
-        scheme = self.get_scheme(scheme_id)
-        if not scheme:
-            return False
-
-        try:
-            self.db.delete(scheme)
-            self.db.commit()
-            return True
-
-        except SQLAlchemyError:
-            self.db.rollback()
-            raise
-
-    def list_schemes(self) -> list[Scheme]:
-        return self.db.query(Scheme).all()
-
 class SemesterRepository:
     def __init__(self, db: Session):
         self.db = db
@@ -134,7 +68,7 @@ class SemesterRepository:
     def list_semesters(self) -> list[Semester]:
         from sqlalchemy.orm import joinedload
         query = self.db.query(Semester).options(
-            joinedload(Semester.scheme).joinedload(Scheme.programe)
+            joinedload(Semester.program)
         )
         return query.all()    
     

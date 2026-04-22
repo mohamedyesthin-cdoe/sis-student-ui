@@ -16,7 +16,6 @@ class Exam(AuditableBase):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    scheme_id = Column(Integer, ForeignKey("schemes.id"), nullable=False)
     semester_id = Column(Integer, ForeignKey("semesters.id"), nullable=False)
 
     exam_name = Column(String(100), nullable=False)
@@ -24,7 +23,6 @@ class Exam(AuditableBase):
     month_year = Column(String(20), nullable=False)
     is_published = Column(Boolean, default=False)
 
-    scheme = relationship("Scheme", back_populates="exams")
     semester = relationship("Semester", back_populates="exams")
 
     timetable = relationship("ExamTimeTable", back_populates="exam")
@@ -62,7 +60,6 @@ class StudentExamRegistration(AuditableBase):
 
     student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
     exam_id = Column(Integer, ForeignKey("exams.id"), nullable=False)
-    scheme_id = Column(Integer, ForeignKey("schemes.id"), nullable=False)
     semester_id = Column(Integer, ForeignKey("semesters.id"), nullable=False)
 
     is_eligible = Column(Boolean, default=True)
@@ -71,7 +68,6 @@ class StudentExamRegistration(AuditableBase):
     exam = relationship("Exam", back_populates="registrations")
     student = relationship("Student", back_populates="exam_registrations")
     semester = relationship("Semester", back_populates="exam_registrations")
-    scheme = relationship("Scheme", back_populates="exam_registrations")
 
     courses = relationship("StudentCourseRegistration", back_populates="exam_registration")
 

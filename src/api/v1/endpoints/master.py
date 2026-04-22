@@ -4,6 +4,7 @@ from typing import List, Optional
 from src.services.master import MasterService
 from src.models.user import User
 from src.schemas.master import *
+from src.schemas.academic import ProgramSemesterResponse
 from src.db.session import get_db
 from src.core.security.dependencies import require_superuser
 from src.core.security.jwt import verify_api_key
@@ -163,6 +164,32 @@ def get_program_by_id(programe_id: int, db: Session = Depends(get_db), current_u
         service = MasterService(db)
         program = service.get_program_by_id_with_fees(programe_id)
         return program
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+@router.get("/programe/{programe_id}/semesters", response_model=ProgramSemesterResponse)
+def get_program_semesters(programe_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_program_semesters(programe_id)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Unexpected error in endpoint: {str(e)}",
+        )
+
+@router.get("/semesters", response_model=List[ProgramSemesterResponse], tags=["Semesters"])
+def list_semesters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    try:
+        service = MasterService(db)
+        return service.list_all_semesters()
     except HTTPException:
         raise
     except Exception as e:
@@ -518,6 +545,3 @@ def delete_batch(batch_id: int, db: Session = Depends(get_db), current_user: Use
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Unexpected error in endpoint: {str(e)}",
         )
-
-
-

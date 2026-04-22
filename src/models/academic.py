@@ -1,34 +1,19 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, Boolean, UniqueConstraint,Enum, Date
-from sqlalchemy.sql import func
+from sqlalchemy import Column, String, Integer, ForeignKey, Boolean, UniqueConstraint, Enum, Date
 from src.db.session import Base
 from src.models.base import AuditableBase
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
-class Scheme(AuditableBase):
-    __tablename__ = "schemes"
-    
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    programe_id = Column(Integer, ForeignKey("programs.id"))
-    regulation_year = Column(String(10), nullable=False)
-    program_pattern = Column(String(50), nullable=False)
-    program_pattern_no = Column(Integer, nullable=False)
-    
-    programe = relationship("Programe", back_populates="schemes")
-    semesters = relationship("Semester", back_populates="scheme")
-    exams = relationship("Exam", back_populates="scheme")
-    exam_registrations = relationship("StudentExamRegistration", back_populates="scheme")
-
-
 class Semester(AuditableBase):
     __tablename__ = "semesters"
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    scheme_id = Column(Integer, ForeignKey("schemes.id"))
+    program_id = Column(Integer, ForeignKey("programs.id", ondelete="CASCADE"), nullable=False, index=True)
+    program_code = Column(String(50), nullable=True, index=True)
     semester_no = Column(Integer, nullable=False)
     semester_name = Column(String(50), nullable=False)    
     
-    scheme = relationship("Scheme", back_populates="semesters")
+    program = relationship("Programe", back_populates="semesters")
     courses = relationship("Course", back_populates="semester")
     exams = relationship("Exam", back_populates="semester")
     exam_registrations = relationship("StudentExamRegistration", back_populates="semester")

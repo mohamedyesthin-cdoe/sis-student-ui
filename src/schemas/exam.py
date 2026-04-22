@@ -3,7 +3,6 @@ from typing import List, Optional
 from datetime import date, time
 
 class ExamBase(BaseModel):
-    scheme_id: int
     semester_id: int
     exam_name: str
     exam_type: str

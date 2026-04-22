@@ -1,37 +1,8 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.models.academic import Scheme, Semester, Course, CourseComponent
+from src.models.academic import Semester, Course, CourseComponent
 from src.repositories.academic import *
 
-class SchemeService:
-    def __init__(self, db: Session):
-        self.scheme_repo = SchemeRepository(db)
-
-    def create_scheme(self, scheme_data) -> Scheme:
-        data = scheme_data.dict() if hasattr(scheme_data, "dict") else scheme_data
-        return self.scheme_repo.create_scheme(data)
-
-    def get_scheme(self, scheme_id: int) -> Scheme:
-        scheme = self.scheme_repo.get_scheme(scheme_id)
-        if not scheme:
-            raise HTTPException(status_code=404, detail="Scheme not found")
-        return scheme
-
-    def update_scheme(self, scheme_id: int, update_data:dict) -> Scheme:
-        scheme = self.scheme_repo.update_scheme(scheme_id, update_data)
-        if not scheme:
-            raise HTTPException(status_code=404, detail="Scheme not found")
-        return scheme
-
-    def delete_scheme(self, scheme_id: int) -> bool:
-        success = self.scheme_repo.delete_scheme(scheme_id)
-        if not success:
-            raise HTTPException(status_code=404, detail="Scheme not found")
-        return success
-
-    def list_schemes(self) -> list[Scheme]:
-        return self.scheme_repo.list_schemes()
-    
 class SemesterService:
     def __init__(self, db: Session):
         self.semester_repo = SemesterRepository(db)

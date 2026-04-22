@@ -21,7 +21,7 @@ class Staff(Base):
     dob = Column(Date, nullable=True)
     gender = Column(String(10), nullable=True)
     faculty = Column(String(30), default=False)
-    department_id = Column(Integer, ForeignKey("departments.id"))
+    department_code = Column(Integer, ForeignKey("departments.id"))
     designation = Column(String(100), nullable=True)
     qualification = Column(String(150), nullable=True)
     specialization = Column(String(150), nullable=True)

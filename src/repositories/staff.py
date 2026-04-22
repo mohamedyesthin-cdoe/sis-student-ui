@@ -79,7 +79,7 @@ class StaffRepository(BaseRepository[Staff]):
                 )
                 .outerjoin(
                     Department,
-                    Staff.department_id == Department.id
+                    Staff.department_code == Department.id
                 )
                 .all()
             )
@@ -112,7 +112,7 @@ class StaffRepository(BaseRepository[Staff]):
                 )
                 .outerjoin(
                     Department,
-                    Staff.department_id == Department.id,
+                    Staff.department_code == Department.id,
                 )
                 .filter(Staff.id == staff_id)
                 .first()

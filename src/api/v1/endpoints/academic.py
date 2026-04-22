@@ -8,58 +8,6 @@ from src.core.security.dependencies import require_superuser
 
 router = APIRouter()
 
-@router.post("/schemes", response_model=SchemeResponse, tags=["Schemes"])
-def create_scheme(scheme_data: SchemeCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SchemeService(db)
-    return service.create_scheme(scheme_data)
-
-@router.get("/schemes/{scheme_id}", tags=["Schemes"])
-def get_scheme(scheme_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SchemeService(db)
-    return service.get_scheme(scheme_id)
-
-@router.put("/schemes/{scheme_id}", response_model=SchemeResponse, tags=["Schemes"])
-def update_scheme(scheme_id: int, update_data: SchemeUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SchemeService(db)
-    update_dict = update_data.model_dump(exclude_unset=True)
-    return service.update_scheme(scheme_id, update_dict)
-
-@router.delete("/schemes/{scheme_id}", tags=["Schemes"])
-def delete_scheme(scheme_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SchemeService(db)
-    return service.delete_scheme(scheme_id)
-
-@router.get("/schemes", tags=["Schemes"])
-def list_schemes(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SchemeService(db)
-    return service.list_schemes()
-
-@router.post("/semesters", response_model=SemesterResponse, tags=["Semesters"])
-def create_semester(semester_data: SemesterCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SemesterService(db)
-    return service.create_semester(semester_data)
-
-@router.get("/semesters/{semester_id}", tags=["Semesters"])
-def get_semester(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SemesterService(db)
-    return service.get_semester(semester_id)
-
-@router.put("/semesters/{semester_id}", response_model=SemesterResponse, tags=["Semesters"])
-def update_semester(semester_id: int, update_data: SemesterUpdate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SemesterService(db)
-    update_dict = update_data.model_dump(exclude_unset=True)
-    return service.update_semester(semester_id, update_dict)
-
-@router.delete("/semesters/{semester_id}" , tags=["Semesters"])
-def delete_semester(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SemesterService(db)
-    return service.delete_semester(semester_id)
-
-@router.get("/semesters" , tags=["Semesters"])
-def list_semesters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = SemesterService(db)
-    return service.list_semesters()
-
 @router.post("/courses", response_model=CourseResponse , tags=["Courses"])
 def create_course(course_data: CourseCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     service = CourseService(db)
