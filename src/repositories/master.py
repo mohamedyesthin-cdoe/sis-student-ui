@@ -109,22 +109,37 @@ class MasterRepository:
         return [dict(row) for row in rows]
 
     def _fetch_legacy_program_rows(self, program_id: Optional[int] = None) -> list[SimpleNamespace]:
-        stmt = sa.text(
-            """
+        bind = self.db.get_bind() or self.db.bind
+        if bind is None:
+            return []
+
+        inspector = sa.inspect(bind)
+        program_columns = {col["name"] for col in inspector.get_columns("programs")} if inspector.has_table("programs") else set()
+
+        select_parts = ["p.id AS id"]
+        for column_name in [
+            "department_id",
+            "department_code",
+            "programe",
+            "short_name",
+            "programe_code",
+            "duration",
+            "category",
+            "application_code",
+            "batch",
+            "academic_year",
+            "admission_year",
+            "pending_payment_workflow_enabled",
+            "created_at",
+            "updated_at",
+            "faculty",
+        ]:
+            if column_name in program_columns:
+                select_parts.append(f"p.{column_name} AS {column_name}")
+
+        stmt_sql = f"""
             SELECT
-                p.id AS id,
-                p.department_code AS department_code,
-                p.programe AS programe,
-                p.short_name AS short_name,
-                p.programe_code AS programe_code,
-                p.duration AS duration,
-                p.category AS category,
-                p.application_code AS application_code,
-                p.batch AS batch,
-                p.academic_year AS academic_year,
-                p.pending_payment_workflow_enabled AS pending_payment_workflow_enabled,
-                p.created_at AS created_at,
-                p.updated_at AS updated_at,
+                {", ".join(select_parts)},
                 f.id AS fee_id,
                 f.programe_id AS fee_programe_id,
                 f.semester AS fee_semester,
@@ -137,42 +152,13 @@ class MasterRepository:
                 f.total_fee AS fee_total_fee
             FROM programs p
             LEFT JOIN fee_details f ON f.programe_id = p.id
-            """
-        )
+        """
         params: dict[str, object] = {}
         if program_id is not None:
-            stmt = sa.text(
-                """
-                SELECT
-                    p.id AS id,
-                    p.department_code AS department_code,
-                    p.programe AS programe,
-                    p.short_name AS short_name,
-                    p.programe_code AS programe_code,
-                    p.duration AS duration,
-                    p.category AS category,
-                    p.application_code AS application_code,
-                    p.batch AS batch,
-                    p.academic_year AS academic_year,
-                    p.pending_payment_workflow_enabled AS pending_payment_workflow_enabled,
-                    p.created_at AS created_at,
-                    p.updated_at AS updated_at,
-                    f.id AS fee_id,
-                    f.programe_id AS fee_programe_id,
-                    f.semester AS fee_semester,
-                    f.application_fee AS fee_application_fee,
-                    f.admission_fee AS fee_admission_fee,
-                    f.tuition_fee AS fee_tuition_fee,
-                    f.exam_fee AS fee_exam_fee,
-                    f.lms_fee AS fee_lms_fee,
-                    f.lab_fee AS fee_lab_fee,
-                    f.total_fee AS fee_total_fee
-                FROM programs p
-                LEFT JOIN fee_details f ON f.programe_id = p.id
-                WHERE p.id = :program_id
-                """
-            )
+            stmt_sql += " WHERE p.id = :program_id"
             params["program_id"] = program_id
+
+        stmt = sa.text(stmt_sql)
 
         rows = self.db.execute(stmt, params).mappings().all()
         grouped: dict[int, dict] = {}
@@ -183,19 +169,19 @@ class MasterRepository:
                 program_id_value,
                 {
                     "id": row["id"],
-                    "department_id": None,
-                    "department_code": row["department_code"],
-                    "programe": row["programe"],
-                    "short_name": row["short_name"],
-                    "programe_code": row["programe_code"],
-                    "duration": row["duration"],
-                    "category": row["category"],
-                    "application_code": row["application_code"],
-                    "batch": row["batch"],
-                    "academic_year": row["academic_year"],
-                    "pending_payment_workflow_enabled": row["pending_payment_workflow_enabled"],
-                    "created_at": row["created_at"],
-                    "updated_at": row["updated_at"],
+                    "department_id": row.get("department_id"),
+                    "department_code": row.get("department_code"),
+                    "programe": row.get("programe"),
+                    "short_name": row.get("short_name"),
+                    "programe_code": row.get("programe_code"),
+                    "duration": row.get("duration"),
+                    "category": row.get("category"),
+                    "application_code": row.get("application_code"),
+                    "batch": row.get("batch"),
+                    "academic_year": row.get("academic_year") or row.get("admission_year"),
+                    "pending_payment_workflow_enabled": row.get("pending_payment_workflow_enabled"),
+                    "created_at": row.get("created_at"),
+                    "updated_at": row.get("updated_at"),
                     "fee": [],
                 },
             )
