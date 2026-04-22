@@ -1,3 +1,4 @@
+import sqlalchemy as sa
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from typing import List, Optional
@@ -19,6 +20,80 @@ class MasterRepository:
     def __init__(self, db: Session):
         self.db = db
         self.model = Programe
+
+    def _semesters_use_program_id(self) -> bool:
+        bind = self.db.get_bind() or self.db.bind
+        if bind is None:
+            return False
+
+        inspector = sa.inspect(bind)
+        if not inspector.has_table("semesters"):
+            return False
+
+        semester_columns = {col["name"] for col in inspector.get_columns("semesters")}
+        return "program_id" in semester_columns
+
+    def _fetch_semester_rows(self, program_id: Optional[int] = None) -> list[dict]:
+        if self._semesters_use_program_id():
+            query = (
+                self.db.query(
+                    Semester.id.label("id"),
+                    Semester.program_id.label("program_id"),
+                    Semester.program_code.label("program_code"),
+                    Semester.semester_no.label("semester_no"),
+                    Semester.semester_name.label("semester_name"),
+                )
+            )
+            if program_id is not None:
+                query = query.filter(Semester.program_id == program_id)
+
+            rows = query.order_by(Semester.semester_no.asc(), Semester.id.asc()).all()
+            return [dict(row._mapping) for row in rows]
+
+        if not self.db.bind:
+            return []
+
+        stmt = sa.text(
+            """
+            SELECT
+                s.id AS id,
+                sc.programe_id AS program_id,
+                p.programe_code AS program_code,
+                s.semester_no AS semester_no,
+                s.semester_name AS semester_name
+            FROM semesters s
+            JOIN schemes sc ON sc.id = s.scheme_id
+            JOIN programs p ON p.id = sc.programe_id
+            """
+        )
+        params: dict[str, object] = {}
+        if program_id is not None:
+            stmt = sa.text(
+                """
+                SELECT
+                    s.id AS id,
+                    sc.programe_id AS program_id,
+                    p.programe_code AS program_code,
+                    s.semester_no AS semester_no,
+                    s.semester_name AS semester_name
+                FROM semesters s
+                JOIN schemes sc ON sc.id = s.scheme_id
+                JOIN programs p ON p.id = sc.programe_id
+                WHERE sc.programe_id = :program_id
+                """
+            )
+            params["program_id"] = program_id
+
+        stmt = stmt.columns(
+            id=sa.Integer(),
+            program_id=sa.Integer(),
+            program_code=sa.String(),
+            semester_no=sa.Integer(),
+            semester_name=sa.String(),
+        ).bindparams(**{k: sa.bindparam(k) for k in params})
+
+        rows = self.db.execute(stmt, params).mappings().all()
+        return [dict(row) for row in rows]
 
     def _semester_count_from_duration(self, duration: Optional[str]) -> int:
         if not duration:
@@ -77,6 +152,9 @@ class MasterRepository:
         return department
 
     def _sync_program_semester_codes(self, program: Programe) -> None:
+        if not self._semesters_use_program_id():
+            return
+
         if not program.semesters:
             return
 
@@ -94,6 +172,17 @@ class MasterRepository:
             )
             program_data["department_id"] = department.id
             program_data["department_code"] = department.department_code
+
+            if not self._semesters_use_program_id():
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail=(
+                        "Legacy semester schema detected in UAT. "
+                        "Run the semester refactor migration so semesters include program_id "
+                        "before creating programs."
+                    ),
+                )
+
             obj = self.model(**program_data)
             self.db.add(obj)
             self.db.flush()  # ensures obj.id is available
@@ -137,7 +226,6 @@ class MasterRepository:
                 .options(
                     joinedload(self.model.fee),  # eager load fees
                     joinedload(self.model.department),
-                    joinedload(self.model.semesters),
                 )
                 .all()
             )
@@ -172,7 +260,6 @@ class MasterRepository:
                 .options(
                     joinedload(self.model.fee),
                     joinedload(self.model.department),
-                    joinedload(self.model.semesters),
                 )
                 .filter(self.model.id == programe_id)
                 .first()
@@ -183,27 +270,18 @@ class MasterRepository:
                 detail=f"Database error while fetching program with fees by id: {str(e)}",
             )
 
-    def get_semesters_by_program_id(self, programe_id: int) -> List[Semester]:
+    def get_semesters_by_program_id(self, programe_id: int) -> List[dict]:
         try:
-            return (
-                self.db.query(Semester)
-                .filter(Semester.program_id == programe_id)
-                .order_by(Semester.semester_no.asc())
-                .all()
-            )
+            return self._fetch_semester_rows(programe_id)
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Database error while fetching semesters by program id: {str(e)}",
             )
 
-    def get_all_semesters(self) -> List[Semester]:
+    def get_all_semesters(self) -> List[dict]:
         try:
-            return (
-                self.db.query(Semester)
-                .order_by(Semester.program_id.asc(), Semester.semester_no.asc())
-                .all()
-            )
+            return self._fetch_semester_rows()
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -212,14 +290,7 @@ class MasterRepository:
 
     def get_programs_with_semesters(self) -> List[Programe]:
         try:
-            return (
-                self.db.query(Programe)
-                .options(
-                    joinedload(Programe.semesters),
-                )
-                .order_by(Programe.id.asc())
-                .all()
-            )
+            return self.db.query(Programe).order_by(Programe.id.asc()).all()
         except SQLAlchemyError as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

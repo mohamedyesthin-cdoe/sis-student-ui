@@ -11,9 +11,55 @@ class MasterService:
     def __init__(self, db: Session):
         self.repo = MasterRepository(db)
 
+    def _serialize_fee(self, fee: FeeDetails) -> dict:
+        return {
+            "id": fee.id,
+            "semester": fee.semester,
+            "application_fee": fee.application_fee,
+            "admission_fee": fee.admission_fee,
+            "tuition_fee": fee.tuition_fee,
+            "exam_fee": fee.exam_fee,
+            "lms_fee": fee.lms_fee,
+            "lab_fee": fee.lab_fee,
+            "total_fee": fee.total_fee,
+        }
+
+    def _serialize_program(self, program: Programe, semester_rows: list[dict]) -> dict:
+        semesters = [
+            {
+                "id": row["id"],
+                "program_id": row["program_id"],
+                "program_code": row.get("program_code"),
+                "semester_no": row["semester_no"],
+                "semester_name": row["semester_name"],
+            }
+            for row in semester_rows
+        ]
+
+        return {
+            "id": program.id,
+            "department_id": program.department_id,
+            "department_code": program.department_code,
+            "programe": program.programe,
+            "short_name": program.short_name,
+            "programe_code": program.programe_code,
+            "duration": program.duration,
+            "category": program.category,
+            "batch": program.batch,
+            "academic_year": program.academic_year,
+            "pending_payment_workflow_enabled": program.pending_payment_workflow_enabled,
+            "fee": [self._serialize_fee(fee) for fee in (program.fee or [])],
+            "semesters": semesters,
+            "created_at": program.created_at,
+            "updated_at": program.updated_at,
+        }
+
     def create_program(self, data: ProgrameCreate) -> ProgrameResponse:
         try:
-            return self.repo.create_program(data)
+            program = self.repo.create_program(data)
+            program = self.repo.get_by_id_with_fees(program.id) or program
+            semester_rows = self.repo.get_semesters_by_program_id(program.id)
+            return self._serialize_program(program, semester_rows)
         except HTTPException:
             # bubble up repo errors
             raise
@@ -25,7 +71,20 @@ class MasterService:
         
     def list_programs(self) -> List[ProgrameResponse]:
         try:
-            return self.repo.get_all_programs()
+            programs = self.repo.get_all_programs()
+            semester_rows = self.repo.get_all_semesters()
+            semesters_by_program: dict[int, list[dict]] = {}
+
+            for row in semester_rows:
+                semesters_by_program.setdefault(row["program_id"], []).append(row)
+
+            return [
+                self._serialize_program(
+                    program,
+                    semesters_by_program.get(program.id, []),
+                )
+                for program in programs
+            ]
         except HTTPException:
             raise
         except Exception as e:
@@ -36,7 +95,10 @@ class MasterService:
         
     def update_programe(self, programe_id: int, data: ProgrameUpdate) -> ProgrameResponse:
         try:
-            return self.repo.update_program(programe_id, data)
+            program = self.repo.update_program(programe_id, data)
+            program = self.repo.get_by_id_with_fees(program.id) or program
+            semester_rows = self.repo.get_semesters_by_program_id(program.id)
+            return self._serialize_program(program, semester_rows)
         except HTTPException:
             raise
         except Exception as e:
@@ -47,13 +109,14 @@ class MasterService:
         
     def get_program_by_id_with_fees(self, programe_id: int) -> Programe:
         try:
-            program = self.repo.get_by_id(programe_id)
+            program = self.repo.get_by_id_with_fees(programe_id)
             if not program:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Program not found",
             )
-            return program
+            semester_rows = self.repo.get_semesters_by_program_id(program.id)
+            return self._serialize_program(program, semester_rows)
         except HTTPException:
             raise
         except Exception as e:
@@ -95,8 +158,8 @@ class MasterService:
                 department_code=program.department_code,
                 semesters=[
                     ProgramSemesterItem(
-                        semester_no=semester.semester_no,
-                        semester_name=semester.semester_name,
+                        semester_no=semester["semester_no"],
+                        semester_name=semester["semester_name"],
                     )
                     for semester in semesters
                 ],
@@ -112,6 +175,12 @@ class MasterService:
     def list_all_semesters(self) -> List[ProgramSemesterResponse]:
         try:
             programs = self.repo.get_programs_with_semesters()
+            semester_rows = self.repo.get_all_semesters()
+            semesters_by_program: dict[int, list[dict]] = {}
+
+            for row in semester_rows:
+                semesters_by_program.setdefault(row["program_id"], []).append(row)
+
             return [
                 ProgramSemesterResponse(
                     program_id=program.id,
@@ -119,10 +188,13 @@ class MasterService:
                     department_code=program.department_code,
                     semesters=[
                         ProgramSemesterItem(
-                            semester_no=semester.semester_no,
-                            semester_name=semester.semester_name,
+                            semester_no=semester["semester_no"],
+                            semester_name=semester["semester_name"],
                         )
-                        for semester in sorted(program.semesters, key=lambda item: item.semester_no)
+                        for semester in sorted(
+                            semesters_by_program.get(program.id, []),
+                            key=lambda item: item["semester_no"],
+                        )
                     ],
                 )
                 for program in programs
