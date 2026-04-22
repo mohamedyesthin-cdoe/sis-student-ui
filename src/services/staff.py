@@ -10,6 +10,7 @@ from src.schemas.user import UserCreate
 from src.repositories.staff import StaffRepository
 from src.repositories.user import UserRepository
 from src.models.staff import Staff
+from src.models.master import Department
 from src.utils.hash import generate_password, hash_password
 from src.utils.email import send_credentials_email
 from src.utils.logger import setup_logger
@@ -28,8 +29,40 @@ class StaffService:
         self.repo = StaffRepository(db)
         self.user_repo = UserRepository()
 
+    def _validate_department_code(self, department_code: int | None) -> None:
+        """Ensure the department reference exists before persisting staff data."""
+        if department_code is None:
+            return
+
+        if department_code <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": "Department is required and must be a valid department id.",
+                    "code": status.HTTP_400_BAD_REQUEST,
+                    "status": False,
+                },
+            )
+
+        department = (
+            self.db.query(Department)
+            .filter(Department.id == department_code)
+            .first()
+        )
+        if not department:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "message": f"Department with id {department_code} does not exist.",
+                    "code": status.HTTP_400_BAD_REQUEST,
+                    "status": False,
+                },
+            )
+
     async def create_staff(self, data: StaffBase) -> StaffResponse:
         try:
+            self._validate_department_code(data.department_code)
+
             existing_user = self.user_repo.get_user_by_identifier(
                 self.db,
                 username=data.employee_id,
@@ -194,6 +227,7 @@ class StaffService:
                 )
 
             staff_data = data.model_dump(exclude_none=True)
+            self._validate_department_code(staff_data.get("department_code"))
 
             # Convert Enums
             for k, v in list(staff_data.items()):
