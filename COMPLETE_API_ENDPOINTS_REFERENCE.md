@@ -261,7 +261,7 @@ Used by Collexo gateway in production.
 | GET | `/courses/{course_id}` | Get course |
 | GET | `/course-components` | List components |
 | GET | `/course-components/{component_id}` | Get component |
-| GET | `/semesters` | List semesters |
+| GET | `/semesters` | List semesters grouped by program id |
 | GET | `/semesters/{semester_id}` | Get semester |
 | POST | `/schemes` | Create scheme |
 | POST | `/courses` | Create course |

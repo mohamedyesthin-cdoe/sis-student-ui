@@ -69,7 +69,7 @@ class SemesterRepository:
         from sqlalchemy.orm import joinedload
         query = self.db.query(Semester).options(
             joinedload(Semester.program)
-        )
+        ).order_by(Semester.program_id.asc(), Semester.semester_no.asc(), Semester.id.asc())
         return query.all()    
     
 class CourseRepository:

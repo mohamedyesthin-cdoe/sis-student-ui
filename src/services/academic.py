@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src.models.academic import Semester, Course, CourseComponent
 from src.repositories.academic import *
+from src.schemas.academic import SemesterProgramGroupResponse, SemesterProgramItem
 
 class SemesterService:
     def __init__(self, db: Session):
@@ -29,8 +30,32 @@ class SemesterService:
             raise HTTPException(status_code=404, detail="Semester not found")
         return success
     
-    def list_semesters(self) -> list[Semester]:
-        return self.semester_repo.list_semesters()
+    def list_semesters(self) -> list[SemesterProgramGroupResponse]:
+        semesters = self.semester_repo.list_semesters()
+        grouped: dict[int, SemesterProgramGroupResponse] = {}
+
+        for semester in semesters:
+            program_id = semester.program_id
+            program_code = getattr(semester, "program_code", None)
+            if semester.program is not None and program_code is None:
+                program_code = getattr(semester.program, "programe_code", None)
+
+            if program_id not in grouped:
+                grouped[program_id] = SemesterProgramGroupResponse(
+                    program_id=program_id,
+                    program_code=program_code,
+                    semesters=[],
+                )
+
+            grouped[program_id].semesters.append(
+                SemesterProgramItem(
+                    id=semester.id,
+                    semester_no=semester.semester_no,
+                    semester_name=semester.semester_name,
+                )
+            )
+
+        return [grouped[program_id] for program_id in sorted(grouped)]
     
 class CourseService:
     def __init__(self, db: Session):

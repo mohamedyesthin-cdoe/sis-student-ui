@@ -8,6 +8,16 @@ from src.core.security.dependencies import require_superuser
 
 router = APIRouter()
 
+@router.get("/semesters", response_model=list[SemesterProgramGroupResponse], tags=["Semesters"])
+def list_semesters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = SemesterService(db)
+    return service.list_semesters()
+
+@router.get("/semesters/{semester_id}", response_model=SemesterResponse, tags=["Semesters"])
+def get_semester(semester_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = SemesterService(db)
+    return service.get_semester(semester_id)
+
 @router.post("/courses", response_model=CourseResponse , tags=["Courses"])
 def create_course(course_data: CourseCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     service = CourseService(db)

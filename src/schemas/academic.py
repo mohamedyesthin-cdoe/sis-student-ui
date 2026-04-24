@@ -36,6 +36,22 @@ class ProgramSemesterResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class SemesterProgramItem(BaseModel):
+    id: int
+    semester_no: int
+    semester_name: str
+
+    class Config:
+        from_attributes = True
+
+class SemesterProgramGroupResponse(BaseModel):
+    program_id: int
+    program_code: Optional[str] = None
+    semesters: List[SemesterProgramItem]
+
+    class Config:
+        from_attributes = True
+
 class CourseBase(BaseModel):
     semester_id: int
     dept_code: str
