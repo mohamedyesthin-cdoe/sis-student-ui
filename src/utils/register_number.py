@@ -18,15 +18,26 @@ def generate_series_number(last_reg_no: str, program_code: str, year: str) -> st
 
 def generate_registration_number(program_code: str, last_reg_no: str, admission_year: str) -> str:
     """Generate registration number as program_code + year + series(3 digits)."""
-    #year = str(datetime.now().year)[-2:]  # last two digits of year
-    year = admission_year[-2:]  # use admission year last two digits
-    
+
     try:
+        # Handle formats like "2026" or "2025-2026"
+        if "-" in admission_year:
+            year_part = admission_year.split("-")[-1]  # get after "-"
+        else:
+            year_part = admission_year
+
+        year = year_part[-2:]  # last two digits
+
         series_number = generate_series_number(last_reg_no, program_code, year)
+
     except Exception as e:
         logging.error(f"Error syncing students: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to sync students: {str(e)}")
-    
+
     registration_no = f"{program_code}{year}{series_number}"
+
+    logging.info(f"Admission year received: {admission_year}")
+    logging.info(f"Extracted year: {year}")
     logging.info(f"Generated registration number: {registration_no}")
+
     return registration_no
