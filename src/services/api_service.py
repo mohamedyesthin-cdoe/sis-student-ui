@@ -161,6 +161,8 @@ class ApiService:
     def course_master(self) -> ProgramListResponse:
         try:
             course = self.master_repo.get_program()
+            program_ids = [program.id for program in course if getattr(program, "id", None) is not None]
+            semester_counts = self.master_repo.get_semester_counts_by_program_id(program_ids)
             course_data = []
             for value in course:
                 data = value.dict() if hasattr(value, "dict") else vars(value)
@@ -172,6 +174,7 @@ class ApiService:
                     "des": data["programe"],
                     "cshort": data["short_name"],
                     "duration": data["duration"],
+                    "total_semesters": semester_counts.get(data["id"], 0),
                 }
                 course_data.append(dic)
             return {

@@ -46,6 +46,7 @@ class ProgrameOut(BaseModel):
     des: Optional[str] = None
     cshort: Optional[str] = None
     duration: Optional[str] = None
+    total_semesters: Optional[int] = None
 
 class ProgramListResponse(BaseModel):
     code: int
@@ -73,6 +74,7 @@ class ProgrameResponse(ProgrameBase):
     id: int
     fee: Optional[List[FeeSchema]]
     semesters: Optional[List[SemesterResponse]] = None
+    total_semesters: Optional[int] = None
     created_at: datetime
     updated_at: Optional[datetime]
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import Optional
 from src.services.master import MasterService
 from src.models.user import User
 from src.schemas.master import *
@@ -177,19 +177,6 @@ def get_program_semesters(programe_id: int, db: Session = Depends(get_db), curre
     try:
         service = MasterService(db)
         return service.list_program_semesters(programe_id)
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unexpected error in endpoint: {str(e)}",
-        )
-
-@router.get("/semesters", response_model=List[ProgramSemesterResponse], tags=["Semesters"])
-def list_semesters(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    try:
-        service = MasterService(db)
-        return service.list_all_semesters()
     except HTTPException:
         raise
     except Exception as e:

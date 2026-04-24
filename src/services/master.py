@@ -4,7 +4,7 @@ from src.models.master import *
 from src.schemas.master import *
 from src.schemas.academic import ProgramSemesterResponse, ProgramSemesterItem
 from fastapi import HTTPException, status
-from typing import List
+from typing import List, Optional
 from src.services.student_service import StudentService
 
 class MasterService:
@@ -15,6 +15,28 @@ class MasterService:
         if isinstance(obj, dict):
             return obj.get(key, default)
         return getattr(obj, key, default)
+
+    def _resolve_department_fields(self, program: Programe) -> tuple[Optional[int], Optional[str]]:
+        department_id = self._value(program, "department_id")
+        department_code = self._value(program, "department_code")
+        department = self._value(program, "department")
+
+        if department is not None:
+            department_id = department_id or self._value(department, "id")
+            department_code = department_code or self._value(department, "department_code")
+
+        if department_id is None and department_code:
+            matched_department = self.repo.get_department_by_code(department_code)
+            if matched_department:
+                department_id = matched_department.id
+                department_code = matched_department.department_code
+
+        if department_code is None and department_id is not None:
+            matched_department = self.repo.get_department_by_id(department_id)
+            if matched_department:
+                department_code = matched_department.department_code
+
+        return department_id, department_code
 
     def _serialize_fee(self, fee: FeeDetails) -> dict:
         return {
@@ -30,6 +52,7 @@ class MasterService:
         }
 
     def _serialize_program(self, program: Programe, semester_rows: list[dict]) -> dict:
+        department_id, department_code = self._resolve_department_fields(program)
         semesters = [
             {
                 "id": row["id"],
@@ -45,8 +68,8 @@ class MasterService:
 
         return {
             "id": self._value(program, "id"),
-            "department_id": self._value(program, "department_id"),
-            "department_code": self._value(program, "department_code"),
+            "department_id": department_id,
+            "department_code": department_code,
             "programe": self._value(program, "programe"),
             "short_name": self._value(program, "short_name"),
             "programe_code": self._value(program, "programe_code"),
@@ -57,6 +80,7 @@ class MasterService:
             "pending_payment_workflow_enabled": self._value(program, "pending_payment_workflow_enabled"),
             "fee": [self._serialize_fee(fee) for fee in fees],
             "semesters": semesters,
+            "total_semesters": len(semesters),
             "created_at": self._value(program, "created_at"),
             "updated_at": self._value(program, "updated_at"),
         }
@@ -109,8 +133,11 @@ class MasterService:
             return [
                 self._serialize_program(
                     program,
-                    semesters_by_program.get(self._value(program, "id"), [])
-                    or self._generated_semester_rows(program),
+                    sorted(
+                        semesters_by_program.get(self._value(program, "id"), [])
+                        or self._generated_semester_rows(program),
+                        key=lambda item: item["semester_no"],
+                    ),
                 )
                 for program in programs
             ]
@@ -187,7 +214,7 @@ class MasterService:
             return ProgramSemesterResponse(
                 program_id=self._value(program, "id"),
                 program_code=self._value(program, "programe_code"),
-                department_code=self._value(program, "department_code"),
+                department_code=self._resolve_department_fields(program)[1],
                 semesters=[
                     ProgramSemesterItem(
                         semester_no=semester["semester_no"],
@@ -202,42 +229,6 @@ class MasterService:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while fetching semesters: {str(e)}",
-            )
-
-    def list_all_semesters(self) -> List[ProgramSemesterResponse]:
-        try:
-            programs = self.repo.get_programs_with_semesters()
-            semester_rows = self.repo.get_all_semesters()
-            semesters_by_program: dict[int, list[dict]] = {}
-
-            for row in semester_rows:
-                semesters_by_program.setdefault(row["program_id"], []).append(row)
-
-            return [
-                ProgramSemesterResponse(
-                    program_id=self._value(program, "id"),
-                    program_code=self._value(program, "programe_code"),
-                    department_code=self._value(program, "department_code"),
-                    semesters=[
-                        ProgramSemesterItem(
-                            semester_no=semester["semester_no"],
-                            semester_name=semester["semester_name"],
-                        )
-                        for semester in sorted(
-                            semesters_by_program.get(self._value(program, "id"), [])
-                            or self._generated_semester_rows(program),
-                            key=lambda item: item["semester_no"],
-                        )
-                    ],
-                )
-                for program in programs
-            ]
-        except HTTPException:
-            raise
-        except Exception as e:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Unexpected error while listing semesters: {str(e)}",
             )
 
     def update_program_payment_workflow(

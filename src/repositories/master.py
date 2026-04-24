@@ -408,6 +408,37 @@ class MasterRepository:
                 detail=f"Database error while fetching all semesters: {str(e)}",
             )
 
+    def get_semester_counts_by_program_id(self, program_ids: Optional[list[int]] = None) -> dict[int, int]:
+        try:
+            if self._semesters_use_program_id():
+                query = self.db.query(
+                    Semester.program_id.label("program_id"),
+                    sa.func.count(Semester.id).label("total_semesters"),
+                ).group_by(Semester.program_id)
+
+                if program_ids:
+                    query = query.filter(Semester.program_id.in_(program_ids))
+
+                rows = query.all()
+                return {row.program_id: int(row.total_semesters or 0) for row in rows}
+
+            rows = self._fetch_semester_rows()
+            allowed_ids = set(program_ids) if program_ids else None
+            counts: dict[int, int] = {}
+            for row in rows:
+                program_id = row["program_id"]
+                if program_id is None:
+                    continue
+                if allowed_ids is not None and program_id not in allowed_ids:
+                    continue
+                counts[program_id] = counts.get(program_id, 0) + 1
+            return counts
+        except SQLAlchemyError as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Database error while counting semesters by program: {str(e)}",
+            )
+
     def get_programs_with_semesters(self) -> List[Programe]:
         try:
             if not self._programs_use_department_id():
