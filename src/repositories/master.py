@@ -8,13 +8,13 @@ from fastapi import HTTPException, status
 from src.repositories.base import BaseRepository
 from src.models.master import (
     Programe, FeeDetails, CourseCode, 
-    CourseCategory, CourseTitle, Subjects, Department, ProgramPaymentWorkflowScope,
+    MasterCourseCategory, CourseTitle, Subjects, Department, ProgramPaymentWorkflowScope,
     AcademicYear, Batch, SemesterMaster
 )
 from src.models.academic import Semester
 from src.schemas.master import (
     ProgrameCreate, ProgrameUpdate, ProgrameResponse, CourseCodeResponse,
-    CourseCategoryResponse
+    MasterCourseCategoryResponse
 )
 
 class MasterRepository:
@@ -529,16 +529,16 @@ class MasterRepository:
     
     def get_all_course_codes(self) -> List[CourseCode]:
         return self.db.query(CourseCode).all()
-    
-    def get_course_category(self, category_name: str) -> Optional[CourseCategory]:
+
+    def get_course_category_master(self, category_name: str) -> Optional[MasterCourseCategory]:
         return (
-            self.db.query(CourseCategory)
-            .filter(CourseCategory.name == category_name)
+            self.db.query(MasterCourseCategory)
+            .filter(MasterCourseCategory.name == category_name)
             .first()
         )
     
-    def get_all_course_category(self) -> List[CourseCategory]:
-        return self.db.query(CourseCategory).all()
+    def get_all_course_category_master(self) -> List[MasterCourseCategory]:
+        return self.db.query(MasterCourseCategory).all()
     
     def get_course_title(self, title_name: str) -> Optional[CourseTitle]:
         return (

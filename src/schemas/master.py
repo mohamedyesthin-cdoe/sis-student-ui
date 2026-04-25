@@ -139,30 +139,30 @@ class CourseCodeResponse(BaseModel):
     status: bool
     data: CourseCodeOut
 
-class CourseCategoryBase(BaseModel):
+class MasterCourseCategoryBase(BaseModel):
     name: str
 
     class Config:
         from_attributes = True
 
-class CourseCategoryOut(BaseModel):
+class MasterCourseCategoryOut(BaseModel):
     id: int
     name: str
 
     class Config:
         from_attributes = True 
 
-class CourseCategoryList(BaseModel):
+class MasterCourseCategoryList(BaseModel):
     message: str
     code: int
     status: bool
-    data: List[CourseCategoryOut]
+    data: List[MasterCourseCategoryOut]
 
-class CourseCategoryResponse(BaseModel):
+class MasterCourseCategoryResponse(BaseModel):
     message: str
     code: int
     status: bool
-    data: CourseCategoryOut
+    data: MasterCourseCategoryOut
 
 class CourseTitleBase(BaseModel):
     title: str
@@ -204,12 +204,12 @@ class SyllabusBase(BaseModel):
 
 class SyllabusCreate(SyllabusBase):
     course_code_id: int = Field(..., description="FK → course_code.id")
-    course_category_id: int = Field(..., description="FK → course_category.id")
+    master_course_category_id: int = Field(..., description="FK → master_course_category.id")
     course_title_id: int = Field(..., description="FK → course_title.id")
 
 class SyllabusUpdate(BaseModel):
     course_code_id: Optional[int] = None
-    course_category_id: Optional[int] = None
+    master_course_category_id: Optional[int] = None
     course_title_id: Optional[int] = None  
     semester: Optional[str] = None
     credits: Optional[int] = None
@@ -225,7 +225,7 @@ class SyllabusOut(SyllabusBase):
     id: int
 
     course_code: Optional[CourseCodeOut] = None
-    course_category: Optional[CourseCategoryOut] = None
+    master_course_category: Optional[MasterCourseCategoryOut] = None
     course_title: Optional[CourseTitleOut] = None
 
     created_at: datetime

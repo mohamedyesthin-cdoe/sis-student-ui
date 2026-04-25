@@ -410,34 +410,34 @@ class MasterService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Unexpected error while listing course codes: {str(e)}",
             )
-    
-    def create_course_category(self, data: CourseCategoryBase) -> CourseCategoryResponse:
-        
-        existing = self.repo.get_course_category(data.name)
+
+    def create_course_category_master(self, data: MasterCourseCategoryBase) -> MasterCourseCategoryResponse:
+
+        existing = self.repo.get_course_category_master(data.name)
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail=f"Course category '{data.name}' already exists.",
             )
-        
-        course_category = self.repo.create_fields(data=data, model=CourseCategory, response_model=CourseCategoryResponse)
 
-        return CourseCategoryResponse(
+        course_category_master = self.repo.create_fields(data=data, model=MasterCourseCategory, response_model=MasterCourseCategoryResponse)
+
+        return MasterCourseCategoryResponse(
             message="Course category created successfully",
             code=status.HTTP_201_CREATED,
             status=True,
-            data=course_category
+            data=course_category_master
         )
-    
-    def list_course_category(self) -> List[CourseCategoryList]:
+
+    def list_course_category_master(self) -> List[MasterCourseCategoryList]:
         try:
-            items = self.repo.get_all_course_category()
+            items = self.repo.get_all_course_category_master()
             return [
-                CourseCategoryList(
+                MasterCourseCategoryList(
                     message="Course codes retrieved successfully",
                     code=status.HTTP_200_OK,
                     status=True,
-                    data=[CourseCategoryOut.from_orm(item) for item in items]
+                    data=[MasterCourseCategoryOut.from_orm(item) for item in items]
                 )
             ]
         except HTTPException:
