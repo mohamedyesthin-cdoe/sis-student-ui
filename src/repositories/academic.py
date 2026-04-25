@@ -203,3 +203,70 @@ class CourseComponentRepository:
 
     def list_course_components(self) -> list[CourseComponent]:
         return self.db.query(CourseComponent).all()
+
+
+class CourseCategoryRepository:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def create_course_category(self, category_data: dict) -> CourseCategory:
+        try:
+            category = CourseCategory(**category_data)
+            self.db.add(category)
+            self.db.commit()
+            self.db.refresh(category)
+            return category
+
+        except IntegrityError:
+            self.db.rollback()
+            raise
+
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
+
+    def get_course_category(self, category_id: int) -> CourseCategory | None:
+        return (
+            self.db.query(CourseCategory)
+            .filter(CourseCategory.id == category_id)
+            .first()
+        )
+
+    def update_course_category(self, category_id: int, update_data: dict) -> CourseCategory | None:
+        category = self.get_course_category(category_id)
+        if not category:
+            return None
+
+        try:
+            for key, value in update_data.items():
+                if hasattr(category, key):   # 🔒 protect model
+                    setattr(category, key, value)
+
+            self.db.commit()
+            self.db.refresh(category)
+            return category
+
+        except IntegrityError:
+            self.db.rollback()
+            raise
+
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
+
+    def delete_course_category(self, category_id: int) -> bool:
+        category = self.get_course_category(category_id)
+        if not category:
+            return False
+
+        try:
+            self.db.delete(category)
+            self.db.commit()
+            return True
+
+        except SQLAlchemyError:
+            self.db.rollback()
+            raise
+
+    def list_course_categories(self) -> list[CourseCategory]:
+        return self.db.query(CourseCategory).all()

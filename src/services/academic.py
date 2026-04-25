@@ -115,5 +115,34 @@ class CourseComponentService:
     def list_components(self) -> list[CourseComponent]:
         return self.component_repo.list_course_components()
 
-    
+# course_category
+class CourseCategoryService:
+    def __init__(self, db: Session):
+        self.component_repo = CourseCategoryRepository(db)
+
+    def create_category(self, category_data) -> CourseCategory:
+        data = category_data.dict() if hasattr(category_data, "dict") else category_data
+        return self.component_repo.create_course_category(data)
+
+    def get_category(self, category_id: int) -> CourseCategory:
+        category = self.component_repo.get_course_category(category_id)
+        if not category:
+            raise HTTPException(status_code=404, detail="Course Category not found")
+        return category
+
+    def update_category(self, category_id: int, update_data: dict) -> CourseCategory:
+        category = self.component_repo.update_course_category(category_id, update_data)
+        if not category:
+            raise HTTPException(status_code=404, detail="Course Category not found")
+        return category
+
+    def delete_category(self, category_id: int) -> bool:
+        success = self.component_repo.delete_course_category(category_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Course Category not found")
+        return success
+
+    def list_categories(self) -> list[CourseCategory]:
+        return self.component_repo.list_course_categories()
+
     

@@ -118,3 +118,21 @@ class CourseComponentResponse(CourseComponentBase):
 
     class Config:
         from_attributes = True
+
+# course_category
+class CourseCategoryBase(BaseModel):
+    category_code: str
+    category_name: str
+
+class CourseCategoryCreate(CourseCategoryBase):
+    pass
+
+class CourseCategoryUpdate(BaseModel):
+    category_name: Optional[str] = None
+    category_code: Optional[str] = None
+
+class CourseCategoryResponse(CourseCategoryBase):
+    id: int
+
+    class Config:
+        from_attributes = True

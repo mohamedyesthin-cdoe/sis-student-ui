@@ -67,3 +67,29 @@ def delete_course_component(component_id: int, db: Session = Depends(get_db), cu
 def list_course_components(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
     service = CourseComponentService(db)
     return service.list_components()
+
+# course_category
+@router.post("/course-categories", response_model=CourseCategoryResponse, tags=["Course Categories"])
+def create_course_category(category_data: CourseCategoryCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = CourseCategoryService(db)
+    return service.create_category(category_data)
+
+@router.get("/course-categories/{category_id}", tags=["Course Categories"])
+def get_course_category(category_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = CourseCategoryService(db)
+    return service.get_category(category_id)
+
+@router.put("/course-categories/{category_id}", response_model=CourseCategoryResponse, tags=["Course Categories"])
+def update_course_category(category_id: int, update_data: dict, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = CourseCategoryService(db)
+    return service.update_category(category_id, update_data)
+
+@router.delete("/course-categories/{category_id}", tags=["Course Categories"])
+def delete_course_category(category_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = CourseCategoryService(db)
+    return service.delete_category(category_id)
+
+@router.get("/course-categories", tags=["Course Categories"])
+def list_course_categories(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+    service = CourseCategoryService(db)
+    return service.list_categories()

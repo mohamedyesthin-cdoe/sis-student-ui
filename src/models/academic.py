@@ -102,3 +102,9 @@ class CourseComponent(AuditableBase):
 #     end_year = Column(Integer, nullable=False)
 
 #     programe = relationship("Program", back_populates="batches")
+class CourseCategory(AuditableBase):
+    __tablename__ = "course_category"
+
+    id = Column(Integer, primary_key=True, index=True)
+    category_code = Column(String(10), unique=True, nullable=False)
+    category_name = Column(String(100), nullable=False)
