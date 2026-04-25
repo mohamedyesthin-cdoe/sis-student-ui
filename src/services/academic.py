@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from src.models.academic import Semester, Course, CourseComponent
+from src.models.academic import Semester, Course
 from src.repositories.academic import *
 from src.schemas.academic import SemesterProgramGroupResponse, SemesterProgramItem
 
@@ -86,34 +86,34 @@ class CourseService:
     def list_courses(self) -> list[Course]:
         return self.course_repo.list_courses()
     
-class CourseComponentService:
-    def __init__(self, db: Session):
-        self.component_repo = CourseComponentRepository(db)
+# class CourseComponentService:
+#     def __init__(self, db: Session):
+#         self.component_repo = CourseComponentRepository(db)
 
-    def create_component(self, component_data) -> CourseComponent:
-        data = component_data.dict() if hasattr(component_data, "dict") else component_data
-        return self.component_repo.create_course_component(data)
+#     def create_component(self, component_data) -> CourseComponent:
+#         data = component_data.dict() if hasattr(component_data, "dict") else component_data
+#         return self.component_repo.create_course_component(data)
     
-    def get_component(self, component_id: int) -> CourseComponent:
-        component = self.component_repo.get_course_component(component_id)
-        if not component:
-            raise HTTPException(status_code=404, detail="Course Component not found")
-        return component
+#     def get_component(self, component_id: int) -> CourseComponent:
+#         component = self.component_repo.get_course_component(component_id)
+#         if not component:
+#             raise HTTPException(status_code=404, detail="Course Component not found")
+#         return component
     
-    def update_component(self, component_id: int, update_data: dict) -> CourseComponent:
-        component = self.component_repo.update_course_component(component_id, update_data)
-        if not component:
-            raise HTTPException(status_code=404, detail="Course Component not found")
-        return component
+#     def update_component(self, component_id: int, update_data: dict) -> CourseComponent:
+#         component = self.component_repo.update_course_component(component_id, update_data)
+#         if not component:
+#             raise HTTPException(status_code=404, detail="Course Component not found")
+#         return component
     
-    def delete_component(self, component_id: int) -> bool:
-        success = self.component_repo.delete_course_component(component_id)
-        if not success:
-            raise HTTPException(status_code=404, detail="Course Component not found")
-        return success
+#     def delete_component(self, component_id: int) -> bool:
+#         success = self.component_repo.delete_course_component(component_id)
+#         if not success:
+#             raise HTTPException(status_code=404, detail="Course Component not found")
+#         return success
     
-    def list_components(self) -> list[CourseComponent]:
-        return self.component_repo.list_course_components()
+#     def list_components(self) -> list[CourseComponent]:
+#         return self.component_repo.list_course_components()
 
 # course_category
 class CourseCategoryService:

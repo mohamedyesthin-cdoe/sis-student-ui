@@ -46,7 +46,7 @@ class ExamTimeTable(AuditableBase):
 
     exam = relationship("Exam", back_populates="timetable")
     course = relationship("Course", back_populates="exam_timetables")
-    component = relationship("CourseComponent", back_populates="exam_timetables")
+    # component = relationship("CourseComponent", back_populates="exam_timetables")
 
     __table_args__ = (
         UniqueConstraint("exam_id", "component_id", name="uq_exam_component"),
@@ -93,7 +93,7 @@ class StudentCourseRegistration(AuditableBase):
         
     exam_registration = relationship("StudentExamRegistration", back_populates="courses")
     course = relationship("Course", back_populates="student_registrations")
-    component = relationship("CourseComponent", back_populates="student_registrations")
+    # component = relationship("CourseComponent", back_populates="student_registrations")
 
     __table_args__ = (
         UniqueConstraint(
@@ -122,7 +122,7 @@ class MarksEntry(AuditableBase):
     student = relationship("Student", back_populates="marksheets")
     exam = relationship("Exam", back_populates="marks_entries")
     course = relationship("Course", back_populates="marks_entries")
-    component = relationship("CourseComponent", back_populates="marks_entries")
+    # component = relationship("CourseComponent", back_populates="marks_entries")
     staff = relationship("Staff", back_populates="entered_marks")
 
     __table_args__ = (
@@ -155,7 +155,7 @@ class CourseResult(AuditableBase):
     student = relationship("Student", back_populates="course_results")
     exam = relationship("Exam", back_populates="course_results")
     course = relationship("Course", back_populates="course_results")
-    component = relationship("CourseComponent", back_populates="component_results")
+    # component = relationship("CourseComponent", back_populates="component_results")
 
     __table_args__ = (
         UniqueConstraint(

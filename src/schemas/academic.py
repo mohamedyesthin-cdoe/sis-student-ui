@@ -73,50 +73,50 @@ class CourseResponse(CourseBase):
     class Config:
         from_attributes = True
 
-class CourseComponentBase(BaseModel):
-    course_id: int
-    component_no: int
-    component_type: str
-    component_code: str
-    component_description: str
-    max_marks: int
-    min_marks: int
-    min_percentage: int
-    exam_mark: Optional[int] = 0
-    is_theory: bool = True
-    is_practical: bool = False
-    is_ia: bool = False
-    is_computed: bool = False
-    computed_components: Optional[List[int]] = None
-    is_others: bool = False
-    specify_others: Optional[str] = None
-    core_or_elective: str
-    is_programme_elective: bool = False
-    elective_type: Optional[str] = None
-    elective_programe_type: Optional[str] = None
-    attendence_percentage: Optional[int] = None
-    book_type: Optional[str] = None
-    mcq_time: Optional[str] = None
-    is_tpi: Optional[str] = None
-    incl_credit: bool = True
-    techorder: Optional[int] = None
-    approved: bool = False
-    is_maincode: bool = False
+# class CourseComponentBase(BaseModel):
+#     course_id: int
+#     component_no: int
+#     component_type: str
+#     component_code: str
+#     component_description: str
+#     max_marks: int
+#     min_marks: int
+#     min_percentage: int
+#     exam_mark: Optional[int] = 0
+#     is_theory: bool = True
+#     is_practical: bool = False
+#     is_ia: bool = False
+#     is_computed: bool = False
+#     computed_components: Optional[List[int]] = None
+#     is_others: bool = False
+#     specify_others: Optional[str] = None
+#     core_or_elective: str
+#     is_programme_elective: bool = False
+#     elective_type: Optional[str] = None
+#     elective_programe_type: Optional[str] = None
+#     attendence_percentage: Optional[int] = None
+#     book_type: Optional[str] = None
+#     mcq_time: Optional[str] = None
+#     is_tpi: Optional[str] = None
+#     incl_credit: bool = True
+#     techorder: Optional[int] = None
+#     approved: bool = False
+#     is_maincode: bool = False
 
-class CourseComponentCreate(CourseComponentBase):
-    pass
+# class CourseComponentCreate(CourseComponentBase):
+#     pass
 
-class CourseComponentUpdate(BaseModel):
-    component_description: Optional[str] = None
-    max_marks: Optional[int] = None
-    min_marks: Optional[int] = None
-    min_percentage: Optional[int] = None
-    approved: Optional[bool] = None
+# class CourseComponentUpdate(BaseModel):
+#     component_description: Optional[str] = None
+#     max_marks: Optional[int] = None
+#     min_marks: Optional[int] = None
+#     min_percentage: Optional[int] = None
+#     approved: Optional[bool] = None
 
-class CourseComponentResponse(CourseComponentBase):
-    id: int
+# class CourseComponentResponse(CourseComponentBase):
+#     id: int
 
-    class Config:
+#     class Config:
         from_attributes = True
 
 # course_category

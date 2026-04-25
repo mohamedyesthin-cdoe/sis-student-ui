@@ -24,12 +24,12 @@ class MarksEntryService:
         staff_id = data["entered_by"]
 
         # Check component
-        component = self.db.query(CourseComponent).filter(
-            CourseComponent.id == component_id
-        ).first()
+        # component = self.db.query(CourseComponent).filter(
+        #     CourseComponent.id == component_id
+        # ).first()
 
-        if not component:
-            raise HTTPException(status_code=404, detail="Component not found")
+        # if not component:
+        #     raise HTTPException(status_code=404, detail="Component not found")
 
         # Prevent editing if locked
         existing = self.db.query(MarksEntry).filter(
@@ -58,8 +58,8 @@ class MarksEntryService:
             self.db.commit()
 
         # If ESE entered → calculate result
-        if component.component_type == "ESE":
-            self.calculate_course_result(student_id, exam_id, course_id)
+        # if component.component_type == "ESE":
+        #     self.calculate_course_result(student_id, exam_id, course_id)
 
         return {"success": True, "message": "Marks saved successfully"}
 

@@ -13,10 +13,10 @@ class MarksRepository:
     # COMPONENT
     # ---------------------------------------------------------
 
-    def get_component(self, component_id: int):
-        return self.db.query(CourseComponent).filter(
-            CourseComponent.id == component_id
-        ).first()
+    # def get_component(self, component_id: int):
+        # return self.db.query(CourseComponent).filter(
+        #     CourseComponent.id == component_id
+        # ).first()
 
     # ---------------------------------------------------------
     # MARKS ENTRY

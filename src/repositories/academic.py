@@ -138,71 +138,71 @@ class CourseRepository:
     def list_courses(self) -> list[Course]:
         return self.db.query(Course).all()
     
-class CourseComponentRepository:
-    def __init__(self, db: Session):
-        self.db = db
+# class CourseComponentRepository:
+#     def __init__(self, db: Session):
+#         self.db = db
 
-    def create_course_component(self, component_data: dict) -> CourseComponent:
-        try:
-            component = CourseComponent(**component_data)
-            self.db.add(component)
-            self.db.commit()
-            self.db.refresh(component)
-            return component
+#     def create_course_component(self, component_data: dict) -> CourseComponent:
+#         try:
+#             component = CourseComponent(**component_data)
+#             self.db.add(component)
+#             self.db.commit()
+#             self.db.refresh(component)
+#             return component
 
-        except IntegrityError:
-            self.db.rollback()
-            raise
+#         except IntegrityError:
+#             self.db.rollback()
+#             raise
 
-        except SQLAlchemyError:
-            self.db.rollback()
-            raise
+#         except SQLAlchemyError:
+#             self.db.rollback()
+#             raise
 
-    def get_course_component(self, component_id: int) -> CourseComponent | None:
-        return (
-            self.db.query(CourseComponent)
-            .filter(CourseComponent.id == component_id)
-            .first()
-        )
+#     def get_course_component(self, component_id: int) -> CourseComponent | None:
+#         return (
+#             self.db.query(CourseComponent)
+#             .filter(CourseComponent.id == component_id)
+#             .first()
+#         )
     
-    def update_course_component(self, component_id: int, update_data: dict) -> CourseComponent | None:
-        component = self.get_course_component(component_id)
-        if not component:
-            return None
+#     def update_course_component(self, component_id: int, update_data: dict) -> CourseComponent | None:
+#         component = self.get_course_component(component_id)
+#         if not component:
+#             return None
 
-        try:
-            for key, value in update_data.items():
-                if hasattr(component, key):   # 🔒 protect model
-                    setattr(component, key, value)
+#         try:
+#             for key, value in update_data.items():
+#                 if hasattr(component, key):   # 🔒 protect model
+#                     setattr(component, key, value)
 
-            self.db.commit()
-            self.db.refresh(component)
-            return component
+#             self.db.commit()
+#             self.db.refresh(component)
+#             return component
 
-        except IntegrityError:
-            self.db.rollback()
-            raise
+#         except IntegrityError:
+#             self.db.rollback()
+#             raise
 
-        except SQLAlchemyError:
-            self.db.rollback()
-            raise
+#         except SQLAlchemyError:
+#             self.db.rollback()
+#             raise
 
-    def delete_course_component(self, component_id: int) -> bool:
-        component = self.get_course_component(component_id)
-        if not component:
-            return False
+#     def delete_course_component(self, component_id: int) -> bool:
+#         component = self.get_course_component(component_id)
+#         if not component:
+#             return False
 
-        try:
-            self.db.delete(component)
-            self.db.commit()
-            return True
+#         try:
+#             self.db.delete(component)
+#             self.db.commit()
+#             return True
 
-        except SQLAlchemyError:
-            self.db.rollback()
-            raise
+#         except SQLAlchemyError:
+#             self.db.rollback()
+#             raise
 
-    def list_course_components(self) -> list[CourseComponent]:
-        return self.db.query(CourseComponent).all()
+#     def list_course_components(self) -> list[CourseComponent]:
+#         return self.db.query(CourseComponent).all()
 
 
 class CourseCategoryRepository:

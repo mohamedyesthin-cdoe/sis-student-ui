@@ -4,6 +4,14 @@ from src.models.base import AuditableBase
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 
+class CourseCategory(AuditableBase):
+    __tablename__ = "course_category"
+
+    id = Column(Integer, primary_key=True, index=True)
+    category_code = Column(String(10), unique=True, nullable=False)
+    category_name = Column(String(100), nullable=False)
+
+
 class Semester(AuditableBase):
     __tablename__ = "semesters"
     
@@ -36,57 +44,57 @@ class Course(AuditableBase):
     regulation_pattern = Column(String(50), nullable=False)
 
     semester = relationship("Semester", back_populates="courses")
-    components = relationship("CourseComponent", back_populates="course")
+    # components = relationship("CourseComponent", back_populates="course")
     exam_timetables = relationship("ExamTimeTable", back_populates="course")
     marks_entries = relationship("MarksEntry", back_populates="course")
     student_registrations = relationship("StudentCourseRegistration", back_populates="course")
     course_results = relationship("CourseResult", back_populates="course")
 
 
-class CourseComponent(AuditableBase):
-    __tablename__ = "course_components"
+# class CourseComponent(AuditableBase):
+#     __tablename__ = "course_components"
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    course_id = Column(Integer, ForeignKey("courses.id"))
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     course_id = Column(Integer, ForeignKey("courses.id"))
 
-    component_no = Column(Integer, nullable=False)
-    component_type = Column(String(50), nullable=False)
-    component_code = Column(String(50), nullable=False)
-    component_description = Column(String(100), nullable=False)
-    max_marks = Column(Integer, nullable=False)
-    min_marks = Column(Integer, nullable=False)
-    min_percentage = Column(Integer, nullable=False)
+#     component_no = Column(Integer, nullable=False)
+#     component_type = Column(String(50), nullable=False)
+#     component_code = Column(String(50), nullable=False)
+#     component_description = Column(String(100), nullable=False)
+#     max_marks = Column(Integer, nullable=False)
+#     min_marks = Column(Integer, nullable=False)
+#     min_percentage = Column(Integer, nullable=False)
 
-    exam_mark = Column(Integer, default=False)
-    is_theory = Column(Boolean, default=True)
-    is_practical = Column(Boolean, default=False)
-    is_ia = Column(Boolean, default=False)
-    is_computed = Column(Boolean, default=False)
-    computed_components = Column(ARRAY(Integer), nullable=True)
+#     exam_mark = Column(Integer, default=False)
+#     is_theory = Column(Boolean, default=True)
+#     is_practical = Column(Boolean, default=False)
+#     is_ia = Column(Boolean, default=False)
+#     is_computed = Column(Boolean, default=False)
+#     computed_components = Column(ARRAY(Integer), nullable=True)
 
-    is_others = Column(Boolean, default=False)
-    specify_others = Column(String(100), nullable=True)
+#     is_others = Column(Boolean, default=False)
+#     specify_others = Column(String(100), nullable=True)
 
-    core_or_elective = Column(String(30), nullable=False)
-    is_programme_elective = Column(Boolean, default=False)
-    elective_type = Column(String(50), nullable=True)
-    elective_programe_type = Column(String(50), nullable=True)
+#     core_or_elective = Column(String(30), nullable=False)
+#     is_programme_elective = Column(Boolean, default=False)
+#     elective_type = Column(String(50), nullable=True)
+#     elective_programe_type = Column(String(50), nullable=True)
 
-    attendence_percentage = Column(Integer, nullable=True)
-    book_type = Column(String(50), nullable=True)
-    mcq_time = Column(String(50), nullable=True)
-    is_tpi = Column(String(30), nullable=True)
-    incl_credit = Column(Boolean, default=True)
-    techorder = Column(Integer, nullable=True)
-    approved = Column(Boolean, default=False)
-    is_maincode = Column(Boolean, default=False)
+#     attendence_percentage = Column(Integer, nullable=True)
+#     book_type = Column(String(50), nullable=True)
+#     mcq_time = Column(String(50), nullable=True)
+#     is_tpi = Column(String(30), nullable=True)
+#     incl_credit = Column(Boolean, default=True)
+#     techorder = Column(Integer, nullable=True)
+#     approved = Column(Boolean, default=False)
+#     is_maincode = Column(Boolean, default=False)
 
-    course = relationship("Course", back_populates="components")
+#     course = relationship("Course", back_populates="components")
 
-    exam_timetables = relationship("ExamTimeTable", back_populates="component")
-    marks_entries = relationship("MarksEntry", back_populates="component")
-    student_registrations = relationship("StudentCourseRegistration", back_populates="component")
-    component_results = relationship("CourseResult", back_populates="component")
+#     exam_timetables = relationship("ExamTimeTable", back_populates="component")
+#     marks_entries = relationship("MarksEntry", back_populates="component")
+#     student_registrations = relationship("StudentCourseRegistration", back_populates="component")
+#     component_results = relationship("CourseResult", back_populates="component")
 
 
 # class Batch(AuditableBase):
@@ -102,9 +110,3 @@ class CourseComponent(AuditableBase):
 #     end_year = Column(Integer, nullable=False)
 
 #     programe = relationship("Program", back_populates="batches")
-class CourseCategory(AuditableBase):
-    __tablename__ = "course_category"
-
-    id = Column(Integer, primary_key=True, index=True)
-    category_code = Column(String(10), unique=True, nullable=False)
-    category_name = Column(String(100), nullable=False)

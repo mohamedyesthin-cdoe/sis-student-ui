@@ -43,30 +43,30 @@ def list_courses(db: Session = Depends(get_db), current_user: User = Depends(req
     service = CourseService(db)
     return service.list_courses()
 
-@router.post("/course-components", response_model=CourseComponentResponse, tags=["Course Components"])
-def create_course_component(component_data: CourseComponentCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = CourseComponentService(db)
-    return service.create_component(component_data)
+# @router.post("/course-components", response_model=CourseComponentResponse, tags=["Course Components"])
+# def create_course_component(component_data: CourseComponentCreate, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     service = CourseComponentService(db)
+#     return service.create_component(component_data)
 
-@router.get("/course-components/{component_id}", tags=["Course Components"])
-def get_course_component(component_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = CourseComponentService(db)
-    return service.get_component(component_id)
+# @router.get("/course-components/{component_id}", tags=["Course Components"])
+# def get_course_component(component_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     service = CourseComponentService(db)
+#     return service.get_component(component_id)
 
-@router.put("/course-components/{component_id}", response_model=CourseComponentResponse, tags=["Course Components"])
-def update_course_component(component_id: int, update_data: dict, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = CourseComponentService(db)
-    return service.update_component(component_id, update_data)   
+# @router.put("/course-components/{component_id}", response_model=CourseComponentResponse, tags=["Course Components"])
+# def update_course_component(component_id: int, update_data: dict, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     service = CourseComponentService(db)
+#     return service.update_component(component_id, update_data)   
 
-@router.delete("/course-components/{component_id}", tags=["Course Components"])
-def delete_course_component(component_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = CourseComponentService(db)
-    return service.delete_component(component_id)
+# @router.delete("/course-components/{component_id}", tags=["Course Components"])
+# def delete_course_component(component_id: int, db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     service = CourseComponentService(db)
+#     return service.delete_component(component_id)
 
-@router.get("/course-components" , tags=["Course Components"])
-def list_course_components(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
-    service = CourseComponentService(db)
-    return service.list_components()
+# @router.get("/course-components" , tags=["Course Components"])
+# def list_course_components(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     service = CourseComponentService(db)
+#     return service.list_components()
 
 # course_category
 @router.post("/course-categories", response_model=CourseCategoryResponse, tags=["Course Categories"])
