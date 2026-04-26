@@ -30,25 +30,43 @@ class Semester(AuditableBase):
 
 class Course(AuditableBase):
     __tablename__ = "courses"
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
-    semester_id = Column(Integer, ForeignKey("semesters.id"))
-    dept_code = Column(String(30), nullable=False)
+
+    program_id = Column(Integer, ForeignKey("programs.id", ondelete="CASCADE"), nullable=False, index=True)
+    semester_id = Column(Integer, ForeignKey("semesters.id", ondelete="CASCADE"), nullable=False, index=True)
+    course_category = Column(String(10), ForeignKey("course_category.category_code"), nullable=False)
+
     main_code = Column(String(30), nullable=False)
     main_course = Column(String(100), nullable=False)
-    course_order = Column(Integer, nullable=False)
-    course_type = Column(String(50), nullable=False)
     course_code = Column(String(50), nullable=False, unique=True)
     course_title = Column(String(200), nullable=False)
     credits = Column(Integer, nullable=False)
     regulation_pattern = Column(String(50), nullable=False)
 
+    # relationships
+    program = relationship("Programe")
     semester = relationship("Semester", back_populates="courses")
+
+# class Course(AuditableBase):
+#     __tablename__ = "courses"
+    
+#     id = Column(Integer, primary_key=True, autoincrement=True)
+#     semester_id = Column(Integer, ForeignKey("semesters.id"))
+#     main_code = Column(String(30), nullable=False)
+#     main_course = Column(String(100), nullable=False)
+#     course_category = Column(String(50), nullable=False)
+#     course_code = Column(String(50), nullable=False, unique=True)
+#     course_title = Column(String(200), nullable=False)
+#     credits = Column(Integer, nullable=False)
+#     regulation_pattern = Column(String(50), nullable=False)
+
+#     semester = relationship("Semester", back_populates="courses")
     # components = relationship("CourseComponent", back_populates="course")
-    exam_timetables = relationship("ExamTimeTable", back_populates="course")
-    marks_entries = relationship("MarksEntry", back_populates="course")
-    student_registrations = relationship("StudentCourseRegistration", back_populates="course")
-    course_results = relationship("CourseResult", back_populates="course")
+    # exam_timetables = relationship("ExamTimeTable", back_populates="course")
+    # marks_entries = relationship("MarksEntry", back_populates="course")
+    # student_registrations = relationship("StudentCourseRegistration", back_populates="course")
+    # course_results = relationship("CourseResult", back_populates="course")
 
 
 # class CourseComponent(AuditableBase):

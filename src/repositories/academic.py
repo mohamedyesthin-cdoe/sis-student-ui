@@ -78,10 +78,13 @@ class CourseRepository:
 
     def create_course(self, course_data: dict) -> Course:
         try:
+            course_data["main_code"] = course_data.get("course_code")
+            course_data["main_course"] = course_data.get("course_title")
             course = Course(**course_data)
             self.db.add(course)
             self.db.commit()
             self.db.refresh(course)
+
             return course
 
         except IntegrityError:

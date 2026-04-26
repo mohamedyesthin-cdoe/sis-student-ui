@@ -52,26 +52,26 @@ class SemesterProgramGroupResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class CourseBase(BaseModel):
-    semester_id: int
-    dept_code: str
-    main_code: str
-    main_course: str
-    course_order: int
-    course_type: str
-    course_code: str
-    course_title: str
-    credits: int
-    regulation_pattern: str
+# class CourseBase(BaseModel):
+#     semester_id: int
+#     dept_code: str
+#     main_code: str
+#     main_course: str
+#     course_order: int
+#     course_type: str
+#     course_code: str
+#     course_title: str
+#     credits: int
+#     regulation_pattern: str
 
-class CourseCreate(CourseBase):
-    pass
+# class CourseCreate(CourseBase):
+#     pass
 
-class CourseResponse(CourseBase):
-    id: int
+# class CourseResponse(CourseBase):
+#     id: int
 
-    class Config:
-        from_attributes = True
+#     class Config:
+#         from_attributes = True
 
 # class CourseComponentBase(BaseModel):
 #     course_id: int
@@ -133,6 +133,46 @@ class CourseCategoryUpdate(BaseModel):
 
 class CourseCategoryResponse(CourseCategoryBase):
     id: int
+
+    class Config:
+        from_attributes = True
+
+# course
+class CourseCreate(BaseModel):
+    program_id: int
+    semester_id: int
+    course_category: str
+
+    course_code: str
+    course_title: str
+    credits: int
+    regulation_pattern: str
+
+class CourseUpdate(BaseModel):
+    program_id: Optional[int]
+    semester_id: Optional[int]
+    course_category: Optional[str]
+
+    course_code: Optional[str]
+    course_title: Optional[str]
+    credits: Optional[int]
+    regulation_pattern: Optional[str]
+
+class CourseResponse(BaseModel):
+    id: int
+
+    program_id: int
+    semester_id: int
+
+    main_code: str
+    main_course: str
+
+    course_category: str
+
+    course_code: str
+    course_title: str
+    credits: int
+    regulation_pattern: str
 
     class Config:
         from_attributes = True
