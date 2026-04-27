@@ -45,7 +45,7 @@ class ExamTimeTable(AuditableBase):
     end_time = Column(Time, nullable=False)
 
     exam = relationship("Exam", back_populates="timetable")
-    course = relationship("Course", back_populates="exam_timetables")
+    # course = relationship("Course", back_populates="exam_timetables")
     # component = relationship("CourseComponent", back_populates="exam_timetables")
 
     __table_args__ = (
@@ -92,7 +92,7 @@ class StudentCourseRegistration(AuditableBase):
     permitted = Column(Boolean, default=True)
         
     exam_registration = relationship("StudentExamRegistration", back_populates="courses")
-    course = relationship("Course", back_populates="student_registrations")
+    # course = relationship("Course", back_populates="student_registrations")
     # component = relationship("CourseComponent", back_populates="student_registrations")
 
     __table_args__ = (
@@ -121,7 +121,7 @@ class MarksEntry(AuditableBase):
 
     student = relationship("Student", back_populates="marksheets")
     exam = relationship("Exam", back_populates="marks_entries")
-    course = relationship("Course", back_populates="marks_entries")
+    # course = relationship("Course", back_populates="marks_entries")
     # component = relationship("CourseComponent", back_populates="marks_entries")
     staff = relationship("Staff", back_populates="entered_marks")
 
@@ -154,7 +154,7 @@ class CourseResult(AuditableBase):
 
     student = relationship("Student", back_populates="course_results")
     exam = relationship("Exam", back_populates="course_results")
-    course = relationship("Course", back_populates="course_results")
+    # course = relationship("Course", back_populates="course_results")
     # component = relationship("CourseComponent", back_populates="component_results")
 
     __table_args__ = (
