@@ -29,34 +29,39 @@ class SemesterService:
         if not success:
             raise HTTPException(status_code=404, detail="Semester not found")
         return success
-    
-    def list_semesters(self) -> list[SemesterProgramGroupResponse]:
-        semesters = self.semester_repo.list_semesters()
+
+    def list_semesters(self, program_id: int) -> list[SemesterProgramGroupResponse]:
+
+        semesters = self.semester_repo.list_semesters(program_id)
         grouped: dict[int, SemesterProgramGroupResponse] = {}
-
+        
         for semester in semesters:
-            program_id = semester.program_id
+            prog_id = semester.program_id
             program_code = getattr(semester, "program_code", None)
+            
             if semester.program is not None and program_code is None:
-                program_code = getattr(semester.program, "programe_code", None)
-
-            if program_id not in grouped:
-                grouped[program_id] = SemesterProgramGroupResponse(
-                    program_id=program_id,
-                    program_code=program_code,
-                    semesters=[],
+                program_code = getattr(
+                    semester.program,
+                    "program_code",
+                    None
                 )
 
-            grouped[program_id].semesters.append(
+            if prog_id not in grouped:
+                grouped[prog_id] = SemesterProgramGroupResponse(
+                    program_id=prog_id,
+                    program_code=program_code,
+                    semesters=[]
+                )
+            
+            grouped[prog_id].semesters.append(
                 SemesterProgramItem(
                     id=semester.id,
                     semester_no=semester.semester_no,
                     semester_name=semester.semester_name,
                 )
             )
+        return [ grouped[pid] for pid in sorted(grouped) ]
 
-        return [grouped[program_id] for program_id in sorted(grouped)]
-    
 class CourseService:
     def __init__(self, db: Session):
         self.course_repo = CourseRepository(db)

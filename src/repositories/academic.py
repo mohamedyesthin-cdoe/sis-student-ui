@@ -65,11 +65,21 @@ class SemesterRepository:
             self.db.rollback()
             raise
 
-    def list_semesters(self) -> list[Semester]:
+    def list_semesters(self,program_id: int) -> list[Semester]:
         from sqlalchemy.orm import joinedload
-        query = self.db.query(Semester).options(
+        query = (
+        self.db.query(Semester)
+        .options(
             joinedload(Semester.program)
-        ).order_by(Semester.program_id.asc(), Semester.semester_no.asc(), Semester.id.asc())
+        )
+        .filter(
+            Semester.program_id == program_id
+        )
+        .order_by(
+            Semester.semester_no.asc(),
+            Semester.id.asc()
+        )
+    )
         return query.all()    
     
 class CourseRepository:
