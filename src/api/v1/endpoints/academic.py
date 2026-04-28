@@ -38,8 +38,19 @@ def delete_course(course_id: int, db: Session = Depends(get_db), current_user: U
     service = CourseService(db)
     return service.delete_course(course_id)
 
-@router.get("/courses", tags=["Courses"])
-def list_courses(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+# @router.get("/courses", response_model=list[CourseResponse], tags=["Courses"])
+# def list_courses(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+#     service = CourseService(db)
+#     return service.list_courses()
+@router.get(
+    "/courses",
+    response_model=list[CourseResponse],
+    tags=["Courses"]
+)
+def list_courses(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_superuser)
+):
     service = CourseService(db)
     return service.list_courses()
 

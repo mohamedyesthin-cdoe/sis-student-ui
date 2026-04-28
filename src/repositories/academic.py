@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from src.models.academic import *
+from sqlalchemy.orm import joinedload
 
 class SemesterRepository:
     def __init__(self, db: Session):
@@ -148,8 +149,18 @@ class CourseRepository:
             self.db.rollback()
             raise
 
+    # def list_courses(self) -> list[Course]:
+    #     return self.db.query(Course).all()
     def list_courses(self) -> list[Course]:
-        return self.db.query(Course).all()
+
+        return (
+            self.db.query(Course)
+            .options(
+                joinedload(Course.program),
+                joinedload(Course.semester)
+            )
+            .all()
+        )
     
 # class CourseComponentRepository:
 #     def __init__(self, db: Session):

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import date, datetime
 
 class SemesterBase(BaseModel):
     program_id: int
@@ -137,8 +138,12 @@ class CourseCategoryResponse(CourseCategoryBase):
     class Config:
         from_attributes = True
 
-# course
-class CourseCreate(BaseModel):
+        
+
+# -------------------------
+# Base Schema
+# -------------------------
+class CourseBase(BaseModel):
     program_id: int
     semester_id: int
     course_category: str
@@ -148,31 +153,81 @@ class CourseCreate(BaseModel):
     credits: int
     regulation_pattern: str
 
-class CourseUpdate(BaseModel):
-    program_id: Optional[int]
-    semester_id: Optional[int]
-    course_category: Optional[str]
 
-    course_code: Optional[str]
-    course_title: Optional[str]
-    credits: Optional[int]
-    regulation_pattern: Optional[str]
+# -------------------------
+# Create Schema
+# -------------------------
+class CourseCreate(CourseBase):
+    pass
+
+
+# -------------------------
+# Update Schema
+# -------------------------
+class CourseUpdate(BaseModel):
+    program_id: int | None = None
+    semester_id: int | None = None
+    course_category: str | None = None
+
+    course_code: str | None = None
+    course_title: str | None = None
+    credits: int | None = None
+    regulation_pattern: str | None = None
+
+
+# -------------------------
+# Response Schema
+# -------------------------
 
 class CourseResponse(BaseModel):
+
     id: int
-
-    program_id: int
-    semester_id: int
-
-    main_code: str
-    main_course: str
-
-    course_category: str
-
     course_code: str
     course_title: str
+
+    semester_id: int
+    semester_name: str | None = None
+
     credits: int
-    regulation_pattern: str
+
+    course_category: str | None = None
+    regulation_pattern: str | None = None
+
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
+    program_id: int
+    program_code: str | None = None
+    program_name: str | None = None
 
     class Config:
         from_attributes = True
+
+# -------------------------
+# Course Item (inside program)
+# -------------------------
+# class CourseItemResponse(BaseModel):
+
+#     id: int
+#     course_code: str
+#     course_title: str
+
+#     semester_id: int
+#     semester_name: str | None = None
+
+#     credits: int
+
+#     class Config:
+#         from_attributes = True
+
+
+# # -------------------------
+# # Program Group Response
+# # -------------------------
+# class ProgramCourseResponse(BaseModel):
+
+#     program_id: int
+#     program_code: str | None = None
+#     program_name: str | None = None
+
+#     courses: list[CourseItemResponse]

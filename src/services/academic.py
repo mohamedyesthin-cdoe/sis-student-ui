@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from src.models.academic import Semester, Course
 from src.repositories.academic import *
-from src.schemas.academic import SemesterProgramGroupResponse, SemesterProgramItem
+from src.schemas.academic import SemesterProgramGroupResponse, SemesterProgramItem,CourseResponse
 
 class SemesterService:
     def __init__(self, db: Session):
@@ -88,9 +88,143 @@ class CourseService:
             raise HTTPException(status_code=404, detail="Course not found")
         return success
     
-    def list_courses(self) -> list[Course]:
-        return self.course_repo.list_courses()
-    
+    def list_courses(self) -> list[CourseResponse]:
+        
+        courses = self.course_repo.list_courses()
+        response: list[CourseResponse] = []
+
+        for course in courses:
+            program_code = getattr(
+                course,
+                "programe_code",
+                None
+            )
+
+            if course.program is not None and program_code is None:
+                program_code = getattr(
+                    course.program,
+                    "programe_code",
+                    None
+                )
+
+            # program_name
+            program_name = None
+
+            if course.program is not None:
+                program_name = getattr(
+                    course.program,
+                    "programe",
+                    None
+                )
+
+            # semester_name
+            semester_name = None
+
+            if course.semester is not None:
+                semester_name = getattr(
+                    course.semester,
+                    "semester_name",
+                None
+            )
+
+            response.append(
+
+                CourseResponse(
+
+                    id=course.id,
+                    course_code=course.course_code,
+                    course_title=course.course_title,
+
+                    semester_id=course.semester_id,
+                    semester_name=semester_name,
+
+                    credits=course.credits,
+
+                    course_category=course.course_category,
+                    regulation_pattern=course.regulation_pattern,
+
+                    created_at=course.created_at,
+                    updated_at=course.updated_at,
+
+                    program_id=course.program_id,
+                    program_code=program_code,
+                    program_name=program_name,
+                )
+            )
+
+        return response
+    # def list_courses(self) -> list[Course]:
+    #     return self.course_repo.list_courses()
+    # def list_courses(self) -> list[ProgramCourseResponse]:
+        
+    #     courses = self.course_repo.list_courses()
+    #     grouped: dict[int, ProgramCourseResponse] = {}
+
+    #     for course in courses:
+
+    #         prog_id = course.program_id
+
+    #         # program_code
+    #         program_code = getattr(
+    #             course,
+    #             "programe_code",
+    #             None
+    #         )
+
+    #         if course.program is not None and program_code is None:
+
+    #             program_code = getattr(
+    #                 course.program,
+    #                 "programe_code",
+    #                 None
+    #             )
+
+    #         # program_name
+    #         program_name = None
+
+    #         if course.program is not None:
+
+    #             program_name = getattr(
+    #                 course.program,
+    #                 "programe",
+    #                 None
+    #             )
+            
+    #         # create group if not exists
+    #         if prog_id not in grouped:
+    #             grouped[prog_id] = ProgramCourseResponse(
+
+    #                 program_id=prog_id,
+    #                 program_code=program_code,
+    #                 program_name=program_name,
+    #                 courses=[]
+    #             )
+
+    #         # semester_name
+    #         semester_name = None
+
+    #         if course.semester is not None:
+
+    #             semester_name = getattr(
+    #                 course.semester,
+    #                 "semester_name",
+    #                 None
+    #             )
+
+    #         grouped[prog_id].courses.append(
+
+    #             CourseItemResponse(
+
+    #                 id=course.id,
+    #                 course_code=course.course_code,
+    #                 course_title=course.course_title,
+    #                 semester_id=course.semester_id,
+    #                 semester_name=semester_name,
+    #                 credits=course.credits,
+    #             )
+    #         )
+
+    #     return [grouped[pid] for pid in sorted(grouped)]    
 # class CourseComponentService:
 #     def __init__(self, db: Session):
 #         self.component_repo = CourseComponentRepository(db)
