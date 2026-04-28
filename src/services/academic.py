@@ -127,6 +127,23 @@ class CourseService:
                 None
             )
 
+            # category_name
+            category_name = None
+
+            if course.course_category is not None:
+                category_name = getattr(
+                    course.course_category,
+                    "category_name",
+                    None
+                )
+
+                category_code = getattr(
+                    course.course_category,
+                    "category_code",
+                    None
+                 )
+
+        
             response.append(
 
                 CourseResponse(
@@ -140,7 +157,8 @@ class CourseService:
 
                     credits=course.credits,
 
-                    course_category=course.course_category,
+                    category_name=category_name,
+                    category_code = category_code,
                     regulation_pattern=course.regulation_pattern,
 
                     created_at=course.created_at,

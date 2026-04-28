@@ -10,6 +10,7 @@ class CourseCategory(AuditableBase):
     id = Column(Integer, primary_key=True, index=True)
     category_code = Column(String(10), unique=True, nullable=False)
     category_name = Column(String(100), nullable=False)
+    courses = relationship("Course", back_populates="course_category")
 
 
 class Semester(AuditableBase):
@@ -35,7 +36,7 @@ class Course(AuditableBase):
 
     program_id = Column(Integer, ForeignKey("programs.id", ondelete="CASCADE"), nullable=False, index=True)
     semester_id = Column(Integer, ForeignKey("semesters.id", ondelete="CASCADE"), nullable=False, index=True)
-    course_category = Column(String(10), ForeignKey("course_category.category_code"), nullable=False)
+    course_category_id = Column(Integer, ForeignKey("course_category.id"), nullable=False,index=True)
 
     main_code = Column(String(30), nullable=False)
     main_course = Column(String(100), nullable=False)
@@ -47,6 +48,7 @@ class Course(AuditableBase):
     # relationships
     program = relationship("Programe")
     semester = relationship("Semester", back_populates="courses")
+    course_category = relationship("CourseCategory", back_populates="courses")
 
 # class Course(AuditableBase):
 #     __tablename__ = "courses"

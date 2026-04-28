@@ -146,7 +146,7 @@ class CourseCategoryResponse(CourseCategoryBase):
 class CourseBase(BaseModel):
     program_id: int
     semester_id: int
-    course_category: str
+    course_category_id: str
 
     course_code: str
     course_title: str
@@ -167,7 +167,7 @@ class CourseCreate(CourseBase):
 class CourseUpdate(BaseModel):
     program_id: int | None = None
     semester_id: int | None = None
-    course_category: str | None = None
+    course_category_id: str | None = None
 
     course_code: str | None = None
     course_title: str | None = None
@@ -190,7 +190,6 @@ class CourseResponse(BaseModel):
 
     credits: int
 
-    course_category: str | None = None
     regulation_pattern: str | None = None
 
     created_at: datetime | None = None
@@ -199,6 +198,9 @@ class CourseResponse(BaseModel):
     program_id: int
     program_code: str | None = None
     program_name: str | None = None
+
+    category_name: str | None = None
+    category_code: str | None = None
 
     class Config:
         from_attributes = True

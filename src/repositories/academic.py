@@ -157,7 +157,8 @@ class CourseRepository:
             self.db.query(Course)
             .options(
                 joinedload(Course.program),
-                joinedload(Course.semester)
+                joinedload(Course.semester),
+                joinedload(Course.course_category),
             )
             .all()
         )
