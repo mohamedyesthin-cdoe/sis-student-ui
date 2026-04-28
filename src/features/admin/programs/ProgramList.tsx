@@ -69,9 +69,11 @@ export default function ProgramList() {
       filteredPrograms,
       [
         { header: "S.No", key: "sno" },
-        { header: "Program ID", key: "id" },
+        { header: "Program Code", key: "programe_code" },
         { header: "Program Name", key: "programe" },
         { header: "Duration", key: "duration" },
+        { header: "Total Semesters", key: "total_semesters" },
+        { header: "Department Code", key: "department_code" }
       ],
       "Programs",
       "Programs"
@@ -129,9 +131,11 @@ export default function ProgramList() {
                 ) : (
                   <ReusableTable
                     columns={[
-                      { key: "id", label: "Program ID" },
+                      { key: "programe_code", label: "Program Code" },
                       { key: "programe", label: "Program Name" },
                       { key: "duration", label: "Duration" },
+                      { key: "total_semesters", label: "Total Semesters" },
+                      { key: "department_code", label: "Department Code" }
                     ]}
                     data={filteredPrograms}
                     page={page}

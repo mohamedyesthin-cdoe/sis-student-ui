@@ -70,19 +70,19 @@ export const ADMIN_MENU_ITEMS: MenuItem[] = [
     icon: 'Master',
     subItems: [
       // { text: 'Syllabus List', routePath: '/syllabus' },
-      { text: 'Programs', routePath: '/programs' },
       { text: 'Roles', routePath: '/role-list' },
       { text: 'Departments', routePath: '/department-list' },
-      { text: 'Schemes', routePath: '/schemes/list' },
-      { text: 'Semesters', routePath: '/semesters/list' },
+      { text: 'Programs', routePath: '/programs' },
+      // { text: 'Schemes', routePath: '/schemes/list' },
+      // { text: 'Semesters', routePath: '/semesters/list' },
       { text: 'Courses', routePath: '/courses/list' },
-      { text: 'Course Components', routePath: '/course-components/list' },
+      // { text: 'Course Components', routePath: '/course-components/list' },
       { text: 'Exams', routePath: '/exam/list' },
       { text: 'Exam Timetable', routePath: '/exam-timetables/list' },
       // { text: 'Mark Entry', routePath: '/students-marks-entry' },
       { text: 'Payment Control', routePath: '/payment-control/list' },
-      { text: 'Batches', routePath: '/batch/list' },
-      { text: 'Years', routePath: '/year/list' },
+      // { text: 'Batches', routePath: '/batch/list' },
+      // { text: 'Years', routePath: '/year/list' },
     ],
     routePath: '',
   },
@@ -164,7 +164,7 @@ export const STUDENT_MENU_ITEMS: MenuItem[] = [
   },
 ];
 export const FACULTY_MENU_ITEMS: MenuItem[] = [
- 
+
   {
     text: 'Grievances',
     icon: 'Grievances',

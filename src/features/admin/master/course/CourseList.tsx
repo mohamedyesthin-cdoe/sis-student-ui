@@ -31,7 +31,9 @@ export default function CourseList() {
   const [searchText, setSearchText] = React.useState("");
   const [courses, setCourses] = React.useState<any[]>([]);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [selectedCourses, setSelectedCourses] = React.useState<any>(null);
+  const [selectedCourses, setSelectedCourses] =
+    React.useState<any>(null);
+
   /* ---------------------------- API CALL ---------------------------- */
 
   React.useEffect(() => {
@@ -40,10 +42,16 @@ export default function CourseList() {
     apiClient
       .get(ApiRoutes.COURSES)
       .then((res) => {
-        const data = res.data?.data ?? res.data ?? [];
+        const data =
+          res.data?.data ?? res.data ?? [];
         setCourses(data);
       })
-      .catch(() => showAlert("Failed to load courses", "error"));
+      .catch(() =>
+        showAlert(
+          "Failed to load courses",
+          "error"
+        )
+      );
   }, []);
 
   /* ----------------------- DELETE WITH CONFIRM ---------------------- */
@@ -54,15 +62,20 @@ export default function CourseList() {
     try {
       await apiRequest({
         url: `${ApiRoutes.COURSES}/${selectedCourses.id}`,
-        method: "delete" as const,
+        method: "delete",
       });
 
-      // ✅ remove deleted item from UI immediately
       setCourses((prev) =>
-        prev.filter((item) => item.id !== selectedCourses.id)
+        prev.filter(
+          (item) =>
+            item.id !== selectedCourses.id
+        )
       );
 
-      showAlert("Course deleted successfully!", "success");
+      showAlert(
+        "Course deleted successfully!",
+        "success"
+      );
 
       handleCloseDelete();
     } catch (err: any) {
@@ -78,6 +91,7 @@ export default function CourseList() {
     setSelectedCourses(null);
     setOpenDelete(false);
   };
+
   const handleOpenDelete = (row: any) => {
     setSelectedCourses(row);
     setOpenDelete(true);
@@ -85,19 +99,23 @@ export default function CourseList() {
 
   /* ------------------------------- FILTER --------------------------- */
 
-  const filteredCourses = courses.filter((c) => {
-    const combined = `
-      ${c.dept_code}
-      ${c.main_code}
-      ${c.main_course}
-      ${c.course_code}
-      ${c.course_title}
-      ${c.course_type}
-      ${c.regulation_pattern}
+  const filteredCourses = courses.filter(
+    (c) => {
+      const combined = `
+       ${c.program_name}
+       ${c.program_code}
+       ${c.semester_name}
+       ${c.course_category}
+       ${c.course_code}
+       ${c.course_title}
+       ${c.regulation_pattern}
     `.toLowerCase();
 
-    return combined.includes(searchText.toLowerCase());
-  });
+      return combined.includes(
+        searchText.toLowerCase()
+      );
+    }
+  );
 
   /* ------------------------------- EXPORT --------------------------- */
 
@@ -105,25 +123,41 @@ export default function CourseList() {
     exportToExcel(
       filteredCourses.map((c, index) => ({
         sno: index + 1,
-        dept_code: c.dept_code,
-        main_code: c.main_code,
-        main_course: c.main_course,
+
+        program_name: c.program_name,
+        program_code: c.program_code,
+        semester_name: c.semester_name,
+
+        course_category: c.course_category,
+
         course_code: c.course_code,
         course_title: c.course_title,
-        course_type: c.course_type,
+
         credits: c.credits,
+
         regulation_pattern: c.regulation_pattern,
+
+        created_at: c.created_at,
+        updated_at: c.updated_at,
       })),
       [
         { header: "S.No", key: "sno" },
-        { header: "Dept Code", key: "dept_code" },
-        { header: "Main Code", key: "main_code" },
-        { header: "Main Course", key: "main_course" },
+
+        { header: "Program", key: "program_name" },
+        { header: "Program Code", key: "program_code" },
+        { header: "Semester", key: "semester_name" },
+
+        { header: "Course Category", key: "course_category" },
+
         { header: "Course Code", key: "course_code" },
         { header: "Course Title", key: "course_title" },
-        { header: "Course Type", key: "course_type" },
+
         { header: "Credits", key: "credits" },
-        { header: "Regulation Pattern", key: "regulation_pattern" },
+
+        { header: "Regulation", key: "regulation_pattern" },
+
+        { header: "Created At", key: "created_at" },
+        { header: "Updated At", key: "updated_at" },
       ],
       "Courses",
       "Courses"
@@ -137,7 +171,11 @@ export default function CourseList() {
       <CardComponent
         sx={{
           width: "100%",
-          maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+          maxWidth: {
+            xs: "350px",
+            sm: "900px",
+            md: "1300px",
+          },
           mx: "auto",
           p: 3,
           mt: 3,
@@ -150,8 +188,10 @@ export default function CourseList() {
               label: "Search",
               type: "text",
               value: searchText,
-              onChange: (val) => setSearchText(val),
-              placeholder: "Search courses",
+              onChange: (val) =>
+                setSearchText(val),
+              placeholder:
+                "Search courses",
               visible: true,
             },
           ]}
@@ -159,13 +199,18 @@ export default function CourseList() {
             {
               label: "Export Excel",
               color: "secondary",
-              startIcon: <FileDownloadIcon />,
-              onClick: handleExportExcel,
+              startIcon:
+                <FileDownloadIcon />,
+              onClick:
+                handleExportExcel,
             },
             {
               label: "Add Course",
               color: "primary",
-              onClick: () => navigate("/courses/add"),
+              onClick: () =>
+                navigate(
+                  "/courses/add"
+                ),
             },
           ]}
         />
@@ -177,30 +222,64 @@ export default function CourseList() {
         ) : (
           <ReusableTable
             columns={[
-              { key: "dept_code", label: "Dept Code" },
-              { key: "main_code", label: "Main Code" },
-              { key: "main_course", label: "Main Course" },
-              { key: "course_code", label: "Course Code" },
-              { key: "course_title", label: "Course Title" },
-              { key: "course_type", label: "Course Type" },
-              { key: "credits", label: "Credits" },
-              { key: "regulation_pattern", label: "Regulation" },
+              {
+                key: "course_code",
+                label: "Course Code",
+              },
+              {
+                key: "course_title",
+                label: "Course Title",
+              },
+               {
+                key: "course_category",
+                label: "Category",
+                 render: (row: any) =>
+                  `${row.category_name} - (${row.category_code})`,
+              },
+              {
+                key: "semester_name",
+                label: "Semester",
+              },
+              {
+                key: "program_name",
+                label: "Program",
+                render: (row: any) =>
+                  `${row.program_name} - (${row.program_code})`,
+              },
+              
+             
+              
+              {
+                key: "credits",
+                label: "Credits",
+              },
+              {
+                key: "regulation_pattern",
+                label: "Regulation",
+              },
             ]}
+
             data={filteredCourses}
             page={page}
             rowsPerPage={rowsPerPage}
             actions={[
               {
                 label: "Edit",
-                icon: <EditIcon fontSize="small" />,
+                icon:
+                  <EditIcon fontSize="small" />,
                 color: "primary",
-                onClick: (row) => navigate(`/courses/edit/${row.id}`),
+                onClick: (row) =>
+                  navigate(
+                    `/courses/edit/${row.id}`
+                  ),
               },
               {
                 label: "Delete",
-                icon: <DeleteIcon fontSize="small" />,
+                icon:
+                  <DeleteIcon fontSize="small" />,
                 color: "error",
-                onClick: handleOpenDelete,
+                onClick:
+                  handleOpenDelete,
               },
             ]}
           />
@@ -208,27 +287,43 @@ export default function CourseList() {
 
         <TablePagination
           page={page}
-          rowsPerPage={rowsPerPage}
-          totalCount={filteredCourses.length}
-          onPageChange={(newPage) => setPage(newPage)}
+          rowsPerPage={
+            rowsPerPage
+          }
+          totalCount={
+            filteredCourses.length
+          }
+          onPageChange={(
+            newPage
+          ) =>
+            setPage(newPage)
+          }
         />
       </CardComponent>
+
       <CustomDialog
         open={openDelete}
         title="Delete Course"
         description={
           <>
-            Are you sure you want to delete{" "}
+            Are you sure you want to
+            delete{" "}
             <strong>
-              {selectedCourses?.course_title}
+              {
+                selectedCourses?.course_title
+              }
             </strong>
             ?
           </>
         }
         confirmText="Delete"
         cancelText="Cancel"
-        onClose={handleCloseDelete}
-        onConfirm={handleConfirmDelete}
+        onClose={
+          handleCloseDelete
+        }
+        onConfirm={
+          handleConfirmDelete
+        }
       />
     </>
   );

@@ -31,7 +31,9 @@ export default function SemestersList() {
   const [searchText, setSearchText] = React.useState("");
   const [semesters, setSemesters] = React.useState<any[]>([]);
   const [openDelete, setOpenDelete] = React.useState(false);
-  const [selectedSemesters, setSelectedSemesters] = React.useState<any>(null);
+  const [selectedSemesters, setSelectedSemesters] =
+    React.useState<any>(null);
+
   /* ---------------------------- API CALL ---------------------------- */
 
   React.useEffect(() => {
@@ -39,89 +41,141 @@ export default function SemestersList() {
 
     apiClient
       .get(ApiRoutes.SEMESTERS)
-      .then((res) => setSemesters(res.data || []))
-      .catch(() => showAlert("Failed to load semesters", "error"));
+      .then((res) => {
+        const apiData = res.data || [];
+
+        // ✅ Map one row per program
+        const mappedData = apiData.map(
+          (program: any) => ({
+            id: program.program_id,
+            program_id: program.program_id,
+            program_code: program.program_code,
+            department_code:
+              program.department_code,
+            total_semesters:
+              program.semesters?.length || 0,
+          })
+        );
+
+        setSemesters(mappedData);
+      })
+      .catch(() =>
+        showAlert(
+          "Failed to load semesters",
+          "error"
+        )
+      );
   }, []);
 
-  /* ----------------------- DELETE WITH CONFIRM ---------------------- */
+  /* ----------------------- DELETE ---------------------- */
 
   const handleConfirmDelete = async () => {
-    if (!selectedSemesters?.id) return;
+    if (!selectedSemesters?.program_id)
+      return;
 
     try {
       await apiRequest({
-        url: `${ApiRoutes.SEMESTERS}/${selectedSemesters.id}`,
-        method: "delete" as const,
+        url: `${ApiRoutes.SEMESTERS}/${selectedSemesters.program_id}`,
+        method: "delete",
       });
 
-      // ✅ remove deleted item from UI immediately
       setSemesters((prev) =>
-        prev.filter((item) => item.id !== selectedSemesters.id)
+        prev.filter(
+          (item) =>
+            item.program_id !==
+            selectedSemesters.program_id
+        )
       );
 
-      showAlert("Semester deleted successfully!", "success");
+      showAlert(
+        "Program semesters deleted successfully!",
+        "success"
+      );
 
       handleCloseDelete();
     } catch (err: any) {
       showAlert(
         err.response?.data?.message ||
-        "Failed to delete semester.",
+          "Failed to delete program semesters.",
         "error"
       );
     }
   };
 
-
   const handleCloseDelete = () => {
     setSelectedSemesters(null);
     setOpenDelete(false);
   };
+
   const handleOpenDelete = (row: any) => {
     setSelectedSemesters(row);
     setOpenDelete(true);
   };
 
-  /* ------------------------------- FILTER --------------------------- */
+  /* ----------------------- FILTER ----------------------- */
 
-  const filteredSemesters = semesters.filter((s) => {
-    const combined = `
-      ${s.semester_name}
-      ${s.semester_no}
-      ${s.scheme_id}
-    `.toLowerCase();
+  const filteredSemesters = semesters.filter(
+    (s) => {
+      const combined = `
+        ${s.program_code}
+        ${s.program_id}
+        ${s.total_semesters}
+      `.toLowerCase();
 
-    return combined.includes(searchText.toLowerCase());
-  });
+      return combined.includes(
+        searchText.toLowerCase()
+      );
+    }
+  );
 
-  /* ------------------------------- EXPORT --------------------------- */
+  /* ----------------------- EXPORT ----------------------- */
 
   const handleExportExcel = () => {
     exportToExcel(
-      filteredSemesters.map((s, index) => ({
-        sno: index + 1,
-        semester_name: s.semester_name,
-        semester_no: s.semester_no,
-        scheme_id: s.scheme_id,
-      })),
+      filteredSemesters.map(
+        (s, index) => ({
+          sno: index + 1,
+          program_code: s.program_code,
+          program_id: s.program_id,
+          total_semesters:
+            s.total_semesters,
+        })
+      ),
       [
-        { header: "S.No", key: "sno" },
-        { header: "Semester Name", key: "semester_name" },
-        { header: "Semester No", key: "semester_no" },
-        { header: "Scheme ID", key: "scheme_id" },
+        {
+          header: "S.No",
+          key: "sno",
+        },
+        {
+          header: "Program Code",
+          key: "program_code",
+        },
+        {
+          header: "Department Code",
+          key: "department_code",
+        },
+        {
+          header: "Total Semesters",
+          key: "total_semesters",
+        },
       ],
       "Semesters",
       "Semesters"
     );
   };
 
-  /* ------------------------------- UI ------------------------------- */
+  /* ----------------------- UI ----------------------- */
 
   return (
     <>
       <CardComponent
         sx={{
           width: "100%",
-          maxWidth: { xs: "350px", sm: "900px", md: "1300px" },
+          maxWidth: {
+            xs: "350px",
+            sm: "900px",
+            md: "1300px",
+          },
           mx: "auto",
           p: 3,
           mt: 3,
@@ -134,8 +188,10 @@ export default function SemestersList() {
               label: "Search",
               type: "text",
               value: searchText,
-              onChange: (val) => setSearchText(val),
-              placeholder: "Search semesters",
+              onChange: (val) =>
+                setSearchText(val),
+              placeholder:
+                "Search programs",
               visible: true,
             },
           ]}
@@ -143,63 +199,73 @@ export default function SemestersList() {
             {
               label: "Export Excel",
               color: "secondary",
-              startIcon: <FileDownloadIcon />,
+              startIcon:
+                <FileDownloadIcon />,
               onClick: handleExportExcel,
             },
             {
               label: "Add Semester",
               color: "primary",
-              onClick: () => navigate("/semesters/add"),
+              onClick: () =>
+                navigate(
+                  "/semesters/add"
+                ),
             },
           ]}
         />
 
         {loading ? (
           <TableSkeleton />
-        ) : filteredSemesters.length === 0 ? (
+        ) : filteredSemesters.length ===
+          0 ? (
           <NoDataFoundUI />
         ) : (
           <ReusableTable
             columns={[
-              { key: "semester_name", label: "Semester Name" },
-              { key: "semester_no", label: "Semester No" },
-              { key: "scheme_id", label: "Scheme ID" },
+              {
+                key: "total_semesters",
+                label:
+                  "Total Semesters",
+              },
+              {
+                key: "program_code",
+                label: "Program Code",
+              },
+               {
+                key: "department_code",
+                label: "Department Code",
+              },            
+              
             ]}
             data={filteredSemesters}
             page={page}
             rowsPerPage={rowsPerPage}
-            actions={[
-              {
-                label: "Edit",
-                icon: <EditIcon fontSize="small" />,
-                color: "primary",
-                onClick: (row) => navigate(`/semesters/edit/${row.id}`),
-              },
-              {
-                label: "Delete",
-                icon: <DeleteIcon fontSize="small" />,
-                color: "error",
-                onClick: handleOpenDelete,
-              },
-            ]}
           />
         )}
 
         <TablePagination
           page={page}
           rowsPerPage={rowsPerPage}
-          totalCount={filteredSemesters.length}
-          onPageChange={(newPage) => setPage(newPage)}
+          totalCount={
+            filteredSemesters.length
+          }
+          onPageChange={(newPage) =>
+            setPage(newPage)
+          }
         />
       </CardComponent>
+
       <CustomDialog
         open={openDelete}
-        title="Delete Semester"
+        title="Delete Program Semesters"
         description={
           <>
-            Are you sure you want to delete{" "}
+            Are you sure you want to delete
+            semesters for{" "}
             <strong>
-              {selectedSemesters?.semester_name}
+              {
+                selectedSemesters?.program_code
+              }
             </strong>
             ?
           </>
@@ -207,7 +273,9 @@ export default function SemestersList() {
         confirmText="Delete"
         cancelText="Cancel"
         onClose={handleCloseDelete}
-        onConfirm={handleConfirmDelete}
+        onConfirm={
+          handleConfirmDelete
+        }
       />
     </>
   );

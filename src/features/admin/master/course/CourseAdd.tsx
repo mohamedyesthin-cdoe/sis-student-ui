@@ -26,12 +26,10 @@ import apiClient from "../../../../services/ApiClient";
 /* -------------------------------- types -------------------------------- */
 
 interface FormValues {
-  semester_id: string;
-  dept_code: string;
-  main_code: string;
-  main_course: string;
-  course_order: number;
-  course_type: string;
+  program_id: number;
+  semester_id: number;
+
+  course_category: string;
   course_code: string;
   course_title: string;
   credits: number;
@@ -39,12 +37,10 @@ interface FormValues {
 }
 
 const defaultValues: FormValues = {
-  semester_id: "",
-  dept_code: "",
-  main_code: "",
-  main_course: "",
-  course_order: 0,
-  course_type: "",
+  program_id: 0,
+  semester_id: 0,
+
+  course_category: "",
   course_code: "",
   course_title: "",
   credits: 0,
@@ -54,12 +50,10 @@ const defaultValues: FormValues = {
 /* ----------------------------- validation ------------------------------- */
 
 const schema = Yup.object().shape({
-  semester_id: Yup.string().required("Semester is required"),
-  dept_code: Yup.string().required("Department Code is required"),
-  main_code: Yup.string().required("Main Code is required"),
-  main_course: Yup.string().required("Main Course is required"),
-  course_order: Yup.number().min(1).required("Course Order is required"),
-  course_type: Yup.string().required("Course Type is required"),
+  program_id: Yup.number().required("Program is required"),
+  semester_id: Yup.number().required("Semester is required"),
+
+  course_category: Yup.string().required("Course Category is required"),
   course_code: Yup.string().required("Course Code is required"),
   course_title: Yup.string().required("Course Title is required"),
   credits: Yup.number().min(0).required("Credits are required"),
@@ -71,12 +65,22 @@ const schema = Yup.object().shape({
 export default function CourseAdd() {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const { showAlert, showConfirm } = useAlert();
   const { loading } = useLoader();
   const { clearError } = useGlobalError();
 
   const [initialData, setInitialData] = useState<FormValues | null>(null);
+
+  const [programs, setPrograms] = useState<
+    { value: string; label: string }[]
+  >([]);
+
   const [semesters, setSemesters] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const [courseCategories, setCourseCategories] = useState<
     { value: string; label: string }[]
   >([]);
 
@@ -84,66 +88,137 @@ export default function CourseAdd() {
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues,
   });
 
-  /* -------------------------- fetch semesters ---------------------------- */
+  const selectedProgramId = watch("program_id");
+
+  /* ------------------------- fetch programs ------------------------- */
 
   useEffect(() => {
     clearError();
 
+    const fetchPrograms = async () => {
+      try {
+        const res = await apiClient.get(
+          ApiRoutes.GETPROGRAMLIST
+        );
+
+        const mapped = (res.data || []).map(
+          (p: any) => ({
+            value: String(p.id),
+            label: p.programe,
+          })
+        );
+
+        setPrograms(mapped);
+      } catch {
+        showAlert(
+          "Failed to load programs list",
+          "error"
+        );
+      }
+    };
+
+    const fetchCategories = async () => {
+      try {
+        const res = await apiClient.get(
+          ApiRoutes.COURSECATEGORYLIST
+        );
+
+        const mapped = (res.data || []).map(
+          (c: any) => ({
+            value: String(c.id),
+            label: `${c.category_name} (${c.category_code})`,
+          })
+        );
+
+        setCourseCategories(mapped);
+      } catch {
+        showAlert(
+          "Failed to load course categories list",
+          "error"
+        );
+      }
+    };
+
+    fetchPrograms();
+    fetchCategories();
+
+  }, []);
+
+  /* ---------------------- fetch semesters by program ---------------------- */
+
+  useEffect(() => {
+    if (!selectedProgramId) {
+      setSemesters([]);
+      setValue("semester_id", 0);
+      return;
+    }
+
     const fetchSemesters = async () => {
       try {
-        const res = await apiClient.get(ApiRoutes.SEMESTERS);
+        const res = await apiClient.get(
+          `${ApiRoutes.SEMESTERS}/${selectedProgramId}`
+        );
 
-        const mapped = (res.data || []).map((s: any) => ({
-          value: String(s.id),
-          label: `${s.semester_name} - ${s.semester_no}`,
-        }));
+        const semesterList =
+          res.data?.[0]?.semesters || [];
+
+        const mapped = semesterList.map(
+          (s: any) => ({
+            value: String(s.id),
+            label: `${s.semester_name}`,
+          })
+        );
 
         setSemesters(mapped);
+
       } catch {
-        showAlert("Failed to load semesters list", "error");
+        showAlert(
+          "Failed to load semesters list",
+          "error"
+        );
       }
     };
 
     fetchSemesters();
-  }, []);
 
-  /* --------------------------- edit mode -------------------------------- */
+  }, [selectedProgramId]);
+
+  /* --------------------------- edit mode --------------------------- */
 
   useEffect(() => {
-    if (!id || semesters.length === 0) return;
-
-    const courseId = Number(id);
-    if (!courseId) return;
+    if (!id) return;
 
     const fetchCourse = async () => {
       try {
         const res = await apiClient.get(
-          `${ApiRoutes.COURSES}/${courseId}`
+          `${ApiRoutes.COURSES}/${Number(id)}`
         );
 
         const data = res.data;
 
         const formatted: FormValues = {
-          semester_id: String(data.semester_id),
-          dept_code: data.dept_code,
-          main_code: data.main_code,
-          main_course: data.main_course,
-          course_order: data.course_order,
-          course_type: data.course_type,
+          program_id: data.program_id,
+          semester_id: data.semester_id,
+
+          course_category: data.course_category,
           course_code: data.course_code,
           course_title: data.course_title,
           credits: data.credits,
-          regulation_pattern: data.regulation_pattern,
+          regulation_pattern:
+            data.regulation_pattern,
         };
 
         setInitialData(formatted);
         reset(formatted);
+
       } catch (error: any) {
         showAlert(
           error?.response?.data?.detail ||
@@ -154,9 +229,10 @@ export default function CourseAdd() {
     };
 
     fetchCourse();
-  }, [id, semesters.length]);
 
-  /* ----------------------------- handlers -------------------------------- */
+  }, [id]);
+
+  /* ----------------------------- handlers ----------------------------- */
 
   const handleBack = () => {
     if (isDirty) {
@@ -173,26 +249,33 @@ export default function CourseAdd() {
   const handleReset = () => {
     if (id && initialData) {
       reset(initialData);
-      showAlert("Original values restored", "info");
+      showAlert(
+        "Original values restored",
+        "info"
+      );
     } else {
       reset(defaultValues);
-      showAlert("Form cleared", "info");
+      showAlert(
+        "Form cleared",
+        "info"
+      );
     }
   };
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (
+    data: FormValues
+  ) => {
     try {
       const payload = {
+        program_id: Number(data.program_id),
         semester_id: Number(data.semester_id),
-        dept_code: data.dept_code,
-        main_code: data.main_code,
-        main_course: data.main_course,
-        course_order: Number(data.course_order),
-        course_type: data.course_type,
+
+        course_category: data.course_category,
         course_code: data.course_code,
         course_title: data.course_title,
         credits: Number(data.credits),
-        regulation_pattern: data.regulation_pattern,
+        regulation_pattern:
+          data.regulation_pattern,
       };
 
       if (id) {
@@ -201,23 +284,37 @@ export default function CourseAdd() {
           method: "put",
           data: payload,
         });
-        showAlert("Course updated successfully", "success");
+
+        showAlert(
+          "Course updated successfully",
+          "success"
+        );
+
       } else {
         await apiRequest({
           url: ApiRoutes.COURSES,
           method: "post",
           data: payload,
         });
-        showAlert("Course created successfully", "success");
+
+        showAlert(
+          "Course created successfully",
+          "success"
+        );
       }
 
       navigate("/courses/list");
+
     } catch (error: any) {
-      showAlert(error?.detail || "Failed to save course", "error");
+      showAlert(
+        error?.detail ||
+        "Failed to save course",
+        "error"
+      );
     }
   };
 
-  /* ------------------------------- UI ----------------------------------- */
+  /* ------------------------------- UI ------------------------------- */
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -225,7 +322,23 @@ export default function CourseAdd() {
         <CardComponent sx={{ p: 4 }}>
           <Grid container spacing={3}>
 
-            {/* Semester */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Controller
+                name="program_id"
+                control={control}
+                render={({ field }) => (
+                  <CustomSelect
+                    label="Program"
+                    field={field}
+                    options={programs}
+                    helperText={
+                      errors.program_id?.message
+                    }
+                  />
+                )}
+              />
+            </Grid>
+
             <Grid size={{ xs: 12, md: 6 }}>
               <Controller
                 name="semester_id"
@@ -235,8 +348,10 @@ export default function CourseAdd() {
                     label="Semester"
                     field={field}
                     options={semesters}
-                    // error={errors.semester_id}
-                    helperText={errors.semester_id?.message}
+                    disabled={!selectedProgramId}
+                    helperText={
+                      errors.semester_id?.message
+                    }
                   />
                 )}
               />
@@ -244,75 +359,16 @@ export default function CourseAdd() {
 
             <Grid size={{ xs: 12, md: 6 }}>
               <Controller
-                name="dept_code"
+                name="course_category"
                 control={control}
                 render={({ field }) => (
-                  <CustomInputText
-                    label="Department Code"
+                  <CustomSelect
+                    label="Course Category"
                     field={field}
-                    error={!!errors.dept_code}
-                    helperText={errors.dept_code?.message}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="main_code"
-                control={control}
-                render={({ field }) => (
-                  <CustomInputText
-                    label="Main Code"
-                    field={field}
-                    error={!!errors.main_code}
-                    helperText={errors.main_code?.message}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="main_course"
-                control={control}
-                render={({ field }) => (
-                  <CustomInputText
-                    label="Main Course"
-                    field={field}
-                    error={!!errors.main_course}
-                    helperText={errors.main_course?.message}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="course_order"
-                control={control}
-                render={({ field }) => (
-                  <CustomNumberInput
-                    label="Course Order"
-                    value={field.value ?? ""}
-                    error={!!errors.course_order}
-                    helperText={errors.course_order?.message}
-                    onChange={(val) => field.onChange(val)}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Controller
-                name="course_type"
-                control={control}
-                render={({ field }) => (
-                  <CustomInputText
-                    label="Course Type"
-                    field={field}
-                    error={!!errors.course_type}
-                    helperText={errors.course_type?.message}
+                    options={courseCategories}
+                    helperText={
+                      errors.course_category?.message
+                    }
                   />
                 )}
               />
@@ -326,8 +382,6 @@ export default function CourseAdd() {
                   <CustomInputText
                     label="Course Code"
                     field={field}
-                    error={!!errors.course_code}
-                    helperText={errors.course_code?.message}
                   />
                 )}
               />
@@ -341,8 +395,13 @@ export default function CourseAdd() {
                   <CustomInputText
                     label="Course Title"
                     field={field}
-                    error={!!errors.course_title}
-                    helperText={errors.course_title?.message}
+                    error={
+                      !!errors.course_title
+                    }
+                    helperText={
+                      errors.course_title
+                        ?.message
+                    }
                   />
                 )}
               />
@@ -355,10 +414,19 @@ export default function CourseAdd() {
                 render={({ field }) => (
                   <CustomNumberInput
                     label="Credits"
-                    value={field.value ?? ""}
-                    error={!!errors.credits}
-                    helperText={errors.credits?.message}
-                    onChange={(val) => field.onChange(val)}
+                    value={
+                      field.value ?? ""
+                    }
+                    error={
+                      !!errors.credits
+                    }
+                    helperText={
+                      errors.credits
+                        ?.message
+                    }
+                    onChange={(val) =>
+                      field.onChange(val)
+                    }
                   />
                 )}
               />
@@ -372,8 +440,14 @@ export default function CourseAdd() {
                   <CustomInputText
                     label="Regulation Pattern"
                     field={field}
-                    error={!!errors.regulation_pattern}
-                    helperText={errors.regulation_pattern?.message}
+                    error={
+                      !!errors.regulation_pattern
+                    }
+                    helperText={
+                      errors
+                        .regulation_pattern
+                        ?.message
+                    }
                   />
                 )}
               />
@@ -381,13 +455,26 @@ export default function CourseAdd() {
 
           </Grid>
 
-          {/* Actions */}
-          <Box sx={{ display: "flex", gap: 2, mt: 4, justifyContent: "flex-end" }}>
-            <Button variant="contained" onClick={handleBack}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              mt: 4,
+              justifyContent: "flex-end",
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={handleBack}
+            >
               Back
             </Button>
 
-            <Button variant="outlined" color="error" onClick={handleReset}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleReset}
+            >
               Reset
             </Button>
 
@@ -397,9 +484,18 @@ export default function CourseAdd() {
               color="secondary"
               disabled={loading}
             >
-              {loading ? <CircularProgress size={20} /> : id ? "Update" : "Submit"}
+              {loading
+                ? (
+                  <CircularProgress
+                    size={20}
+                  />
+                )
+                : id
+                ? "Update"
+                : "Submit"}
             </Button>
           </Box>
+
         </CardComponent>
       </form>
     </Box>

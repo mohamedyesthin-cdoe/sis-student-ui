@@ -27,10 +27,8 @@ export const ApiRoutes = {
   GETSYLLABUSLIST: 'syllabus/list',
   SYLLABUSADD: 'syllabus/add',
   COURSECODELIST: 'coursecode/list',
-  COURSECATEGORYLIST: 'coursecategory/list',
   COURSETITLELIST: 'coursetitle/list',
   COURSECODEADD: 'coursecode/add',
-  COURSECATEGORYADD: 'coursecategory/add',
   COURSETITLEADD: 'coursetitle/add',
   GETROLES: 'admin/roles',
   ROLESADD: 'admin/roles/add',
@@ -91,4 +89,13 @@ export const ApiRoutes = {
   GRIEVANCEFACULTYLIST: 'grievance/faculty/list',
   GRIEVANCEFACULTYVIEW: 'grievance/faculty',
   GRIEVANCEUPDATEBYFACULTY: 'grievance/faculty/status',
+
+
+  COURSECATEGORYLIST: 'course-categories',
+  COURSECATEGORYADD: 'course-categories',
+  COURSECATEGORYUPDATE:'course-categories',
+  COURSECATEGORYDELETE: 'course-categories',
+  COURSECATEGORYBYID: 'course-categories'
+
+
 };
