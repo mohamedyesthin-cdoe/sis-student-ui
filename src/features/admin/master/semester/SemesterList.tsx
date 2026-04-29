@@ -1,6 +1,4 @@
 import * as React from "react";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import { useNavigate } from "react-router-dom";
 
@@ -105,11 +103,6 @@ export default function SemestersList() {
   const handleCloseDelete = () => {
     setSelectedSemesters(null);
     setOpenDelete(false);
-  };
-
-  const handleOpenDelete = (row: any) => {
-    setSelectedSemesters(row);
-    setOpenDelete(true);
   };
 
   /* ----------------------- FILTER ----------------------- */
