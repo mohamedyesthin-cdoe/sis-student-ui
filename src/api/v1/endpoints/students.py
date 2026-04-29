@@ -49,7 +49,7 @@ async def update_document_existing_sync_student(db: Session = Depends(get_db), c
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
 @router.get("/list", response_model=List[StudentResponse])
-def get_all_students(db: Session = Depends(get_db), current_user: User = Depends(require_superuser)):
+def get_all_students(db: Session = Depends(get_db)):
     """Retrieve all students."""
     try:
         service = StudentService(db)
