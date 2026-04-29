@@ -54,7 +54,7 @@ def get_all_students(db: Session = Depends(get_db)):
     try:
         service = StudentService(db)
         students = service.get_all_students()
-        return students
+        return students 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to retrieve students: {str(e)}")
     
